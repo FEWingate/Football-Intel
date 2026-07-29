@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Matchup Statistics — Football Intel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/fi-styles.css">
+<style>
+/* page-specific: the convergence gutter */
+.mrow{display:grid;grid-template-columns:1fr 116px 1fr;gap:10px;align-items:center;
+  padding:9px 0;border-bottom:1px solid var(--hairline)}
+.mrow:last-child{border-bottom:0}
+.mhead{display:grid;grid-template-columns:1fr 116px 1fr;gap:10px;align-items:end;
+  padding:14px 0 8px;position:sticky;top:0;background:var(--bg);
+  border-bottom:1px solid var(--border);z-index:1}
+.mhead div{font-family:var(--font-mono);font-size:9px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--text-dim)}
+.mhead .o{color:var(--primary)}
+.mhead .d{text-align:right;color:var(--accent-blue)}
+.mhead .c{text-align:center}
+.side{display:flex;align-items:baseline;gap:9px;min-width:0}
+.side.right{justify-content:flex-end;text-align:right}
+.val{font-family:var(--font-mono);font-size:15px;font-weight:500;
+  font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.metric{font-size:12.5px;color:var(--text-mid);flex:1;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.side.right .metric{text-align:right}
+.subsect{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--text-dim);padding:12px 0 3px;
+  border-bottom:1px solid var(--hairline)}
+.gutter{position:relative;height:20px}
+.gutter .track{position:absolute;inset:8px 0 auto;height:3px;background:var(--border2);border-radius:2px}
+.gutter .mid{position:absolute;left:50%;top:4px;width:1px;height:11px;background:var(--border2)}
+.gutter .fill{position:absolute;top:8px;height:3px;border-radius:2px;background:var(--primary)}
+.gutter .fill.def{background:var(--accent-blue)}
+.gutter .flag{position:absolute;left:50%;transform:translateX(-50%);top:-4px;
+  font-family:var(--font-mono);font-size:8px;letter-spacing:.1em;color:#09090b;
+  background:var(--accent-gold);border-radius:3px;padding:1px 5px;font-weight:700}
+@media(max-width:760px){
+  .mrow,.mhead{grid-template-columns:1fr 62px 1fr;gap:6px}
+  .val{font-size:13px}.metric{font-size:11px}
+}
+</style>
+</head>
+<body>
+<script src="js/fi-shell.js"></script>
+<script>
+const POSITIONS = ["QB","RB","WR","TE"];
+const POS_LABEL = {QB:"Quarterback",RB:"Running backs",WR:"Wide receivers",TE:"Tight ends"};
+let DATA=null, activeGame=null, dir=0, lastFocus=null;
+
+const main = fiShell({ page:'matchup', pageLabel:'Matchup Statistics', status:'loading' });
+
+main.innerHTML = `
+  <div class="bar">
+    <label class="lbl" for="wk">Week</label>
+    <select id="wk"></select>
+    <div class="legend">
+      <span><span class="badge gold">EDGE</span> top-10 offense vs bottom-10 defense</span>
+      <span><span class="rk t1">#1</span> elite</span>
+      <span><span class="rk t4">#32</span> poor</span>
+    </div>
+  </div>
+  <div id="grid" class="card-grid" aria-live="polite"></div>
+  <div class="modal-overlay" id="scrim"></div>
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="modal-header">
+      <div class="modal-title" id="mTitle"></div>
+      <div class="modal-subtitle" id="mSub"></div>
+      <button class="modal-close" id="mClose" aria-label="Close matchup">✕</button>
+      <div class="seg" id="mToggle"></div>
+    </div>
+    <div class="modal-body" id="mBody"></div>
+  </div>`;
+
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2,"0");
+
+const wkSel = $("wk");
+for (let w=3; w<=18; w++){
+  const o=document.createElement("option"); o.value=w; o.textContent="Week "+w; wkSel.appendChild(o);
+}
+wkSel.value = 10;
+wkSel.addEventListener("change", () => load(Number(wkSel.value)));
+
+async function load(week){
+  $("grid").innerHTML = `<div class="empty">Loading week ${week}…</div>`;
+  fiStatus("Loading","loading");
+  try{
+    const res = await fetch(`matchup/wk${pad(week)}.json`);
+    if(!res.ok) throw new Error("missing");
+    DATA = await res.json();
+  }catch(e){
+    DATA=null; fiStatus("No data","error"); fiUpdated("");
+    $("grid").innerHTML = `<div class="empty">
+      Week ${week} isn't built yet.<br>
+      Run <b>python3 build_matchup_stats.py ${week}</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+  fiStatus("Ready");
+  fiUpdated(`${DATA.season} · through ${DATA.data_horizon}`);
+  renderGrid();
+}
+
+const isConv = (o,d) => o<=10 && d>=23;
+function convCount(off,def){
+  let n=0;
+  for(const p of POSITIONS)
+    for(const m of Object.keys(DATA.labels.pos[p]))
+      if(isConv(DATA.teams[off].off[p][m].r, DATA.teams[def].def[p][m].r)) n++;
+  return n;
+}
+
+function renderGrid(){
+  const frag = document.createDocumentFragment();
+  DATA.games.forEach(g=>{
+    const a = convCount(g.away,g.home), h = convCount(g.home,g.away);
+    const btn = document.createElement("button");
+    btn.className = "game-card" + (Math.max(a,h)>=4 ? " hot" : "");
+    btn.innerHTML = `<div class="game-card-body">
+      <div class="matchup-line">${g.away}<em>@</em>${g.home}</div>
+      <div class="recs">${esc(g.away_record)} · ${esc(g.home_record)}</div>
+      <div class="card-tags">
+        <span class="badge ${a>=3?'gold':''}">${g.away} ${a} edge${a===1?'':'s'}</span>
+        <span class="badge ${h>=3?'gold':''}">${g.home} ${h} edge${h===1?'':'s'}</span>
+      </div></div>`;
+    btn.addEventListener("click", ()=>openGame(g,btn));
+    frag.appendChild(btn);
+  });
+  $("grid").innerHTML=""; $("grid").appendChild(frag);
+}
+
+function openGame(g, source){
+  activeGame=g; dir=0; lastFocus=source;
+  $("mTitle").innerHTML = `${g.away} <em>at</em> ${g.home}`;
+  $("mSub").textContent = `${g.away_record} · ${g.home_record} — week ${DATA.week}, ${DATA.data_horizon}`;
+  $("mToggle").innerHTML = `
+    <button data-d="0">${g.away} offense vs ${g.home} defense</button>
+    <button data-d="1">${g.home} offense vs ${g.away} defense</button>`;
+  $("mToggle").querySelectorAll("button").forEach(b=>
+    b.addEventListener("click", ()=>{ dir=Number(b.dataset.d); renderMatchup(); }));
+  $("scrim").classList.add("open"); $("modal").classList.add("open");
+  renderMatchup(); $("mClose").focus();
+}
+function closeModal(){
+  $("scrim").classList.remove("open"); $("modal").classList.remove("open");
+  if(lastFocus) lastFocus.focus();
+}
+$("mClose").addEventListener("click", closeModal);
+$("scrim").addEventListener("click", closeModal);
+document.addEventListener("keydown", e=>{
+  if(e.key==="Escape" && $("modal").classList.contains("open")) closeModal();
+});
+
+function rowHTML(label, off, def, inv){
+  const edge = def.r - off.r;
+  const pct = Math.min(Math.abs(edge)/31,1)*50;
+  const conv = isConv(off.r, def.r);
+  const fill = edge>=0
+    ? `<span class="fill" style="left:50%;width:${pct}%"></span>`
+    : `<span class="fill def" style="right:50%;width:${pct}%"></span>`;
+  return `<div class="mrow">
+    <div class="side">
+      <span class="val">${off.v}</span><span class="rk ${rkClass(off.r)}">#${off.r}</span>
+      <span class="metric">${esc(label)}</span>
+    </div>
+    <div class="gutter" title="${edge>=0?'Offense':'Defense'} edge: ${Math.abs(edge)} rank steps${inv?' (lower is better for the offense)':''}">
+      <span class="track"></span><span class="mid"></span>${fill}
+      ${conv?'<span class="flag">EDGE</span>':''}
+    </div>
+    <div class="side right">
+      <span class="metric">${esc(label)} allowed</span>
+      <span class="rk ${rkClass(def.r)}">#${def.r}</span><span class="val">${def.v}</span>
+    </div></div>`;
+}
+
+function renderMatchup(){
+  const g=activeGame;
+  const offTeam = dir===0?g.away:g.home, defTeam = dir===0?g.home:g.away;
+  const O=DATA.teams[offTeam], D=DATA.teams[defTeam];
+  $("mToggle").querySelectorAll("button").forEach(b=>
+    b.setAttribute("aria-pressed", String(Number(b.dataset.d)===dir)));
+
+  let h = `<div class="mhead">
+      <div class="o">${offTeam} offense</div><div class="c">edge</div>
+      <div class="d">${defTeam} defense</div></div>
+    <div class="sect"><h3>Team</h3><span class="rule"></span></div>`;
+  for(const m of Object.keys(DATA.labels.team_off))
+    h += rowHTML(DATA.labels.team_off[m], O.team_off[m], D.team_def[m]);
+  for(const p of POSITIONS){
+    h += `<div class="sect"><h3>${POS_LABEL[p]}</h3><span class="rule"></span></div>`;
+    let group = null;
+    for(const m of Object.keys(DATA.labels.pos[p])){
+      const meta = DATA.labels.pos[p][m];
+      if(meta.g !== group){ group = meta.g; h += `<div class="subsect">${esc(group)}</div>`; }
+      h += rowHTML(meta.l, O.off[p][m], D.def[p][m], meta.inv);
+    }
+  }
+  $("mBody").innerHTML = h;
+  $("modal").scrollTop = 0;
+}
+
+load(10);
+</script>
+</body>
+</html>
