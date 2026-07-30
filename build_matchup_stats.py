@@ -183,17 +183,19 @@ def fetch_csv(urls):
 
 def norm_players(df):
     team_col = "team" if "team" in df.columns else "recent_team"
-    df = df.rename(columns={team_col: "team"})
+    name_col = ("player_display_name" if "player_display_name" in df.columns
+                else "player_name")
+    df = df.rename(columns={team_col: "team", name_col: "name"})
     if "season_type" in df.columns:
         df = df[df["season_type"] == "REG"]
     if "season" in df.columns:
         df = df[df["season"] == SEASON]
-    cols = ["position", "team", "opponent_team", "week"] + RAW_COLS
+    cols = ["name", "position", "team", "opponent_team", "week"] + RAW_COLS
     for c in cols:
         if c not in df.columns:
             df[c] = 0
     df = df[cols].copy()
-    num = [c for c in cols if c not in ("position", "team", "opponent_team")]
+    num = [c for c in cols if c not in ("name", "position", "team", "opponent_team")]
     df[num] = df[num].fillna(0)
     df["pos"] = df["position"].map(POS_MAP)
     return df[df["pos"].notna()]
@@ -385,7 +387,157 @@ def build(week):
 
     build_context(week, all_teams, records, prior_stats, prior_games,
                   out_team_def, out_pos_def)
+    build_threats(week, all_teams, records, prior_stats, week_games, gp)
     print("Serve the folder and open matchup_stats.html / contextual_stats.html")
+
+
+# ==========================================================================
+# THREAT SYSTEM — offensive starters (QB, RB, WR, WR, TE) vs the positional
+# defense they face. Emits raw ranks; classification happens in the browser
+# so the tier rules stay tunable without rebuilding data.
+# ==========================================================================
+
+SNAPS_URL = ("https://github.com/nflverse/nflverse-data/releases/download/"
+             "snap_counts/snap_counts_{season}.csv")
+
+# Starters per team, by snap share.
+LINEUP = [("QB", 1), ("RB", 1), ("WR", 2), ("TE", 1)]
+SNAP_LOOKBACK = 4           # weeks of snap share used to identify starters
+MIN_GAMES = 3               # games needed before a player can be ranked
+
+# Prop categories only — the ones Frank actually bets.
+# key -> (label, raw stat column, decimals)
+THREAT_CATS = {
+    "QB": {
+        "pass_yds": ("Passing yards", "passing_yards", 1),
+        "pass_tds": ("Passing TDs", "passing_tds", 2),
+    },
+    "RB": {
+        "rush_yds": ("Rushing yards", "rushing_yards", 1),
+        "rush_tds": ("Rushing TDs", "rushing_tds", 2),
+        "rec_yds":  ("Receiving yards", "receiving_yards", 1),
+        "rec":      ("Receptions", "receptions", 1),
+    },
+    "WR": {
+        "rec_yds":  ("Receiving yards", "receiving_yards", 1),
+        "rec":      ("Receptions", "receptions", 1),
+        "rec_tds":  ("Receiving TDs", "receiving_tds", 2),
+    },
+}
+THREAT_CATS["TE"] = dict(THREAT_CATS["WR"])
+THREAT_POS = ["QB", "RB", "WR", "TE"]
+
+
+def build_threats(week, all_teams, records, prior_stats, week_games, gp):
+    """prior_stats already respects the data horizon (weeks 1..week-1)."""
+    import pandas as pd
+
+    snaps = fetch_csv(SNAPS_URL.format(season=SEASON))
+    snaps = snaps[(snaps["season"] == SEASON) & (snaps["game_type"] == "REG")
+                  & (snaps["week"] < week)]
+    lo = max(1, week - SNAP_LOOKBACK)
+    snaps = snaps[snaps["week"] >= lo]
+    snaps = snaps[snaps["position"].isin(THREAT_POS)]
+
+    # ---- who starts: highest mean offensive snap share in the lookback ----
+    share = (snaps.groupby(["team", "player", "position"])["offense_pct"]
+             .mean().reset_index())
+    starters = {}
+    for t in all_teams:
+        sub = share[share["team"] == t]
+        picked = []
+        for pos, n in LINEUP:
+            rows = sub[sub["position"] == pos].nlargest(n, "offense_pct")
+            for _, r in rows.iterrows():
+                picked.append({"name": r["player"], "pos": pos,
+                               "snap_pct": round(float(r["offense_pct"]) * 100, 1)})
+        starters[t] = picked
+
+    # ---- player production per game, ranked within position ----
+    pl = prior_stats.copy()
+    pl["posg"] = pl["position"].map(POS_MAP)
+    pl = pl[pl["posg"].notna()]
+    agg = (pl.groupby(["name", "posg", "team"])
+             .agg(gp=("week", "nunique"),
+                  **{c: (c, "sum") for c in
+                     ["passing_yards", "passing_tds", "rushing_yards", "rushing_tds",
+                      "receiving_yards", "receiving_tds", "receptions"]})
+             .reset_index())
+    # Early in the season there aren't MIN_GAMES to be had — fall back to what
+    # exists so week 3 isn't a blank page, and flag the thin sample.
+    min_games = min(MIN_GAMES, max(1, week - 1))
+    agg = agg[agg["gp"] >= min_games]
+
+    player_rank = {}     # (name, pos) -> {cat: {"v":pg, "r":rank}}
+    for pos in THREAT_POS:
+        sub = agg[agg["posg"] == pos].copy()
+        for cat, (_lbl, col, dec) in THREAT_CATS[pos].items():
+            sub[cat] = (sub[col] / sub["gp"]).round(dec)
+            sub[cat + "_r"] = sub[cat].rank(ascending=False, method="min").astype(int)
+        for _, r in sub.iterrows():
+            player_rank[(r["name"], pos)] = {
+                c: {"v": float(r[c]), "r": int(r[c + "_r"])}
+                for c in THREAT_CATS[pos]}
+
+    # ---- defense allowed to each position, per game, ranked ----
+    dfn = {}
+    for pos in THREAT_POS:
+        sub = pl[pl["posg"] == pos]
+        tot = sub.groupby("opponent_team")[
+            ["passing_yards", "passing_tds", "rushing_yards", "rushing_tds",
+             "receiving_yards", "receiving_tds", "receptions"]].sum()
+        vals = {}
+        for cat, (_lbl, col, dec) in THREAT_CATS[pos].items():
+            vals[cat] = {t: round(float(tot.loc[t, col]) / gp[t], dec)
+                         if t in tot.index else 0.0 for t in all_teams}
+        dfn[pos] = {}
+        for cat in THREAT_CATS[pos]:
+            order = sorted(all_teams, key=lambda t: vals[cat][t])   # fewest allowed = rank 1
+            ranks = {t: i + 1 for i, t in enumerate(order)}
+            dfn[pos][cat] = {t: {"v": vals[cat][t], "r": ranks[t]} for t in all_teams}
+
+    # ---- assemble: each starter with their ranks and the defense they face ----
+    opp_of = {}
+    for _, g in week_games.iterrows():
+        opp_of[g["away_team"]] = g["home_team"]
+        opp_of[g["home_team"]] = g["away_team"]
+
+    teams_out = {}
+    for t in all_teams:
+        opp = opp_of.get(t)
+        roster = []
+        for s in starters.get(t, []):
+            pr = player_rank.get((s["name"], s["pos"]))
+            if not pr or not opp:
+                roster.append({**s, "cats": {}, "unranked": True})
+                continue
+            cats = {}
+            for cat in THREAT_CATS[s["pos"]]:
+                d = dfn[s["pos"]][cat][opp]
+                cats[cat] = {"v": pr[cat]["v"], "r": pr[cat]["r"],
+                             "dv": d["v"], "dr": d["r"]}
+            roster.append({**s, "cats": cats})
+        teams_out[t] = {"record": records[t], "opp": opp, "starters": roster}
+
+    payload = {
+        "season": SEASON, "week": week, "data_horizon": f"weeks 1-{week - 1}",
+        "min_games": min_games, "thin_sample": min_games < MIN_GAMES,
+        "snap_lookback": SNAP_LOOKBACK,
+        "labels": {p: {c: THREAT_CATS[p][c][0] for c in THREAT_CATS[p]} for p in THREAT_POS},
+        "pos_cats": {p: list(THREAT_CATS[p].keys()) for p in THREAT_POS},
+        "games": [{
+            "game_id": f"{SEASON}_{week:02d}_{g['away_team']}_{g['home_team']}",
+            "away": g["away_team"], "home": g["home_team"],
+            "away_record": records[g["away_team"]], "home_record": records[g["home_team"]],
+        } for _, g in week_games.iterrows()],
+        "teams": teams_out,
+    }
+    os.makedirs("threats", exist_ok=True)
+    path = f"threats/wk{week:02d}.json"
+    with open(path, "w") as f:
+        json.dump(payload, f)
+    n = sum(len(v["starters"]) for v in teams_out.values())
+    print(f"Wrote {path} — {n} starters, {os.path.getsize(path)/1024:.0f} KB")
 
 
 # ==========================================================================

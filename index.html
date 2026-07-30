@@ -1,7 +1,175 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<title>Football Intel</title>
-<meta http-equiv="refresh" content="0; url=matchup_stats.html">
-<body style="font-family:system-ui;background:#09090b;color:#a3e635;padding:2rem">
-Loading Football Intel… <a href="matchup_stats.html" style="color:#a3e635">continue</a>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Football Intel — NFL Matchup Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400;0,500;0,600;0,700;0,800;1,800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/fi-styles.css">
+<style>
+body{min-height:100vh;overflow-x:hidden}
+.land-top{display:flex;align-items:center;padding:22px 28px;gap:14px}
+.land-logo{display:flex;align-items:center;gap:9px}
+.land-logo::before{content:'';width:9px;height:9px;border-radius:50%;
+  background:var(--primary);box-shadow:0 0 12px var(--primary)}
+.land-logo span{font-family:var(--font-display);font-weight:800;font-size:19px;letter-spacing:-.02em}
+.land-logo span b{color:var(--primary);font-weight:800}
+.land-note{margin-left:auto;font-family:var(--font-mono);font-size:10px;
+  letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase}
+
+.hero{max-width:1000px;margin:0 auto;padding:34px 24px 60px;text-align:center}
+.kicker{display:flex;align-items:center;justify-content:center;gap:14px;
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.34em;
+  color:var(--primary);text-transform:uppercase;margin-bottom:26px}
+.kicker::before,.kicker::after{content:'';width:56px;height:1px;background:var(--primary);opacity:.55}
+.hero h1{font-family:var(--font-display);font-weight:800;letter-spacing:-.035em;
+  line-height:.94;margin:0;font-size:clamp(46px,9vw,116px)}
+.hero h1 em{font-style:italic;color:var(--primary)}
+.tagline{font-family:var(--font-display);font-weight:700;font-size:20px;
+  margin:26px 0 10px;letter-spacing:-.01em}
+.blurb{color:var(--text-mid);font-size:15px;line-height:1.65;max-width:620px;margin:0 auto}
+
+.chips{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin:32px auto 0;max-width:840px}
+.chip-f{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-mono);
+  font-size:11.5px;padding:8px 13px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:var(--surface);color:var(--text-mid)}
+.chip-f.on{border-color:rgba(163,230,53,.4);color:var(--primary);background:rgba(163,230,53,.06)}
+.chip-f .ic{font-size:12px}
+
+.loadbar{max-width:440px;margin:46px auto 0}
+.loadbar .track{height:2px;background:var(--border);border-radius:2px;overflow:hidden}
+.loadbar .fill{height:100%;width:0;background:var(--primary);
+  box-shadow:0 0 10px var(--primary);transition:width .45s linear}
+.loadbar .msg{font-family:var(--font-mono);font-size:10px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--text-dim);margin-top:14px;min-height:14px}
+.loadbar .msg.err{color:var(--accent-orange)}
+
+.skip{display:inline-block;margin-top:34px;font-family:var(--font-mono);font-size:10px;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);
+  text-decoration:none;border-bottom:1px solid transparent;padding-bottom:2px}
+.skip:hover{color:var(--primary);border-bottom-color:var(--primary)}
+.skip.hide{visibility:hidden}
+
+.land-foot{text-align:center;padding:0 24px 44px;font-family:var(--font-mono);
+  font-size:10px;letter-spacing:.1em;color:var(--text-dim)}
+@media(max-width:640px){
+  .hero{padding-top:18px}
+  .kicker::before,.kicker::after{width:26px}
+  .tagline{font-size:17px}
+}
+@media(prefers-reduced-motion:reduce){.loadbar .fill{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="land-top">
+  <div class="land-logo"><span>FOOTBALL <b>INTEL</b></span></div>
+  <div class="land-note">Free · No login required</div>
+</div>
+
+<main class="hero">
+  <div class="kicker" id="kicker">NFL Season</div>
+  <h1>Football<br><em>Intelligence</em></h1>
+  <div class="tagline">Every Matchup. Every Edge.</div>
+  <p class="blurb">
+    Positional offense against the defense it actually faces — ranked, contextualized,
+    and stripped of the noise that hides where a game is really won.
+  </p>
+
+  <div class="chips">
+    <span class="chip-f on"><span class="ic">⚔️</span> Matchup Statistics</span>
+    <span class="chip-f on"><span class="ic">📊</span> Contextual Statistics</span>
+    <span class="chip-f on"><span class="ic">🎯</span> Positional Defense Ranks</span>
+    <span class="chip-f on"><span class="ic">💥</span> Explosive Play Splits</span>
+    <span class="chip-f on"><span class="ic">⚡</span> Threat System</span>
+    <span class="chip-f"><span class="ic">💰</span> DFS Center</span>
+    <span class="chip-f"><span class="ic">🎲</span> Prop Center</span>
+    <span class="chip-f"><span class="ic">🩹</span> Injuries</span>
+    <span class="chip-f"><span class="ic">◉</span> Coeus AI Analyst</span>
+  </div>
+
+  <div class="loadbar">
+    <div class="track"><div class="fill" id="fill"></div></div>
+    <div class="msg" id="msg">Initializing…</div>
+  </div>
+
+  <a class="skip" id="skip" href="matchup_stats.html">Skip intro →</a>
+</main>
+
+<div class="land-foot" id="foot"></div>
+
+<script>
+const DEST     = 'matchup_stats.html';   // where the intro hands off
+const DURATION = 7000;                   // total intro length in ms
+const WEEKS    = Array.from({length: 16}, (_, i) => i + 3);   // weeks 3-18
+
+const fill  = document.getElementById('fill');
+const msg   = document.getElementById('msg');
+const start = Date.now();
+let failed = false;
+
+const STAGES = [
+  [0,    'Initializing…'],
+  [900,  'Locating data files…'],
+  [2600, 'Loading positional rankings…'],
+  [4200, 'Indexing defensive splits…'],
+  [5600, 'Preparing matchup grid…'],
+];
+
+/* Bar and copy advance on a timer so the intro reads at a human pace,
+   independent of how fast the fetches actually return. */
+const ticker = setInterval(() => {
+  if (failed) return;
+  const t = Date.now() - start;
+  fill.style.width = Math.min((t / DURATION) * 100, 100) + '%';
+  const stage = STAGES.filter(s => t >= s[0]).pop();
+  if (stage && msg.textContent !== stage[1]) msg.textContent = stage[1];
+  if (t >= DURATION) {
+    clearInterval(ticker);
+    location.replace(DEST);
+  }
+}, 100);
+
+function stop(text){
+  failed = true;
+  clearInterval(ticker);
+  fill.style.width = '100%';
+  msg.textContent = text;
+  msg.classList.add('err');
+  document.getElementById('skip').classList.add('hide');
+}
+
+/* Confirm the data is actually published while the intro plays. */
+(async () => {
+  const found = [];
+  await Promise.all(WEEKS.map(async w => {
+    const f = String(w).padStart(2, '0');
+    try {
+      const r = await fetch('matchup/wk' + f + '.json', { method: 'HEAD' });
+      if (r.ok) found.push(w);
+    } catch (e) { /* week not published */ }
+  }));
+
+  if (!found.length){
+    stop('No data published yet');
+    document.getElementById('foot').textContent =
+      'Run build_matchup_stats.py, then commit the matchup/ and context/ folders.';
+    return;
+  }
+
+  found.sort((a, b) => a - b);
+  const latest = found[found.length - 1];
+  try {
+    const res = await fetch('matchup/wk' + String(latest).padStart(2, '0') + '.json');
+    const d = await res.json();
+    document.getElementById('kicker').textContent = 'NFL ' + d.season + ' Season';
+    document.getElementById('foot').textContent =
+      d.season + ' · weeks ' + found[0] + '–' + latest + ' available · '
+      + (d.games || []).length + ' games in week ' + latest;
+  } catch (e) { /* keep generic labels */ }
+})();
+</script>
 </body>
+</html>

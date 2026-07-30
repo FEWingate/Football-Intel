@@ -6,7 +6,7 @@
    ═══════════════════════════════════════════════════════════════ */
 
 const NAV = [
-  { key: 'threats',  label: 'Threats',      ico: '⚡', href: 'index.html' },
+  { key: 'threats',  label: 'Threats',      ico: '⚡', href: 'threats.html' },
   { key: 'matchup',  label: 'Matchup Stats',ico: '⚔️', href: 'matchup_stats.html' },
   { key: 'context',  label: 'Contextual',   ico: '📊', href: 'contextual_stats.html' },
   { key: 'games',    label: 'Games',        ico: '📅' },
@@ -21,7 +21,7 @@ const NAV = [
   { key: 'coeus',    label: 'Coeus',        ico: '◉' },
 ];
 
-const MOBILE_NAV = ['threats', 'matchup', 'context', 'dfs', 'coeus'];
+const MOBILE_NAV = ['matchup', 'context', 'threats', 'dfs', 'coeus'];
 
 function fiShell({ page, pageLabel, status = 'ready' }) {
   document.body.dataset.page = page;
