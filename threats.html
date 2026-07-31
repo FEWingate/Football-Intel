@@ -36,7 +36,8 @@
 .gm.live{border-color:color-mix(in srgb,var(--accent-red) 40%,var(--border))}
 .gm-head{padding:13px 16px;border-bottom:1px solid var(--border);
   display:flex;align-items:center;gap:12px;background:var(--surface2)}
-.gm-title{font-family:var(--font-display);font-weight:800;font-size:17px;letter-spacing:-.02em}
+.gm-title{font-family:var(--font-display);font-weight:800;font-size:17px;letter-spacing:-.02em;
+  display:flex;align-items:center;gap:6px}
 .gm-title em{font-style:normal;color:var(--text-dim);font-weight:600;font-size:12px;margin:0 6px}
 .gm-recs{font-family:var(--font-mono);font-size:10px;color:var(--text-dim)}
 .gm-count{margin-left:auto;font-family:var(--font-mono);font-size:10px;
@@ -48,7 +49,8 @@
 @media(max-width:560px){.side + .side{border-left:0;border-top:1px solid var(--border)}}
 .side-h{font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;
   text-transform:uppercase;color:var(--text-mid);margin-bottom:11px;
-  display:flex;align-items:center;gap:7px}
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.side-h .vs{display:inline-flex;align-items:center;gap:5px}
 .side-h .vs{color:var(--text-dim);letter-spacing:.04em;text-transform:none}
 
 .thr{padding:10px 0;border-bottom:1px solid var(--hairline)}
@@ -175,10 +177,10 @@ function threatHTML(s){
 
 function sideHTML(team, opp){
   const t = DATA.teams[team];
-  if (!t) return `<div class="side"><div class="side-h">${esc(team)}</div><div class="na">N/A</div></div>`;
+  if (!t) return `<div class="side"><div class="side-h">${fiLogoHTML(team,18)}${esc(team)}</div><div class="na">N/A</div></div>`;
   const body = (t.starters || []).map(threatHTML).filter(Boolean).join('');
   return `<div class="side">
-    <div class="side-h">${esc(team)} <span class="vs">vs ${esc(opp)} defense</span></div>
+    <div class="side-h">${fiLogoHTML(team,18)}${esc(team)} <span class="vs">vs ${fiLogoHTML(opp,14)}${esc(opp)} defense</span></div>
     ${body || '<div class="na">N/A — no threats</div>'}
   </div>`;
 }
@@ -199,7 +201,7 @@ function render(){
     const hot = Object.keys(DATA.teams).length && n >= 3;
     return `<section class="gm${hot ? ' live' : ''}">
       <div class="gm-head">
-        <span class="gm-title">${g.away}<em>@</em>${g.home}</span>
+        <span class="gm-title">${fiLogoHTML(g.away,24)}${g.away}<em>@</em>${fiLogoHTML(g.home,24)}${g.home}</span>
         <span class="gm-recs">${esc(g.away_record)} · ${esc(g.home_record)}</span>
         <span class="gm-count">${n || 'no'} threat${n === 1 ? '' : 's'}</span>
       </div>

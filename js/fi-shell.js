@@ -145,6 +145,10 @@ function fiClassify(cats){
    ESPN's CDN, keyed by their abbreviations. Only two differ from
    nflverse's: the Rams and Washington. */
 const FI_ESPN_ABBR = { LA: 'lar', WAS: 'wsh' };
+/* Preload the two logos most pages show first so they don't pop in late. */
+function fiPreloadLogos(teams){
+  (teams || []).slice(0, 8).forEach(t => { const i = new Image(); i.src = fiLogo(t); });
+}
 function fiLogo(team){
   const a = (FI_ESPN_ABBR[team] || team || '').toLowerCase();
   return `https://a.espncdn.com/i/teamlogos/nfl/500/${a}.png`;

@@ -18,8 +18,9 @@
   border-bottom:1px solid var(--border);z-index:1}
 .mhead div{font-family:var(--font-mono);font-size:9px;letter-spacing:.15em;
   text-transform:uppercase;color:var(--text-dim)}
-.mhead .o{color:var(--primary)}
-.mhead .d{text-align:right;color:var(--accent-blue)}
+.mhead .o{color:var(--primary);display:flex;align-items:center;gap:6px}
+.mhead .d{text-align:right;color:var(--accent-blue);display:flex;align-items:center;
+  justify-content:flex-end;gap:6px}
 .mhead .c{text-align:center}
 .side{display:flex;align-items:baseline;gap:9px;min-width:0}
 .side.right{justify-content:flex-end;text-align:right}
@@ -121,11 +122,11 @@ function renderGrid(){
     const btn = document.createElement("button");
     btn.className = "game-card" + (Math.max(a,h)>=4 ? " hot" : "");
     btn.innerHTML = `<div class="game-card-body">
-      <div class="matchup-line">${g.away}<em>@</em>${g.home}</div>
+      <div class="matchup-line">${fiLogoHTML(g.away,26)}${g.away}<em>@</em>${fiLogoHTML(g.home,26)}${g.home}</div>
       <div class="recs">${esc(g.away_record)} · ${esc(g.home_record)}</div>
       <div class="card-tags">
-        <span class="badge ${a>=3?'gold':''}">${g.away} ${a} edge${a===1?'':'s'}</span>
-        <span class="badge ${h>=3?'gold':''}">${g.home} ${h} edge${h===1?'':'s'}</span>
+        <span class="badge ${a>=3?'gold':''}">${fiLogoHTML(g.away,14)}${g.away} ${a} edge${a===1?'':'s'}</span>
+        <span class="badge ${h>=3?'gold':''}">${fiLogoHTML(g.home,14)}${g.home} ${h} edge${h===1?'':'s'}</span>
       </div></div>`;
     btn.addEventListener("click", ()=>openGame(g,btn));
     frag.appendChild(btn);
@@ -135,11 +136,11 @@ function renderGrid(){
 
 function openGame(g, source){
   activeGame=g; dir=0; lastFocus=source;
-  $("mTitle").innerHTML = `${g.away} <em>at</em> ${g.home}`;
+  $("mTitle").innerHTML = `${fiLogoHTML(g.away,32)}${g.away} <em>at</em> ${g.home}${fiLogoHTML(g.home,32)}`;
   $("mSub").textContent = `${g.away_record} · ${g.home_record} — week ${DATA.week}, ${DATA.data_horizon}`;
   $("mToggle").innerHTML = `
-    <button data-d="0">${g.away} offense vs ${g.home} defense</button>
-    <button data-d="1">${g.home} offense vs ${g.away} defense</button>`;
+    <button data-d="0">${fiLogoHTML(g.away,16)}${g.away} offense vs ${fiLogoHTML(g.home,16)}${g.home} defense</button>
+    <button data-d="1">${fiLogoHTML(g.home,16)}${g.home} offense vs ${fiLogoHTML(g.away,16)}${g.away} defense</button>`;
   $("mToggle").querySelectorAll("button").forEach(b=>
     b.addEventListener("click", ()=>{ dir=Number(b.dataset.d); renderMatchup(); }));
   $("scrim").classList.add("open"); $("modal").classList.add("open");
@@ -185,8 +186,8 @@ function renderMatchup(){
     b.setAttribute("aria-pressed", String(Number(b.dataset.d)===dir)));
 
   let h = `<div class="mhead">
-      <div class="o">${offTeam} offense</div><div class="c">edge</div>
-      <div class="d">${defTeam} defense</div></div>
+      <div class="o">${fiLogoHTML(offTeam,16)}${offTeam} offense</div><div class="c">edge</div>
+      <div class="d">${fiLogoHTML(defTeam,16)}${defTeam} defense</div></div>
     <div class="sect"><h3>Team</h3><span class="rule"></span></div>`;
   for(const m of Object.keys(DATA.labels.team_off))
     h += rowHTML(DATA.labels.team_off[m], O.team_off[m], D.team_def[m]);

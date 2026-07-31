@@ -31,6 +31,9 @@
 .gap.up{color:var(--accent-red)} .gap.down{color:var(--accent-green)} .gap.flat{color:var(--text-dim)}
 .cell{display:inline-flex;align-items:center;gap:7px;justify-content:flex-end}
 .wknum{color:var(--text-dim);font-size:10.5px;margin-right:5px;font-family:var(--font-mono)}
+.team-pick{display:inline-flex;align-items:center;gap:7px}
+.stat-table td b{display:inline-flex;align-items:center;gap:5px;font-weight:500}
+.panel-title{display:flex;align-items:center;gap:8px}
 .res{font-family:var(--font-mono);font-size:10.5px;margin-left:7px;color:var(--text-mid)}
 .res.w{color:var(--accent-green)} .res.l{color:var(--accent-red)}
 @media(max-width:860px){
@@ -56,7 +59,8 @@ const main = fiShell({ page:'context', pageLabel:'Contextual Statistics', status
 main.innerHTML = `
   <div class="bar">
     <label class="lbl" for="wk">Week</label><select id="wk"></select>
-    <label class="lbl" for="tm">Team</label><select id="tm"></select>
+    <label class="lbl" for="tm">Team</label>
+    <span class="team-pick"><span id="tmLogo"></span><select id="tm"></select></span>
     <div class="legend">
       <span>Defense faced:</span>
       <span class="chip top">T10</span><span>toughest</span>
@@ -74,7 +78,8 @@ const wkSel=$("wk");
 for(let w=3;w<=18;w++){const o=document.createElement("option");o.value=w;o.textContent="Week "+w;wkSel.appendChild(o);}
 wkSel.value=10;
 wkSel.addEventListener("change",()=>load(Number(wkSel.value)));
-$("tm").addEventListener("change",()=>{team=$("tm").value;render();});
+$("tm").addEventListener("change",()=>{team=$("tm").value;syncTeamLogo();render();});
+function syncTeamLogo(){ $("tmLogo").innerHTML = team ? fiLogoHTML(team,22) : ''; }
 
 $("units").innerHTML = UNITS.map(([k,l])=>
   `<button role="tab" data-u="${k}">${l}</button>`).join('');
@@ -102,6 +107,7 @@ async function load(week){
   $("tm").innerHTML = teams.map(t=>
     `<option value="${t}">${t} (${DATA.teams[t].record})</option>`).join('');
   $("tm").value = team;
+  syncTeamLogo();
   render();
 }
 
@@ -145,7 +151,7 @@ function render(){
   let h = `<div class="panel">
     <div class="panel-header">
       <div>
-        <div class="panel-title">Production by defense faced</div>
+        <div class="panel-title">${fiLogoHTML(team,20)}Production by defense faced</div>
         <div class="panel-subtitle">${esc(team)} · per-game average · n = games</div>
       </div>
       <span class="panel-count">${metrics.length} metrics</span>
@@ -177,7 +183,7 @@ function render(){
     </tr></thead><tbody>`;
   log.forEach(e=>{
     h += `<tr><td><span class="wknum">WK ${e.week}</span>
-      <b>${e.home?"vs":"@"} ${esc(e.opp)}</b>
+      <b>${e.home?"vs":"@"} ${fiLogoHTML(e.opp,16)}${esc(e.opp)}</b>
       <span class="res ${e.result.toLowerCase()}">${esc(e.result)} ${esc(e.score)}</span></td>`;
     metrics.forEach(m=>{
       const c=cellFor(e,unit,m);

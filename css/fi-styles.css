@@ -341,8 +341,13 @@ select:hover{border-color:var(--border2)}
 
 
 /* ── TEAM LOGO ── */
-.fi-logo{display:inline-flex;align-items:center;justify-content:center;flex:none;position:relative}
+.fi-logo{display:inline-flex;align-items:center;justify-content:center;flex:none;position:relative;
+  vertical-align:middle}
 .fi-logo img{object-fit:contain;display:block}
 .fi-logo i{display:none;font-style:normal;font-family:var(--font-display);font-weight:800;
   font-size:12px;letter-spacing:-.02em;color:var(--text-mid)}
 .fi-logo.fallback i{display:block}
+
+.badge .fi-logo{margin-right:1px}
+.seg button .fi-logo{margin-right:2px}
+.modal-title{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
