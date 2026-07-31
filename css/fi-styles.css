@@ -338,3 +338,11 @@ select:hover{border-color:var(--border2)}
   *{animation:none !important;transition:none !important}
   .stat-table tbody tr{opacity:1}
 }
+
+
+/* ── TEAM LOGO ── */
+.fi-logo{display:inline-flex;align-items:center;justify-content:center;flex:none;position:relative}
+.fi-logo img{object-fit:contain;display:block}
+.fi-logo i{display:none;font-style:normal;font-family:var(--font-display);font-weight:800;
+  font-size:12px;letter-spacing:-.02em;color:var(--text-mid)}
+.fi-logo.fallback i{display:block}

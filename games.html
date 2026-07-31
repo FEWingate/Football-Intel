@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Games — Football Intel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/fi-styles.css">
+<style>
+.daygroup{margin-bottom:24px}
+.dayhead{display:flex;align-items:baseline;gap:11px;margin:0 0 11px}
+.dayhead h2{margin:0;font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;font-weight:700;color:var(--text)}
+.dayhead .date{font-family:var(--font-mono);font-size:10px;color:var(--text-dim);letter-spacing:.06em}
+.dayhead .rule{flex:1;height:1px;background:var(--border)}
+
+.gcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:14px 16px 15px;display:block;text-decoration:none;color:inherit;
+  transition:border-color .18s,transform .15s}
+.gcard:hover{border-color:var(--border2);transform:translateY(-1px)}
+.gcard.hot{border-color:rgba(163,230,53,.45)}
+.gcard-top{display:flex;align-items:flex-start;gap:14px}
+.teams-col{flex:1;min-width:0}
+.trow{display:flex;align-items:center;gap:9px;padding:3px 0}
+.tabbr{font-family:var(--font-display);font-weight:800;font-size:19px;letter-spacing:-.02em;
+  min-width:52px}
+.trow.win .tabbr{color:var(--primary)}
+.trec{font-family:var(--font-mono);font-size:10.5px;color:var(--text-dim)}
+.tform{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.12em}
+.tform .W{color:var(--accent-green)} .tform .L{color:var(--accent-red)} .tform .T{color:var(--text-dim)}
+.tscore{margin-left:auto;font-family:var(--font-mono);font-size:19px;font-weight:500;
+  font-variant-numeric:tabular-nums;color:var(--text-mid)}
+.trow.win .tscore{color:var(--text);font-weight:700}
+.kick{text-align:right;font-family:var(--font-mono);font-size:11px;color:var(--text-mid);
+  white-space:nowrap;line-height:1.7}
+.kick .final{color:var(--accent-green);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+.odds{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px;padding-top:11px;
+  border-top:1px solid var(--hairline)}
+.odd{font-family:var(--font-mono);font-size:10px;letter-spacing:.05em;padding:4px 8px;
+  border-radius:var(--radius-sm);border:1px solid var(--border);color:var(--text-mid)}
+.odd b{color:var(--text);font-weight:600}
+.odd.thr{border-color:rgba(163,230,53,.4);color:var(--primary);background:rgba(163,230,53,.06)}
+.odd.thr b{color:var(--primary)}
+.meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:9px;font-family:var(--font-mono);
+  font-size:9.5px;color:var(--text-dim);letter-spacing:.04em}
+.links{display:flex;gap:8px;margin-top:11px}
+.links a{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-dim);text-decoration:none;border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:4px 9px}
+.links span{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--text-dim);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:4px 9px}
+.gcard:hover .links span{color:var(--primary);border-color:rgba(163,230,53,.4)}
+button.gcard{font:inherit;text-align:left;cursor:pointer}
+.boxtable td{font-size:13.5px}
+.boxtable .boxlbl{text-align:center;font-family:var(--font-mono);font-size:10px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap}
+.boxtable .num{font-family:var(--font-mono);font-size:15px;color:var(--text-mid);width:34%}
+.boxtable td.num:first-child{text-align:right}
+.boxtable td.num:last-child{text-align:left}
+.boxtable .num.lead{color:var(--primary);font-weight:600}
+.leaders{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:6px}
+@media(max-width:600px){.leaders{grid-template-columns:1fr}}
+.lead-col{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:12px 13px}
+.lead-team{display:flex;align-items:center;gap:8px;font-family:var(--font-display);
+  font-weight:800;font-size:15px;margin-bottom:9px}
+.lead-row{display:grid;grid-template-columns:44px 1fr;gap:7px;padding:6px 0;
+  border-bottom:1px solid var(--hairline)}
+.lead-row:last-child{border-bottom:0}
+.lp{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.12em;color:var(--text-dim);
+  padding-top:3px}
+.ln{font-size:13.5px;font-weight:500}
+.lv{grid-column:2;font-family:var(--font-mono);font-size:10.5px;color:var(--text-mid)}
+.mkt{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.na{font-family:var(--font-mono);font-size:11px;color:var(--text-dim)}
+@media(max-width:520px){
+  .kick{font-size:10px}.tabbr{font-size:17px;min-width:44px}
+}
+</style>
+</head>
+<body>
+<script src="js/fi-shell.js"></script>
+<script>
+let GAMES = null, THREATS = null;
+const main = fiShell({ page: 'games', pageLabel: 'Games', status: 'loading' });
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2, '0');
+
+main.innerHTML = `
+  <div class="bar">
+    <label class="lbl" for="wk">Week</label><select id="wk"></select>
+    <div class="legend" id="wksum"></div>
+  </div>
+  <div id="slate" aria-live="polite"></div>
+  <div class="modal-overlay" id="scrim"></div>
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="modal-header">
+      <div class="modal-title" id="mTitle"></div>
+      <div class="modal-subtitle" id="mSub"></div>
+      <button class="modal-close" id="mClose" aria-label="Close game">✕</button>
+    </div>
+    <div class="modal-body" id="mBody"></div>
+  </div>`;
+
+const wkSel = $('wk');
+for (let w = 1; w <= 18; w++){
+  const o = document.createElement('option'); o.value = w; o.textContent = 'Week ' + w;
+  wkSel.appendChild(o);
+}
+wkSel.value = 10;
+wkSel.addEventListener('change', () => load(Number(wkSel.value)));
+
+async function load(week){
+  $('slate').innerHTML = `<div class="empty">Loading week ${week}…</div>`;
+  $('wksum').innerHTML = '';
+  fiStatus('Loading', 'loading');
+  try {
+    const r = await fetch(`games/wk${pad(week)}.json`);
+    if (!r.ok) throw new Error('missing');
+    GAMES = await r.json();
+  } catch (e){
+    GAMES = null; fiStatus('No data', 'error'); fiUpdated('');
+    $('slate').innerHTML = `<div class="empty">
+      Week ${week} isn't built yet.<br>
+      Run <b>python3 build_matchup_stats.py ${week}</b>, then reload.</div>`;
+    return;
+  }
+  THREATS = null;
+  try {
+    const r2 = await fetch(`threats/wk${pad(week)}.json`);
+    if (r2.ok) THREATS = await r2.json();
+  } catch (e){ /* threat board not built for this week — cards still render */ }
+  fiStatus('Ready');
+  fiUpdated(`${GAMES.season} · week ${GAMES.week}`);
+  render();
+}
+
+function threatCount(team){
+  if (!THREATS || !THREATS.teams[team]) return null;
+  return (THREATS.teams[team].starters || [])
+    .reduce((n, s) => n + fiClassify(s.cats).length, 0);
+}
+
+function formHTML(f){
+  return (f || '').split('').map(c => `<span class="${c}">${c}</span>`).join('');
+}
+
+function timeLabel(g){
+  if (g.played) return `<div class="final">Final</div>`;
+  if (!g.gametime) return '';
+  const [h, m] = g.gametime.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const hh = h % 12 === 0 ? 12 : h % 12;
+  return `<div>${hh}:${pad(m)} ${ampm} ET</div>`;
+}
+
+function render(){
+  const days = {};
+  GAMES.games.forEach(g => { (days[g.gameday] ||= []).push(g); });
+
+  let html = '', withLines = 0, played = 0;
+  Object.entries(days).forEach(([date, list]) => {
+    const wd = list[0].weekday || '';
+    const nice = new Date(date + 'T12:00:00').toLocaleDateString(undefined,
+      { month: 'short', day: 'numeric' });
+    html += `<div class="daygroup">
+      <div class="dayhead"><h2>${esc(wd)}</h2><span class="date">${nice}</span>
+        <span class="rule"></span></div>
+      <div class="card-grid">`;
+    list.forEach(g => {
+      if (g.spread_line !== null) withLines++;
+      if (g.played) played++;
+      const aw = g.played && g.away_score > g.home_score;
+      const hw = g.played && g.home_score > g.away_score;
+      const at = threatCount(g.away), ht = threatCount(g.home);
+      const totalThreats = (at || 0) + (ht || 0);
+
+      const fav = g.spread_line === null ? null
+        : (g.spread_line > 0 ? g.home : g.away);
+      const spreadTxt = g.spread_line === null ? ''
+        : `<span class="odd"><b>${esc(fav)}</b> −${Math.abs(g.spread_line)}</span>`;
+      const totalTxt = g.total_line === null ? ''
+        : `<span class="odd">O/U <b>${g.total_line}</b></span>`;
+      const thrTxt = totalThreats
+        ? `<span class="odd thr"><b>${totalThreats}</b> threat${totalThreats === 1 ? '' : 's'}</span>` : '';
+
+      html += `<button type="button" class="gcard${totalThreats >= 4 ? ' hot' : ''}" data-gid="${g.game_id}">
+        <div class="gcard-top">
+          <div class="teams-col">
+            <div class="trow${aw ? ' win' : ''}">
+              ${fiLogoHTML(g.away, 26)}
+              <span class="tabbr">${g.away}</span>
+              <span class="trec">${esc(g.away_record)}</span>
+              <span class="tform">${formHTML(g.away_form)}</span>
+              ${g.played ? `<span class="tscore">${g.away_score}</span>` : ''}
+            </div>
+            <div class="trow${hw ? ' win' : ''}">
+              ${fiLogoHTML(g.home, 26)}
+              <span class="tabbr">${g.home}</span>
+              <span class="trec">${esc(g.home_record)}</span>
+              <span class="tform">${formHTML(g.home_form)}</span>
+              ${g.played ? `<span class="tscore">${g.home_score}</span>` : ''}
+            </div>
+          </div>
+          <div class="kick">${timeLabel(g)}</div>
+        </div>
+        <div class="odds">${spreadTxt}${totalTxt}${thrTxt}</div>
+        <div class="meta">
+          <span>${esc(g.stadium)}</span>
+          ${g.roof ? `<span>${esc(g.roof)}</span>` : ''}
+          ${g.surface ? `<span>${esc(g.surface)}</span>` : ''}
+          ${g.div_game ? '<span>division</span>' : ''}
+          ${g.away_rest !== null ? `<span>rest ${g.away_rest}/${g.home_rest}</span>` : ''}
+        </div>
+        <div class="links">
+          <span>Matchup</span><span>Threats</span><span>Box score</span>
+        </div>
+      </button>`;
+    });
+    html += `</div></div>`;
+  });
+
+  $('slate').innerHTML = html;
+  $('slate').querySelectorAll('.gcard').forEach(b =>
+    b.addEventListener('click', () => openGame(b.dataset.gid, b)));
+  $('wksum').innerHTML =
+    `<span>${GAMES.games.length} games</span>` +
+    (played ? `<span>${played} final</span>` : '') +
+    (withLines ? `<span>${withLines} with lines</span>` : '<span>lines not posted</span>');
+}
+
+/* ── game modal: box score + offensive leaders ── */
+let lastFocus = null;
+const BOX_ROWS = [
+  ['pts', 'Points'], ['total_yds', 'Total yards'], ['pass_yds', 'Passing yards'],
+  ['rush_yds', 'Rushing yards'], ['first_downs', 'First downs'],
+  ['comp', 'Completions'], ['att', 'Attempts'],
+  ['sacks_taken', 'Sacks allowed'], ['turnovers', 'Interceptions'],
+];
+
+function leaderBlock(side, team, L){
+  if (!L) return `<div class="lead-col"><div class="lead-team">${fiLogoHTML(team, 22)}
+    <span>${esc(team)}</span></div><div class="na">No data</div></div>`;
+  const qb = L.qb ? `<div class="lead-row"><span class="lp">QB</span>
+      <span class="ln">${esc(L.qb.name)}</span>
+      <span class="lv">${L.qb.comp}/${L.qb.att}, ${L.qb.yds} yds,
+        ${L.qb.td} TD${L.qb.int ? `, ${L.qb.int} INT` : ''}${L.qb.rush_yds ? ` · ${L.qb.rush_yds} rush` : ''}</span>
+    </div>` : '';
+  const rush = (L.rush || []).map(r => `<div class="lead-row"><span class="lp">RUSH</span>
+      <span class="ln">${esc(r.name)}</span>
+      <span class="lv">${r.car} car, ${r.yds} yds${r.td ? `, ${r.td} TD` : ''}</span></div>`).join('');
+  const rec = (L.rec || []).map(r => `<div class="lead-row"><span class="lp">REC</span>
+      <span class="ln">${esc(r.name)}</span>
+      <span class="lv">${r.rec}/${r.tgt}, ${r.yds} yds${r.td ? `, ${r.td} TD` : ''}</span></div>`).join('');
+  return `<div class="lead-col">
+    <div class="lead-team">${fiLogoHTML(team, 22)}<span>${esc(team)}</span></div>
+    ${qb}${rush}${rec}</div>`;
+}
+
+function openGame(gid, source){
+  const g = GAMES.games.find(x => x.game_id === gid);
+  if (!g) return;
+  lastFocus = source;
+  $('mTitle').innerHTML =
+    `${fiLogoHTML(g.away, 34)} ${g.away} <em>at</em> ${g.home} ${fiLogoHTML(g.home, 34)}`;
+  const when = g.played
+    ? `Final — ${g.away} ${g.away_score}, ${g.home} ${g.home_score}`
+    : `${esc(g.weekday)} ${esc(g.gameday)}`;
+  $('mSub').textContent = `${when} · ${g.stadium}`;
+
+  let h = '';
+  const box = g.box || {};
+  if (box.away && box.home){
+    h += `<div class="sect"><h3>${g.played ? 'Box score' : 'Season totals'}</h3><span class="rule"></span></div>
+      <table class="stat-table boxtable"><thead><tr>
+        <th class="right">${g.away}</th><th style="text-align:center">&nbsp;</th><th>${g.home}</th>
+      </tr></thead><tbody>` +
+      BOX_ROWS.filter(([k]) => box.away[k] !== null && box.away[k] !== undefined)
+        .map(([k, lbl]) => {
+          const a = box.away[k], b = box.home[k];
+          const aw = a > b ? ' lead' : '', bw = b > a ? ' lead' : '';
+          return `<tr><td class="num${aw}">${a}</td>
+            <td class="boxlbl">${lbl}</td><td class="num${bw}">${b}</td></tr>`;
+        }).join('') + `</tbody></table>`;
+  }
+
+  const L = g.leaders || {};
+  if (L.away || L.home){
+    h += `<div class="sect"><h3>${g.leader_scope === 'game' ? 'Game leaders' : 'Season leaders'}</h3>
+      <span class="rule"></span></div>
+      <div class="leaders">${leaderBlock('away', g.away, L.away)}${leaderBlock('home', g.home, L.home)}</div>`;
+  }
+
+  if (!h) h = `<div class="empty">No player data for this game yet.<br>
+    Box scores appear once the game is played.</div>`;
+
+  const odds = [];
+  if (g.spread_line !== null) odds.push(`Spread ${g.spread_line > 0 ? g.home : g.away} −${Math.abs(g.spread_line)}`);
+  if (g.total_line !== null) odds.push(`Total ${g.total_line}`);
+  if (g.away_ml !== null) odds.push(`ML ${g.away}&nbsp;${g.away_ml > 0 ? '+' : ''}${g.away_ml} / ${g.home}&nbsp;${g.home_ml > 0 ? '+' : ''}${g.home_ml}`);
+  if (odds.length) h += `<div class="sect"><h3>Market</h3><span class="rule"></span></div>
+    <div class="mkt">${odds.map(o => `<span class="odd">${o}</span>`).join('')}</div>`;
+
+  $('mBody').innerHTML = h;
+  $('scrim').classList.add('open'); $('modal').classList.add('open');
+  $('mClose').focus();
+}
+function closeModal(){
+  $('scrim').classList.remove('open'); $('modal').classList.remove('open');
+  if (lastFocus) lastFocus.focus();
+}
+$('mClose').addEventListener('click', closeModal);
+$('scrim').addEventListener('click', closeModal);
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && $('modal').classList.contains('open')) closeModal();
+});
+
+load(10);
+</script>
+</body>
+</html>

@@ -388,7 +388,121 @@ def build(week):
     build_context(week, all_teams, records, prior_stats, prior_games,
                   out_team_def, out_pos_def)
     build_threats(week, all_teams, records, prior_stats, week_games, gp)
+    build_games(week, all_teams, records, week_games, prior_games, stats)
     print("Serve the folder and open matchup_stats.html / contextual_stats.html")
+
+
+# ==========================================================================
+# GAMES — the week's slate: schedule, lines, venue, rest, results.
+# Everything here comes straight from the nflverse schedule file.
+# ==========================================================================
+
+def _num(v):
+    import math
+    try:
+        f = float(v)
+        return None if math.isnan(f) else f
+    except (TypeError, ValueError):
+        return None
+
+
+def _int(v):
+    f = _num(v)
+    return None if f is None else int(f)
+
+
+def _leaders_and_box(df, team, pts=None):
+    """df = player rows for one team (one game, or a season slice)."""
+    g = lambda r, k: float(r.get(k, 0) or 0)
+    box = {
+        "pts": pts,
+        "pass_yds": int(df["passing_yards"].sum()),
+        "rush_yds": int(df["rushing_yards"].sum()),
+        "total_yds": int(df["passing_yards"].sum() + df["rushing_yards"].sum()),
+        "first_downs": int(df["passing_first_downs"].sum() + df["rushing_first_downs"].sum()),
+        "turnovers": int(df["passing_interceptions"].sum()),
+        "sacks_taken": int(df["sacks_suffered"].sum()),
+        "comp": int(df["completions"].sum()), "att": int(df["attempts"].sum()),
+        "tds": int(df["passing_tds"].sum() + df["rushing_tds"].sum()),
+    }
+    qb_rows = df[df["attempts"] > 0].sort_values("attempts", ascending=False)
+    qb = None
+    if len(qb_rows):
+        r = qb_rows.iloc[0]
+        qb = {"name": r["name"], "comp": int(r["completions"]), "att": int(r["attempts"]),
+              "yds": int(r["passing_yards"]), "td": int(r["passing_tds"]),
+              "int": int(r["passing_interceptions"]), "rush_yds": int(r["rushing_yards"])}
+    rush = [{"name": r["name"], "car": int(r["carries"]), "yds": int(r["rushing_yards"]),
+             "td": int(r["rushing_tds"])}
+            for _, r in df[df["carries"] > 0].nlargest(2, "rushing_yards").iterrows()]
+    rec = [{"name": r["name"], "rec": int(r["receptions"]), "tgt": int(r["targets"]),
+            "yds": int(r["receiving_yards"]), "td": int(r["receiving_tds"])}
+           for _, r in df[df["receptions"] > 0].nlargest(3, "receiving_yards").iterrows()]
+    return box, {"qb": qb, "rush": rush, "rec": rec}
+
+
+def build_games(week, all_teams, records, week_games, prior_games, stats=None):
+    # last-3 form per team, for a quick read on each card
+    form = {}
+    for _, g in prior_games.sort_values("week").iterrows():
+        hs, as_ = int(g["home_score"]), int(g["away_score"])
+        for t, pf, pa in [(g["home_team"], hs, as_), (g["away_team"], as_, hs)]:
+            form.setdefault(t, []).append("W" if pf > pa else ("L" if pf < pa else "T"))
+
+    rows = []
+    for _, g in week_games.iterrows():
+        away, home = g["away_team"], g["home_team"]
+        hs, as_ = _int(g.get("home_score")), _int(g.get("away_score"))
+        played = hs is not None and as_ is not None
+        rows.append({
+            "game_id": f"{SEASON}_{week:02d}_{away}_{home}",
+            "away": away, "home": home,
+            "away_record": records.get(away, ""), "home_record": records.get(home, ""),
+            "away_form": "".join(form.get(away, [])[-3:]),
+            "home_form": "".join(form.get(home, [])[-3:]),
+            "gameday": str(g.get("gameday", "")), "weekday": str(g.get("weekday", "")),
+            "gametime": str(g.get("gametime", "")) if pd.notna(g.get("gametime")) else "",
+            "stadium": str(g.get("stadium", "")) if pd.notna(g.get("stadium")) else "",
+            "roof": str(g.get("roof", "")) if pd.notna(g.get("roof")) else "",
+            "surface": str(g.get("surface", "")) if pd.notna(g.get("surface")) else "",
+            "div_game": bool(_int(g.get("div_game")) or 0),
+            "away_rest": _int(g.get("away_rest")), "home_rest": _int(g.get("home_rest")),
+            "spread_line": _num(g.get("spread_line")),
+            "total_line": _num(g.get("total_line")),
+            "away_ml": _int(g.get("away_moneyline")), "home_ml": _int(g.get("home_moneyline")),
+            "played": played,
+            "away_score": as_, "home_score": hs,
+        })
+
+        # box score for a completed game; season-to-date leaders before kickoff
+        if stats is not None:
+            entry = rows[-1]
+            src_df = stats[stats["week"] == week] if played else stats[stats["week"] < week]
+            entry["leader_scope"] = "game" if played else "season"
+            box, lead = {}, {}
+            for side, t, pts in [("away", away, as_), ("home", home, hs)]:
+                sub = src_df[src_df["team"] == t]
+                if len(sub):
+                    b, l = _leaders_and_box(sub, t, pts)
+                    box[side], lead[side] = b, l
+            entry["box"], entry["leaders"] = box, lead
+
+    # sort by kickoff so the page reads like a real slate
+    rows.sort(key=lambda r: (r["gameday"], r["gametime"]))
+
+    payload = {
+        "season": SEASON, "week": week,
+        "data_horizon": f"weeks 1-{week - 1}" if week > 1 else "season opener",
+        "games": rows,
+    }
+    os.makedirs("games", exist_ok=True)
+    path = f"games/wk{week:02d}.json"
+    with open(path, "w") as f:
+        json.dump(payload, f)
+    lines = sum(1 for r in rows if r["spread_line"] is not None)
+    kind = "schedule only" if stats is None else "with box scores"
+    print(f"Wrote {path} — {len(rows)} games, {lines} with lines, {kind}, "
+          f"{os.path.getsize(path)/1024:.0f} KB")
 
 
 # ==========================================================================
@@ -639,6 +753,40 @@ def build_context(week, all_teams, records, prior_stats, prior_games,
           f"{os.path.getsize(path) / 1024:.0f} KB")
 
 
+def build_games_only(week):
+    """Schedule, lines and venue — needs nothing but games.csv, so this works
+    for a future season before any player stats exist."""
+    games = fetch_csv(GAMES_URL)
+    games = games[(games["season"] == SEASON) & (games["game_type"] == "REG")]
+    if games.empty:
+        raise SystemExit(f"no {SEASON} schedule available")
+    week_games = games[games["week"] == week]
+    if week_games.empty:
+        raise SystemExit(f"no week {week} games in the {SEASON} schedule")
+    prior_games = games[(games["week"] < week) & games["home_score"].notna()]
+
+    wl = {}
+    for _, g in prior_games.iterrows():
+        hs, as_ = int(g["home_score"]), int(g["away_score"])
+        for t, pf, pa in [(g["home_team"], hs, as_), (g["away_team"], as_, hs)]:
+            wl.setdefault(t, []).append("W" if pf > pa else ("L" if pf < pa else "T"))
+    all_teams = sorted(set(games["home_team"]) | set(games["away_team"]))
+    records = {}
+    for t in all_teams:
+        r = wl.get(t, [])
+        records[t] = f"{r.count('W')}-{r.count('L')}" + (f"-{r.count('T')}" if r.count("T") else "")
+
+    # Box scores only need this week's own results, so load player stats if
+    # they exist — a completed week gets a box score even when the ranking
+    # pages sit out for want of prior data.
+    stats = None
+    try:
+        stats = norm_players(fetch_csv(PLAYER_STATS_URLS))
+    except SystemExit:
+        pass                      # season hasn't started; schedule only
+    build_games(week, all_teams, records, week_games, prior_games, stats)
+
+
 def current_week(games):
     """The next week that hasn't been played yet — the one to preview."""
     reg = games[(games["season"] == SEASON) & (games["game_type"] == "REG")]
@@ -660,7 +808,7 @@ def resolve_weeks(arg):
         sys.exit(f"FATAL: no {SEASON} schedule found in nflverse yet.")
     if arg == "auto":
         return [wk]
-    return list(range(FIRST_BUILDABLE_WEEK, wk + 1))
+    return list(range(1, wk + 1))
 
 
 if __name__ == "__main__":
@@ -671,7 +819,23 @@ if __name__ == "__main__":
               f"(need week {FIRST_BUILDABLE_WEEK}+ for meaningful ranks). Exiting cleanly.")
         sys.exit(0)
     print(f"Season {SEASON} — building week(s): {', '.join(map(str, weeks))}")
-    built, skipped = 0, []
+    built, skipped, games_built = 0, [], 0
+
+    # 1. Games: schedule only, so build every scheduled week regardless of
+    #    how far the season has progressed.
+    sched = fetch_csv(GAMES_URL)
+    sched = sched[(sched["season"] == SEASON) & (sched["game_type"] == "REG")]
+    game_weeks = sorted(int(w) for w in sched["week"].unique()) if not sched.empty else []
+    if arg not in ("all",):
+        game_weeks = [w for w in game_weeks if w in weeks]
+    for w in game_weeks:
+        try:
+            build_games_only(w)
+            games_built += 1
+        except SystemExit as e:
+            print(f"  week {w} games: skipped — {e}")
+
+    # 2. Stats-dependent pages: need player data and enough prior weeks.
     for w in weeks:
         if w < FIRST_BUILDABLE_WEEK:
             skipped.append(w); continue
@@ -679,7 +843,8 @@ if __name__ == "__main__":
             build(w)
             built += 1
         except SystemExit as e:
-            print(f"  week {w}: skipped — {e}")
+            print(f"  week {w} stats: skipped — {e}")
             skipped.append(w)
-    print(f"\nDone. {built} week(s) written."
-          + (f" Skipped: {skipped}" if skipped else ""))
+
+    print(f"\nDone. {games_built} game file(s), {built} stat week(s)."
+          + (f" Stats skipped: {skipped}" if skipped else ""))

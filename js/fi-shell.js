@@ -9,7 +9,7 @@ const NAV = [
   { key: 'threats',  label: 'Threats',      ico: '⚡', href: 'threats.html' },
   { key: 'matchup',  label: 'Matchup Stats',ico: '⚔️', href: 'matchup_stats.html' },
   { key: 'context',  label: 'Contextual',   ico: '📊', href: 'contextual_stats.html' },
-  { key: 'games',    label: 'Games',        ico: '📅' },
+  { key: 'games',    label: 'Games',        ico: '📅', href: 'games.html' },
   { key: 'teams',    label: 'Teams',        ico: '🛡️' },
   { key: 'players',  label: 'Players',      ico: '👤' },
   { key: 'dfs',      label: 'DFS Center',   ico: '💰' },
@@ -21,7 +21,7 @@ const NAV = [
   { key: 'coeus',    label: 'Coeus',        ico: '◉' },
 ];
 
-const MOBILE_NAV = ['matchup', 'context', 'threats', 'dfs', 'coeus'];
+const MOBILE_NAV = ['games', 'threats', 'matchup', 'context', 'coeus'];
 
 function fiShell({ page, pageLabel, status = 'ready' }) {
   document.body.dataset.page = page;
@@ -107,6 +107,57 @@ function fiStatus(text, kind) {
   el.className = 'live-dot' + (kind ? ' ' + kind : '');
 }
 function fiUpdated(text) { document.getElementById('fiUpdated').textContent = text; }
+
+/* ── THREAT TIERS (shared by threats.html and games.html) ──────────────
+   Buckets are exclusive and a category is consumed by the tightest tier
+   that claims it. Within a tier: 1 convergence = Double, 1 convergence
+   plus another qualifying strength = Triple, 2+ convergences = Quadruple. */
+const FI_TIERS = [
+  { key: 'nuclear',  label: 'Nuclear',  playerMax: 3,  defMin: 30 },
+  { key: 'elite',    label: 'Elite',    playerMax: 5,  defMin: 28 },
+  { key: 'standard', label: 'Standard', playerMax: 10, defMin: 23 },
+];
+
+function fiClassify(cats){
+  const assigned = {};
+  for (const [cat, c] of Object.entries(cats || {})){
+    for (const t of FI_TIERS){
+      if (c.r <= t.playerMax && c.dr >= t.defMin){ assigned[cat] = t.key; break; }
+    }
+  }
+  const out = [], used = new Set();
+  for (const t of FI_TIERS){
+    const conv = Object.keys(assigned).filter(c => assigned[c] === t.key);
+    if (!conv.length) continue;
+    const extra = Object.entries(cats)
+      .filter(([c, v]) => !conv.includes(c) && !used.has(c) && v.r <= t.playerMax)
+      .map(([c]) => c);
+    conv.forEach(c => used.add(c));
+    extra.forEach(c => used.add(c));
+    out.push({ tier: t.key, tierLabel: t.label,
+               type: conv.length >= 2 ? 'Quadruple' : (extra.length ? 'Triple' : 'Double'),
+               conv, extra });
+  }
+  return out;
+}
+
+/* ── TEAM LOGOS ──────────────────────────────────────────────────────
+   ESPN's CDN, keyed by their abbreviations. Only two differ from
+   nflverse's: the Rams and Washington. */
+const FI_ESPN_ABBR = { LA: 'lar', WAS: 'wsh' };
+function fiLogo(team){
+  const a = (FI_ESPN_ABBR[team] || team || '').toLowerCase();
+  return `https://a.espncdn.com/i/teamlogos/nfl/500/${a}.png`;
+}
+/* Renders a logo that quietly falls back to the abbreviation if the
+   image can't load, so the page never shows a broken icon. */
+function fiLogoHTML(team, size){
+  const px = size || 30;
+  return `<span class="fi-logo" style="width:${px}px;height:${px}px">
+    <img src="${fiLogo(team)}" alt="${team}" width="${px}" height="${px}"
+         loading="lazy" onerror="this.style.display='none';this.parentNode.classList.add('fallback')">
+    <i>${team}</i></span>`;
+}
 
 /* rank tier → pill class (1-8 elite … 25-32 poor) */
 function rkClass(r) { return r <= 8 ? 't1' : r <= 16 ? 't2' : r <= 24 ? 't3' : 't4'; }

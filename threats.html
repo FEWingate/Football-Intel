@@ -10,6 +10,11 @@
 <link rel="stylesheet" href="css/fi-styles.css">
 <style>
 .summary{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:18px}
+.warn{display:flex;gap:9px;align-items:flex-start;margin-bottom:14px;padding:11px 13px;
+  border:1px solid rgba(251,146,60,.4);background:rgba(251,146,60,.07);
+  border-radius:var(--radius);font-size:12.5px;color:var(--text-mid);line-height:1.55}
+.warn b{color:var(--accent-orange);font-family:var(--font-mono);font-size:10px;
+  letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;padding-top:2px}
 .sum-pill{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;
   padding:7px 11px;border-radius:var(--radius-sm);border:1px solid var(--border);
   background:var(--surface);color:var(--text-mid)}
@@ -74,26 +79,7 @@
 <body>
 <script src="js/fi-shell.js"></script>
 <script>
-/* ── TIER RULES ─────────────────────────────────────────────────────────
-   Buckets are EXCLUSIVE: a convergence is assigned to the tightest tier it
-   clears and counted only there. Type is then decided within each bucket.
-     1 converged category, no other strength  → Double
-     1 converged category + another top-10    → Triple
-     2+ converged categories                  → Quadruple (capped)
-   ------------------------------------------------------------------- */
-const TIERS = [
-  { key: 'nuclear',  label: 'Nuclear',  playerMax: 3,  defMin: 30 },
-  { key: 'elite',    label: 'Elite',    playerMax: 5,  defMin: 28 },
-  { key: 'standard', label: 'Standard', playerMax: 10, defMin: 23 },
-];
-/* Designation counts CONVERGENCES (a player top-N category meeting a defense
-   bottom-N in that same category). One convergence = Double. Two or more =
-   Quadruple. A player being top-10 somewhere the defence ISN'T weak is shown
-   as supporting context but does NOT change the designation.
-   Set TRIPLE_ON_EXTRA_STRENGTH = true to promote a single convergence to
-   Triple when the player also holds another top-N category. */
-const EXTRA_STRENGTH_MAX      = 10;
-const TRIPLE_ON_EXTRA_STRENGTH = false;
+const SUPPORT_DISPLAY_MAX = 10;   // how far down to show supporting rows
 
 let DATA = null;
 const main = fiShell({ page: 'threats', pageLabel: 'Threat System', status: 'loading' });
@@ -112,6 +98,7 @@ main.innerHTML = `
       <span>top 3 vs bottom 3</span>
     </div>
   </div>
+  <div id="warn"></div>
   <div class="summary" id="summary"></div>
   <div class="gm-grid" id="grid" aria-live="polite"></div>
   <div class="rules" id="rules"></div>`;
@@ -124,28 +111,7 @@ for (let w = 3; w <= 18; w++){
 wkSel.value = 10;
 wkSel.addEventListener('change', () => load(Number(wkSel.value)));
 
-/* ── classification ── */
-function classify(cats){
-  const assigned = {};                       // cat -> tier key (exclusive)
-  for (const [cat, c] of Object.entries(cats)){
-    for (const t of TIERS){
-      if (c.r <= t.playerMax && c.dr >= t.defMin){ assigned[cat] = t.key; break; }
-    }
-  }
-  const out = [];
-  for (const t of TIERS){
-    const conv = Object.keys(assigned).filter(c => assigned[c] === t.key);
-    if (!conv.length) continue;
-    const extra = Object.entries(cats)
-      .filter(([c, v]) => !conv.includes(c) && v.r <= EXTRA_STRENGTH_MAX)
-      .map(([c]) => c);
-    const type = conv.length >= 2 ? 'Quadruple'
-               : (TRIPLE_ON_EXTRA_STRENGTH && extra.length) ? 'Triple'
-               : 'Double';
-    out.push({ tier: t.key, tierLabel: t.label, type, conv, extra });
-  }
-  return out;
-}
+const classify = fiClassify;
 
 /* ── data ── */
 async function load(week){
@@ -189,7 +155,7 @@ function threatHTML(s){
     </div>`;
   };
   const support = Object.keys(s.cats).filter(c =>
-    !convCats.includes(c) && s.cats[c].r <= EXTRA_STRENGTH_MAX);
+    !convCats.includes(c) && s.cats[c].r <= SUPPORT_DISPLAY_MAX);
   const rows = convCats.map(c => row(c, true)).join('')
     + support.map(c => row(c, false)).join('')
     + (support.length ? '<div class="support-note">'
@@ -242,6 +208,12 @@ function render(){
   }).join('');
 
   $('grid').innerHTML = cards;
+  $('warn').innerHTML = DATA.thin_sample
+    ? `<div class="warn"><b>Thin sample</b><span>Ranks here come from only
+       ${DATA.week - 1} week${DATA.week - 1 === 1 ? '' : 's'} of play, with a
+       ${DATA.min_games}-game minimum. Early-season ranks swing hard, so expect more
+       flags than a settled week would produce — treat these as provisional.</span></div>`
+    : '';
   $('summary').innerHTML =
     `<span class="sum-pill"><b>${total}</b> threats</span>
      <span class="sum-pill"><b>${gamesWith}</b> of ${DATA.games.length} games</span>` +
