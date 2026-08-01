@@ -43,6 +43,23 @@
 @media(max-width:640px){
   .lead-table td, .lead-table thead th{padding:7px 9px}
 }
+/* ── PLAYER MODAL ── */
+.subsect{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--text-dim);padding:14px 0 3px}
+.tier-badge{
+  font-family:var(--font-mono);font-size:8px;letter-spacing:.06em;font-weight:700;
+  border-radius:3px;padding:2px 6px;text-transform:uppercase;
+}
+.tier-badge.top{color:var(--accent-red);background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.3)}
+.tier-badge.mid{color:var(--text-mid);background:var(--surface2);border:1px solid var(--border)}
+.tier-badge.bot{color:var(--accent-green);background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3)}
+.split-cards{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin:10px 0 4px}
+.split-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px}
+.split-card .sc-label{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim)}
+.split-card .sc-games{font-family:var(--font-mono);font-size:9px;color:var(--text-dim);margin-top:1px}
+.split-card .sc-value{font-family:var(--font-display);font-weight:800;font-size:20px;margin-top:6px;letter-spacing:-.02em}
+.split-card.top{border-color:rgba(244,63,94,.3)}
+.split-card.bot{border-color:rgba(74,222,128,.3)}
 </style>
 </head>
 <body>
@@ -60,25 +77,40 @@ let offSubgroup = null, offSortKey = null, offSortDir = 'desc';
 
 let PLAYERSTATS = null;
 let playerPos = 'QB', playerCat = null, playerSortKey = null, playerSortDir = 'desc';
+let currentPlayerRows = [], activePlayer = null, activeSec = 'season', logStatKey = null, lastFocus = null;
 
-let currentView = 'dvp'; // 'dvp' | 'team_off' | 'players'
+let currentView = 'team_off'; // 'team_off' | 'players' | 'dvp'
 
 main.innerHTML = `
   <div class="tabs view-switch" id="viewSwitch" role="tablist">
-    <button role="tab" data-view="dvp" aria-selected="true">Defense vs Position</button>
-    <button role="tab" data-view="team_off" aria-selected="false">Team Offense</button>
+    <button role="tab" data-view="team_off" aria-selected="true">Team Offense</button>
     <button role="tab" data-view="players" aria-selected="false">Players</button>
+    <button role="tab" data-view="dvp" aria-selected="false">Defense vs Position</button>
   </div>
   <div class="bar">
-    <span class="lbl" id="sectionLbl">Defense vs Position</span>
-    <div class="legend" id="sectionLegend"><span>Cumulative through the selected week · click any column to sort</span></div>
+    <span class="lbl" id="sectionLbl">Team Offense</span>
+    <div class="legend" id="sectionLegend"><span>Season totals so far, per team · click any column to sort</span></div>
   </div>
   <div class="hub-controls">
     <div class="tabs" id="innerTabs" role="tablist"></div>
-    <select class="wk-select" id="weekSel"></select>
+    <select class="wk-select" id="weekSel" style="display:none"></select>
   </div>
   <div class="tabs" id="catTabs" role="tablist" style="display:none"></div>
-  <div class="lead-wrap"><table class="lead-table" id="leadTable"></table></div>`;
+  <div class="lead-wrap"><table class="lead-table" id="leadTable"></table></div>
+  <div class="modal-overlay" id="scrim"></div>
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="modal-header">
+      <div class="modal-title" id="mTitle"></div>
+      <div class="modal-subtitle" id="mSub"></div>
+      <button class="modal-close" id="mClose" aria-label="Close player">✕</button>
+      <div class="seg" id="mToggle">
+        <button data-sec="season">Season</button>
+        <button data-sec="career">Career</button>
+        <button data-sec="log">Game Log</button>
+      </div>
+    </div>
+    <div class="modal-body" id="mBody"></div>
+  </div>`;
 
 const $ = id => document.getElementById(id);
 const pad = n => String(n).padStart(2,"0");
@@ -361,44 +393,150 @@ function renderPlayerCatTabs(){
 }
 
 function renderPlayersTable(){
-  const labels = PLAYERSTATS.labels[playerPos][playerCat];
-  const keys = Object.keys(labels);
-  if(!playerSortKey || !keys.includes(playerSortKey)) playerSortKey = keys[0];
+  try{
+    const labels = PLAYERSTATS.labels[playerPos][playerCat];
+    const keys = Object.keys(labels);
+    if(!playerSortKey || !keys.includes(playerSortKey)) playerSortKey = keys[0];
 
-  const rows = PLAYERSTATS.players[playerPos].filter(p => keys.every(k => k in p.m));
-  rows.sort((a,b) => {
-    const av = a.m[playerSortKey] ?? -Infinity, bv = b.m[playerSortKey] ?? -Infinity;
-    return playerSortDir === 'desc' ? bv - av : av - bv;
+    const rows = PLAYERSTATS.players[playerPos].filter(p => p.season && keys.every(k => k in p.season.m));
+    if(!rows.length) throw new Error("no rows matched this category — data may be stale");
+    rows.sort((a,b) => {
+      const av = a.season.m[playerSortKey] ?? -Infinity, bv = b.season.m[playerSortKey] ?? -Infinity;
+      return playerSortDir === 'desc' ? bv - av : av - bv;
+    });
+    currentPlayerRows = rows;
+
+    let head = `<thead><tr>
+      <th class="team-col">Player</th>
+      <th>GP</th>
+      ${keys.map(k => `<th data-key="${k}" class="${k===playerSortKey?'sorted':''}">
+        ${esc(labels[k].l)}${k===playerSortKey ? (playerSortDir==='desc'?' ▾':' ▴') : ''}
+      </th>`).join('')}
+    </tr></thead>`;
+
+    let body = '<tbody>' + rows.map((row,i) => {
+      const cells = keys.map(k => `<td><span class="cell-val">${fmtVal(row.season.m[k])}</span></td>`).join('');
+      return `<tr data-idx="${i}" style="cursor:pointer">
+        <td class="team-col"><span class="rank-num">${i+1}</span>${fiLogoHTML(row.team,20)}${esc(row.name)}</td>
+        <td><span class="cell-val">${row.games}</span></td>
+        ${cells}
+      </tr>`;
+    }).join('') + '</tbody>';
+
+    $("leadTable").innerHTML = head + body;
+
+    $("leadTable").querySelectorAll("thead th[data-key]").forEach(th => {
+      th.onclick = () => {
+        const k = th.dataset.key;
+        if(k === playerSortKey) playerSortDir = playerSortDir === 'desc' ? 'asc' : 'desc';
+        else { playerSortKey = k; playerSortDir = 'desc'; }
+        renderPlayersTable();
+      };
+    });
+    $("leadTable").querySelectorAll("tbody tr[data-idx]").forEach(tr => {
+      tr.onclick = () => openPlayer(currentPlayerRows[Number(tr.dataset.idx)]);
+    });
+  }catch(err){
+    console.error("renderPlayersTable failed:", err);
+    $("leadTable").outerHTML = `<div class="empty" id="leadTable">
+      Player data looks out of date or malformed (${esc(err.message)}).<br>
+      Re-run <b>python3 build_matchup_stats.py all</b> after making sure
+      <b>players/career_base.json</b> exists, then reload.</div>`;
+  }
+}
+
+/* ── PLAYER MODAL ─────────────────────────────────────────────────── */
+function openPlayer(row){
+  activePlayer = row; activeSec = 'season'; logStatKey = null; lastFocus = document.activeElement;
+  $("mTitle").innerHTML = `${fiLogoHTML(row.team,32)}${esc(row.name)}`;
+  $("mSub").textContent = `${playerPos} · ${row.team} · ${row.games} games this season`;
+
+  $("mToggle").querySelectorAll("button").forEach(b => {
+    b.setAttribute("aria-pressed", String(b.dataset.sec === activeSec));
+    b.onclick = () => { activeSec = b.dataset.sec; renderPlayerModalBody(); };
   });
 
-  let head = `<thead><tr>
-    <th class="team-col">Player</th>
-    <th>GP</th>
-    ${keys.map(k => `<th data-key="${k}" class="${k===playerSortKey?'sorted':''}">
-      ${esc(labels[k].l)}${k===playerSortKey ? (playerSortDir==='desc'?' ▾':' ▴') : ''}
-    </th>`).join('')}
-  </tr></thead>`;
+  $("scrim").classList.add("open"); $("modal").classList.add("open");
+  renderPlayerModalBody(); $("mClose").focus();
+}
 
-  let body = '<tbody>' + rows.map((row,i) => {
-    const cells = keys.map(k => `<td><span class="cell-val">${fmtVal(row.m[k])}</span></td>`).join('');
-    return `<tr>
-      <td class="team-col"><span class="rank-num">${i+1}</span>${fiLogoHTML(row.team,20)}${esc(row.name)}</td>
-      <td><span class="cell-val">${row.games}</span></td>
-      ${cells}
+function renderPlayerModalBody(){
+  $("mToggle").querySelectorAll("button").forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.sec === activeSec)));
+
+  const box = $("mBody");
+  if(activeSec === 'season') box.innerHTML = statBlockHTML(activePlayer.season.m, `${activePlayer.season.games} games`);
+  else if(activeSec === 'career') box.innerHTML = statBlockHTML(activePlayer.career.m,
+    `${activePlayer.career.games} games · through ${activePlayer.career.through}` +
+    (activePlayer.career.through < 1999 ? '' : ' (nflverse data starts 1999 — pre-1999 seasons aren\'t included)'));
+  else renderGameLog(box, activePlayer);
+}
+
+function statBlockHTML(m, horizonNote){
+  const cats = PLAYERSTATS.labels[playerPos];
+  let h = `<div class="empty" style="padding:8px 0 4px;text-align:left;font-size:10px">${horizonNote}</div>`;
+  for(const [cat, labels] of Object.entries(cats)){
+    h += `<div class="subsect">${esc(cat)}</div><table class="stat-table"><tbody>`;
+    for(const [k, meta] of Object.entries(labels)){
+      h += `<tr><td>${esc(meta.l)}</td><td class="num">${fmtVal(m[k])}</td></tr>`;
+    }
+    h += `</tbody></table>`;
+  }
+  return h;
+}
+
+function renderGameLog(box, row){
+  const tierLabel = { top: 'Top 10', mid: 'Middle 12', bot: 'Bottom 10' };
+  const volumeLabels = PLAYERSTATS.labels[playerPos].Volume;
+  const volKeys = Object.keys(volumeLabels);
+  if(!logStatKey || !volKeys.includes(logStatKey)) logStatKey = volKeys[0];
+
+  let h = `<div class="split-cards">`;
+  for(const tier of ['top','mid','bot']){
+    const s = row.splits[tier] || {games:0, m:{}};
+    h += `<div class="split-card ${tier}">
+      <div class="sc-label">vs ${tierLabel[tier]}</div>
+      <div class="sc-games">${s.games} game${s.games===1?'':'s'}</div>
+      <div class="sc-value">${s.games ? fmtVal(s.m[logStatKey]) : '—'}</div>
+      <div class="sc-games">${esc(volumeLabels[logStatKey].l)}</div>
+    </div>`;
+  }
+  h += `</div>`;
+
+  h += `<div class="lead-wrap" style="max-height:460px;margin-top:10px">
+    <table class="lead-table"><thead><tr>
+    <th class="team-col">Week</th><th>Opp</th><th>Tier</th>
+    ${volKeys.map(k => `<th data-key="${k}" class="${k===logStatKey?'sorted':''}">${esc(volumeLabels[k].l)}</th>`).join('')}
+  </tr></thead><tbody>`;
+  row.log.slice().reverse().forEach(g => {
+    h += `<tr>
+      <td class="team-col">${g.week}</td>
+      <td>${g.opp ? fiLogoHTML(g.opp,18)+esc(g.opp) : '—'}</td>
+      <td>${g.tier ? `<span class="tier-badge ${g.tier}">${tierLabel[g.tier]}</span>` : '—'}</td>
+      ${volKeys.map(k => {
+        const isRate = k.endsWith('_pg') || k.endsWith('_ypg');
+        const v = isRate ? g.cum[k] : g.m[k];
+        return `<td><span class="cell-val">${fmtVal(v)}</span></td>`;
+      }).join('')}
     </tr>`;
-  }).join('') + '</tbody>';
+  });
+  h += `</tbody></table></div>`;
+  box.innerHTML = h;
 
-  $("leadTable").innerHTML = head + body;
-
-  $("leadTable").querySelectorAll("thead th[data-key]").forEach(th => {
-    th.onclick = () => {
-      const k = th.dataset.key;
-      if(k === playerSortKey) playerSortDir = playerSortDir === 'desc' ? 'asc' : 'desc';
-      else { playerSortKey = k; playerSortDir = 'desc'; }
-      renderPlayersTable();
-    };
+  box.querySelectorAll("thead th[data-key]").forEach(th => {
+    th.onclick = () => { logStatKey = th.dataset.key; renderGameLog(box, row); };
   });
 }
+
+function closePlayerModal(){
+  $("scrim").classList.remove("open"); $("modal").classList.remove("open");
+  if(lastFocus) lastFocus.focus();
+}
+$("mClose").addEventListener("click", closePlayerModal);
+$("scrim").addEventListener("click", closePlayerModal);
+document.addEventListener("keydown", e=>{
+  if(e.key==="Escape" && $("modal").classList.contains("open")) closePlayerModal();
+});
 
 load();
 </script>

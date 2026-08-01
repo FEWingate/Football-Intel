@@ -432,12 +432,12 @@ def norm_players(df):
         df = df[df["season_type"] == "REG"]
     if "season" in df.columns:
         df = df[df["season"] == SEASON]
-    cols = ["name", "position", "team", "opponent_team", "week"] + RAW_COLS
+    cols = ["player_id", "name", "position", "team", "opponent_team", "week"] + RAW_COLS
     for c in cols:
         if c not in df.columns:
             df[c] = 0
     df = df[cols].copy()
-    num = [c for c in cols if c not in ("name", "position", "team", "opponent_team")]
+    num = [c for c in cols if c not in ("player_id", "name", "position", "team", "opponent_team")]
     df[num] = df[num].fillna(0)
     df["pos"] = df["position"].map(POS_MAP)
     return df[df["pos"].notna()]
@@ -1176,30 +1176,203 @@ def compute_pass_run_defense(df, games_played, pbp_stats):
     return out
 
 
+def build_career_base():
+    """One-time (or rarely re-run) historical aggregation: every season from
+    1999 through the season before SEASON, summed per player_id. This is
+    deliberately NOT part of the regular weekly build — refetching 25+
+    seasons every run would be slow and pointless since history doesn't
+    change. Run this manually (python3 build_matchup_stats.py --career-base)
+    when you want to refresh it; the regular build just reads the resulting
+    file and layers the current season on top of it at render/build time."""
+    years = range(1999, SEASON)
+    totals = {}  # player_id -> {name, pos, team, games, raw: {col: sum}}
+    for year in years:
+        urls = [
+            f"https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_{year}.csv",
+            f"https://github.com/nflverse/nflverse-data/releases/download/player_stats/player_stats_{year}.csv",
+        ]
+        df = None
+        for url in urls:
+            print(f"  fetching {url}")
+            try:
+                r = requests.get(url, timeout=90)
+                if r.status_code != 200:
+                    print(f"    -> HTTP {r.status_code}, trying next candidate")
+                    continue
+                df = pd.read_csv(StringIO(r.text), low_memory=False)
+                break
+            except Exception as e:
+                print(f"    -> {e}, trying next candidate")
+        if df is None:
+            print(f"    -> no source found for {year}, skipping")
+            continue
+
+        df = df[df.get("season_type", "REG") == "REG"] if "season_type" in df.columns else df
+        df["pos"] = df["position"].map(POS_MAP)
+        df = df[df["pos"].notna()]
+        for c in RAW_COLS:
+            if c not in df.columns:
+                df[c] = 0
+        df[RAW_COLS] = df[RAW_COLS].fillna(0)
+
+        grouped = df.groupby(["player_id", "pos"])
+        sums = grouped[RAW_COLS].sum(numeric_only=True)
+        games = grouped.size()
+        last_name = grouped["player_display_name"].last() if "player_display_name" in df.columns else grouped["player_name"].last()
+        last_team_col = "recent_team" if "recent_team" in df.columns else "team"
+        last_team = grouped[last_team_col].last()
+
+        for (pid, pos), gp in games.items():
+            key = (pid, pos)
+            if key not in totals:
+                totals[key] = {"name": last_name.get((pid, pos), ""), "pos": pos,
+                                "team": last_team.get((pid, pos), ""), "games": 0,
+                                "raw": {c: 0.0 for c in RAW_COLS}}
+            t = totals[key]
+            t["games"] += int(gp)
+            t["name"] = last_name.get((pid, pos), t["name"])  # keep most recent
+            t["team"] = last_team.get((pid, pos), t["team"])
+            for c in RAW_COLS:
+                t["raw"][c] += float(sums.loc[(pid, pos), c])
+
+    payload = {
+        "through_season": SEASON - 1,
+        "players": {f"{pid}|{pos}": v for (pid, pos), v in totals.items()},
+    }
+    os.makedirs("players", exist_ok=True)
+    path = "players/career_base.json"
+    with open(path, "w") as f:
+        json.dump(payload, f)
+    print(f"Wrote {path} — {len(totals)} player-position entries, "
+          f"1999-{SEASON-1}, {os.path.getsize(path) / 1024:.0f} KB")
+
+
+def build_player_log(player_df, pos, latest_matchup):
+    """One player's game-by-game log, each game tagged with the tier
+    (top/mid/bot) of the defense-vs-position rank their opponent held that
+    week, plus average production split by tier. The Volume-group stats
+    only, to keep a game row readable at a glance.
+
+    Counting stats (Passing Yards, Completions, Attempts...) show that
+    single game's total. Rate stats (_pg/_ypg suffix, e.g. Passing Yards /
+    Game) show the running season-to-date average THROUGH that week, not
+    that game's own total divided by 1 — otherwise "yards" and "yards /
+    game" are identical and the per-game column is meaningless."""
+    volume_keys = [k for k, (_l, _d, _hb, grp) in POS_METRICS[pos].items() if grp == "Volume"]
+    rate_keys = {k for k in volume_keys if k.endswith("_pg") or k.endswith("_ypg")}
+    primary_key = list(POS_METRICS[pos].keys())[0]
+
+    log = []
+    tier_rows = {"top": [], "mid": [], "bot": []}
+    cum_raw = {c: 0.0 for c in RAW_COLS}
+    cum_games = 0
+    for _, row in player_df.sort_values("week").iterrows():
+        opp = row.get("opponent_team")
+        s = {c: row[c] for c in RAW_COLS}
+        game_metrics = pos_metrics_from_sums(pos, s, 1)  # this game's own totals
+
+        cum_games += 1
+        for c in RAW_COLS:
+            cum_raw[c] += s[c]
+        cum_metrics = pos_metrics_from_sums(pos, cum_raw, cum_games)  # through this week
+
+        tier = None
+        if latest_matchup and opp in latest_matchup.get("teams", {}):
+            def_block = latest_matchup["teams"][opp].get("def", {}).get(pos, {})
+            rank = def_block.get(primary_key, {}).get("r")
+            if rank is not None:
+                tier = tier_of(rank)
+
+        entry = {
+            "week": int(row["week"]), "opp": opp, "tier": tier,
+            "m": {k: round(game_metrics.get(k, 0), 1) for k in volume_keys},
+            "cum": {k: round(cum_metrics.get(k, 0), 1) for k in rate_keys},
+        }
+        log.append(entry)
+        if tier:
+            tier_rows[tier].append(entry["m"])
+
+    splits = {}
+    for tier, rows in tier_rows.items():
+        if not rows:
+            splits[tier] = {"games": 0, "m": {}}
+            continue
+        splits[tier] = {
+            "games": len(rows),
+            "m": {k: round(sum(r[k] for r in rows) / len(rows), 1) for k in volume_keys},
+        }
+    return log, splits
+
+
 def build_player_stats():
     """Season-to-date individual player leaderboards, grouped by position
     then by the same Volume/Efficiency/Explosive/Protection categories
     POS_METRICS already tags each stat with. Reuses norm_players() (already
     fetched for Matchup Stats) and pos_metrics_from_sums() (already used for
     team-position aggregates) — a player is just a group-by of one. Always-
-    current, not week-gated, same as team stats."""
+    current, not week-gated, same as team stats.
+
+    Also layers in career totals (from the separately-built career_base.json,
+    if present) and a per-game log classified by the opponent's defense-vs-
+    position tier that week, reusing tier_of() — same Top10/Mid12/Bottom10
+    convention as the Contextual Stats page, using the most recently built
+    matchup/wkNN.json as the current defense-vs-position ranking (a single
+    current snapshot applied across the season's games, matching how
+    Contextual Stats already classifies team-position logs)."""
     stats = norm_players(fetch_csv(PLAYER_STATS_URLS))
     if stats.empty:
         raise SystemExit(f"no {SEASON} player stats available yet")
 
-    games_played = stats.groupby(["name", "pos"]).size().to_dict()
-    sums = stats.groupby(["name", "pos"])[RAW_COLS].sum(numeric_only=True)
-    # most recent team on record, in case of a mid-season trade
+    career_base = {}
+    if os.path.exists("players/career_base.json"):
+        with open("players/career_base.json") as f:
+            cb = json.load(f)
+        career_base = cb.get("players", {})
+        career_through = cb.get("through_season", SEASON - 1)
+    else:
+        career_through = SEASON - 1
+
+    # latest built matchup week on disk -> current defense-vs-position ranks
+    latest_matchup = None
+    if os.path.isdir("matchup"):
+        wk_files = sorted(int(f[2:4]) for f in os.listdir("matchup")
+                           if f.startswith("wk") and f.endswith(".json"))
+        if wk_files:
+            with open(f"matchup/wk{wk_files[-1]:02d}.json") as f:
+                latest_matchup = json.load(f)
+
+    games_played = stats.groupby(["player_id", "pos"]).size().to_dict()
+    sums = stats.groupby(["player_id", "pos"])[RAW_COLS].sum(numeric_only=True)
+    latest_name = (stats.sort_values("week")
+                    .groupby(["player_id", "pos"])["name"].last().to_dict())
     latest_team = (stats.sort_values("week")
-                    .groupby(["name", "pos"])["team"].last().to_dict())
+                    .groupby(["player_id", "pos"])["team"].last().to_dict())
+    player_weeks = {key: sub for key, sub in stats.groupby(["player_id", "pos"])}
 
     players_out = {p: [] for p in POSITIONS}
-    for (name, pos), gp in games_played.items():
-        s = sums.loc[(name, pos)].to_dict()
-        metrics = pos_metrics_from_sums(pos, s, gp)
+    for (pid, pos), gp in games_played.items():
+        name = latest_name.get((pid, pos), "")
+        team = latest_team.get((pid, pos), "")
+        s = sums.loc[(pid, pos)].to_dict()
+        season_metrics = pos_metrics_from_sums(pos, s, gp)
+
+        cb_key = f"{pid}|{pos}"
+        cb_entry = career_base.get(cb_key)
+        career_gp = gp + (cb_entry["games"] if cb_entry else 0)
+        career_raw = dict(s)
+        if cb_entry:
+            for c in RAW_COLS:
+                career_raw[c] = career_raw.get(c, 0) + cb_entry["raw"].get(c, 0)
+        career_metrics = pos_metrics_from_sums(pos, career_raw, career_gp)
+
+        log, splits_acc = build_player_log(player_weeks[(pid, pos)], pos, latest_matchup)
+
         players_out[pos].append({
-            "name": name, "team": latest_team.get((name, pos), ""),
-            "games": gp, "m": {k: round(v, 2) for k, v in metrics.items()},
+            "name": name, "team": team, "games": gp,
+            "season": {"games": gp, "m": {k: round(v, 2) for k, v in season_metrics.items()}},
+            "career": {"games": career_gp, "through": career_through,
+                       "m": {k: round(v, 2) for k, v in career_metrics.items()}},
+            "log": log, "splits": splits_acc,
         })
     for p in POSITIONS:
         players_out[p].sort(key=lambda r: r["games"], reverse=True)
@@ -1355,6 +1528,9 @@ def resolve_weeks(arg):
 
 if __name__ == "__main__":
     arg = sys.argv[1] if len(sys.argv) > 1 else str(DEFAULT_WEEK)
+    if arg == "--career-base":
+        build_career_base()
+        sys.exit(0)
     weeks = resolve_weeks(arg)
     if not weeks:
         print(f"Season {SEASON}: nothing buildable yet "
