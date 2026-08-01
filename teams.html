@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Teams — Football Intel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/fi-styles.css">
+<style>
+/* page-specific: conference/division grouping */
+.conf-split{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.conf-block{margin-bottom:0}
+.conf-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.conf-tag{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:-.02em}
+.conf-tag.afc{color:var(--accent-red)}
+.conf-tag.nfc{color:var(--accent-blue)}
+.conf-head .rule{flex:1;height:1px;background:var(--border)}
+.division-grid{display:grid;gap:14px;grid-template-columns:1fr}
+@media(max-width:900px){
+  .conf-split{grid-template-columns:1fr}
+}
+.div-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.div-panel-head{
+  padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;
+}
+.div-name{font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim)}
+.div-body{padding:2px 14px}
+.team-row{
+  display:flex;align-items:center;gap:10px;padding:9px 4px;width:100%;
+  background:none;border:none;border-bottom:1px solid var(--hairline);
+  cursor:pointer;font:inherit;color:inherit;text-align:left;transition:background .15s;
+  border-radius:var(--radius-sm);
+}
+.team-row:hover{background:var(--surface2)}
+.team-row:last-child{border-bottom:0}
+.team-row.leader{background:linear-gradient(90deg,rgba(250,204,21,.07),transparent 70%)}
+.team-row .tname{flex:1;min-width:0}
+.team-row .tfull{font-size:12.5px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.team-row .tabbr{font-family:var(--font-mono);font-size:9px;color:var(--text-dim);letter-spacing:.08em}
+.team-row .trec{text-align:right;flex:none}
+.team-row .rec-val{font-family:var(--font-mono);font-size:13px;font-weight:500;font-variant-numeric:tabular-nums}
+.team-row .rec-pd{display:block;font-family:var(--font-mono);font-size:9px;margin-top:1px;font-variant-numeric:tabular-nums}
+.rec-pd.pos{color:var(--accent-green)}
+.rec-pd.neg{color:var(--accent-red)}
+.rec-pd.zero{color:var(--text-dim)}
+.leads-badge{
+  font-family:var(--font-mono);font-size:7.5px;letter-spacing:.1em;font-weight:700;
+  color:var(--accent-gold);border:1px solid rgba(250,204,21,.35);background:rgba(250,204,21,.1);
+  border-radius:3px;padding:1px 4px;margin-left:6px;vertical-align:middle;
+}
+.info-cards{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));margin:14px 0 4px}
+.info-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px}
+.info-card .ic-label{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)}
+.info-card .ic-value{font-family:var(--font-display);font-weight:700;font-size:15px;margin-top:3px;letter-spacing:-.01em}
+.info-card .ic-value.mono{font-family:var(--font-mono);font-weight:600;font-size:14px}
+.subsect{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--text-dim);padding:14px 0 3px}
+
+@media(max-width:520px){
+  .division-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<script src="js/fi-shell.js"></script>
+<script>
+const main = fiShell({ page:'teams', pageLabel:'Teams', status:'loading' });
+
+main.innerHTML = `
+  <div class="bar">
+    <span class="lbl">32 Teams</span>
+    <div class="legend">
+      <span>Records computed from every played game this season</span>
+      <span><span class="leads-badge">LEADS</span> best record in division</span>
+    </div>
+  </div>
+  <div id="confs" class="conf-split"></div>
+  <div class="modal-overlay" id="scrim"></div>
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="modal-header">
+      <div class="modal-title" id="mTitle"></div>
+      <div class="modal-subtitle" id="mSub"></div>
+      <button class="modal-close" id="mClose" aria-label="Close team">✕</button>
+      <div class="seg" id="mToggle">
+        <button data-sec="offense">Offense</button>
+        <button data-sec="defense">Defense</button>
+        <button data-sec="special_teams">Special Teams</button>
+        <button data-sec="penalties">Penalties</button>
+      </div>
+    </div>
+    <div class="modal-body" id="mBody"></div>
+  </div>`;
+
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2,"0");
+let RECORDS = null, TEAMSTATS = null, activeTeam = null, activeSec = 'offense', lastFocus = null;
+
+async function load(){
+  fiStatus("Loading","loading");
+  const records = {}; // team -> {overall:{w,l,t,pf,pa}, home:{w,l,t}, away:{w,l,t}}
+  Object.keys(FI_TEAM_NAME).forEach(t => records[t] = {
+    overall:{w:0,l:0,t:0,pf:0,pa:0}, home:{w:0,l:0,t:0}, away:{w:0,l:0,t:0}
+  });
+
+  let latestWeek = 0, foundAny = false;
+  for (let w = 1; w <= 22; w++){
+    let data;
+    try{
+      const res = await fetch(`games/wk${pad(w)}.json`);
+      if(!res.ok) continue;
+      data = await res.json();
+    }catch(e){ continue; }
+    foundAny = true;
+    (data.games || []).forEach(g => {
+      if(!g.played) return;
+      latestWeek = Math.max(latestWeek, data.week);
+      const a = records[g.away], h = records[g.home];
+      if(!a || !h) return;
+      a.overall.pf += g.away_score; a.overall.pa += g.home_score;
+      h.overall.pf += g.home_score; h.overall.pa += g.away_score;
+      const aRes = g.away_score>g.home_score?'w':g.home_score>g.away_score?'l':'t';
+      const hRes = g.home_score>g.away_score?'w':g.away_score>g.home_score?'l':'t';
+      a.overall[aRes]++; h.overall[hRes]++;
+      a.away[aRes]++; h.home[hRes]++;
+    });
+  }
+
+  if(!foundAny){
+    fiStatus("No data","error"); fiUpdated("");
+    $("confs").innerHTML = `<div class="empty">
+      No games data found.<br>
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+  RECORDS = records;
+
+  try{
+    const res = await fetch(`teamstats/latest.json`);
+    if(res.ok) TEAMSTATS = await res.json();
+  }catch(e){ /* stats section just won't have data yet */ }
+
+  fiStatus("Ready");
+  fiUpdated(`through week ${latestWeek}`);
+  renderConferences(records);
+}
+
+function recHTML(r){
+  const rec = r.t > 0 ? `${r.w}-${r.l}-${r.t}` : `${r.w}-${r.l}`;
+  const pd = r.pf - r.pa;
+  const pdClass = pd > 0 ? 'pos' : pd < 0 ? 'neg' : 'zero';
+  const pdStr = pd > 0 ? `+${pd}` : `${pd}`;
+  return `<span class="rec-val">${rec}</span><span class="rec-pd ${pdClass}">${pdStr}</span>`;
+}
+
+function renderConferences(records){
+  let html = '';
+  for(const [conf, divisions] of Object.entries(FI_CONFERENCES)){
+    html += `<div class="conf-block">
+      <div class="conf-head">
+        <span class="conf-tag ${conf.toLowerCase()}">${conf}</span>
+        <span class="rule"></span>
+      </div>
+      <div class="division-grid">`;
+    for(const [divName, teams] of Object.entries(divisions)){
+      const sorted = [...teams].sort((a,b) => {
+        const ra=records[a].overall, rb=records[b].overall;
+        const pctA = (ra.w + ra.t*0.5) / Math.max(1, ra.w+ra.l+ra.t);
+        const pctB = (rb.w + rb.t*0.5) / Math.max(1, rb.w+rb.l+rb.t);
+        if(pctB !== pctA) return pctB - pctA;
+        return (rb.pf-rb.pa) - (ra.pf-ra.pa);
+      });
+      const leaderGP = records[sorted[0]].overall.w + records[sorted[0]].overall.l + records[sorted[0]].overall.t;
+      html += `<div class="div-panel">
+        <div class="div-panel-head"><span class="div-name">${conf} ${divName}</span></div>
+        <div class="div-body">`;
+      sorted.forEach((t,i) => {
+        const isLeader = i===0 && leaderGP > 0;
+        html += `<button class="team-row${isLeader?' leader':''}" data-team="${t}">
+          ${fiLogoHTML(t, 30)}
+          <div class="tname">
+            <div class="tfull">${esc(FI_TEAM_NAME[t])}${isLeader?'<span class="leads-badge">LEADS</span>':''}</div>
+            <div class="tabbr">${t}</div>
+          </div>
+          <div class="trec">${recHTML(records[t].overall)}</div>
+        </button>`;
+      });
+      html += `</div></div>`;
+    }
+    html += `</div></div>`;
+  }
+  $("confs").innerHTML = html;
+}
+
+$("confs").addEventListener("click", e => {
+  const btn = e.target.closest(".team-row");
+  if(btn) openTeam(btn.dataset.team, btn);
+});
+
+function miniRec(r){
+  return r.t > 0 ? `${r.w}-${r.l}-${r.t}` : `${r.w}-${r.l}`;
+}
+
+function openTeam(t, source){
+  activeTeam = t; activeSec = 'offense'; lastFocus = source;
+  const info = FI_TEAM_INFO[t];
+  const rec = RECORDS[t];
+  $("mTitle").innerHTML = `${fiLogoHTML(t,32)}${esc(FI_TEAM_NAME[t])}`;
+  $("mSub").textContent = `${info.city}, ${info.state}`;
+
+  $("mBody").innerHTML = `
+    <div class="info-cards">
+      <div class="info-card"><div class="ic-label">Stadium</div><div class="ic-value">${esc(info.stadium)}</div></div>
+      <div class="info-card"><div class="ic-label">Capacity</div><div class="ic-value mono">${info.capacity.toLocaleString()}</div></div>
+      <div class="info-card"><div class="ic-label">Overall</div><div class="ic-value mono">${miniRec(rec.overall)}</div></div>
+      <div class="info-card"><div class="ic-label">Home</div><div class="ic-value mono">${miniRec(rec.home)}</div></div>
+      <div class="info-card"><div class="ic-label">Road</div><div class="ic-value mono">${miniRec(rec.away)}</div></div>
+    </div>
+    <div id="statBody"></div>`;
+
+  $("mToggle").querySelectorAll("button").forEach(b => {
+    b.setAttribute("aria-pressed", String(b.dataset.sec === activeSec));
+    b.onclick = () => { activeSec = b.dataset.sec; renderStats(); };
+  });
+
+  $("scrim").classList.add("open"); $("modal").classList.add("open");
+  renderStats(); $("mClose").focus();
+}
+
+function renderStats(){
+  $("mToggle").querySelectorAll("button").forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.sec === activeSec)));
+
+  const box = $("statBody");
+  if(!TEAMSTATS){
+    box.innerHTML = `<div class="empty">
+      No team-stats data yet.<br>
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+  const teamData = TEAMSTATS.teams[activeTeam];
+  const labels = TEAMSTATS.labels[activeSec];
+  const data = teamData[activeSec];
+  let h = `<div class="empty" style="padding:8px 0 4px;text-align:left;font-size:10px">
+    ${TEAMSTATS.data_horizon} · ${teamData.games} games played</div>`;
+  for(const [subgroup, cols] of Object.entries(labels)){
+    h += `<div class="subsect">${esc(subgroup)}</div>
+      <table class="stat-table"><thead><tr>
+        <th>Stat</th><th class="right">Total</th><th class="right">Per Game</th>
+      </tr></thead><tbody>`;
+    for(const [col, label] of Object.entries(cols)){
+      const cell = data[subgroup][col];
+      const tot = cell.tot === null ? '—' : cell.tot.toLocaleString();
+      const avg = cell.tot === null ? `${cell.avg.toFixed(1)}%` : cell.avg;
+      h += `<tr><td>${esc(label)}</td><td class="num">${tot}</td><td class="num">${avg}</td></tr>`;
+    }
+    h += `</tbody></table>`;
+  }
+  box.innerHTML = h;
+}
+
+function closeModal(){
+  $("scrim").classList.remove("open"); $("modal").classList.remove("open");
+  if(lastFocus) lastFocus.focus();
+}
+$("mClose").addEventListener("click", closeModal);
+$("scrim").addEventListener("click", closeModal);
+document.addEventListener("keydown", e=>{
+  if(e.key==="Escape" && $("modal").classList.contains("open")) closeModal();
+});
+
+load();
+</script>
+</body>
+</html>

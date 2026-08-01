@@ -10,7 +10,7 @@ const NAV = [
   { key: 'threats',  label: 'Threats',      ico: '⚡', href: 'threats.html' },
   { key: 'matchup',  label: 'Matchup Stats',ico: '⚔️', href: 'matchup_stats.html' },
   { key: 'context',  label: 'Contextual',   ico: '📊', href: 'contextual_stats.html' },
-  { key: 'teams',    label: 'Teams',        ico: '🛡️' },
+  { key: 'teams',    label: 'Teams',        ico: '🛡️', href: 'teams.html' },
   { key: 'players',  label: 'Players',      ico: '👤' },
   { key: 'dfs',      label: 'DFS Center',   ico: '💰' },
   { key: 'props',    label: 'Prop Center',  ico: '🎯' },
@@ -162,6 +162,74 @@ function fiLogoHTML(team, size){
          loading="lazy" onerror="this.style.display='none';this.parentNode.classList.add('fallback')">
     <i>${team}</i></span>`;
 }
+
+/* ── DIVISIONS / FULL NAMES ─────────────────────────────────────────
+   Static NFL structure — not in the data files, so it lives here once
+   and every page (Teams, Standings, Players…) can share it. */
+const FI_CONFERENCES = {
+  AFC: {
+    East:  ['BUF', 'MIA', 'NE', 'NYJ'],
+    North: ['BAL', 'CIN', 'CLE', 'PIT'],
+    South: ['HOU', 'IND', 'JAX', 'TEN'],
+    West:  ['DEN', 'KC', 'LV', 'LAC'],
+  },
+  NFC: {
+    East:  ['DAL', 'NYG', 'PHI', 'WAS'],
+    North: ['CHI', 'DET', 'GB', 'MIN'],
+    South: ['ATL', 'CAR', 'NO', 'TB'],
+    West:  ['ARI', 'LA', 'SEA', 'SF'],
+  },
+};
+const FI_TEAM_NAME = {
+  ARI: 'Arizona Cardinals',   ATL: 'Atlanta Falcons',    BAL: 'Baltimore Ravens',
+  BUF: 'Buffalo Bills',       CAR: 'Carolina Panthers',  CHI: 'Chicago Bears',
+  CIN: 'Cincinnati Bengals',  CLE: 'Cleveland Browns',   DAL: 'Dallas Cowboys',
+  DEN: 'Denver Broncos',      DET: 'Detroit Lions',      GB: 'Green Bay Packers',
+  HOU: 'Houston Texans',      IND: 'Indianapolis Colts', JAX: 'Jacksonville Jaguars',
+  KC: 'Kansas City Chiefs',   LA: 'Los Angeles Rams',    LAC: 'Los Angeles Chargers',
+  LV: 'Las Vegas Raiders',    MIA: 'Miami Dolphins',     MIN: 'Minnesota Vikings',
+  NE: 'New England Patriots', NO: 'New Orleans Saints',  NYG: 'New York Giants',
+  NYJ: 'New York Jets',       PHI: 'Philadelphia Eagles',PIT: 'Pittsburgh Steelers',
+  SEA: 'Seattle Seahawks',    SF: 'San Francisco 49ers', TB: 'Tampa Bay Buccaneers',
+  TEN: 'Tennessee Titans',    WAS: 'Washington Commanders',
+};
+/* city, state, stadium, seating capacity. Naming-rights deals and new
+   builds shift periodically — worth a quick check if a team's venue has
+   been in the news. */
+const FI_TEAM_INFO = {
+  ARI: { city: 'Glendale',        state: 'AZ', stadium: 'State Farm Stadium',           capacity: 63400 },
+  ATL: { city: 'Atlanta',         state: 'GA', stadium: 'Mercedes-Benz Stadium',        capacity: 71000 },
+  BAL: { city: 'Baltimore',       state: 'MD', stadium: 'M&T Bank Stadium',             capacity: 71008 },
+  BUF: { city: 'Orchard Park',    state: 'NY', stadium: 'Highmark Stadium',             capacity: 60108 },
+  CAR: { city: 'Charlotte',       state: 'NC', stadium: 'Bank of America Stadium',      capacity: 74867 },
+  CHI: { city: 'Chicago',         state: 'IL', stadium: 'Soldier Field',                capacity: 61500 },
+  CIN: { city: 'Cincinnati',      state: 'OH', stadium: 'Paycor Stadium',               capacity: 65515 },
+  CLE: { city: 'Cleveland',       state: 'OH', stadium: 'Huntington Bank Field',        capacity: 67431 },
+  DAL: { city: 'Arlington',       state: 'TX', stadium: 'AT&T Stadium',                 capacity: 80000 },
+  DEN: { city: 'Denver',          state: 'CO', stadium: 'Empower Field at Mile High',   capacity: 76125 },
+  DET: { city: 'Detroit',         state: 'MI', stadium: 'Ford Field',                   capacity: 65000 },
+  GB:  { city: 'Green Bay',       state: 'WI', stadium: 'Lambeau Field',                capacity: 81441 },
+  HOU: { city: 'Houston',         state: 'TX', stadium: 'NRG Stadium',                  capacity: 72220 },
+  IND: { city: 'Indianapolis',    state: 'IN', stadium: 'Lucas Oil Stadium',            capacity: 67000 },
+  JAX: { city: 'Jacksonville',    state: 'FL', stadium: 'EverBank Stadium',             capacity: 67838 },
+  KC:  { city: 'Kansas City',     state: 'MO', stadium: 'GEHA Field at Arrowhead Stadium', capacity: 76416 },
+  LA:  { city: 'Inglewood',       state: 'CA', stadium: 'SoFi Stadium',                 capacity: 70240 },
+  LAC: { city: 'Inglewood',       state: 'CA', stadium: 'SoFi Stadium',                 capacity: 70240 },
+  LV:  { city: 'Las Vegas',       state: 'NV', stadium: 'Allegiant Stadium',            capacity: 65000 },
+  MIA: { city: 'Miami Gardens',   state: 'FL', stadium: 'Hard Rock Stadium',            capacity: 65326 },
+  MIN: { city: 'Minneapolis',     state: 'MN', stadium: 'U.S. Bank Stadium',            capacity: 66655 },
+  NE:  { city: 'Foxborough',      state: 'MA', stadium: 'Gillette Stadium',             capacity: 65878 },
+  NO:  { city: 'New Orleans',     state: 'LA', stadium: 'Caesars Superdome',            capacity: 73208 },
+  NYG: { city: 'East Rutherford', state: 'NJ', stadium: 'MetLife Stadium',              capacity: 82500 },
+  NYJ: { city: 'East Rutherford', state: 'NJ', stadium: 'MetLife Stadium',              capacity: 82500 },
+  PHI: { city: 'Philadelphia',    state: 'PA', stadium: 'Lincoln Financial Field',      capacity: 69796 },
+  PIT: { city: 'Pittsburgh',      state: 'PA', stadium: 'Acrisure Stadium',             capacity: 68400 },
+  SEA: { city: 'Seattle',         state: 'WA', stadium: 'Lumen Field',                  capacity: 68740 },
+  SF:  { city: 'Santa Clara',     state: 'CA', stadium: "Levi's Stadium",               capacity: 68500 },
+  TB:  { city: 'Tampa',           state: 'FL', stadium: 'Raymond James Stadium',        capacity: 65890 },
+  TEN: { city: 'Nashville',       state: 'TN', stadium: 'Nissan Stadium',               capacity: 69143 },
+  WAS: { city: 'Landover',        state: 'MD', stadium: 'Northwest Stadium',            capacity: 63000 },
+};
 
 /* rank tier → pill class (1-8 elite … 25-32 poor) */
 function rkClass(r) { return r <= 8 ? 't1' : r <= 16 ? 't2' : r <= 24 ? 't3' : 't4'; }

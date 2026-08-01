@@ -17,7 +17,7 @@ import os
 import sys
 import pandas as pd
 import requests
-from io import StringIO
+from io import StringIO, BytesIO
 
 def default_season():
     """NFL season year: 2026 season spans Sep 2026 - Feb 2027."""
@@ -35,6 +35,8 @@ PLAYER_STATS_URLS = [
     f"https://github.com/nflverse/nflverse-data/releases/download/player_stats/player_stats_{SEASON}.csv",
 ]
 GAMES_URL = "https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv"
+TEAM_STATS_URL = f"https://github.com/nflverse/nflverse-data/releases/download/stats_team/stats_team_week_{SEASON}.csv"
+PBP_URL = f"https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_{SEASON}.csv.gz"
 
 POS_MAP = {"QB": "QB", "RB": "RB", "FB": "RB", "WR": "WR", "TE": "TE"}
 POSITIONS = ["QB", "RB", "WR", "TE"]
@@ -147,6 +149,210 @@ RAW_COLS = ["completions", "attempts", "passing_yards", "passing_tds",
             "receiving_first_downs", "receiving_air_yards",
             "receiving_yards_after_catch",
             "receiving_10", "receiving_16", "receiving_20", "receiving_40"]
+
+
+# ── Team Stats (Teams page modal) ──────────────────────────────────────
+# Every column nflverse's stats_team_week file provides, bucketed into
+# Offense / Defense / Special Teams / Penalties per subgroup.
+# col -> (label, decimals, is_rate)
+# is_rate columns aren't summable across weeks (percentages, CPOE) — they
+# get an average-of-weeks instead of a season total.
+# ── Down/Distance (drive sustainability + coach tendencies) ────────────
+# These aren't raw stats_team_week columns — they're computed from the
+# play-by-play file (down, ydstogo, third/fourth_down_converted flags),
+# so build_team_stats() fills these in separately, not via the generic
+# column-sum path the rest of TEAM_STATS_GROUPS uses.
+DOWN_DIST_OFF_COLS = {
+    "fd1_run": ("1st Down Run Plays", 0, False),
+    "fd1_pass": ("1st Down Pass Plays", 0, False),
+    "fd1_run_pct": ("1st Down Run %", 1, True),
+    "fd1_pass_pct": ("1st Down Pass %", 1, True),
+    "d3_att": ("3rd Down Attempts", 0, False),
+    "d3_conv": ("3rd Down Conversions", 0, False),
+    "d3_pct": ("3rd Down %", 1, True),
+    "d4_situations": ("4th Down Situations", 0, False),
+    "d4_go_att": ("4th Down Go-For-It Attempts", 0, False),
+    "d4_go_pct": ("4th Down Go-For-It Rate", 1, True),
+    "d4_conv": ("4th Down Conversions", 0, False),
+    "d4_conv_pct": ("4th Down Conversion %", 1, True),
+}
+DOWN_DIST_DEF_COLS = {
+    "fd1_run_faced": ("1st Down Run Plays Faced", 0, False),
+    "fd1_pass_faced": ("1st Down Pass Plays Faced", 0, False),
+    "fd1_run_pct_faced": ("Opponent 1st Down Run %", 1, True),
+    "fd1_pass_pct_faced": ("Opponent 1st Down Pass %", 1, True),
+    "d3_att_faced": ("3rd Down Attempts Faced", 0, False),
+    "d3_conv_allowed": ("3rd Down Conversions Allowed", 0, False),
+    "d3_pct_allowed": ("3rd Down % Allowed", 1, True),
+    "d3_stop_pct": ("3rd Down Stop Rate", 1, True),
+    "d4_situations_faced": ("4th Down Situations Faced", 0, False),
+    "d4_go_att_faced": ("Opponent 4th Down Go-For-It Attempts", 0, False),
+    "d4_go_pct_faced": ("Opponent 4th Down Go-For-It Rate", 1, True),
+    "d4_conv_allowed": ("4th Down Conversions Allowed", 0, False),
+    "d4_conv_pct_allowed": ("4th Down Conversion % Allowed", 1, True),
+    "d4_stop_pct": ("4th Down Stop Rate", 1, True),
+}
+DOWN_DIST_SUBGROUP_NAME = "Down/Distance"  # skip this subgroup in the generic column loop
+
+TEAM_STATS_GROUPS = {
+    "offense": {
+        "Passing": {
+            "completions": ("Completions", 0, False),
+            "attempts": ("Attempts", 0, False),
+            "passing_yards": ("Passing Yards", 0, False),
+            "passing_tds": ("Passing TDs", 0, False),
+            "passing_interceptions": ("Interceptions Thrown", 0, False),
+            "sacks_suffered": ("Sacks Taken", 0, False),
+            "sack_yards_lost": ("Sack Yards Lost", 0, False),
+            "sack_fumbles": ("Sack Fumbles", 0, False),
+            "sack_fumbles_lost": ("Sack Fumbles Lost", 0, False),
+            "passing_air_yards": ("Air Yards", 0, False),
+            "passing_yards_after_catch": ("YAC (Passing)", 0, False),
+            "passing_first_downs": ("Passing First Downs", 0, False),
+            "passing_epa": ("Passing EPA", 1, False),
+            "passing_cpoe": ("CPOE (pts)", 1, True),
+            "passing_2pt_conversions": ("Passing 2PT Conversions", 0, False),
+            "passing_10": ("10+ Yd Completions", 0, False),
+            "passing_16": ("16+ Yd Completions", 0, False),
+            "passing_20": ("20+ Yd Completions", 0, False),
+            "passing_40": ("40+ Yd Completions", 0, False),
+        },
+        "Rushing": {
+            "carries": ("Carries", 0, False),
+            "rushing_yards": ("Rushing Yards", 0, False),
+            "rushing_tds": ("Rushing TDs", 0, False),
+            "rushing_fumbles": ("Rushing Fumbles", 0, False),
+            "rushing_fumbles_lost": ("Rushing Fumbles Lost", 0, False),
+            "rushing_first_downs": ("Rushing First Downs", 0, False),
+            "rushing_epa": ("Rushing EPA", 1, False),
+            "rushing_2pt_conversions": ("Rushing 2PT Conversions", 0, False),
+            "rushing_10": ("10+ Yd Runs", 0, False),
+            "rushing_12": ("12+ Yd Runs", 0, False),
+            "rushing_20": ("20+ Yd Runs", 0, False),
+            "rushing_40": ("40+ Yd Runs", 0, False),
+        },
+        "Receiving": {
+            "receptions": ("Receptions", 0, False),
+            "targets": ("Targets", 0, False),
+            "receiving_yards": ("Receiving Yards", 0, False),
+            "receiving_tds": ("Receiving TDs", 0, False),
+            "receiving_fumbles": ("Receiving Fumbles", 0, False),
+            "receiving_fumbles_lost": ("Receiving Fumbles Lost", 0, False),
+            "receiving_air_yards": ("Receiving Air Yards", 0, False),
+            "receiving_yards_after_catch": ("YAC (Receiving)", 0, False),
+            "receiving_first_downs": ("Receiving First Downs", 0, False),
+            "receiving_epa": ("Receiving EPA", 1, False),
+            "receiving_2pt_conversions": ("Receiving 2PT Conversions", 0, False),
+            "receiving_10": ("10+ Yd Catches", 0, False),
+            "receiving_16": ("16+ Yd Catches", 0, False),
+            "receiving_20": ("20+ Yd Catches", 0, False),
+            "receiving_40": ("40+ Yd Catches", 0, False),
+        },
+        "Down/Distance": DOWN_DIST_OFF_COLS,
+        "Ball Security": {
+            "fumbles_total": ("Total Fumbles", 0, False),
+            "fumbles_lost_total": ("Fumbles Lost", 0, False),
+            "fumbles_not_forced": ("Unforced Fumbles", 0, False),
+            "fumbles_out_of_bounds": ("Fumbles Out of Bounds", 0, False),
+            "fumbles_forced_by_opp": ("Fumbles Forced By Opponent", 0, False),
+            "fumble_recovery_own": ("Own Fumbles Recovered", 0, False),
+            "fumble_recovery_yards_own": ("Own Fumble Recovery Yards", 0, False),
+        },
+    },
+    "defense": {
+        "Run / Pass Defense": {
+            "def_tackles_solo": ("Solo Tackles", 0, False),
+            "def_tackles_with_assist": ("Assisted Tackles", 0, False),
+            "def_tackle_assists": ("Tackle Assists", 0, False),
+            "def_tackles_for_loss": ("Tackles For Loss", 0, False),
+            "def_tackles_for_loss_yards": ("TFL Yards", 0, False),
+            "def_qb_hits": ("QB Hits", 0, False),
+            "def_sacks": ("Sacks", 0, False),
+            "def_sack_yards": ("Sack Yards", 0, False),
+            "def_pass_defended": ("Passes Defended", 0, False),
+        },
+        "Turnovers Forced": {
+            "def_interceptions": ("Interceptions", 0, False),
+            "def_interception_yards": ("INT Return Yards", 0, False),
+            "def_fumbles_forced": ("Fumbles Forced", 0, False),
+            "def_fumbles": ("Defensive Fumbles", 0, False),
+            "fumble_recovery_opp": ("Opponent Fumbles Recovered", 0, False),
+            "fumble_recovery_yards_opp": ("Opp Fumble Recovery Yards", 0, False),
+            "fumble_recovery_tds": ("Fumble Recovery TDs", 0, False),
+        },
+        "Scoring": {
+            "def_tds": ("Defensive TDs", 0, False),
+            "def_safeties": ("Safeties", 0, False),
+        },
+        "Down/Distance": DOWN_DIST_DEF_COLS,
+    },
+    "special_teams": {
+        "Kicking": {
+            "fg_made": ("FG Made", 0, False),
+            "fg_att": ("FG Attempts", 0, False),
+            "fg_missed": ("FG Missed", 0, False),
+            "fg_blocked": ("FG Blocked", 0, False),
+            "fg_long": ("Longest FG", 0, False),
+            "fg_pct": ("FG %", 1, True),
+            "fg_made_0_19": ("FG Made 0-19", 0, False),
+            "fg_made_20_29": ("FG Made 20-29", 0, False),
+            "fg_made_30_39": ("FG Made 30-39", 0, False),
+            "fg_made_40_49": ("FG Made 40-49", 0, False),
+            "fg_made_50_59": ("FG Made 50-59", 0, False),
+            "fg_made_60_": ("FG Made 60+", 0, False),
+            "fg_missed_0_19": ("FG Missed 0-19", 0, False),
+            "fg_missed_20_29": ("FG Missed 20-29", 0, False),
+            "fg_missed_30_39": ("FG Missed 30-39", 0, False),
+            "fg_missed_40_49": ("FG Missed 40-49", 0, False),
+            "fg_missed_50_59": ("FG Missed 50-59", 0, False),
+            "fg_missed_60_": ("FG Missed 60+", 0, False),
+            "fg_made_distance": ("Made FG Total Yards", 0, False),
+            "fg_missed_distance": ("Missed FG Total Yards", 0, False),
+            "fg_blocked_distance": ("Blocked FG Total Yards", 0, False),
+            "pat_made": ("PAT Made", 0, False),
+            "pat_att": ("PAT Attempts", 0, False),
+            "pat_missed": ("PAT Missed", 0, False),
+            "pat_blocked": ("PAT Blocked", 0, False),
+            "pat_pct": ("PAT %", 1, True),
+            "gwfg_made": ("Game-Winning FG Made", 0, False),
+            "gwfg_att": ("Game-Winning FG Att", 0, False),
+            "gwfg_missed": ("Game-Winning FG Missed", 0, False),
+            "gwfg_blocked": ("Game-Winning FG Blocked", 0, False),
+            "gwfg_distance": ("Game-Winning FG Distance", 0, False),
+        },
+        "Punting": {
+            "pt_att": ("Punts", 0, False),
+            "pt_blocked": ("Punts Blocked", 0, False),
+            "pt_long": ("Longest Punt", 0, False),
+            "pt_yards": ("Punt Yards", 0, False),
+            "pt_net_yards": ("Net Punt Yards", 0, False),
+            "pt_inside_20": ("Punts Inside 20", 0, False),
+            "pt_out_of_bounds": ("Punts Out of Bounds", 0, False),
+            "pt_downed": ("Punts Downed", 0, False),
+            "pt_touchback": ("Punt Touchbacks", 0, False),
+            "pt_fair_caught": ("Opponent Fair Catches", 0, False),
+            "pt_returned": ("Opponent Punt Returns", 0, False),
+            "pt_return_yards": ("Opponent Punt Return Yards", 0, False),
+            "pt_return_tds": ("Opponent Punt Return TDs", 0, False),
+        },
+        "Returns": {
+            "punt_returns": ("Punt Returns", 0, False),
+            "punt_return_yards": ("Punt Return Yards", 0, False),
+            "kickoff_returns": ("Kickoff Returns", 0, False),
+            "kickoff_return_yards": ("Kickoff Return Yards", 0, False),
+            "special_teams_tds": ("Special Teams TDs", 0, False),
+            "misc_yards": ("Misc Yards", 0, False),
+        },
+    },
+    "penalties": {
+        "Discipline": {
+            "penalties": ("Penalties", 0, False),
+            "penalty_yards": ("Penalty Yards", 0, False),
+            "timeouts": ("Timeouts Used", 0, False),
+        },
+    },
+}
+
 
 def tier_of(rank):
     """Defensive strength faced, by season rank in that category.
@@ -751,6 +957,161 @@ def build_context(week, all_teams, records, prior_stats, prior_games,
           f"{os.path.getsize(path) / 1024:.0f} KB")
 
 
+def fetch_pbp():
+    """Play-by-play is gzipped and much bigger than the other feeds, so it
+    gets its own fetch path rather than reusing fetch_csv()'s text/StringIO
+    handling."""
+    if PBP_URL in _CSV_CACHE:
+        return _CSV_CACHE[PBP_URL].copy()
+    print(f"  fetching {PBP_URL}")
+    r = requests.get(PBP_URL, timeout=180)
+    if r.status_code != 200:
+        sys.exit(f"FATAL: could not download play-by-play (HTTP {r.status_code}).")
+    df = pd.read_csv(BytesIO(r.content), compression="gzip", low_memory=False)
+    _CSV_CACHE[PBP_URL] = df
+    return df.copy()
+
+
+def compute_down_distance(games_played):
+    """Offense (posteam) and defense (defteam) down/distance splits, keyed
+    the same way as the rest of TEAM_STATS_GROUPS: {tot, avg} per stat."""
+    pbp = fetch_pbp()
+    reg = pbp[pbp["season_type"] == "REG"]
+
+    def pct(n, d):
+        return round(100 * n / d, 1) if d else 0.0
+
+    d1 = reg[(reg["down"] == 1) & (reg["play_type"].isin(["run", "pass"]))]
+    off1 = d1.groupby(["posteam", "play_type"]).size().unstack(fill_value=0)
+    def1 = d1.groupby(["defteam", "play_type"]).size().unstack(fill_value=0)
+
+    d3 = reg[reg["down"] == 3]
+    off3 = d3.groupby("posteam").agg(conv=("third_down_converted", "sum"),
+                                      fail=("third_down_failed", "sum"))
+    def3 = d3.groupby("defteam").agg(conv=("third_down_converted", "sum"),
+                                      fail=("third_down_failed", "sum"))
+
+    d4 = reg[reg["down"] == 4]
+    d4_go = d4[d4["play_type"].isin(["run", "pass"])]
+    off4_go = d4_go.groupby("posteam").agg(att=("play_id", "count"),
+                                            conv=("fourth_down_converted", "sum"))
+    off4_tot = d4.groupby("posteam").size()
+    def4_go = d4_go.groupby("defteam").agg(att=("play_id", "count"),
+                                            conv=("fourth_down_converted", "sum"))
+    def4_tot = d4.groupby("defteam").size()
+
+    def get(df_, t, col, default=0):
+        return int(df_.loc[t, col]) if (df_ is not None and t in df_.index and col in df_.columns) else default
+
+    out = {}
+    for t, gp in games_played.items():
+        run1 = get(off1, t, "run"); pass1 = get(off1, t, "pass")
+        run1d = get(def1, t, "run"); pass1d = get(def1, t, "pass")
+        c3 = int(off3.loc[t, "conv"]) if t in off3.index else 0
+        f3 = int(off3.loc[t, "fail"]) if t in off3.index else 0
+        c3d = int(def3.loc[t, "conv"]) if t in def3.index else 0
+        f3d = int(def3.loc[t, "fail"]) if t in def3.index else 0
+        goA = int(off4_go.loc[t, "att"]) if t in off4_go.index else 0
+        goC = int(off4_go.loc[t, "conv"]) if t in off4_go.index else 0
+        totA = int(off4_tot.get(t, 0))
+        goAd = int(def4_go.loc[t, "att"]) if t in def4_go.index else 0
+        goCd = int(def4_go.loc[t, "conv"]) if t in def4_go.index else 0
+        totAd = int(def4_tot.get(t, 0))
+
+        def tavg(tot, dec=0):
+            return {"tot": tot, "avg": round(tot / gp, max(dec, 1)) if gp else 0}
+        def ravg(val):
+            return {"tot": None, "avg": val}
+
+        off = {
+            "fd1_run": tavg(run1), "fd1_pass": tavg(pass1),
+            "fd1_run_pct": ravg(pct(run1, run1 + pass1)),
+            "fd1_pass_pct": ravg(pct(pass1, run1 + pass1)),
+            "d3_att": tavg(c3 + f3), "d3_conv": tavg(c3), "d3_pct": ravg(pct(c3, c3 + f3)),
+            "d4_situations": tavg(totA), "d4_go_att": tavg(goA),
+            "d4_go_pct": ravg(pct(goA, totA)),
+            "d4_conv": tavg(goC), "d4_conv_pct": ravg(pct(goC, goA)),
+        }
+        deff = {
+            "fd1_run_faced": tavg(run1d), "fd1_pass_faced": tavg(pass1d),
+            "fd1_run_pct_faced": ravg(pct(run1d, run1d + pass1d)),
+            "fd1_pass_pct_faced": ravg(pct(pass1d, run1d + pass1d)),
+            "d3_att_faced": tavg(c3d + f3d), "d3_conv_allowed": tavg(c3d),
+            "d3_pct_allowed": ravg(pct(c3d, c3d + f3d)), "d3_stop_pct": ravg(pct(f3d, c3d + f3d)),
+            "d4_situations_faced": tavg(totAd), "d4_go_att_faced": tavg(goAd),
+            "d4_go_pct_faced": ravg(pct(goAd, totAd)),
+            "d4_conv_allowed": tavg(goCd), "d4_conv_pct_allowed": ravg(pct(goCd, goAd)),
+            "d4_stop_pct": ravg(pct(goAd - goCd, goAd)),
+        }
+        out[t] = {"offense": off, "defense": deff}
+    return out
+
+
+def build_team_stats():
+    """Season-to-date team stats — every offense/defense/special-teams/penalty
+    column nflverse's stats_team_week file provides, as both a season total
+    and a per-game average. Not week-horizon-gated like the ranking pages;
+    this is just 'what's true right now', so it always uses every played
+    week. Writes a single file, overwritten on every build run."""
+    df = fetch_csv(TEAM_STATS_URL)
+    df = df[(df["season"] == SEASON) & (df["season_type"] == "REG")]
+    if df.empty:
+        raise SystemExit(f"no {SEASON} team stats available yet")
+
+    games_played = df.groupby("team").size().to_dict()
+    all_cols = [c for section, grp in TEAM_STATS_GROUPS.items()
+                for sub, cols in grp.items() if sub != DOWN_DIST_SUBGROUP_NAME
+                for c in cols]
+    for c in all_cols:
+        if c not in df.columns:
+            df[c] = 0
+    sums = df.groupby("team")[all_cols].sum(numeric_only=True)
+    means = df.groupby("team")[all_cols].mean(numeric_only=True)
+    down_dist = compute_down_distance(games_played)
+
+    teams_out = {}
+    for t in sorted(games_played.keys()):
+        gp = games_played[t]
+        entry = {"games": gp}
+        for section, subgroups in TEAM_STATS_GROUPS.items():
+            entry[section] = {}
+            for sub, cols in subgroups.items():
+                if sub == DOWN_DIST_SUBGROUP_NAME:
+                    entry[section][sub] = down_dist.get(t, {}).get(section, {})
+                    continue
+                entry[section][sub] = {}
+                for col, (_label, dec, is_rate) in cols.items():
+                    if is_rate:
+                        tot = None
+                        avg = float(means.loc[t, col]) if t in means.index else 0
+                        if col in ("fg_pct", "pat_pct"):
+                            avg *= 100
+                        avg = round(avg, dec)
+                    else:
+                        tot = round(float(sums.loc[t, col]), dec) if t in sums.index else 0
+                        avg = round(tot / gp, max(dec, 1)) if gp else 0
+                        tot = int(tot) if dec == 0 else tot
+                    entry[section][sub][col] = {"tot": tot, "avg": avg}
+        teams_out[t] = entry
+
+    labels = {
+        section: {sub: {c: v[0] for c, v in cols.items()} for sub, cols in subgroups.items()}
+        for section, subgroups in TEAM_STATS_GROUPS.items()
+    }
+    payload = {
+        "season": SEASON,
+        "data_horizon": f"through {max(games_played.values())} games played",
+        "labels": labels,
+        "teams": teams_out,
+    }
+    os.makedirs("teamstats", exist_ok=True)
+    path = "teamstats/latest.json"
+    with open(path, "w") as f:
+        json.dump(payload, f)
+    print(f"Wrote {path} — {len(teams_out)} teams, "
+          f"{os.path.getsize(path) / 1024:.0f} KB")
+
+
 def build_games_only(week):
     """Schedule, lines and venue — needs nothing but games.csv, so this works
     for a future season before any player stats exist."""
@@ -846,3 +1207,9 @@ if __name__ == "__main__":
 
     print(f"\nDone. {games_built} game file(s), {built} stat week(s)."
           + (f" Stats skipped: {skipped}" if skipped else ""))
+
+    # 3. Team stats: always-current season totals for the Teams page modal.
+    try:
+        build_team_stats()
+    except SystemExit as e:
+        print(f"  team stats: skipped — {e}")
