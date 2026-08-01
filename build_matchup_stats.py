@@ -528,14 +528,12 @@ THREAT_CATS = {
     },
     "RB": {
         "rush_yds": ("Rushing yards", "rushing_yards", 1),
-        "rush_tds": ("Rushing TDs", "rushing_tds", 2),
         "rec_yds":  ("Receiving yards", "receiving_yards", 1),
         "rec":      ("Receptions", "receptions", 1),
     },
     "WR": {
         "rec_yds":  ("Receiving yards", "receiving_yards", 1),
         "rec":      ("Receptions", "receptions", 1),
-        "rec_tds":  ("Receiving TDs", "receiving_tds", 2),
     },
 }
 THREAT_CATS["TE"] = dict(THREAT_CATS["WR"])

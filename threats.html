@@ -198,7 +198,25 @@ function sideHTML(team, opp){
 
 function render(){
   const counts = {}; let total = 0, gamesWith = 0;
-  const cards = DATA.games.map(g => {
+
+  /* Loudest games first: most threats at the top, quiet games at the bottom.
+     Ties break on the strongest tier present, so one Nuclear outranks a game
+     of the same size made only of Standards. */
+  const TIER_WEIGHT = { nuclear: 3, elite: 2, standard: 1 };
+  const withCount = DATA.games.map(g => {
+    let n = 0, best = 0;
+    for (const t of [g.away, g.home])
+      for (const s of (DATA.teams[t]?.starters || []))
+        for (const r of classify(s.cats || {})){
+          n++; best = Math.max(best, TIER_WEIGHT[r.tier] || 0);
+        }
+    return { g, n, best };
+  });
+  const ordered = withCount
+    .sort((a, b) => b.n - a.n || b.best - a.best)
+    .map(x => x.g);
+
+  const cards = ordered.map(g => {
     let n = 0;
     for (const t of [g.away, g.home]){
       for (const s of (DATA.teams[t]?.starters || [])){
