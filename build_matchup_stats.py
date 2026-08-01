@@ -86,7 +86,9 @@ POS_METRICS = {
         "car_pg":     ("Carries / game", 1, True, "Volume"),
         "rec_yds":    ("Receiving yards", 0, True, "Volume"),
         "rec":        ("Receptions", 0, True, "Volume"),
-        "td":         ("Total TDs", 0, True, "Volume"),
+        "rec_pg":     ("Receptions / game", 1, True, "Volume"),
+        "rush_td":    ("Rushing TDs", 0, True, "Volume"),
+        "rec_td":     ("Receiving TDs", 0, True, "Volume"),
         "fd_pg":      ("Rushing first downs / game", 1, True, "Efficiency"),
         "r10_pg":     ("10+ yd runs / game", 1, True, "Explosive"),
         "r12_pg":     ("12+ yd runs / game", 1, True, "Explosive"),
@@ -97,6 +99,7 @@ POS_METRICS = {
         "rec_yds":    ("Receiving yards", 0, True, "Volume"),
         "rec_ypg":    ("Receiving yards / game", 1, True, "Volume"),
         "rec":        ("Receptions", 0, True, "Volume"),
+        "rec_pg":     ("Receptions / game", 1, True, "Volume"),
         "td":         ("Receiving TDs", 0, True, "Volume"),
         "ypr":        ("Yards / reception", 1, True, "Efficiency"),
         "air_pg":     ("Air yards / game", 1, True, "Efficiency"),
@@ -126,7 +129,7 @@ LOG_POS = {
     "QB": {"pass_yds": ("Passing yards", 0), "comp_pct": ("Completion %", 1),
            "ypc": ("Yards / completion", 1), "pass_td": ("Passing TDs", 0)},
     "RB": {"rush_yds": ("Rushing yards", 0), "rec_yds": ("Receiving yards", 0),
-           "rec": ("Receptions", 0), "td": ("Total TDs", 0)},
+           "rec": ("Receptions", 0), "rush_td": ("Rushing TDs", 0), "rec_td": ("Receiving TDs", 0)},
     "WR": {"rec_yds": ("Receiving yards", 0), "rec": ("Receptions", 0),
            "ypr": ("Yards / reception", 1), "td": ("Receiving TDs", 0)},
     "TE": {"rec_yds": ("Receiving yards", 0), "rec": ("Receptions", 0),
@@ -134,7 +137,7 @@ LOG_POS = {
 }
 LOG_POS_DEFKEY = {
     "QB": {"pass_yds": "pass_yds", "comp_pct": "comp_pct", "ypc": "ypc", "pass_td": "pass_td"},
-    "RB": {"rush_yds": "rush_yds", "rec_yds": "rec_yds", "rec": "rec", "td": "td"},
+    "RB": {"rush_yds": "rush_yds", "rec_yds": "rec_yds", "rec": "rec", "rush_td": "rush_td", "rec_td": "rec_td"},
     "WR": {"rec_yds": "rec_yds", "rec": "rec", "ypr": "ypr", "td": "td"},
     "TE": {"rec_yds": "rec_yds", "rec": "rec", "ypr": "ypr", "td": "td"},
 }
@@ -192,7 +195,44 @@ DOWN_DIST_DEF_COLS = {
     "d4_conv_pct_allowed": ("4th Down Conversion % Allowed", 1, True),
     "d4_stop_pct": ("4th Down Stop Rate", 1, True),
 }
-DOWN_DIST_SUBGROUP_NAME = "Down/Distance"  # skip this subgroup in the generic column loop
+PASS_DEF_COLS = {
+    "comp_allowed": ("Completions Allowed", 0, False),
+    "att_faced": ("Attempts Faced", 0, False),
+    "pass_yds_allowed": ("Passing Yards Allowed", 0, False),
+    "pass_td_allowed": ("Passing TDs Allowed", 0, False),
+    "comp_pct_allowed": ("Completion % Allowed", 1, True),
+    "pass_air_yds_allowed": ("Air Yards Allowed", 0, False),
+    "pass_yac_allowed": ("YAC Allowed", 0, False),
+    "pass_fd_allowed": ("Passing First Downs Allowed", 0, False),
+    "pass_epa_allowed": ("Passing EPA Allowed", 1, False),
+    "def_pass10_allowed": ("10+ Yd Completions Allowed", 0, False),
+    "def_pass16_allowed": ("16+ Yd Completions Allowed", 0, False),
+    "def_pass20_allowed": ("20+ Yd Completions Allowed", 0, False),
+    "def_pass40_allowed": ("40+ Yd Completions Allowed", 0, False),
+    "def_sacks": ("Sacks", 0, False),
+    "def_sack_yards": ("Sack Yards", 0, False),
+    "def_qb_hits": ("QB Hits", 0, False),
+    "def_pass_defended": ("Passes Defended", 0, False),
+}
+RUN_DEF_COLS = {
+    "carries_faced": ("Carries Faced", 0, False),
+    "rush_yds_allowed": ("Rushing Yards Allowed", 0, False),
+    "rush_td_allowed": ("Rushing TDs Allowed", 0, False),
+    "rush_fd_allowed": ("Rushing First Downs Allowed", 0, False),
+    "rush_epa_allowed": ("Rushing EPA Allowed", 1, False),
+    "def_rush10_allowed": ("10+ Yd Runs Allowed", 0, False),
+    "def_rush12_allowed": ("12+ Yd Runs Allowed", 0, False),
+    "def_rush20_allowed": ("20+ Yd Runs Allowed", 0, False),
+    "def_rush40_allowed": ("40+ Yd Runs Allowed", 0, False),
+    "def_tackles_for_loss": ("Tackles For Loss", 0, False),
+    "def_tackles_for_loss_yards": ("TFL Yards", 0, False),
+}
+DOWN_DIST_SUBGROUP_NAME = "Down/Distance"
+# subgroups that don't come from the plain team-column-sum path — Pass/Run
+# Defense mix opponent-groupby yardage with play-by-play explosive-play
+# counts, Down/Distance is pure play-by-play. All handled specially in
+# build_team_stats().
+CUSTOM_SUBGROUPS = {"Pass Defense", "Run Defense", DOWN_DIST_SUBGROUP_NAME}
 
 TEAM_STATS_GROUPS = {
     "offense": {
@@ -260,16 +300,12 @@ TEAM_STATS_GROUPS = {
         },
     },
     "defense": {
-        "Run / Pass Defense": {
+        "Pass Defense": PASS_DEF_COLS,
+        "Run Defense": RUN_DEF_COLS,
+        "Tackling": {
             "def_tackles_solo": ("Solo Tackles", 0, False),
             "def_tackles_with_assist": ("Assisted Tackles", 0, False),
             "def_tackle_assists": ("Tackle Assists", 0, False),
-            "def_tackles_for_loss": ("Tackles For Loss", 0, False),
-            "def_tackles_for_loss_yards": ("TFL Yards", 0, False),
-            "def_qb_hits": ("QB Hits", 0, False),
-            "def_sacks": ("Sacks", 0, False),
-            "def_sack_yards": ("Sack Yards", 0, False),
-            "def_pass_defended": ("Passes Defended", 0, False),
         },
         "Turnovers Forced": {
             "def_interceptions": ("Interceptions", 0, False),
@@ -441,7 +477,9 @@ def pos_metrics_from_sums(pos, s, gp):
             "car_pg":   safe_div(g("carries"), gp),
             "rec_yds":  g("receiving_yards"),
             "rec":      g("receptions"),
-            "td":       g("rushing_tds") + g("receiving_tds"),
+            "rec_pg":   safe_div(g("receptions"), gp),
+            "rush_td":  g("rushing_tds"),
+            "rec_td":   g("receiving_tds"),
             "fd_pg":    safe_div(g("rushing_first_downs"), gp),
             "r10_pg":   safe_div(g("rushing_10"), gp),
             "r12_pg":   safe_div(g("rushing_12"), gp),
@@ -452,6 +490,7 @@ def pos_metrics_from_sums(pos, s, gp):
         "rec_yds": g("receiving_yards"),
         "rec_ypg": safe_div(g("receiving_yards"), gp),
         "rec":     g("receptions"),
+        "rec_pg":  safe_div(g("receptions"), gp),
         "td":      g("receiving_tds"),
         "ypr":     safe_div(g("receiving_yards"), g("receptions")),
         "air_pg":  safe_div(g("receiving_air_yards"), gp),
@@ -972,9 +1011,10 @@ def fetch_pbp():
     return df.copy()
 
 
-def compute_down_distance(games_played):
-    """Offense (posteam) and defense (defteam) down/distance splits, keyed
-    the same way as the rest of TEAM_STATS_GROUPS: {tot, avg} per stat."""
+def compute_pbp_stats(games_played):
+    """Offense/defense splits that need play-by-play, not just the season
+    team-stats file: Down/Distance and Explosive Plays Allowed. Loaded once
+    and shared so we don't re-download pbp twice."""
     pbp = fetch_pbp()
     reg = pbp[pbp["season_type"] == "REG"]
 
@@ -1000,6 +1040,17 @@ def compute_down_distance(games_played):
                                             conv=("fourth_down_converted", "sum"))
     def4_tot = d4.groupby("defteam").size()
 
+    # explosive plays allowed: completions/runs faced by each defense, by
+    # the same yardage thresholds nflverse uses on the offense side.
+    pass_faced = reg[(reg["play_type"] == "pass") & (reg["complete_pass"] == 1)]
+    rush_faced = reg[reg["play_type"] == "run"]
+    pass_bucket = {}
+    for thresh in (10, 16, 20, 40):
+        pass_bucket[thresh] = pass_faced[pass_faced["yards_gained"] >= thresh].groupby("defteam").size()
+    rush_bucket = {}
+    for thresh in (10, 12, 20, 40):
+        rush_bucket[thresh] = rush_faced[rush_faced["yards_gained"] >= thresh].groupby("defteam").size()
+
     def get(df_, t, col, default=0):
         return int(df_.loc[t, col]) if (df_ is not None and t in df_.index and col in df_.columns) else default
 
@@ -1023,7 +1074,7 @@ def compute_down_distance(games_played):
         def ravg(val):
             return {"tot": None, "avg": val}
 
-        off = {
+        off_dd = {
             "fd1_run": tavg(run1), "fd1_pass": tavg(pass1),
             "fd1_run_pct": ravg(pct(run1, run1 + pass1)),
             "fd1_pass_pct": ravg(pct(pass1, run1 + pass1)),
@@ -1032,7 +1083,7 @@ def compute_down_distance(games_played):
             "d4_go_pct": ravg(pct(goA, totA)),
             "d4_conv": tavg(goC), "d4_conv_pct": ravg(pct(goC, goA)),
         }
-        deff = {
+        def_dd = {
             "fd1_run_faced": tavg(run1d), "fd1_pass_faced": tavg(pass1d),
             "fd1_run_pct_faced": ravg(pct(run1d, run1d + pass1d)),
             "fd1_pass_pct_faced": ravg(pct(pass1d, run1d + pass1d)),
@@ -1043,8 +1094,136 @@ def compute_down_distance(games_played):
             "d4_conv_allowed": tavg(goCd), "d4_conv_pct_allowed": ravg(pct(goCd, goAd)),
             "d4_stop_pct": ravg(pct(goAd - goCd, goAd)),
         }
-        out[t] = {"offense": off, "defense": deff}
+        out[t] = {
+            "offense": {DOWN_DIST_SUBGROUP_NAME: off_dd},
+            "defense": {DOWN_DIST_SUBGROUP_NAME: def_dd},
+            "explosive_pass_allowed": {th: int(pass_bucket[th].get(t, 0)) for th in (10, 16, 20, 40)},
+            "explosive_rush_allowed": {th: int(rush_bucket[th].get(t, 0)) for th in (10, 12, 20, 40)},
+        }
     return out
+
+
+def compute_pass_run_defense(df, games_played, pbp_stats):
+    """Pass/Run Defense subgroups: yardage allowed comes from re-aggregating
+    the team-stats file by opponent_team (each row already holds what the
+    opposing offense did that week); sacks/QB hits/TFL/passes-defended are
+    this team's own def_* columns; explosive-play counts come from the
+    play-by-play pass computed above. All three get merged into one dict
+    per subgroup here since TEAM_STATS_GROUPS treats them as a single
+    'custom' subgroup."""
+    opp_pass_cols = ["completions", "attempts", "passing_yards", "passing_tds",
+                      "passing_air_yards", "passing_yards_after_catch",
+                      "passing_first_downs", "passing_epa"]
+    opp_rush_cols = ["carries", "rushing_yards", "rushing_tds",
+                      "rushing_first_downs", "rushing_epa"]
+    own_cols = ["def_sacks", "def_sack_yards", "def_qb_hits", "def_pass_defended",
+                "def_tackles_for_loss", "def_tackles_for_loss_yards"]
+    for c in opp_pass_cols + opp_rush_cols + own_cols:
+        if c not in df.columns:
+            df[c] = 0
+    opp_sums = df.groupby("opponent_team")[opp_pass_cols + opp_rush_cols].sum(numeric_only=True)
+    own_sums = df.groupby("team")[own_cols].sum(numeric_only=True)
+
+    def tavg(tot, gp, dec=0):
+        tot = round(float(tot), dec)
+        tot = int(tot) if dec == 0 else tot
+        return {"tot": tot, "avg": round(tot / gp, max(dec, 1)) if gp else 0}
+    def ravg(val):
+        return {"tot": None, "avg": round(val, 1)}
+    def pct(n, d):
+        return round(100 * n / d, 1) if d else 0.0
+
+    out = {}
+    for t, gp in games_played.items():
+        o = opp_sums.loc[t] if t in opp_sums.index else opp_sums.iloc[0] * 0
+        s = own_sums.loc[t] if t in own_sums.index else own_sums.iloc[0] * 0
+        expl_p = pbp_stats.get(t, {}).get("explosive_pass_allowed", {10: 0, 16: 0, 20: 0, 40: 0})
+        expl_r = pbp_stats.get(t, {}).get("explosive_rush_allowed", {10: 0, 12: 0, 20: 0, 40: 0})
+
+        pass_def = {
+            "comp_allowed": tavg(o["completions"], gp),
+            "att_faced": tavg(o["attempts"], gp),
+            "pass_yds_allowed": tavg(o["passing_yards"], gp),
+            "pass_td_allowed": tavg(o["passing_tds"], gp),
+            "comp_pct_allowed": ravg(pct(o["completions"], o["attempts"])),
+            "pass_air_yds_allowed": tavg(o["passing_air_yards"], gp),
+            "pass_yac_allowed": tavg(o["passing_yards_after_catch"], gp),
+            "pass_fd_allowed": tavg(o["passing_first_downs"], gp),
+            "pass_epa_allowed": tavg(o["passing_epa"], gp, dec=1),
+            "def_pass10_allowed": tavg(expl_p[10], gp),
+            "def_pass16_allowed": tavg(expl_p[16], gp),
+            "def_pass20_allowed": tavg(expl_p[20], gp),
+            "def_pass40_allowed": tavg(expl_p[40], gp),
+            "def_sacks": tavg(s["def_sacks"], gp),
+            "def_sack_yards": tavg(s["def_sack_yards"], gp),
+            "def_qb_hits": tavg(s["def_qb_hits"], gp),
+            "def_pass_defended": tavg(s["def_pass_defended"], gp),
+        }
+        run_def = {
+            "carries_faced": tavg(o["carries"], gp),
+            "rush_yds_allowed": tavg(o["rushing_yards"], gp),
+            "rush_td_allowed": tavg(o["rushing_tds"], gp),
+            "rush_fd_allowed": tavg(o["rushing_first_downs"], gp),
+            "rush_epa_allowed": tavg(o["rushing_epa"], gp, dec=1),
+            "def_rush10_allowed": tavg(expl_r[10], gp),
+            "def_rush12_allowed": tavg(expl_r[12], gp),
+            "def_rush20_allowed": tavg(expl_r[20], gp),
+            "def_rush40_allowed": tavg(expl_r[40], gp),
+            "def_tackles_for_loss": tavg(s["def_tackles_for_loss"], gp),
+            "def_tackles_for_loss_yards": tavg(s["def_tackles_for_loss_yards"], gp),
+        }
+        out[t] = {"Pass Defense": pass_def, "Run Defense": run_def}
+    return out
+
+
+def build_player_stats():
+    """Season-to-date individual player leaderboards, grouped by position
+    then by the same Volume/Efficiency/Explosive/Protection categories
+    POS_METRICS already tags each stat with. Reuses norm_players() (already
+    fetched for Matchup Stats) and pos_metrics_from_sums() (already used for
+    team-position aggregates) — a player is just a group-by of one. Always-
+    current, not week-gated, same as team stats."""
+    stats = norm_players(fetch_csv(PLAYER_STATS_URLS))
+    if stats.empty:
+        raise SystemExit(f"no {SEASON} player stats available yet")
+
+    games_played = stats.groupby(["name", "pos"]).size().to_dict()
+    sums = stats.groupby(["name", "pos"])[RAW_COLS].sum(numeric_only=True)
+    # most recent team on record, in case of a mid-season trade
+    latest_team = (stats.sort_values("week")
+                    .groupby(["name", "pos"])["team"].last().to_dict())
+
+    players_out = {p: [] for p in POSITIONS}
+    for (name, pos), gp in games_played.items():
+        s = sums.loc[(name, pos)].to_dict()
+        metrics = pos_metrics_from_sums(pos, s, gp)
+        players_out[pos].append({
+            "name": name, "team": latest_team.get((name, pos), ""),
+            "games": gp, "m": {k: round(v, 2) for k, v in metrics.items()},
+        })
+    for p in POSITIONS:
+        players_out[p].sort(key=lambda r: r["games"], reverse=True)
+
+    labels = {}
+    for pos, metrics in POS_METRICS.items():
+        by_group = {}
+        for k, (lbl, dec, hb, grp) in metrics.items():
+            by_group.setdefault(grp, {})[k] = {"l": lbl, "inv": not hb}
+        labels[pos] = by_group
+
+    payload = {
+        "season": SEASON,
+        "data_horizon": f"through {max(games_played.values())} games played",
+        "labels": labels,
+        "players": players_out,
+    }
+    os.makedirs("players", exist_ok=True)
+    path = "players/latest.json"
+    with open(path, "w") as f:
+        json.dump(payload, f)
+    total = sum(len(v) for v in players_out.values())
+    print(f"Wrote {path} — {total} players across {len(POSITIONS)} positions, "
+          f"{os.path.getsize(path) / 1024:.0f} KB")
 
 
 def build_team_stats():
@@ -1060,14 +1239,15 @@ def build_team_stats():
 
     games_played = df.groupby("team").size().to_dict()
     all_cols = [c for section, grp in TEAM_STATS_GROUPS.items()
-                for sub, cols in grp.items() if sub != DOWN_DIST_SUBGROUP_NAME
+                for sub, cols in grp.items() if sub not in CUSTOM_SUBGROUPS
                 for c in cols]
     for c in all_cols:
         if c not in df.columns:
             df[c] = 0
     sums = df.groupby("team")[all_cols].sum(numeric_only=True)
     means = df.groupby("team")[all_cols].mean(numeric_only=True)
-    down_dist = compute_down_distance(games_played)
+    pbp_stats = compute_pbp_stats(games_played)
+    pass_run_def = compute_pass_run_defense(df, games_played, pbp_stats)
 
     teams_out = {}
     for t in sorted(games_played.keys()):
@@ -1076,8 +1256,11 @@ def build_team_stats():
         for section, subgroups in TEAM_STATS_GROUPS.items():
             entry[section] = {}
             for sub, cols in subgroups.items():
+                if sub in ("Pass Defense", "Run Defense"):
+                    entry[section][sub] = pass_run_def.get(t, {}).get(sub, {})
+                    continue
                 if sub == DOWN_DIST_SUBGROUP_NAME:
-                    entry[section][sub] = down_dist.get(t, {}).get(section, {})
+                    entry[section][sub] = pbp_stats.get(t, {}).get(section, {}).get(sub, {})
                     continue
                 entry[section][sub] = {}
                 for col, (_label, dec, is_rate) in cols.items():
@@ -1213,3 +1396,9 @@ if __name__ == "__main__":
         build_team_stats()
     except SystemExit as e:
         print(f"  team stats: skipped — {e}")
+
+    # 4. Player leaderboards: always-current, for Stats Hub.
+    try:
+        build_player_stats()
+    except SystemExit as e:
+        print(f"  player stats: skipped — {e}")

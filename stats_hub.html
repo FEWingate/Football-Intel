@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Stats Hub — Football Intel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/fi-styles.css">
+<style>
+/* page-specific: leaderboard table w/ sticky team column + sortable headers */
+.hub-controls{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:2px}
+.view-switch{margin-bottom:14px}
+.wk-select{
+  background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);
+  color:var(--text);font-family:var(--font-mono);font-size:11px;padding:6px 10px;cursor:pointer;
+}
+.lead-wrap{
+  overflow:auto;max-height:calc(100vh - 180px);
+  border:1px solid var(--border);border-radius:var(--radius-lg);margin-top:12px;
+}
+.lead-table{width:100%;border-collapse:separate;border-spacing:0}
+.lead-table thead th{
+  padding:9px 12px;text-align:right;font-family:var(--font-mono);font-size:9px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap;
+  cursor:pointer;user-select:none;border-bottom:1px solid var(--border);
+  position:sticky;top:0;background:var(--surface2);z-index:3;
+}
+.lead-table thead th:hover{color:var(--text)}
+.lead-table thead th.sorted{color:var(--primary)}
+.lead-table thead th.team-col{text-align:left;left:0;z-index:4}
+.lead-table td{padding:8px 12px;font-size:12px;text-align:right;border-bottom:1px solid var(--hairline);white-space:nowrap}
+.lead-table tbody tr:last-child td{border-bottom:0}
+.lead-table tbody tr:hover td{background:var(--surface2)}
+.lead-table td.team-col{
+  text-align:left;position:sticky;left:0;background:var(--surface);z-index:1;
+  display:flex;align-items:center;gap:8px;font-size:12.5px;
+}
+.lead-table tbody tr:hover td.team-col{background:var(--surface2)}
+.rank-num{font-family:var(--font-mono);font-size:10px;color:var(--text-dim);width:20px;display:inline-block}
+.cell-val{font-family:var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text-mid);font-size:12px}
+@media(max-width:640px){
+  .lead-table td, .lead-table thead th{padding:7px 9px}
+}
+</style>
+</head>
+<body>
+<script src="js/fi-shell.js"></script>
+<script>
+const main = fiShell({ page:'stats', pageLabel:'Stats Hub', status:'loading' });
+
+const POSITIONS = ['QB','RB','WR','TE'];
+let WEEKS = {};       // week number -> full matchup json
+let weekList = [];    // sorted available week numbers
+let currentWeek = null, currentPos = 'QB', sortKey = null, sortDir = 'desc';
+
+let TEAMSTATS = null;
+let offSubgroup = null, offSortKey = null, offSortDir = 'desc';
+
+let PLAYERSTATS = null;
+let playerPos = 'QB', playerCat = null, playerSortKey = null, playerSortDir = 'desc';
+
+let currentView = 'dvp'; // 'dvp' | 'team_off' | 'players'
+
+main.innerHTML = `
+  <div class="tabs view-switch" id="viewSwitch" role="tablist">
+    <button role="tab" data-view="dvp" aria-selected="true">Defense vs Position</button>
+    <button role="tab" data-view="team_off" aria-selected="false">Team Offense</button>
+    <button role="tab" data-view="players" aria-selected="false">Players</button>
+  </div>
+  <div class="bar">
+    <span class="lbl" id="sectionLbl">Defense vs Position</span>
+    <div class="legend" id="sectionLegend"><span>Cumulative through the selected week · click any column to sort</span></div>
+  </div>
+  <div class="hub-controls">
+    <div class="tabs" id="innerTabs" role="tablist"></div>
+    <select class="wk-select" id="weekSel"></select>
+  </div>
+  <div class="tabs" id="catTabs" role="tablist" style="display:none"></div>
+  <div class="lead-wrap"><table class="lead-table" id="leadTable"></table></div>`;
+
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2,"0");
+
+$("viewSwitch").querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+  $("viewSwitch").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+  currentView = b.dataset.view;
+  switchView();
+}));
+
+async function load(){
+  fiStatus("Loading","loading");
+  for(let w=1; w<=22; w++){
+    try{
+      const res = await fetch(`matchup/wk${pad(w)}.json`);
+      if(!res.ok) continue;
+      WEEKS[w] = await res.json();
+      weekList.push(w);
+    }catch(e){ /* week not built yet */ }
+  }
+  weekList.sort((a,b)=>a-b);
+
+  try{
+    const res = await fetch(`teamstats/latest.json`);
+    if(res.ok) TEAMSTATS = await res.json();
+  }catch(e){ /* team stats not built yet */ }
+
+  try{
+    const res = await fetch(`players/latest.json`);
+    if(res.ok) PLAYERSTATS = await res.json();
+  }catch(e){ /* player stats not built yet */ }
+
+  if(!weekList.length && !TEAMSTATS && !PLAYERSTATS){
+    fiStatus("No data","error"); fiUpdated("");
+    $("leadTable").outerHTML = `<div class="empty">
+      No stats data found.<br>
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+
+  fiStatus("Ready");
+  switchView();
+}
+
+function switchView(){
+  if(currentView === 'dvp'){
+    $("sectionLbl").textContent = 'Defense vs Position';
+    $("sectionLegend").innerHTML = '<span>Cumulative through the selected week · click any column to sort</span>';
+    $("weekSel").style.display = '';
+    $("catTabs").style.display = 'none';
+    setupDvpControls();
+  } else if(currentView === 'team_off'){
+    $("sectionLbl").textContent = 'Team Offense';
+    $("sectionLegend").innerHTML = '<span>Season totals so far, per team · click any column to sort</span>';
+    $("weekSel").style.display = 'none';
+    $("catTabs").style.display = 'none';
+    setupTeamOffenseControls();
+  } else {
+    $("sectionLbl").textContent = 'Players';
+    $("sectionLegend").innerHTML = '<span>Season totals so far, individual players · click any column to sort</span>';
+    $("weekSel").style.display = 'none';
+    $("catTabs").style.display = '';
+    setupPlayersControls();
+  }
+}
+
+/* ── DEFENSE VS POSITION ─────────────────────────────────────────── */
+function setupDvpControls(){
+  if(!weekList.length){
+    $("innerTabs").innerHTML = '';
+    $("leadTable").outerHTML = `<div class="empty" id="leadTable">
+      No matchup data found.<br>
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+  const latestWeek = weekList[weekList.length-1];
+  if(!currentWeek) currentWeek = latestWeek;
+
+  const opts = [`<option value="${latestWeek}"${currentWeek===latestWeek?' selected':''}>Season</option>`]
+    .concat(weekList.slice().reverse().map(w =>
+      `<option value="${w}"${w===currentWeek?' selected':''}>Week ${w}</option>`));
+  $("weekSel").innerHTML = opts.join('');
+  $("weekSel").onchange = e => {
+    currentWeek = Number(e.target.value);
+    const label = currentWeek === latestWeek ? 'season' : `week ${currentWeek}`;
+    fiUpdated(`${label} · ${WEEKS[currentWeek].data_horizon}`);
+    renderDvpTable();
+  };
+
+  $("innerTabs").innerHTML = POSITIONS.map((p,i) =>
+    `<button role="tab" aria-selected="${p===currentPos}" data-pos="${p}">${p}</button>`).join('');
+  $("innerTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    $("innerTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    currentPos = b.dataset.pos;
+    sortKey = null; sortDir = 'desc';
+    renderDvpTable();
+  });
+
+  const label = currentWeek === latestWeek ? 'season' : `week ${currentWeek}`;
+  fiUpdated(`${label} · ${WEEKS[currentWeek].data_horizon}`);
+  renderDvpTable();
+}
+
+function fmtVal(v){
+  if(v === null || v === undefined) return '—';
+  return Number.isInteger(v) ? String(v) : v.toFixed(1);
+}
+
+function renderDvpTable(){
+  const wk = WEEKS[currentWeek];
+  const labels = wk.labels.pos[currentPos];
+  const keys = Object.keys(labels);
+  if(!sortKey) sortKey = keys[0];
+
+  const rows = Object.entries(wk.teams)
+    .filter(([,t]) => t.def && t.def[currentPos])
+    .map(([abbr,t]) => ({ abbr, def: t.def[currentPos] }));
+
+  rows.sort((a,b) => {
+    const av = a.def[sortKey]?.v ?? -Infinity, bv = b.def[sortKey]?.v ?? -Infinity;
+    return sortDir === 'desc' ? bv - av : av - bv;
+  });
+
+  let head = `<thead><tr>
+    <th class="team-col">Team</th>
+    ${keys.map(k => `<th data-key="${k}" class="${k===sortKey?'sorted':''}">
+      ${esc(labels[k].l)}${k===sortKey ? (sortDir==='desc'?' ▾':' ▴') : ''}
+    </th>`).join('')}
+  </tr></thead>`;
+
+  let body = '<tbody>' + rows.map((row,i) => {
+    const cells = keys.map(k => {
+      const cell = row.def[k];
+      if(!cell) return `<td>—</td>`;
+      return `<td><span class="cell-val">${fmtVal(cell.v)}</span><span class="rk ${rkClass(cell.r)}">#${cell.r}</span></td>`;
+    }).join('');
+    return `<tr>
+      <td class="team-col"><span class="rank-num">${i+1}</span>${fiLogoHTML(row.abbr,22)}${esc(FI_TEAM_NAME[row.abbr]||row.abbr)}</td>
+      ${cells}
+    </tr>`;
+  }).join('') + '</tbody>';
+
+  $("leadTable").innerHTML = head + body;
+
+  $("leadTable").querySelectorAll("thead th[data-key]").forEach(th => {
+    th.onclick = () => {
+      const k = th.dataset.key;
+      if(k === sortKey) sortDir = sortDir === 'desc' ? 'asc' : 'desc';
+      else { sortKey = k; sortDir = 'desc'; }
+      renderDvpTable();
+    };
+  });
+}
+
+/* ── TEAM OFFENSE ─────────────────────────────────────────────────── */
+function setupTeamOffenseControls(){
+  if(!TEAMSTATS){
+    $("innerTabs").innerHTML = '';
+    $("leadTable").outerHTML = `<div class="empty" id="leadTable">
+      No team-stats data found.<br>
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+  const subgroups = Object.keys(TEAMSTATS.labels.offense);
+  if(!offSubgroup) offSubgroup = subgroups[0];
+
+  $("innerTabs").innerHTML = subgroups.map(s =>
+    `<button role="tab" aria-selected="${s===offSubgroup}" data-sub="${esc(s)}">${esc(s)}</button>`).join('');
+  $("innerTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    $("innerTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    offSubgroup = b.dataset.sub;
+    offSortKey = null; offSortDir = 'desc';
+    renderTeamOffenseTable();
+  });
+
+  fiUpdated(`season · ${TEAMSTATS.data_horizon}`);
+  renderTeamOffenseTable();
+}
+
+function offenseColumns(){
+  const labels = TEAMSTATS.labels.offense[offSubgroup];
+  const sampleTeam = Object.values(TEAMSTATS.teams)[0];
+  const cols = [];
+  for(const [key, label] of Object.entries(labels)){
+    const isRate = sampleTeam.offense[offSubgroup][key].tot === null;
+    if(isRate){
+      cols.push({ key, field:'avg', sortKey:`${key}:avg`, label, pct:true });
+    } else {
+      cols.push({ key, field:'tot', sortKey:`${key}:tot`, label });
+      cols.push({ key, field:'avg', sortKey:`${key}:avg`, label: label + ' / G' });
+    }
+  }
+  return cols;
+}
+
+function renderTeamOffenseTable(){
+  const cols = offenseColumns();
+  if(!offSortKey) offSortKey = cols[0].sortKey;
+
+  const valueFor = (abbr, sk) => {
+    const [key, field] = sk.split(':');
+    return TEAMSTATS.teams[abbr].offense[offSubgroup][key][field];
+  };
+
+  const rows = Object.keys(TEAMSTATS.teams).map(abbr => ({ abbr }));
+  rows.sort((a,b) => {
+    const av = valueFor(a.abbr, offSortKey) ?? -Infinity, bv = valueFor(b.abbr, offSortKey) ?? -Infinity;
+    return offSortDir === 'desc' ? bv - av : av - bv;
+  });
+
+  let head = `<thead><tr>
+    <th class="team-col">Team</th>
+    ${cols.map(c => `<th data-key="${c.sortKey}" class="${c.sortKey===offSortKey?'sorted':''}">
+      ${esc(c.label)}${c.sortKey===offSortKey ? (offSortDir==='desc'?' ▾':' ▴') : ''}
+    </th>`).join('')}
+  </tr></thead>`;
+
+  let body = '<tbody>' + rows.map((row,i) => {
+    const cells = cols.map(c => {
+      const v = valueFor(row.abbr, c.sortKey);
+      const text = c.pct ? (v==null?'—':`${v.toFixed(1)}%`) : fmtVal(v);
+      return `<td><span class="cell-val">${text}</span></td>`;
+    }).join('');
+    return `<tr>
+      <td class="team-col"><span class="rank-num">${i+1}</span>${fiLogoHTML(row.abbr,22)}${esc(FI_TEAM_NAME[row.abbr]||row.abbr)}</td>
+      ${cells}
+    </tr>`;
+  }).join('') + '</tbody>';
+
+  $("leadTable").innerHTML = head + body;
+
+  $("leadTable").querySelectorAll("thead th[data-key]").forEach(th => {
+    th.onclick = () => {
+      const k = th.dataset.key;
+      if(k === offSortKey) offSortDir = offSortDir === 'desc' ? 'asc' : 'desc';
+      else { offSortKey = k; offSortDir = 'desc'; }
+      renderTeamOffenseTable();
+    };
+  });
+}
+
+/* ── PLAYERS ──────────────────────────────────────────────────────── */
+function setupPlayersControls(){
+  if(!PLAYERSTATS){
+    $("innerTabs").innerHTML = ''; $("catTabs").innerHTML = '';
+    $("leadTable").outerHTML = `<div class="empty" id="leadTable">
+      No player-stats data found.<br>
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+  const positions = Object.keys(PLAYERSTATS.labels);
+
+  $("innerTabs").innerHTML = positions.map(p =>
+    `<button role="tab" aria-selected="${p===playerPos}" data-pos="${esc(p)}">${esc(p)}</button>`).join('');
+  $("innerTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    $("innerTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    playerPos = b.dataset.pos;
+    playerCat = null; playerSortKey = null; playerSortDir = 'desc';
+    renderPlayerCatTabs();
+  });
+
+  fiUpdated(`season · ${PLAYERSTATS.data_horizon}`);
+  renderPlayerCatTabs();
+}
+
+function renderPlayerCatTabs(){
+  const cats = Object.keys(PLAYERSTATS.labels[playerPos]);
+  if(!playerCat || !cats.includes(playerCat)) playerCat = cats[0];
+
+  $("catTabs").innerHTML = cats.map(c =>
+    `<button role="tab" aria-selected="${c===playerCat}" data-cat="${esc(c)}">${esc(c)}</button>`).join('');
+  $("catTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    $("catTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    playerCat = b.dataset.cat;
+    playerSortKey = null; playerSortDir = 'desc';
+    renderPlayersTable();
+  });
+
+  renderPlayersTable();
+}
+
+function renderPlayersTable(){
+  const labels = PLAYERSTATS.labels[playerPos][playerCat];
+  const keys = Object.keys(labels);
+  if(!playerSortKey || !keys.includes(playerSortKey)) playerSortKey = keys[0];
+
+  const rows = PLAYERSTATS.players[playerPos].filter(p => keys.every(k => k in p.m));
+  rows.sort((a,b) => {
+    const av = a.m[playerSortKey] ?? -Infinity, bv = b.m[playerSortKey] ?? -Infinity;
+    return playerSortDir === 'desc' ? bv - av : av - bv;
+  });
+
+  let head = `<thead><tr>
+    <th class="team-col">Player</th>
+    <th>GP</th>
+    ${keys.map(k => `<th data-key="${k}" class="${k===playerSortKey?'sorted':''}">
+      ${esc(labels[k].l)}${k===playerSortKey ? (playerSortDir==='desc'?' ▾':' ▴') : ''}
+    </th>`).join('')}
+  </tr></thead>`;
+
+  let body = '<tbody>' + rows.map((row,i) => {
+    const cells = keys.map(k => `<td><span class="cell-val">${fmtVal(row.m[k])}</span></td>`).join('');
+    return `<tr>
+      <td class="team-col"><span class="rank-num">${i+1}</span>${fiLogoHTML(row.team,20)}${esc(row.name)}</td>
+      <td><span class="cell-val">${row.games}</span></td>
+      ${cells}
+    </tr>`;
+  }).join('') + '</tbody>';
+
+  $("leadTable").innerHTML = head + body;
+
+  $("leadTable").querySelectorAll("thead th[data-key]").forEach(th => {
+    th.onclick = () => {
+      const k = th.dataset.key;
+      if(k === playerSortKey) playerSortDir = playerSortDir === 'desc' ? 'asc' : 'desc';
+      else { playerSortKey = k; playerSortDir = 'desc'; }
+      renderPlayersTable();
+    };
+  });
+}
+
+load();
+</script>
+</body>
+</html>

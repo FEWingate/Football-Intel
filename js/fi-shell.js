@@ -16,7 +16,7 @@ const NAV = [
   { key: 'props',    label: 'Prop Center',  ico: '🎯' },
   { key: 'injuries', label: 'Injuries',     ico: '🩹' },
   { key: 'standings',label: 'Standings',    ico: '🏆' },
-  { key: 'stats',    label: 'Stats Hub',    ico: '📈' },
+  { key: 'stats',    label: 'Stats Hub',    ico: '📈', href: 'stats_hub.html' },
   { key: 'reports',  label: 'Intel Reports',ico: '📄' },
   { key: 'coeus',    label: 'Coeus',        ico: '◉' },
 ];
