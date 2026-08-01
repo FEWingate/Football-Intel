@@ -16,36 +16,37 @@
 .dayhead .date{font-family:var(--font-mono);font-size:10px;color:var(--text-dim);letter-spacing:.06em}
 .dayhead .rule{flex:1;height:1px;background:var(--border)}
 
+.card-grid{grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
 .gcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
-  padding:14px 16px 15px;display:block;text-decoration:none;color:inherit;
+  padding:20px 22px 20px;display:block;text-decoration:none;color:inherit;
   transition:border-color .18s,transform .15s}
 .gcard:hover{border-color:var(--border2);transform:translateY(-1px)}
 .gcard.hot{border-color:rgba(163,230,53,.45)}
 .gcard-top{display:flex;align-items:flex-start;gap:14px}
 .teams-col{flex:1;min-width:0}
-.trow{display:flex;align-items:center;gap:9px;padding:3px 0}
-.tabbr{font-family:var(--font-display);font-weight:800;font-size:19px;letter-spacing:-.02em;
-  min-width:52px}
+.trow{display:flex;align-items:center;gap:11px;padding:6px 0}
+.tabbr{font-family:var(--font-display);font-weight:800;font-size:23px;letter-spacing:-.02em;
+  min-width:60px}
 .trow.win .tabbr{color:var(--primary)}
-.trec{font-family:var(--font-mono);font-size:10.5px;color:var(--text-dim)}
-.tform{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.12em}
+.trec{font-family:var(--font-mono);font-size:11.5px;color:var(--text-dim)}
+.tform{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.12em}
 .tform .W{color:var(--accent-green)} .tform .L{color:var(--accent-red)} .tform .T{color:var(--text-dim)}
-.tscore{margin-left:auto;font-family:var(--font-mono);font-size:19px;font-weight:500;
+.tscore{margin-left:auto;font-family:var(--font-mono);font-size:23px;font-weight:500;
   font-variant-numeric:tabular-nums;color:var(--text-mid)}
 .trow.win .tscore{color:var(--text);font-weight:700}
-.kick{text-align:right;font-family:var(--font-mono);font-size:11px;color:var(--text-mid);
+.kick{text-align:right;font-family:var(--font-mono);font-size:12px;color:var(--text-mid);
   white-space:nowrap;line-height:1.7}
 .kick .final{color:var(--accent-green);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
-.odds{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px;padding-top:11px;
+.odds{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:14px;
   border-top:1px solid var(--hairline)}
-.odd{font-family:var(--font-mono);font-size:10px;letter-spacing:.05em;padding:4px 8px;
+.odd{font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;padding:5px 10px;
   border-radius:var(--radius-sm);border:1px solid var(--border);color:var(--text-mid)}
 .odd b{color:var(--text);font-weight:600}
 .odd.thr{border-color:rgba(163,230,53,.4);color:var(--primary);background:rgba(163,230,53,.06)}
 .odd.thr b{color:var(--primary)}
-.meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:9px;font-family:var(--font-mono);
-  font-size:9.5px;color:var(--text-dim);letter-spacing:.04em}
-.links{display:flex;gap:8px;margin-top:11px}
+.meta{display:flex;gap:13px;flex-wrap:wrap;margin-top:12px;font-family:var(--font-mono);
+  font-size:10.5px;color:var(--text-dim);letter-spacing:.04em}
+.links{display:flex;gap:8px;margin-top:14px}
 .links a{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
   color:var(--text-dim);text-decoration:none;border:1px solid var(--border);
   border-radius:var(--radius-sm);padding:4px 9px}
@@ -54,6 +55,9 @@
   border-radius:var(--radius-sm);padding:4px 9px}
 .gcard:hover .links span{color:var(--primary);border-color:rgba(163,230,53,.4)}
 button.gcard{font:inherit;text-align:left;cursor:pointer}
+.modal-header{text-align:center}
+.modal-header .modal-title{justify-content:center}
+.modal-header .modal-subtitle{text-align:center}
 .boxtable td{font-size:13.5px}
 .boxtable .boxlbl{text-align:center;font-family:var(--font-mono);font-size:10px;
   letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap}
@@ -77,7 +81,9 @@ button.gcard{font:inherit;text-align:left;cursor:pointer}
 .mkt{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
 .na{font-family:var(--font-mono);font-size:11px;color:var(--text-dim)}
 @media(max-width:520px){
-  .kick{font-size:10px}.tabbr{font-size:17px;min-width:44px}
+  .kick{font-size:11px}.tabbr{font-size:20px;min-width:52px}
+  .gcard{padding:16px 16px 17px}
+  .card-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -191,14 +197,14 @@ function render(){
         <div class="gcard-top">
           <div class="teams-col">
             <div class="trow${aw ? ' win' : ''}">
-              ${fiLogoHTML(g.away, 26)}
+              ${fiLogoHTML(g.away, 32)}
               <span class="tabbr">${g.away}</span>
               <span class="trec">${esc(g.away_record)}</span>
               <span class="tform">${formHTML(g.away_form)}</span>
               ${g.played ? `<span class="tscore">${g.away_score}</span>` : ''}
             </div>
             <div class="trow${hw ? ' win' : ''}">
-              ${fiLogoHTML(g.home, 26)}
+              ${fiLogoHTML(g.home, 32)}
               <span class="tabbr">${g.home}</span>
               <span class="trec">${esc(g.home_record)}</span>
               <span class="tform">${formHTML(g.home_form)}</span>

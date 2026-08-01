@@ -6,10 +6,10 @@
    ═══════════════════════════════════════════════════════════════ */
 
 const NAV = [
+  { key: 'games',    label: 'Games',        ico: '📅', href: 'games.html' },
   { key: 'threats',  label: 'Threats',      ico: '⚡', href: 'threats.html' },
   { key: 'matchup',  label: 'Matchup Stats',ico: '⚔️', href: 'matchup_stats.html' },
   { key: 'context',  label: 'Contextual',   ico: '📊', href: 'contextual_stats.html' },
-  { key: 'games',    label: 'Games',        ico: '📅', href: 'games.html' },
   { key: 'teams',    label: 'Teams',        ico: '🛡️' },
   { key: 'players',  label: 'Players',      ico: '👤' },
   { key: 'dfs',      label: 'DFS Center',   ico: '💰' },

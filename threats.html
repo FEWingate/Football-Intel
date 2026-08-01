@@ -30,7 +30,8 @@
   background:color-mix(in srgb, var(--tc) 9%, transparent)}
 .tbadge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--tc)}
 
-.gm-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(420px,1fr))}
+.gm-grid{display:grid;gap:14px;align-items:start;
+  grid-template-columns:repeat(auto-fill,minmax(420px,1fr))}
 @media(max-width:900px){.gm-grid{grid-template-columns:1fr}}
 .gm{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
 .gm.live{border-color:color-mix(in srgb,var(--accent-red) 40%,var(--border))}
@@ -45,6 +46,8 @@
 .sides{display:grid;grid-template-columns:1fr 1fr}
 @media(max-width:560px){.sides{grid-template-columns:1fr}}
 .side{padding:13px 15px 15px}
+.gm.empty-game .sides{display:none}
+.gm.empty-game .gm-head{border-bottom:0}
 .side + .side{border-left:1px solid var(--border)}
 @media(max-width:560px){.side + .side{border-left:0;border-top:1px solid var(--border)}}
 .side-h{font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;
@@ -62,11 +65,16 @@
 .thr-snap{font-family:var(--font-mono);font-size:9px;color:var(--text-dim);margin-left:auto}
 .thr-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
 .conv{margin-top:8px;display:flex;flex-direction:column;gap:4px}
-.conv-row{font-family:var(--font-mono);font-size:10.5px;color:var(--text-mid);
-  display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.conv-row .cat{color:var(--text)}
+.conv-row{padding:5px 0 6px}
+.conv-cat{font-family:var(--font-mono);font-size:10.5px;color:var(--text);
+  letter-spacing:.03em;display:flex;align-items:center;gap:6px}
+.conv-nums{display:flex;align-items:baseline;gap:9px;padding-left:13px;margin-top:3px;
+  font-family:var(--font-mono);font-size:11px;color:var(--text-mid);white-space:nowrap}
+.side-val{display:inline-flex;align-items:baseline;gap:5px}
+.side-val b{color:var(--text);font-weight:500;font-variant-numeric:tabular-nums}
+.side-val em{font-style:normal;font-size:9px;color:var(--text-dim);letter-spacing:.05em}
 .conv-row .rk{font-size:9.5px}
-.conv-row .arrow{color:var(--text-dim)}
+.conv-row .arrow{color:var(--text-dim);font-size:9.5px}
 .conv-row .mark{width:7px;display:inline-block;color:var(--primary);font-size:7px;line-height:1}
 .conv-row.support{opacity:.5}
 .support-note{font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;
@@ -147,13 +155,16 @@ function threatHTML(s){
   const row = (c, converged) => {
     const x = s.cats[c];
     return `<div class="conv-row${converged ? '' : ' support'}">
-      ${converged ? '<span class="mark">\u25CF</span>' : '<span class="mark"></span>'}
-      <span class="cat">${esc(label(s.pos, c))}</span>
-      <span class="rk ${rkClass(x.r)}">#${x.r}</span>
-      <span>${x.v}</span>
-      <span class="arrow">vs</span>
-      <span class="rk ${rkClass(x.dr)}">D #${x.dr}</span>
-      <span>${x.dv} allowed</span>
+      <div class="conv-cat">
+        ${converged ? '<span class="mark">\u25CF</span>' : '<span class="mark"></span>'}
+        ${esc(label(s.pos, c))}
+      </div>
+      <div class="conv-nums">
+        <span class="side-val"><b>${x.v}</b><span class="rk ${rkClass(x.r)}">#${x.r}</span></span>
+        <span class="arrow">vs</span>
+        <span class="side-val"><b>${x.dv}</b><span class="rk ${rkClass(x.dr)}">#${x.dr}</span>
+          <em>allowed</em></span>
+      </div>
     </div>`;
   };
   const support = Object.keys(s.cats).filter(c =>
@@ -199,7 +210,7 @@ function render(){
     }
     if (n) gamesWith++;
     const hot = Object.keys(DATA.teams).length && n >= 3;
-    return `<section class="gm${hot ? ' live' : ''}">
+    return `<section class="gm${hot ? ' live' : ''}${n ? '' : ' empty-game'}">
       <div class="gm-head">
         <span class="gm-title">${fiLogoHTML(g.away,24)}${g.away}<em>@</em>${fiLogoHTML(g.home,24)}${g.home}</span>
         <span class="gm-recs">${esc(g.away_record)} · ${esc(g.home_record)}</span>
