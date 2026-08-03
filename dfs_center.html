@@ -70,6 +70,50 @@
 .lead-table td.name-col{text-align:left;position:sticky;left:0;background:var(--surface);z-index:1}
 .lead-table tbody tr:hover td.name-col{background:var(--surface2)}
 .cell-val{font-family:var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text-mid);font-size:12px}
+.stack-builder-layout{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start}
+#stackListsCol{min-width:0}
+#builderCol{
+  position:sticky;top:70px;border-left:1px solid var(--border);padding-left:20px;
+}
+.builder-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.builder-title{font-family:var(--font-display);font-weight:700;font-size:15px}
+.builder-sub{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);margin-bottom:10px}
+.builder-sub.over{color:var(--accent-red)}
+.builder-slot{
+  display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);margin-bottom:5px;font-size:12px;min-height:34px;
+}
+.builder-slot.filled{background:var(--surface2);cursor:pointer}
+.builder-slot.filled:hover{border-color:var(--accent-red)}
+.builder-slot.empty{color:var(--text-dim);border-style:dashed}
+.builder-slot .bs-pos{
+  font-family:var(--font-mono);font-size:9px;font-weight:700;color:var(--text-dim);width:32px;flex:none;
+}
+.builder-slot .bs-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.builder-slot .bs-salary{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);flex:none}
+.builder-slot.selected-stack{border-color:var(--primary)}
+.excluded-chips{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 4px}
+.excluded-chip{
+  display:flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:9.5px;
+  color:var(--accent-red);background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.3);
+  border-radius:3px;padding:2px 6px;cursor:pointer;
+}
+.excluded-chip:hover{background:rgba(244,63,94,.16)}
+.excluded-label{font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim)}
+.play-card.stack-selected{border-color:var(--primary);background:var(--surface2)}
+.search-result{
+  display:flex;align-items:center;gap:8px;padding:6px 4px;font-size:12px;cursor:pointer;
+  border-bottom:1px solid var(--hairline);
+}
+.search-result:hover{background:var(--surface2)}
+.search-result.disabled{opacity:.35;cursor:not-allowed}
+.search-result .sr-pos{font-family:var(--font-mono);font-size:9px;color:var(--text-dim);width:26px;flex:none}
+.search-result .sr-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.search-result .sr-salary{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);flex:none}
+@media(max-width:900px){
+  .stack-builder-layout{grid-template-columns:1fr}
+  #builderCol{position:static;border-left:none;border-top:1px solid var(--border);padding-left:0;padding-top:16px;margin-top:8px}
+}
 .lineup-controls{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px}
 .gen-btn{
   background:var(--primary);color:var(--bg);border:none;border-radius:var(--radius);
@@ -112,6 +156,14 @@ let slateSort = 'value', slateDir = 'desc';
 let searchTerm = '';
 let dfsView = 'best'; // 'best' | 'lineups' | 'slate'
 let stackMode = 'none'; // 'none' | 'stack' | 'double' | 'onslaught'
+let scoringMode = 'composite'; // 'composite' | 'matchup_history' | 'ceiling'
+let generatorCount = 5; // 5 | 10 | 15 | 25
+let bestView = 'players'; // 'players' | 'stacks'
+let stackBasis = 'recommended'; // 'recommended' | 'matchup' | 'contextual'
+const BUILDER_SLOT_LABELS = ['QB','RB','RB','WR','WR','WR','TE','FLEX','DST'];
+let builderSlots = BUILDER_SLOT_LABELS.map(label => ({ label, player: null }));
+let selectedStackSig = null;
+let builderSearchTerm = '';
 let loadedFileName = null;
 const STORAGE_KEY = 'fi_dfs_slate_v1';
 
@@ -143,12 +195,71 @@ main.innerHTML = `
 
 const $ = id => document.getElementById(id);
 
+let PLAYERSTATS = null;
+let NAME_INDEX = { exact: {}, lastname: {} };
+let unmatchedRelevant = [];
+
+function normalizeName(name){
+  return String(name).toLowerCase().trim()
+    .replace(/[.']/g, '')
+    .replace(/\b(jr|sr|ii|iii|iv|v)\b\.?\s*$/, '')
+    .trim().replace(/\s+/g, ' ');
+}
+
+function buildNameIndex(playerStats){
+  const exact = {}, lastname = {};
+  ['QB','RB','WR','TE'].forEach(pos => {
+    (playerStats.players[pos] || []).forEach(p => {
+      const norm = normalizeName(p.name);
+      exact[norm + '|' + pos] = p;
+      const last = norm.split(' ').pop();
+      const key = last + '|' + pos;
+      (lastname[key] = lastname[key] || []).push(p);
+    });
+  });
+  return { exact, lastname };
+}
+
+function firstNamesSimilar(normA, normB){
+  const a = normA.split(' ')[0], b = normB.split(' ')[0];
+  if(!a || !b) return false;
+  const len = Math.min(3, a.length, b.length);
+  return a.slice(0, len) === b.slice(0, len);
+}
+
+function matchSiteData(dkPlayer){
+  const norm = normalizeName(dkPlayer.name);
+  const exactHit = NAME_INDEX.exact[norm + '|' + dkPlayer.pos];
+  if(exactHit) return exactHit;
+  const last = norm.split(' ').pop();
+  const candidates = NAME_INDEX.lastname[last + '|' + dkPlayer.pos] || [];
+  if(candidates.length !== 1) return null;
+  // Last name alone isn't safe enough — "Robert Henry Jr." and "Derrick
+  // Henry" both being the only "Henry" RB would otherwise wrongly match a
+  // deep-bench player to a superstar's stats. Require the first names to
+  // at least share a 3-character prefix (also handles nicknames like
+  // Kenny/Kenneth) before accepting the fallback.
+  const cand = candidates[0];
+  return firstNamesSimilar(norm, normalizeName(cand.name)) ? cand : null;
+}
+
+const TIER_LABEL = { top: 'Top 10', mid: 'Middle 12', bot: 'Bottom 10' };
+function tierOf(rank){
+  if(rank <= 10) return 'top';
+  if(rank <= 22) return 'mid';
+  return 'bot';
+}
+
 async function load(){
   fiStatus("Loading","loading");
   try{
     const res = await fetch(`matchup/wk18.json`);
     if(res.ok) MATCHUP = await res.json();
   }catch(e){ /* opponent grading unavailable without it */ }
+  try{
+    const res = await fetch(`players/latest.json`);
+    if(res.ok){ PLAYERSTATS = await res.json(); NAME_INDEX = buildNameIndex(PLAYERSTATS); }
+  }catch(e){ /* matchup history / ceiling modes unavailable without it */ }
 
   const saved = loadSavedSlate();
   if(saved && saved.raw && saved.raw.length){
@@ -192,15 +303,57 @@ function renderShell(){
     </div>
 
     <div id="viewBest" style="display:${dfsView==='best'?'':'none'}">
-      <div class="tabs" id="bestPosTabs" role="tablist"></div>
-      <div class="card-grid" id="bestCards"></div>
+      <div class="tabs" id="bestViewTabs" role="tablist">
+        <button role="tab" data-view="players" aria-selected="true">Players</button>
+        <button role="tab" data-view="stacks" aria-selected="false">Stacks</button>
+      </div>
+      <div id="bestPlayersPanel">
+        <div class="tabs" id="bestPosTabs" role="tablist"></div>
+        <div class="card-grid" id="bestCards"></div>
+      </div>
+      <div id="bestStacksPanel" style="display:none">
+        <div class="tabs" id="stackBasisTabs" role="tablist"></div>
+        <div class="lineup-note" id="stackBasisNote" style="margin-bottom:14px"></div>
+        <div class="stack-builder-layout">
+          <div id="stackListsCol">
+            <div class="sect"><h3>Single stack — QB + 1</h3><span class="rule"></span></div>
+            <div class="card-grid" id="stackSingleCards"></div>
+            <div class="sect" style="margin-top:20px"><h3>Double stack — QB + 2</h3><span class="rule"></span></div>
+            <div class="card-grid" id="stackDoubleCards"></div>
+            <div class="sect" style="margin-top:20px"><h3>Triple stack — QB + 3</h3><span class="rule"></span></div>
+            <div class="card-grid" id="stackTripleCards"></div>
+          </div>
+          <div id="builderCol">
+            <div class="builder-head">
+              <span class="builder-title">Lineup Builder</span>
+              <button class="replace-btn" id="clearBuilderBtn">Clear</button>
+            </div>
+            <div class="builder-sub" id="builderSalary">Select a stack to begin</div>
+            <div id="builderSlots"></div>
+            <div id="builderExcluded"></div>
+            <button class="gen-btn" id="builderGenBtn" style="width:100%;margin-top:10px">Generate rest of the lineup</button>
+            <div class="sect" style="margin-top:18px"><h3>Search players</h3><span class="rule"></span></div>
+            <input class="search-box" id="builderSearchBox" placeholder="Or search by name…" style="width:100%">
+            <div id="builderSearchResults"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div id="viewLineups" style="display:${dfsView==='lineups'?'':'none'}">
+      ${!PLAYERSTATS ? `<div class="caveat"><b>Matchup History and Ceiling modes unavailable</b> —
+        players/latest.json didn't load. Season Composite mode still works fully.</div>` : ''}
+      ${unmatchedRelevant.length ? `<div class="caveat"><b>${unmatchedRelevant.length} player(s)
+        with real production couldn't be matched to site data</b> by name
+        (${unmatchedRelevant.slice(0,6).map(p=>esc(p.name)).join(', ')}${unmatchedRelevant.length>6?'…':''}) —
+        they'll use season-average as a fallback for Matchup History/Ceiling instead of their own history.</div>` : ''}
+      <div class="tabs" id="scoringModeTabs" role="tablist"></div>
       <div class="lineup-controls">
+        <div class="tabs" id="countTabs" role="tablist"></div>
         <button class="gen-btn" id="genBtn">Generate 5 lineups</button>
-        <span class="lineup-note">Ranked by opponent matchup + recent performance only — salary is a hard cap, not a scoring factor</span>
+        <span class="lineup-note" id="scoringModeNote"></span>
       </div>
+      <div class="lineup-note" id="exposureNote" style="margin-bottom:14px"></div>
       <div class="stack-controls">
         <div class="tabs" id="stackModeTabs" role="tablist"></div>
         <label class="bringback-toggle">
@@ -224,10 +377,14 @@ function renderShell(){
     dfsView = b.dataset.view; renderShell();
   });
   buildBestTabs();
+  setupBuilderControls();
+  buildScoringModeTabs();
+  buildCountTabs();
   buildStackModeTabs();
   buildSlateTabs();
   $("searchBox").oninput = e => { searchTerm = e.target.value.toLowerCase(); renderSlate(); };
   renderBestPlays();
+  if(bestView === 'stacks') renderStacks();
   renderSlate();
 }
 
@@ -278,7 +435,11 @@ function computeAll(players){
   players.forEach(p => {
     p.opp = opponentOf(p.team, p.gameInfo);
     p.value = p.salary ? (p.avgPts / (p.salary / 1000)) : 0;
+    p.siteData = (PLAYERSTATS && p.pos !== 'DST') ? matchSiteData(p) : null;
   });
+
+  unmatchedRelevant = players.filter(p =>
+    p.pos !== 'DST' && !p.siteData && p.avgPts >= 5);
 
   for(const pos in byPos){
     const group = byPos[pos];
@@ -286,20 +447,20 @@ function computeAll(players){
     const [vMin, vMax] = range(group.map(p => p.value));
     const [pMin, pMax] = range(group.map(p => p.avgPts));
     const norm = (v, lo, hi) => hi > lo ? ((v - lo) / (hi - lo)) * 100 : 50;
+    const primaryKey = MATCHUP?.labels?.pos?.[pos] ? Object.keys(MATCHUP.labels.pos[pos])[0] : null;
 
     group.forEach(p => {
       p.valueScore = norm(p.value, vMin, vMax);
       p.perfScore = norm(p.avgPts, pMin, pMax);
-      p.oppScore = null; p.oppRankLabel = null;
+      p.oppScore = null; p.oppRankLabel = null; p.oppTier = null;
 
       if(MATCHUP && p.opp && MATCHUP.teams[p.opp]){
         if(pos === 'DST'){
           const r = MATCHUP.teams[p.opp].team_off?.ppg?.r;
-          if(r){ p.oppScore = ((r - 1) / 31) * 100; p.oppRankLabel = `Opp offense #${r}`; }
-        } else if(MATCHUP.labels.pos[pos]){
-          const primaryKey = Object.keys(MATCHUP.labels.pos[pos])[0];
+          if(r){ p.oppScore = ((r - 1) / 31) * 100; p.oppRankLabel = `Opp offense #${r}`; p.oppTier = tierOf(r); }
+        } else if(primaryKey){
           const r = MATCHUP.teams[p.opp].def?.[pos]?.[primaryKey]?.r;
-          if(r){ p.oppScore = ((r - 1) / 31) * 100; p.oppRankLabel = `Def vs ${pos} #${r}`; }
+          if(r){ p.oppScore = ((r - 1) / 31) * 100; p.oppRankLabel = `Def vs ${pos} #${r}`; p.oppTier = tierOf(r); }
         }
       }
 
@@ -307,13 +468,345 @@ function computeAll(players){
       p.composite = hasOpp
         ? 0.4 * p.oppScore + 0.3 * p.valueScore + 0.3 * p.perfScore
         : 0.5 * p.valueScore + 0.5 * p.perfScore;
-      // lineup generator uses matchup + performance only — no salary/value factored in
+      // lineup generator's default mode: matchup + performance only, no salary/value
       p.quality = hasOpp ? 0.5 * p.oppScore + 0.5 * p.perfScore : p.perfScore;
+
+      // Matchup History: this exact player's own history against defenses
+      // in the same tier as their actual upcoming opponent. Needs 2+
+      // qualifying games or it falls back to season average (avgPts) —
+      // a 1-game sample is too noisy to build a lineup around.
+      p.matchupHistoryGames = 0;
+      if(p.siteData && p.oppTier && primaryKey){
+        const split = p.siteData.splits[p.oppTier];
+        if(split && split.games >= 2 && split.m[primaryKey] != null){
+          p.matchupHistoryRaw = split.m[primaryKey];
+          p.matchupHistoryGames = split.games;
+        } else {
+          p.matchupHistoryRaw = p.avgPts;
+        }
+      } else {
+        p.matchupHistoryRaw = p.avgPts;
+      }
+
+      // Ceiling: average of this player's top-3 DK-scored games this
+      // season. Needs 2+ games logged or falls back to season average.
+      if(p.siteData && p.siteData.ceiling && p.siteData.ceiling.games >= 2){
+        p.ceilingRaw = p.siteData.ceiling.top3avg;
+        p.ceilingGames = p.siteData.ceiling.games;
+        p.ceilingBest = p.siteData.ceiling.best;
+      } else {
+        p.ceilingRaw = p.avgPts;
+        p.ceilingGames = 0;
+        p.ceilingBest = null;
+      }
+    });
+
+    const [mhMin, mhMax] = range(group.map(p => p.matchupHistoryRaw));
+    const [ceMin, ceMax] = range(group.map(p => p.ceilingRaw));
+    group.forEach(p => {
+      p.matchupHistoryScore = norm(p.matchupHistoryRaw, mhMin, mhMax);
+      p.ceilingScore = norm(p.ceilingRaw, ceMin, ceMax);
     });
   }
 }
 
+const STACK_BASIS_FIELDS = { recommended: 'composite', matchup: 'oppScore', contextual: 'matchupHistoryScore' };
+const STACK_BASIS_NOTES = {
+  recommended: 'Ranked by overall composite score (matchup + value + performance) for the QB and his pass-catchers combined.',
+  matchup: "Ranked purely by opponent matchup quality — how weak the opposing defense is against this team's passing attack, ignoring value and recent form.",
+  contextual: "Ranked by each player's own history against defenses in the same tier as this week's actual opponent (falls back to season average below 2 qualifying games).",
+};
+
+function setupBestToggle(){
+  $("bestViewTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    $("bestViewTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    bestView = b.dataset.view;
+    $("bestPlayersPanel").style.display = bestView === 'players' ? '' : 'none';
+    $("bestStacksPanel").style.display = bestView === 'stacks' ? '' : 'none';
+    if(bestView === 'stacks') renderStacks();
+  });
+  $("bestViewTabs").querySelectorAll("button").forEach(b =>
+    b.setAttribute("aria-selected", String(b.dataset.view === bestView)));
+  $("bestPlayersPanel").style.display = bestView === 'players' ? '' : 'none';
+  $("bestStacksPanel").style.display = bestView === 'stacks' ? '' : 'none';
+}
+
+function buildStackBasisTabs(){
+  const modes = [
+    { key:'recommended', label:'Recommended' },
+    { key:'matchup', label:'Best Matchup' },
+    { key:'contextual', label:'Best Contextual' },
+  ];
+  $("stackBasisTabs").innerHTML = modes.map(m =>
+    `<button role="tab" aria-selected="${m.key===stackBasis}" data-basis="${m.key}">${m.label}</button>`).join('');
+  $("stackBasisNote").textContent = STACK_BASIS_NOTES[stackBasis];
+  $("stackBasisTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    $("stackBasisTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    stackBasis = b.dataset.basis;
+    $("stackBasisNote").textContent = STACK_BASIS_NOTES[stackBasis];
+    renderStacks();
+  });
+}
+
+function computeStacks(size){
+  const field = STACK_BASIS_FIELDS[stackBasis];
+  const eligible = CSV_PLAYERS.filter(p => p.status !== 'OUT' && p.status !== 'IR');
+  // One QB per team — the highest-salary one, the best available proxy for
+  // "starter" without depth-chart data. Without this, a backup/third-string
+  // QB (same team, same matchup) produces a near-duplicate stack entry.
+  // One QB per team — highest AvgPointsPerGame is a better "who's actually
+  // the starter" signal than salary alone. Salary can tie between a
+  // starter and a backup in a genuine QB competition (e.g. Tua/Penix both
+  // at $4,800 on ATL, where Penix is the real starter but avgPts separates
+  // them correctly); salary only breaks ties when avgPts also matches.
+  const qbsByTeam = {};
+  eligible.filter(p => p.pos === 'QB').forEach(p => {
+    const cur = qbsByTeam[p.team];
+    if(!cur || p.avgPts > cur.avgPts || (p.avgPts === cur.avgPts && p.salary > cur.salary)){
+      qbsByTeam[p.team] = p;
+    }
+  });
+  const stacks = [];
+  Object.values(qbsByTeam).forEach(qb => {
+    const catchers = eligible
+      .filter(p => p.team === qb.team && (p.pos === 'WR' || p.pos === 'TE'))
+      .filter(p => p[field] != null)
+      .sort((a,b) => b[field] - a[field])
+      .slice(0, size);
+    if(catchers.length < size || qb[field] == null) return; // not enough teammates for this stack size
+    const group = [qb, ...catchers];
+    const score = group.reduce((s,p) => s + p[field], 0) / group.length;
+    stacks.push({ qb, catchers, score, salary: group.reduce((s,p)=>s+p.salary,0) });
+  });
+  stacks.sort((a,b) => b.score - a.score);
+  return stacks.slice(0, 5);
+}
+
+function stackSig(stack){
+  return stack.qb.name + '|' + stack.catchers.map(c=>c.name).join(',');
+}
+
+function stackCardHTML(stack){
+  const playerRow = (p, tag) => `<div class="lineup-row">
+    <span class="lr-pos">${tag}</span>
+    <span class="lr-name">${esc(p.name)}${statusPill(p.status)}</span>
+    <span class="lr-salary">$${p.salary.toLocaleString()}</span>
+  </div>`;
+  const sig = stackSig(stack);
+  const selected = sig === selectedStackSig;
+  return `<div class="play-card${selected?' stack-selected':''}" data-sig="${esc(sig)}" style="cursor:pointer">
+    <div class="pc-top">
+      <span class="pc-name">${esc(stack.qb.team)} Stack</span>
+    </div>
+    <div class="pc-team">vs ${esc(stack.qb.opp || '?')}${stack.qb.oppRankLabel ? ' · ' + esc(stack.qb.oppRankLabel) : ''}</div>
+    ${playerRow(stack.qb, 'QB')}
+    ${stack.catchers.map(c => playerRow(c, c.pos)).join('')}
+    <div class="pc-bottom">
+      <span class="pc-salary">$${stack.salary.toLocaleString()}</span>
+      <span class="pc-score">score ${stack.score.toFixed(0)}</span>
+    </div>
+  </div>`;
+}
+
+function renderStacks(){
+  buildStackBasisTabs();
+  const stacksBySize = {};
+  [['stackSingleCards',1], ['stackDoubleCards',2], ['stackTripleCards',3]].forEach(([id, size]) => {
+    const stacks = computeStacks(size);
+    stacksBySize[size] = stacks;
+    $(id).innerHTML = stacks.length
+      ? stacks.map(stackCardHTML).join('')
+      : `<div class="empty">No eligible ${size===1?'single':size===2?'double':'triple'} stacks in this slate.</div>`;
+    $(id).querySelectorAll('.play-card[data-sig]').forEach(card => {
+      card.onclick = () => {
+        const stack = stacks.find(s => stackSig(s) === card.dataset.sig);
+        if(stack) selectStack(stack);
+      };
+    });
+  });
+  renderBuilderPanel();
+}
+
+/* ── LINEUP BUILDER ──────────────────────────────────────────────── */
+function initBuilderSlots(){
+  builderSlots = BUILDER_SLOT_LABELS.map(label => ({ label, player: null }));
+}
+
+function placeInBuilder(player){
+  const compatible = idx => {
+    const label = builderSlots[idx].label;
+    if(label === player.pos) return true;
+    if(label === 'FLEX' && ['RB','WR','TE'].includes(player.pos)) return true;
+    return false;
+  };
+  // fill the named slot first, FLEX only as last resort
+  let idx = builderSlots.findIndex((s,i) => !s.player && s.label === player.pos && compatible(i));
+  if(idx === -1) idx = builderSlots.findIndex((s,i) => !s.player && s.label === 'FLEX' && compatible(i));
+  if(idx === -1) return false;
+  builderSlots[idx].player = player;
+  return true;
+}
+
+function selectStack(stack){
+  initBuilderSlots();
+  placeInBuilder(stack.qb);
+  stack.catchers.forEach(c => placeInBuilder(c));
+  selectedStackSig = stackSig(stack);
+  renderStacks();
+}
+
+let excludedNames = new Set();
+
+function removeBuilderSlot(idx){
+  const removed = builderSlots[idx].player;
+  if(removed) excludedNames.add(removed.name);
+  builderSlots[idx].player = null;
+  selectedStackSig = null; // no longer matches any single stack once hand-edited
+  renderBuilderPanel();
+}
+
+function builderUsedSalary(){
+  return builderSlots.reduce((s, slot) => s + (slot.player ? slot.player.salary : 0), 0);
+}
+
+function renderBuilderPanel(){
+  const used = builderUsedSalary();
+  const remaining = 50000 - used;
+  const filledCount = builderSlots.filter(s => s.player).length;
+  const subEl = $("builderSalary");
+  if(filledCount === 0){
+    subEl.textContent = 'Select a stack to begin';
+    subEl.className = 'builder-sub';
+  } else {
+    subEl.textContent = `$${used.toLocaleString()} used · $${remaining.toLocaleString()} remaining · ${filledCount}/9 filled`;
+    subEl.className = 'builder-sub' + (remaining < 0 ? ' over' : '');
+  }
+
+  $("builderSlots").innerHTML = builderSlots.map((slot, i) => slot.player
+    ? `<div class="builder-slot filled" data-idx="${i}">
+        <span class="bs-pos">${slot.label}</span>
+        <span class="bs-name">${esc(slot.player.name)}</span>
+        <span class="bs-salary">$${slot.player.salary.toLocaleString()}</span>
+      </div>`
+    : `<div class="builder-slot empty">
+        <span class="bs-pos">${slot.label}</span>
+        <span class="bs-name">—</span>
+      </div>`
+  ).join('');
+  $("builderSlots").querySelectorAll('.builder-slot.filled').forEach(el => {
+    el.onclick = () => removeBuilderSlot(Number(el.dataset.idx));
+  });
+
+  $("builderExcluded").innerHTML = excludedNames.size
+    ? `<div class="excluded-label">Excluded (click to un-exclude)</div>
+       <div class="excluded-chips">${[...excludedNames].map(n =>
+         `<span class="excluded-chip" data-name="${esc(n)}">${esc(n)} ✕</span>`).join('')}</div>`
+    : '';
+  $("builderExcluded").querySelectorAll('.excluded-chip').forEach(el => {
+    el.onclick = () => { excludedNames.delete(el.dataset.name); renderBuilderPanel(); };
+  });
+
+  renderBuilderSearch();
+}
+
+function renderBuilderSearch(){
+  const term = builderSearchTerm.trim().toLowerCase();
+  const placedNames = new Set(builderSlots.filter(s=>s.player).map(s=>s.player.name));
+  const remaining = 50000 - builderUsedSalary();
+  const scoreField = SCORE_FIELDS[scoringMode] || STACK_BASIS_FIELDS[stackBasis] || 'quality';
+
+  const base = CSV_PLAYERS
+    .filter(p => p.status !== 'OUT' && p.status !== 'IR')
+    .filter(p => !placedNames.has(p.name))
+    .filter(p => !excludedNames.has(p.name));
+
+  const resultRow = p => {
+    const hasSlot = builderSlots.some(s => !s.player &&
+      (s.label === p.pos || (s.label === 'FLEX' && ['RB','WR','TE'].includes(p.pos))));
+    const affordable = p.salary <= remaining;
+    const disabled = !hasSlot || !affordable;
+    return `<div class="search-result${disabled?' disabled':''}" data-name="${esc(p.name)}">
+      <span class="sr-pos">${p.pos}</span>
+      <span class="sr-name">${esc(p.name)} · ${esc(p.team)}</span>
+      <span class="sr-salary">$${p.salary.toLocaleString()}</span>
+    </div>`;
+  };
+
+  let html;
+  if(term.length >= 2){
+    const results = base.filter(p => p.name.toLowerCase().includes(term)).slice(0, 15);
+    html = results.map(resultRow).join('') ||
+      `<div class="empty" style="padding:16px 4px">No matches.</div>`;
+  } else {
+    // Default: browse what's actually affordable at each position still open.
+    const emptyLabels = [...new Set(builderSlots.filter(s=>!s.player).map(s=>s.label))];
+    if(!emptyLabels.length){
+      html = `<div class="empty" style="padding:16px 4px">Lineup is full.</div>`;
+    } else {
+      const neededPositions = new Set();
+      emptyLabels.forEach(label => {
+        if(label === 'FLEX') ['RB','WR','TE'].forEach(p => neededPositions.add(p));
+        else neededPositions.add(label);
+      });
+      html = [...neededPositions].map(pos => {
+        const candidates = base
+          .filter(p => p.pos === pos && p.salary <= remaining)
+          .sort((a,b) => b.salary - a.salary)
+          .slice(0, 6);
+        if(!candidates.length) return '';
+        return `<div class="excluded-label" style="margin-top:8px">${pos} — affordable ($${remaining.toLocaleString()} left)</div>`
+          + candidates.map(resultRow).join('');
+      }).join('') || `<div class="empty" style="padding:16px 4px">Nothing affordable at the remaining positions.</div>`;
+    }
+  }
+
+  $("builderSearchResults").innerHTML = html;
+  $("builderSearchResults").querySelectorAll('.search-result:not(.disabled)').forEach(el => {
+    el.onclick = () => {
+      const p = CSV_PLAYERS.find(x => x.name === el.dataset.name);
+      if(p && placeInBuilder(p)){ selectedStackSig = null; renderBuilderPanel(); }
+    };
+  });
+}
+
+function generateRestOfLineup(){
+  if(typeof solver === 'undefined') return;
+  const pool = CSV_PLAYERS
+    .filter(p => p.status !== 'OUT' && p.status !== 'IR')
+    .filter(p => !excludedNames.has(p.name));
+  pool.forEach((p,i) => { p.__pid = i; });
+  const pinned = builderSlots.filter(s=>s.player).map(s => pool.find(p => p.name === s.player.name)).filter(Boolean);
+  const pinnedPids = new Set(pinned.map(p => p.__pid));
+  const scoreField = SCORE_FIELDS[scoringMode] || STACK_BASIS_FIELDS[stackBasis] || 'quality';
+
+  const model = buildLineupModel(pool, [], 0, stackMode, false, scoreField, false, pinnedPids);
+  const result = solver.Solve(model);
+  if(!result.feasible){
+    $("builderSalary").textContent = 'No feasible completion — try clearing an exclusion or picking a cheaper stack.';
+    $("builderSalary").className = 'builder-sub over';
+    return;
+  }
+  const chosen = [];
+  pool.forEach(p => { if(result['p'+p.__pid]) chosen.push(p); });
+  initBuilderSlots();
+  // place pinned players first so they land in the same slots as before
+  pinned.forEach(p => placeInBuilder(p));
+  chosen.filter(p => !pinnedPids.has(p.__pid)).forEach(p => placeInBuilder(p));
+  renderBuilderPanel();
+}
+
+function setupBuilderControls(){
+  $("clearBuilderBtn").onclick = () => {
+    initBuilderSlots(); selectedStackSig = null; builderSearchTerm = ''; excludedNames = new Set();
+    $("builderSearchBox").value = '';
+    renderStacks();
+  };
+  $("builderGenBtn").onclick = generateRestOfLineup;
+  $("builderSearchBox").oninput = e => { builderSearchTerm = e.target.value; renderBuilderSearch(); };
+}
+
 function buildBestTabs(){
+  setupBestToggle();
   const positions = ['QB','RB','WR','TE','DST'];
   $("bestPosTabs").innerHTML = positions.map(p =>
     `<button role="tab" aria-selected="${p===bestPos}" data-pos="${p}">${p}</button>`).join('');
@@ -363,12 +856,15 @@ function teamOpponentMap(players){
   return map;
 }
 
-function buildLineupModel(players, priorLineupIdxSets, minDiff, mode, bringBack){
+function buildLineupModel(players, priorPidSets, minDiff, mode, bringBack, scoreField, forceSingleTE, pinnedPids){
+  scoreField = scoreField || 'quality';
+  pinnedPids = pinnedPids || new Set();
   const variables = {}, binaries = {};
   const constraints = {
     salary: { max: 50000 }, total: { equal: 9 },
     isQB: { equal: 1 }, isDST: { equal: 1 },
-    isRB: { min: 2, max: 3 }, isWR: { min: 3, max: 4 }, isTE: { min: 1, max: 2 },
+    isRB: { min: 2, max: 3 }, isWR: { min: 3, max: 4 },
+    isTE: forceSingleTE ? { equal: 1 } : { min: 1, max: 2 },
   };
   const stackSize = STACK_SIZES[mode] || 0;
   const oppOf = teamOpponentMap(players);
@@ -378,19 +874,24 @@ function buildLineupModel(players, priorLineupIdxSets, minDiff, mode, bringBack)
   // players including the QB, RB included — with zero opponent exposure.
   const stackPositions = mode === 'onslaught' ? ['RB','WR','TE'] : ['WR','TE'];
 
-  players.forEach((p, i) => {
-    const vid = 'p' + i;
+  players.forEach((p) => {
+    const vid = 'p' + p.__pid;
     variables[vid] = {
-      quality: p.quality, salary: p.salary, total: 1,
+      quality: p[scoreField], salary: p.salary, total: 1,
       isQB: p.pos==='QB'?1:0, isRB: p.pos==='RB'?1:0, isWR: p.pos==='WR'?1:0,
       isTE: p.pos==='TE'?1:0, isDST: p.pos==='DST'?1:0,
     };
-    priorLineupIdxSets.forEach((idxSet, li) => {
-      if(idxSet.has(i)) variables[vid]['div'+li] = 1;
+    priorPidSets.forEach((pidSet, li) => {
+      if(pidSet.has(p.__pid)) variables[vid]['div'+li] = 1;
     });
+    if(pinnedPids.has(p.__pid)){
+      const key = 'pin_' + p.__pid;
+      variables[vid][key] = 1;
+      constraints[key] = { equal: 1 };
+    }
     binaries[vid] = 1;
   });
-  priorLineupIdxSets.forEach((idxSet, li) => { constraints['div'+li] = { max: 9 - minDiff }; });
+  priorPidSets.forEach((pidSet, li) => { constraints['div'+li] = { max: 9 - minDiff }; });
 
   // Stack / double stack / onslaught: if this team's QB is picked, require
   // stackSize of that same team's eligible skill players also picked.
@@ -399,8 +900,8 @@ function buildLineupModel(players, priorLineupIdxSets, minDiff, mode, bringBack)
     teams.forEach(T => {
       const key = 'stack_' + T;
       constraints[key] = { min: 0 };
-      players.forEach((p, i) => {
-        const vid = 'p' + i;
+      players.forEach((p) => {
+        const vid = 'p' + p.__pid;
         if(p.team === T && stackPositions.includes(p.pos)) variables[vid][key] = 1;
         if(p.team === T && p.pos === 'QB') variables[vid][key] = -stackSize;
       });
@@ -417,8 +918,8 @@ function buildLineupModel(players, priorLineupIdxSets, minDiff, mode, bringBack)
       if(!O) return;
       const key = 'noOpp_' + T;
       constraints[key] = { max: M };
-      players.forEach((p, i) => {
-        const vid = 'p' + i;
+      players.forEach((p) => {
+        const vid = 'p' + p.__pid;
         if(p.team === O) variables[vid][key] = 1;
         if(p.team === T && p.pos === 'QB') variables[vid][key] = M;
       });
@@ -434,8 +935,8 @@ function buildLineupModel(players, priorLineupIdxSets, minDiff, mode, bringBack)
       if(!O) return;
       const key = 'bring_' + T;
       constraints[key] = { min: 0 };
-      players.forEach((p, i) => {
-        const vid = 'p' + i;
+      players.forEach((p) => {
+        const vid = 'p' + p.__pid;
         if(p.team === O) variables[vid][key] = 1;
         if(p.team === T && p.pos === 'QB') variables[vid][key] = -1;
       });
@@ -443,6 +944,49 @@ function buildLineupModel(players, priorLineupIdxSets, minDiff, mode, bringBack)
   }
 
   return { optimize:'quality', opType:'max', constraints, variables, binaries };
+}
+
+const SCORING_MODE_NOTES = {
+  composite: 'Ranked by opponent matchup + recent performance — salary is a hard cap, not a scoring factor.',
+  matchup_history: "Ranked by each player's own history vs. defenses in the same tier as their actual upcoming opponent (2+ games required, else falls back to season average).",
+  ceiling: "Ranked by each player's average of their best 3 games this season (DK scoring) — chases upside, not consistency.",
+};
+
+function buildCountTabs(){
+  const counts = [5, 10, 15, 25];
+  $("countTabs").innerHTML = counts.map(c =>
+    `<button role="tab" aria-selected="${c===generatorCount}" data-count="${c}">${c}</button>`).join('');
+  $("genBtn").textContent = `Generate ${generatorCount} lineups`;
+  updateExposureNote();
+  $("countTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    $("countTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    generatorCount = Number(b.dataset.count);
+    $("genBtn").textContent = `Generate ${generatorCount} lineups`;
+    updateExposureNote();
+  });
+}
+
+function updateExposureNote(){
+  const cap = EXPOSURE_CAPS[generatorCount];
+  $("exposureNote").textContent =
+    `Exposure rules: any player (including DST) appears in at most ${cap} of ${generatorCount} lineups; ` +
+    `at most ${cap} of ${generatorCount} lineups may use a 2nd TE in FLEX.`;
+}
+
+function buildScoringModeTabs(){
+  const modes = [
+    { key:'composite', label:'Season Composite' },
+    { key:'matchup_history', label:'Matchup History' },
+    { key:'ceiling', label:'High Ceiling' },
+  ];
+  $("scoringModeTabs").innerHTML = modes.map(m =>
+    `<button role="tab" aria-selected="${m.key===scoringMode}" data-mode="${m.key}">${m.label}</button>`).join('');
+  $("scoringModeNote").textContent = SCORING_MODE_NOTES[scoringMode];
+  $("scoringModeTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    $("scoringModeTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    scoringMode = b.dataset.mode;
+    $("scoringModeNote").textContent = SCORING_MODE_NOTES[scoringMode];
+  });
 }
 
 function buildStackModeTabs(){
@@ -465,6 +1009,12 @@ function buildStackModeTabs(){
   });
 }
 
+const SCORE_FIELDS = { composite: 'quality', matchup_history: 'matchupHistoryScore', ceiling: 'ceilingScore' };
+// Rule 1/2: max times any player (including DST) may appear across the
+// batch. Rule 3: max number of lineups in the batch allowed to use TE in
+// FLEX (2 total TE). Same numbers, different mechanism — see note above.
+const EXPOSURE_CAPS = { 5: 2, 10: 4, 15: 6, 25: 8 };
+
 function generateLineups(){
   if(typeof solver === 'undefined'){
     $("lineupResults").innerHTML = `<div class="empty">Solver library failed to load — check your connection and reload.</div>`;
@@ -473,40 +1023,59 @@ function generateLineups(){
   const btn = $("genBtn");
   btn.disabled = true; btn.textContent = 'Generating…';
   const bringBack = $("bringBackChk").checked;
+  const scoreField = SCORE_FIELDS[scoringMode];
+  const numLineups = generatorCount;
+  const exposureCap = EXPOSURE_CAPS[numLineups];
 
   const pool = CSV_PLAYERS.filter(p => p.status !== 'OUT' && p.status !== 'IR');
+  pool.forEach((p, i) => { p.__pid = i; }); // stable id, survives per-iteration filtering
+
+  const exposureCount = {};
+  let teLineupCount = 0;
   const lineups = [];
-  const priorIdxSets = [];
-  for(let n = 0; n < 5; n++){
-    const model = buildLineupModel(pool, priorIdxSets, 3, stackMode, bringBack);
+  const priorPidSets = [];
+
+  for(let n = 0; n < numLineups; n++){
+    const eligible = pool.filter(p => (exposureCount[p.__pid] || 0) < exposureCap);
+    const forceSingleTE = teLineupCount >= exposureCap;
+    const model = buildLineupModel(eligible, priorPidSets, 3, stackMode, bringBack, scoreField, forceSingleTE);
     const result = solver.Solve(model);
     if(!result.feasible) break;
-    const chosenIdx = new Set();
+
+    const chosenPids = new Set();
     const chosen = [];
-    pool.forEach((p,i) => { if(result['p'+i]){ chosen.push(p); chosenIdx.add(i); } });
+    eligible.forEach(p => { if(result['p'+p.__pid]){ chosen.push(p); chosenPids.add(p.__pid); } });
     lineups.push({ players: chosen, quality: result.result,
       salary: chosen.reduce((s,p)=>s+p.salary,0) });
-    priorIdxSets.push(chosenIdx);
+    priorPidSets.push(chosenPids);
+
+    chosen.forEach(p => { exposureCount[p.__pid] = (exposureCount[p.__pid] || 0) + 1; });
+    if(chosen.filter(p => p.pos === 'TE').length === 2) teLineupCount++;
   }
 
-  btn.disabled = false; btn.textContent = 'Generate 5 lineups';
+  btn.disabled = false; btn.textContent = `Generate ${numLineups} lineups`;
   if(!lineups.length){
     $("lineupResults").innerHTML = `<div class="empty">
       No feasible lineup found under these constraints — try a lighter stack setting
       or turn off bring-back; this slate may not have enough qualifying combinations.</div>`;
     return;
   }
-  renderLineups(lineups);
+  const shortfallMsg = lineups.length < numLineups
+    ? `Generated ${lineups.length} of ${numLineups} — exposure caps and stacking constraints ran out
+       of valid combinations before reaching the full batch.`
+    : null;
+  renderLineups(lineups, shortfallMsg);
 }
 
 const POS_ORDER = { QB:0, RB:1, WR:2, TE:3, DST:5 }; // FLEX sits at 4, resolved below
 
-function renderLineups(lineups){
+function renderLineups(lineups, caveatMsg){
   if(!lineups.length){
     $("lineupResults").innerHTML = `<div class="empty">No feasible lineup found — the slate may be too thin at some position.</div>`;
     return;
   }
-  $("lineupResults").innerHTML = `<div class="lineup-grid">` + lineups.map((lu, i) => {
+  const caveatHtml = caveatMsg ? `<div class="caveat">${caveatMsg}</div>` : '';
+  $("lineupResults").innerHTML = caveatHtml + `<div class="lineup-grid">` + lineups.map((lu, i) => {
     // 1 QB, 2 base RB, 3 base WR, 1 base TE, 1 FLEX (extra RB/WR/TE), 1 DST
     const byPos = { QB:[], RB:[], WR:[], TE:[], DST:[] };
     lu.players.forEach(p => byPos[p.pos].push(p));

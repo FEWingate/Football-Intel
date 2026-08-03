@@ -151,7 +151,8 @@ RAW_COLS = ["completions", "attempts", "passing_yards", "passing_tds",
             "receptions", "targets", "receiving_yards", "receiving_tds",
             "receiving_first_downs", "receiving_air_yards",
             "receiving_yards_after_catch",
-            "receiving_10", "receiving_16", "receiving_20", "receiving_40"]
+            "receiving_10", "receiving_16", "receiving_20", "receiving_40",
+            "sack_fumbles_lost", "rushing_fumbles_lost", "receiving_fumbles_lost"]
 
 
 # ── Team Stats (Teams page modal) ──────────────────────────────────────
@@ -1247,6 +1248,33 @@ def build_career_base():
           f"1999-{SEASON-1}, {os.path.getsize(path) / 1024:.0f} KB")
 
 
+def dk_points_for_game(s):
+    """Standard DraftKings Classic scoring (full PPR), computed directly
+    from RAW_COLS — works the same for any offensive position since
+    non-applicable fields are just 0 (a QB's receiving_yards is 0, etc).
+    Doesn't include 2pt conversions (not in the player-week source data) —
+    a minor, disclosed gap; rare enough not to meaningfully move rankings."""
+    pts = 0.0
+    pts += s.get("passing_yards", 0) * 0.04
+    pts += s.get("passing_tds", 0) * 4
+    pts += s.get("passing_interceptions", 0) * -1
+    if s.get("passing_yards", 0) >= 300:
+        pts += 3
+    pts += s.get("rushing_yards", 0) * 0.1
+    pts += s.get("rushing_tds", 0) * 6
+    if s.get("rushing_yards", 0) >= 100:
+        pts += 3
+    pts += s.get("receptions", 0) * 1
+    pts += s.get("receiving_yards", 0) * 0.1
+    pts += s.get("receiving_tds", 0) * 6
+    if s.get("receiving_yards", 0) >= 100:
+        pts += 3
+    fumbles_lost = (s.get("sack_fumbles_lost", 0) + s.get("rushing_fumbles_lost", 0)
+                     + s.get("receiving_fumbles_lost", 0))
+    pts -= fumbles_lost * 1
+    return pts
+
+
 def build_player_log(player_df, pos, latest_matchup):
     """One player's game-by-game log, each game tagged with the tier
     (top/mid/bot) of the defense-vs-position rank their opponent held that
@@ -1266,10 +1294,13 @@ def build_player_log(player_df, pos, latest_matchup):
     tier_rows = {"top": [], "mid": [], "bot": []}
     cum_raw = {c: 0.0 for c in RAW_COLS}
     cum_games = 0
+    dk_scores = []
     for _, row in player_df.sort_values("week").iterrows():
         opp = row.get("opponent_team")
         s = {c: row[c] for c in RAW_COLS}
         game_metrics = pos_metrics_from_sums(pos, s, 1)  # this game's own totals
+        dk_pts = dk_points_for_game(s)
+        dk_scores.append(dk_pts)
 
         cum_games += 1
         for c in RAW_COLS:
@@ -1287,10 +1318,18 @@ def build_player_log(player_df, pos, latest_matchup):
             "week": int(row["week"]), "opp": opp, "tier": tier,
             "m": {k: round(game_metrics.get(k, 0), 1) for k in volume_keys},
             "cum": {k: round(cum_metrics.get(k, 0), 1) for k in rate_keys},
+            "dk": round(dk_pts, 1),
         }
         log.append(entry)
         if tier:
             tier_rows[tier].append(entry["m"])
+
+    dk_scores_sorted = sorted(dk_scores, reverse=True)
+    ceiling = {
+        "games": len(dk_scores),
+        "best": round(dk_scores_sorted[0], 1) if dk_scores_sorted else 0,
+        "top3avg": round(sum(dk_scores_sorted[:3]) / min(3, len(dk_scores_sorted)), 1) if dk_scores_sorted else 0,
+    }
 
     splits = {}
     for tier, rows in tier_rows.items():
@@ -1301,7 +1340,7 @@ def build_player_log(player_df, pos, latest_matchup):
             "games": len(rows),
             "m": {k: round(sum(r[k] for r in rows) / len(rows), 1) for k in volume_keys},
         }
-    return log, splits
+    return log, splits, ceiling
 
 
 def build_player_stats():
@@ -1365,14 +1404,14 @@ def build_player_stats():
                 career_raw[c] = career_raw.get(c, 0) + cb_entry["raw"].get(c, 0)
         career_metrics = pos_metrics_from_sums(pos, career_raw, career_gp)
 
-        log, splits_acc = build_player_log(player_weeks[(pid, pos)], pos, latest_matchup)
+        log, splits_acc, ceiling = build_player_log(player_weeks[(pid, pos)], pos, latest_matchup)
 
         players_out[pos].append({
             "name": name, "team": team, "games": gp,
             "season": {"games": gp, "m": {k: round(v, 2) for k, v in season_metrics.items()}},
             "career": {"games": career_gp, "through": career_through,
                        "m": {k: round(v, 2) for k, v in career_metrics.items()}},
-            "log": log, "splits": splits_acc,
+            "log": log, "splits": splits_acc, "ceiling": ceiling,
         })
     for p in POSITIONS:
         players_out[p].sort(key=lambda r: r["games"], reverse=True)
