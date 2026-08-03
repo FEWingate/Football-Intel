@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DFS Center — Football Intel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/fi-styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://unpkg.com/javascript-lp-solver/dist/solver.global.js"></script>
+<style>
+.drop-zone{
+  border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:48px 24px;
+  text-align:center;cursor:pointer;transition:border-color .15s,background .15s;
+}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--primary);background:var(--surface2)}
+.drop-zone .dz-title{font-family:var(--font-display);font-weight:700;font-size:16px;margin-bottom:6px}
+.drop-zone .dz-sub{font-size:12px;color:var(--text-dim);font-family:var(--font-mono)}
+.caveat{
+  background:rgba(250,204,21,.07);border:1px solid rgba(250,204,21,.3);border-radius:var(--radius);
+  padding:10px 14px;font-size:11.5px;color:var(--text-mid);margin-bottom:16px;line-height:1.5;
+}
+.caveat b{color:var(--accent-gold)}
+.file-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.file-name{font-family:var(--font-mono);font-size:11px;color:var(--text-dim)}
+.replace-btn{
+  background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);
+  color:var(--text-mid);font-family:var(--font-mono);font-size:10px;padding:6px 12px;cursor:pointer;
+}
+.replace-btn:hover{color:var(--text);border-color:var(--border2)}
+.search-box{
+  background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);
+  color:var(--text);font-size:12px;padding:7px 12px;width:220px;
+}
+.search-box::placeholder{color:var(--text-dim)}
+.slate-controls{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:2px}
+.card-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin-bottom:8px}
+.play-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px}
+.play-card .pc-top{display:flex;justify-content:space-between;align-items:start;margin-bottom:2px}
+.play-card .pc-name{font-family:var(--font-display);font-weight:700;font-size:15px}
+.play-card .pc-team{font-size:11px;color:var(--text-dim);font-family:var(--font-mono);margin-bottom:10px}
+.play-card .pc-opp{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-mid);margin-bottom:12px;
+  font-family:var(--font-mono)}
+.pc-factors{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+.pc-factor{background:var(--surface2);border-radius:var(--radius-sm);padding:6px 4px;text-align:center}
+.pc-factor .f-label{font-family:var(--font-mono);font-size:7.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim)}
+.pc-factor .f-value{font-family:var(--font-mono);font-weight:600;font-size:13px;margin-top:2px}
+.pc-bottom{display:flex;justify-content:space-between;align-items:baseline;padding-top:10px;border-top:1px solid var(--hairline)}
+.pc-salary{font-family:var(--font-mono);font-weight:700;font-size:16px}
+.pc-score{font-family:var(--font-mono);font-size:10px;color:var(--text-dim)}
+.status-pill{font-family:var(--font-mono);font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px}
+.status-pill.q{color:var(--accent-gold);background:rgba(250,204,21,.1);border:1px solid rgba(250,204,21,.3)}
+.status-pill.out,.status-pill.ir{color:var(--accent-red);background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.3)}
+.lead-wrap{overflow:auto;max-height:calc(100vh - 300px);border:1px solid var(--border);border-radius:var(--radius-lg);margin-top:12px}
+.lead-table{width:100%;border-collapse:separate;border-spacing:0}
+.lead-table thead th{
+  padding:9px 12px;text-align:right;font-family:var(--font-mono);font-size:9px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap;
+  cursor:pointer;user-select:none;border-bottom:1px solid var(--border);
+  position:sticky;top:0;background:var(--surface2);z-index:3;
+}
+.lead-table thead th:hover{color:var(--text)}
+.lead-table thead th.sorted{color:var(--primary)}
+.lead-table thead th.name-col{text-align:left;left:0;z-index:4}
+.lead-table td{padding:8px 12px;font-size:12px;text-align:right;border-bottom:1px solid var(--hairline);white-space:nowrap}
+.lead-table tbody tr:last-child td{border-bottom:0}
+.lead-table tbody tr:hover td{background:var(--surface2)}
+.lead-table td.name-col{text-align:left;position:sticky;left:0;background:var(--surface);z-index:1}
+.lead-table tbody tr:hover td.name-col{background:var(--surface2)}
+.cell-val{font-family:var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text-mid);font-size:12px}
+.lineup-controls{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.gen-btn{
+  background:var(--primary);color:var(--bg);border:none;border-radius:var(--radius);
+  font-family:var(--font-display);font-weight:700;font-size:13px;padding:10px 20px;cursor:pointer;
+}
+.gen-btn:hover{opacity:.9}
+.gen-btn:disabled{opacity:.5;cursor:default}
+.lineup-note{font-size:11px;color:var(--text-dim);font-family:var(--font-mono)}
+.lineup-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.lineup-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px}
+.lineup-card .lc-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;
+  padding-bottom:10px;border-bottom:1px solid var(--hairline)}
+.lineup-card .lc-title{font-family:var(--font-display);font-weight:700;font-size:14px}
+.lineup-card .lc-salary{font-family:var(--font-mono);font-size:12px;color:var(--text-mid)}
+.lineup-card .lc-salary b{color:var(--primary)}
+.lineup-row{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:12px}
+.lineup-row .lr-pos{
+  font-family:var(--font-mono);font-size:9px;font-weight:700;color:var(--text-dim);
+  width:32px;flex:none;
+}
+.lineup-row .lr-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lineup-row .lr-salary{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);flex:none}
+.stack-controls{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.bringback-toggle{
+  display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-mid);cursor:pointer;
+}
+.bringback-toggle input{cursor:pointer}
+</style>
+</head>
+<body>
+<script src="js/fi-shell.js"></script>
+<script>
+const main = fiShell({ page:'dfs', pageLabel:'DFS Center', status:'loading' });
+
+let CSV_PLAYERS = null;
+let MATCHUP = null;
+let bestPos = 'QB';
+let slatePos = 'ALL';
+let slateSort = 'value', slateDir = 'desc';
+let searchTerm = '';
+let dfsView = 'best'; // 'best' | 'lineups' | 'slate'
+let stackMode = 'none'; // 'none' | 'stack' | 'double' | 'onslaught'
+
+main.innerHTML = `
+  <div class="bar">
+    <span class="lbl">DFS Center</span>
+    <div class="legend"><span>Upload a DraftKings salary CSV to get started</span></div>
+  </div>
+  <div id="content"></div>`;
+
+const $ = id => document.getElementById(id);
+
+async function load(){
+  fiStatus("Loading","loading");
+  try{
+    const res = await fetch(`matchup/wk18.json`);
+    if(res.ok) MATCHUP = await res.json();
+  }catch(e){ /* opponent grading unavailable without it */ }
+  fiStatus("Ready");
+  fiUpdated(CSV_PLAYERS ? `${CSV_PLAYERS.length} players loaded` : "no slate loaded");
+  renderShell();
+}
+
+function renderShell(){
+  if(!CSV_PLAYERS){
+    $("content").innerHTML = `
+      <div class="drop-zone" id="dropZone">
+        <div class="dz-title">Drop a DraftKings salary CSV here</div>
+        <div class="dz-sub">or click to browse · exported from DraftKings' "Export Players" button</div>
+        <input type="file" accept=".csv" id="fileInput" style="display:none">
+      </div>`;
+    wireUpload();
+    return;
+  }
+
+  $("content").innerHTML = `
+    <div class="file-bar">
+      <span class="file-name">${CSV_PLAYERS.length} players loaded</span>
+      <button class="replace-btn" id="replaceBtn">Replace file</button>
+    </div>
+    ${MATCHUP ? `<div class="caveat"><b>Opponent grading note:</b> using ${MATCHUP.season} season-final
+      defense-vs-position ranks (through week ${MATCHUP.week}) as the matchup signal — there's no current-season
+      data yet this early. This updates automatically once real games are on the board.</div>`
+      : `<div class="caveat"><b>No opponent data found</b> — matchup/wk18.json didn't load, so Best Plays will
+      skip the opponent factor. Salary and value still work fine.</div>`}
+
+    <div class="tabs view-switch" id="dfsViewSwitch" role="tablist">
+      <button role="tab" data-view="best" aria-selected="${dfsView==='best'}">Best Plays</button>
+      <button role="tab" data-view="lineups" aria-selected="${dfsView==='lineups'}">Lineup Generator</button>
+      <button role="tab" data-view="slate" aria-selected="${dfsView==='slate'}">Full Slate</button>
+    </div>
+
+    <div id="viewBest" style="display:${dfsView==='best'?'':'none'}">
+      <div class="tabs" id="bestPosTabs" role="tablist"></div>
+      <div class="card-grid" id="bestCards"></div>
+    </div>
+
+    <div id="viewLineups" style="display:${dfsView==='lineups'?'':'none'}">
+      <div class="lineup-controls">
+        <button class="gen-btn" id="genBtn">Generate 5 lineups</button>
+        <span class="lineup-note">Ranked by opponent matchup + recent performance only — salary is a hard cap, not a scoring factor</span>
+      </div>
+      <div class="stack-controls">
+        <div class="tabs" id="stackModeTabs" role="tablist"></div>
+        <label class="bringback-toggle">
+          <input type="checkbox" id="bringBackChk"> Bring-back (add 1+ opponent player)
+        </label>
+      </div>
+      <div id="lineupResults"></div>
+    </div>
+
+    <div id="viewSlate" style="display:${dfsView==='slate'?'':'none'}">
+      <div class="slate-controls">
+        <div class="tabs" id="slatePosTabs" role="tablist"></div>
+        <input class="search-box" id="searchBox" placeholder="Search players…">
+      </div>
+      <div class="lead-wrap"><table class="lead-table" id="slateTable"></table></div>
+    </div>`;
+
+  $("replaceBtn").onclick = () => { CSV_PLAYERS = null; renderShell(); };
+  $("genBtn").onclick = generateLineups;
+  $("dfsViewSwitch").querySelectorAll("button").forEach(b => b.onclick = () => {
+    dfsView = b.dataset.view; renderShell();
+  });
+  buildBestTabs();
+  buildStackModeTabs();
+  buildSlateTabs();
+  $("searchBox").oninput = e => { searchTerm = e.target.value.toLowerCase(); renderSlate(); };
+  renderBestPlays();
+  renderSlate();
+}
+
+function wireUpload(){
+  const zone = $("dropZone"), input = $("fileInput");
+  zone.onclick = () => input.click();
+  input.onchange = e => { if(e.target.files[0]) parseFile(e.target.files[0]); };
+  zone.ondragover = e => { e.preventDefault(); zone.classList.add('drag'); };
+  zone.ondragleave = () => zone.classList.remove('drag');
+  zone.ondrop = e => {
+    e.preventDefault(); zone.classList.remove('drag');
+    if(e.dataTransfer.files[0]) parseFile(e.dataTransfer.files[0]);
+  };
+}
+
+function parseFile(file){
+  Papa.parse(file, {
+    header: true, skipEmptyLines: true,
+    complete: results => {
+      CSV_PLAYERS = results.data.map(normalizeRow).filter(p => p.pos);
+      computeAll(CSV_PLAYERS);
+      fiUpdated(`${CSV_PLAYERS.length} players loaded`);
+      renderShell();
+    },
+  });
+}
+
+function normalizeRow(r){
+  return {
+    name: r['Name'], pos: r['Position'], team: r['TeamAbbrev'],
+    salary: Number(r['Salary']) || 0, avgPts: Number(r['AvgPointsPerGame']) || 0,
+    status: (r['Status'] || '').trim(), gameInfo: r['Game Info'] || '',
+  };
+}
+
+function opponentOf(team, gameInfo){
+  const m = gameInfo.match(/^([A-Z]+)@([A-Z]+)/);
+  if(!m) return null;
+  return m[1] === team ? m[2] : (m[2] === team ? m[1] : null);
+}
+
+function computeAll(players){
+  const byPos = {};
+  players.forEach(p => { (byPos[p.pos] = byPos[p.pos] || []).push(p); });
+
+  players.forEach(p => {
+    p.opp = opponentOf(p.team, p.gameInfo);
+    p.value = p.salary ? (p.avgPts / (p.salary / 1000)) : 0;
+  });
+
+  for(const pos in byPos){
+    const group = byPos[pos];
+    const range = arr => [Math.min(...arr), Math.max(...arr)];
+    const [vMin, vMax] = range(group.map(p => p.value));
+    const [pMin, pMax] = range(group.map(p => p.avgPts));
+    const norm = (v, lo, hi) => hi > lo ? ((v - lo) / (hi - lo)) * 100 : 50;
+
+    group.forEach(p => {
+      p.valueScore = norm(p.value, vMin, vMax);
+      p.perfScore = norm(p.avgPts, pMin, pMax);
+      p.oppScore = null; p.oppRankLabel = null;
+
+      if(MATCHUP && p.opp && MATCHUP.teams[p.opp]){
+        if(pos === 'DST'){
+          const r = MATCHUP.teams[p.opp].team_off?.ppg?.r;
+          if(r){ p.oppScore = ((r - 1) / 31) * 100; p.oppRankLabel = `Opp offense #${r}`; }
+        } else if(MATCHUP.labels.pos[pos]){
+          const primaryKey = Object.keys(MATCHUP.labels.pos[pos])[0];
+          const r = MATCHUP.teams[p.opp].def?.[pos]?.[primaryKey]?.r;
+          if(r){ p.oppScore = ((r - 1) / 31) * 100; p.oppRankLabel = `Def vs ${pos} #${r}`; }
+        }
+      }
+
+      const hasOpp = p.oppScore !== null;
+      p.composite = hasOpp
+        ? 0.4 * p.oppScore + 0.3 * p.valueScore + 0.3 * p.perfScore
+        : 0.5 * p.valueScore + 0.5 * p.perfScore;
+      // lineup generator uses matchup + performance only — no salary/value factored in
+      p.quality = hasOpp ? 0.5 * p.oppScore + 0.5 * p.perfScore : p.perfScore;
+    });
+  }
+}
+
+function buildBestTabs(){
+  const positions = ['QB','RB','WR','TE','DST'];
+  $("bestPosTabs").innerHTML = positions.map(p =>
+    `<button role="tab" aria-selected="${p===bestPos}" data-pos="${p}">${p}</button>`).join('');
+  $("bestPosTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    $("bestPosTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    bestPos = b.dataset.pos; renderBestPlays();
+  });
+}
+
+function statusPill(status){
+  if(!status) return '';
+  const cls = status.toLowerCase();
+  return `<span class="status-pill ${cls}">${esc(status)}</span>`;
+}
+
+function renderBestPlays(){
+  const pool = CSV_PLAYERS.filter(p => p.pos === bestPos && p.status !== 'OUT' && p.status !== 'IR');
+  pool.sort((a,b) => b.composite - a.composite);
+  const top = pool.slice(0, 6);
+
+  $("bestCards").innerHTML = top.map(p => `
+    <div class="play-card">
+      <div class="pc-top">
+        <span class="pc-name">${esc(p.name)}</span>
+        ${statusPill(p.status)}
+      </div>
+      <div class="pc-team">${esc(p.team)}</div>
+      <div class="pc-opp">${fiLogoHTML(p.opp || '', 16)}vs ${esc(p.opp || '?')}
+        ${p.oppRankLabel ? ' · ' + esc(p.oppRankLabel) : ' · opponent data unavailable'}</div>
+      <div class="pc-factors">
+        <div class="pc-factor"><div class="f-label">Value</div><div class="f-value">${p.value.toFixed(1)}x</div></div>
+        <div class="pc-factor"><div class="f-label">Avg pts</div><div class="f-value">${p.avgPts.toFixed(1)}</div></div>
+        <div class="pc-factor"><div class="f-label">Matchup</div><div class="f-value">${p.oppScore!==null ? Math.round(p.oppScore) : '—'}</div></div>
+      </div>
+      <div class="pc-bottom">
+        <span class="pc-salary">$${p.salary.toLocaleString()}</span>
+        <span class="pc-score">score ${p.composite.toFixed(0)}</span>
+      </div>
+    </div>`).join('') || `<div class="empty">No eligible ${esc(bestPos)} plays in this slate.</div>`;
+}
+
+const STACK_SIZES = { none: 0, stack: 1, double: 2, onslaught: 3 };
+
+function teamOpponentMap(players){
+  const map = {};
+  players.forEach(p => { if(p.team && p.opp) map[p.team] = p.opp; });
+  return map;
+}
+
+function buildLineupModel(players, priorLineupIdxSets, minDiff, mode, bringBack){
+  const variables = {}, binaries = {};
+  const constraints = {
+    salary: { max: 50000 }, total: { equal: 9 },
+    isQB: { equal: 1 }, isDST: { equal: 1 },
+    isRB: { min: 2, max: 3 }, isWR: { min: 3, max: 4 }, isTE: { min: 1, max: 2 },
+  };
+  const stackSize = STACK_SIZES[mode] || 0;
+  const oppOf = teamOpponentMap(players);
+  const teams = [...new Set(players.map(p => p.team))];
+  // Stack/double stack pair the QB with his own pass-catchers (the
+  // standard DFS meaning). Onslaught is broader — any 4+ same-team skill
+  // players including the QB, RB included — with zero opponent exposure.
+  const stackPositions = mode === 'onslaught' ? ['RB','WR','TE'] : ['WR','TE'];
+
+  players.forEach((p, i) => {
+    const vid = 'p' + i;
+    variables[vid] = {
+      quality: p.quality, salary: p.salary, total: 1,
+      isQB: p.pos==='QB'?1:0, isRB: p.pos==='RB'?1:0, isWR: p.pos==='WR'?1:0,
+      isTE: p.pos==='TE'?1:0, isDST: p.pos==='DST'?1:0,
+    };
+    priorLineupIdxSets.forEach((idxSet, li) => {
+      if(idxSet.has(i)) variables[vid]['div'+li] = 1;
+    });
+    binaries[vid] = 1;
+  });
+  priorLineupIdxSets.forEach((idxSet, li) => { constraints['div'+li] = { max: 9 - minDiff }; });
+
+  // Stack / double stack / onslaught: if this team's QB is picked, require
+  // stackSize of that same team's eligible skill players also picked.
+  // sum(skill players) - stackSize*QB >= 0  <=>  sum(skill players) >= stackSize*QB
+  if(stackSize > 0){
+    teams.forEach(T => {
+      const key = 'stack_' + T;
+      constraints[key] = { min: 0 };
+      players.forEach((p, i) => {
+        const vid = 'p' + i;
+        if(p.team === T && stackPositions.includes(p.pos)) variables[vid][key] = 1;
+        if(p.team === T && p.pos === 'QB') variables[vid][key] = -stackSize;
+      });
+    });
+  }
+
+  // Onslaught also requires ZERO players from the opponent team. Big-M:
+  // sum(opp players) + M*QB <= M  =>  QB picked forces sum(opp)<=0;
+  // QB not picked leaves sum(opp) <= M (unrestricted, M=9=full roster).
+  if(mode === 'onslaught'){
+    const M = 9;
+    teams.forEach(T => {
+      const O = oppOf[T];
+      if(!O) return;
+      const key = 'noOpp_' + T;
+      constraints[key] = { max: M };
+      players.forEach((p, i) => {
+        const vid = 'p' + i;
+        if(p.team === O) variables[vid][key] = 1;
+        if(p.team === T && p.pos === 'QB') variables[vid][key] = M;
+      });
+    });
+  }
+
+  // Bring-back: if this team's QB is picked, require at least 1 player
+  // from the opponent team. (Mutually exclusive with onslaught — the UI
+  // prevents both being active at once.)
+  if(bringBack && mode !== 'onslaught'){
+    teams.forEach(T => {
+      const O = oppOf[T];
+      if(!O) return;
+      const key = 'bring_' + T;
+      constraints[key] = { min: 0 };
+      players.forEach((p, i) => {
+        const vid = 'p' + i;
+        if(p.team === O) variables[vid][key] = 1;
+        if(p.team === T && p.pos === 'QB') variables[vid][key] = -1;
+      });
+    });
+  }
+
+  return { optimize:'quality', opType:'max', constraints, variables, binaries };
+}
+
+function buildStackModeTabs(){
+  const modes = [
+    { key:'none', label:'No stack' }, { key:'stack', label:'Stack' },
+    { key:'double', label:'Double stack' }, { key:'onslaught', label:'Onslaught' },
+  ];
+  $("stackModeTabs").innerHTML = modes.map(m =>
+    `<button role="tab" aria-selected="${m.key===stackMode}" data-mode="${m.key}">${m.label}</button>`).join('');
+  $("bringBackChk").disabled = (stackMode === 'onslaught');
+  $("stackModeTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    $("stackModeTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    stackMode = b.dataset.mode;
+    const bbChk = $("bringBackChk");
+    if(stackMode === 'onslaught'){
+      bbChk.checked = false; bbChk.disabled = true;
+    } else {
+      bbChk.disabled = false;
+    }
+  });
+}
+
+function generateLineups(){
+  if(typeof solver === 'undefined'){
+    $("lineupResults").innerHTML = `<div class="empty">Solver library failed to load — check your connection and reload.</div>`;
+    return;
+  }
+  const btn = $("genBtn");
+  btn.disabled = true; btn.textContent = 'Generating…';
+  const bringBack = $("bringBackChk").checked;
+
+  const pool = CSV_PLAYERS.filter(p => p.status !== 'OUT' && p.status !== 'IR');
+  const lineups = [];
+  const priorIdxSets = [];
+  for(let n = 0; n < 5; n++){
+    const model = buildLineupModel(pool, priorIdxSets, 3, stackMode, bringBack);
+    const result = solver.Solve(model);
+    if(!result.feasible) break;
+    const chosenIdx = new Set();
+    const chosen = [];
+    pool.forEach((p,i) => { if(result['p'+i]){ chosen.push(p); chosenIdx.add(i); } });
+    lineups.push({ players: chosen, quality: result.result,
+      salary: chosen.reduce((s,p)=>s+p.salary,0) });
+    priorIdxSets.push(chosenIdx);
+  }
+
+  btn.disabled = false; btn.textContent = 'Generate 5 lineups';
+  if(!lineups.length){
+    $("lineupResults").innerHTML = `<div class="empty">
+      No feasible lineup found under these constraints — try a lighter stack setting
+      or turn off bring-back; this slate may not have enough qualifying combinations.</div>`;
+    return;
+  }
+  renderLineups(lineups);
+}
+
+const POS_ORDER = { QB:0, RB:1, WR:2, TE:3, DST:5 }; // FLEX sits at 4, resolved below
+
+function renderLineups(lineups){
+  if(!lineups.length){
+    $("lineupResults").innerHTML = `<div class="empty">No feasible lineup found — the slate may be too thin at some position.</div>`;
+    return;
+  }
+  $("lineupResults").innerHTML = `<div class="lineup-grid">` + lineups.map((lu, i) => {
+    // 1 QB, 2 base RB, 3 base WR, 1 base TE, 1 FLEX (extra RB/WR/TE), 1 DST
+    const byPos = { QB:[], RB:[], WR:[], TE:[], DST:[] };
+    lu.players.forEach(p => byPos[p.pos].push(p));
+    const rows = [];
+    rows.push({ label:'QB', p: byPos.QB[0] });
+    rows.push({ label:'RB', p: byPos.RB[0] });
+    rows.push({ label:'RB', p: byPos.RB[1] });
+    rows.push({ label:'WR', p: byPos.WR[0] });
+    rows.push({ label:'WR', p: byPos.WR[1] });
+    rows.push({ label:'WR', p: byPos.WR[2] });
+    rows.push({ label:'TE', p: byPos.TE[0] });
+    const flexPlayer = byPos.RB[2] || byPos.WR[3] || byPos.TE[1];
+    rows.push({ label:'FLEX', p: flexPlayer });
+    rows.push({ label:'DST', p: byPos.DST[0] });
+
+    return `<div class="lineup-card">
+      <div class="lc-head">
+        <span class="lc-title">Lineup ${i+1}</span>
+        <span class="lc-salary"><b>\$${lu.salary.toLocaleString()}</b> / \$50,000</span>
+      </div>
+      ${rows.map(r => `<div class="lineup-row">
+        <span class="lr-pos">${r.label}</span>
+        <span class="lr-name">${esc(r.p.name)}</span>
+        <span class="lr-salary">\$${r.p.salary.toLocaleString()}</span>
+      </div>`).join('')}
+    </div>`;
+  }).join('') + `</div>`;
+}
+
+function buildSlateTabs(){
+  const positions = ['ALL','QB','RB','WR','TE','DST'];
+  $("slatePosTabs").innerHTML = positions.map(p =>
+    `<button role="tab" aria-selected="${p===slatePos}" data-pos="${p}">${p}</button>`).join('');
+  $("slatePosTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    $("slatePosTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    slatePos = b.dataset.pos; renderSlate();
+  });
+}
+
+const SLATE_COLS = [
+  { key: 'salary', label: 'Salary' },
+  { key: 'avgPts', label: 'Avg pts' },
+  { key: 'value', label: 'Value' },
+];
+
+function renderSlate(){
+  let rows = CSV_PLAYERS.filter(p => slatePos === 'ALL' || p.pos === slatePos);
+  if(searchTerm) rows = rows.filter(p => p.name.toLowerCase().includes(searchTerm));
+  rows.sort((a,b) => slateDir === 'desc' ? b[slateSort]-a[slateSort] : a[slateSort]-b[slateSort]);
+
+  let head = `<thead><tr>
+    <th class="name-col">Player</th><th>Pos</th><th>Team</th><th>Opp</th>
+    ${SLATE_COLS.map(c => `<th data-key="${c.key}" class="${c.key===slateSort?'sorted':''}">
+      ${c.label}${c.key===slateSort ? (slateDir==='desc'?' ▾':' ▴') : ''}</th>`).join('')}
+  </tr></thead>`;
+
+  let body = '<tbody>' + rows.map(p => `
+    <tr>
+      <td class="name-col">${esc(p.name)} ${statusPill(p.status)}</td>
+      <td><span class="cell-val">${esc(p.pos)}</span></td>
+      <td>${fiLogoHTML(p.team,18)}<span class="cell-val">${esc(p.team)}</span></td>
+      <td><span class="cell-val">${p.opp ? esc(p.opp) : '—'}</span></td>
+      <td><span class="cell-val">$${p.salary.toLocaleString()}</span></td>
+      <td><span class="cell-val">${p.avgPts.toFixed(1)}</span></td>
+      <td><span class="cell-val">${p.value.toFixed(1)}x</span></td>
+    </tr>`).join('') + '</tbody>';
+
+  $("slateTable").innerHTML = head + body;
+  $("slateTable").querySelectorAll("thead th[data-key]").forEach(th => {
+    th.onclick = () => {
+      const k = th.dataset.key;
+      if(k === slateSort) slateDir = slateDir === 'desc' ? 'asc' : 'desc';
+      else { slateSort = k; slateDir = 'desc'; }
+      renderSlate();
+    };
+  });
+}
+
+load();
+</script>
+</body>
+</html>

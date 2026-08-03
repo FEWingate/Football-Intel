@@ -12,7 +12,7 @@ const NAV = [
   { key: 'context',  label: 'Contextual',   ico: '📊', href: 'contextual_stats.html' },
   { key: 'teams',    label: 'Teams',        ico: '🛡️', href: 'teams.html' },
   { key: 'players',  label: 'Players',      ico: '👤' },
-  { key: 'dfs',      label: 'DFS Center',   ico: '💰' },
+  { key: 'dfs',      label: 'DFS Center',   ico: '💰', href: 'dfs_center.html' },
   { key: 'props',    label: 'Prop Center',  ico: '🎯' },
   { key: 'injuries', label: 'Injuries',     ico: '🩹' },
   { key: 'stats',    label: 'Stats Hub',    ico: '📈', href: 'stats_hub.html' },
