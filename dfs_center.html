@@ -112,6 +112,27 @@ let slateSort = 'value', slateDir = 'desc';
 let searchTerm = '';
 let dfsView = 'best'; // 'best' | 'lineups' | 'slate'
 let stackMode = 'none'; // 'none' | 'stack' | 'double' | 'onslaught'
+let loadedFileName = null;
+const STORAGE_KEY = 'fi_dfs_slate_v1';
+
+function saveSlate(players, fileName){
+  try{
+    const raw = players.map(p => ({
+      name:p.name, pos:p.pos, team:p.team, salary:p.salary,
+      avgPts:p.avgPts, status:p.status, gameInfo:p.gameInfo,
+    }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ raw, fileName, savedAt: Date.now() }));
+  }catch(e){ /* storage full/unavailable — upload still works, just won't persist */ }
+}
+function loadSavedSlate(){
+  try{
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : null;
+  }catch(e){ return null; }
+}
+function clearSavedSlate(){
+  try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+}
 
 main.innerHTML = `
   <div class="bar">
@@ -128,6 +149,14 @@ async function load(){
     const res = await fetch(`matchup/wk18.json`);
     if(res.ok) MATCHUP = await res.json();
   }catch(e){ /* opponent grading unavailable without it */ }
+
+  const saved = loadSavedSlate();
+  if(saved && saved.raw && saved.raw.length){
+    CSV_PLAYERS = saved.raw.map(r => ({...r}));
+    computeAll(CSV_PLAYERS);
+    loadedFileName = saved.fileName || null;
+  }
+
   fiStatus("Ready");
   fiUpdated(CSV_PLAYERS ? `${CSV_PLAYERS.length} players loaded` : "no slate loaded");
   renderShell();
@@ -147,7 +176,7 @@ function renderShell(){
 
   $("content").innerHTML = `
     <div class="file-bar">
-      <span class="file-name">${CSV_PLAYERS.length} players loaded</span>
+      <span class="file-name">${CSV_PLAYERS.length} players loaded${loadedFileName ? ' · ' + esc(loadedFileName) : ''}</span>
       <button class="replace-btn" id="replaceBtn">Replace file</button>
     </div>
     ${MATCHUP ? `<div class="caveat"><b>Opponent grading note:</b> using ${MATCHUP.season} season-final
@@ -189,7 +218,7 @@ function renderShell(){
       <div class="lead-wrap"><table class="lead-table" id="slateTable"></table></div>
     </div>`;
 
-  $("replaceBtn").onclick = () => { CSV_PLAYERS = null; renderShell(); };
+  $("replaceBtn").onclick = () => { CSV_PLAYERS = null; loadedFileName = null; clearSavedSlate(); renderShell(); };
   $("genBtn").onclick = generateLineups;
   $("dfsViewSwitch").querySelectorAll("button").forEach(b => b.onclick = () => {
     dfsView = b.dataset.view; renderShell();
@@ -220,6 +249,8 @@ function parseFile(file){
     complete: results => {
       CSV_PLAYERS = results.data.map(normalizeRow).filter(p => p.pos);
       computeAll(CSV_PLAYERS);
+      loadedFileName = file.name;
+      saveSlate(CSV_PLAYERS, file.name);
       fiUpdated(`${CSV_PLAYERS.length} players loaded`);
       renderShell();
     },
