@@ -20,7 +20,7 @@ const NAV = [
   { key: 'coeus',    label: 'Coeus',        ico: '◉' },
 ];
 
-const MOBILE_NAV = ['games', 'threats', 'matchup', 'context', 'coeus'];
+const MOBILE_NAV = ['games', 'threats', 'matchup', 'context', 'teams', 'dfs', 'stats'];
 
 function fiShell({ page, pageLabel, status = 'ready' }) {
   document.body.dataset.page = page;

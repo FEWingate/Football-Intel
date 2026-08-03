@@ -305,10 +305,11 @@ select:hover{border-color:var(--border2)}
 .mobile-bottom-nav-inner{display:flex;align-items:center;justify-content:space-around}
 .mobile-nav-btn{
   display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;
-  color:var(--text-dim);font-family:var(--font-mono);font-size:9px;letter-spacing:.05em;
-  text-transform:uppercase;cursor:pointer;text-decoration:none;padding:4px 8px;
+  color:var(--text-dim);font-family:var(--font-mono);font-size:8.5px;letter-spacing:.02em;
+  text-transform:uppercase;cursor:pointer;text-decoration:none;padding:4px 3px;
+  flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.mobile-nav-btn .mnav-icon{font-size:17px;line-height:1}
+.mobile-nav-btn .mnav-icon{font-size:16px;line-height:1}
 .mobile-nav-btn.active{color:var(--text)}
 .mobile-nav-btn.active .mnav-icon{filter:none}
 
