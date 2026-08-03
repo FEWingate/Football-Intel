@@ -16,7 +16,7 @@
 .chip.top{color:var(--accent-green);border-color:rgba(74,222,128,.42);background:rgba(74,222,128,.06)}
 .chip.mid{color:var(--text-mid)}
 .chip.bot{color:var(--accent-red);border-color:rgba(244,63,94,.42);background:rgba(244,63,94,.06)}
-.sp-row{display:grid;grid-template-columns:1.4fr repeat(3,1fr) 92px 64px;gap:12px;
+.sp-row{display:grid;grid-template-columns:1.3fr 1fr repeat(3,1fr) 92px 64px;gap:12px;
   align-items:center;padding:12px 16px;border-bottom:1px solid var(--hairline)}
 .sp-row:last-child{border-bottom:0}
 .sp-row.head{background:var(--surface2);border-bottom:1px solid var(--border)}
@@ -24,8 +24,11 @@
   text-transform:uppercase;color:var(--text-dim)}
 .sp-metric{font-size:12.5px}
 .sp-val{font-family:var(--font-mono);font-size:15px;font-variant-numeric:tabular-nums}
+.sp-val.season{color:var(--text-mid)}
 .sp-val small{display:block;font-size:9px;color:var(--text-dim);letter-spacing:.05em;margin-top:2px}
 .sp-val.none{color:var(--text-dim);font-size:12.5px}
+.tier-diff{font-size:10.5px;font-weight:600}
+.tier-diff.up{color:var(--accent-green)} .tier-diff.down{color:var(--accent-red)} .tier-diff.flat{color:var(--text-dim)}
 .slope{height:26px}
 .gap{font-family:var(--font-mono);font-size:10.5px;text-align:right;font-variant-numeric:tabular-nums}
 .gap.up{color:var(--accent-red)} .gap.down{color:var(--accent-green)} .gap.flat{color:var(--text-dim)}
@@ -140,6 +143,18 @@ function gapTag(sp){
   const diff=b-a, cls=diff>0?"up":diff<0?"down":"flat";
   return `<div class="gap ${cls}">${diff>0?"+":""}${diff.toFixed(1)}</div>`;
 }
+function seasonAvgFor(m){
+  const log = DATA.teams[team].log;
+  const vals = log.map(e => cellFor(e,unit,m)).filter(c => c && c.v!=null).map(c => c.v);
+  if(!vals.length) return null;
+  return vals.reduce((s,v)=>s+v,0) / vals.length;
+}
+function diffBadge(tierAvg, seasonAvg){
+  if(tierAvg===null || seasonAvg===null) return '';
+  const diff = tierAvg - seasonAvg;
+  const cls = diff>0 ? 'up' : diff<0 ? 'down' : 'flat';
+  return ` <span class="tier-diff ${cls}">(${diff>0?'+':''}${diff.toFixed(1)})</span>`;
+}
 
 function render(){
   if(!DATA) return;
@@ -156,15 +171,17 @@ function render(){
       </div>
       <span class="panel-count">${metrics.length} metrics</span>
     </div>
-    <div class="sp-row head"><span>Metric</span>
+    <div class="sp-row head"><span>Metric</span><span>Season Avg</span>
       ${TIERS.map(([,l])=>`<span>${l}</span>`).join('')}<span>Trend</span><span>Gap</span></div>`;
   metrics.forEach(m=>{
+    const seasonAvg = seasonAvgFor(m);
     h += `<div class="sp-row"><div class="sp-metric">${esc(labels[m])}</div>`;
+    h += `<div class="sp-val season" data-tier="Season Avg">${seasonAvg===null ? '—' : seasonAvg.toFixed(1)}</div>`;
     TIERS.forEach(([k,l])=>{
       const c=sp[m][k];
       h += c.avg===null
         ? `<div class="sp-val none" data-tier="${l}">— <small>no games</small></div>`
-        : `<div class="sp-val" data-tier="${l}">${c.avg}<small>n=${c.n}</small></div>`;
+        : `<div class="sp-val" data-tier="${l}">${c.avg}${diffBadge(c.avg, seasonAvg)}<small>n=${c.n}</small></div>`;
     });
     h += slopeSVG(sp[m]) + gapTag(sp[m]) + `</div>`;
   });
