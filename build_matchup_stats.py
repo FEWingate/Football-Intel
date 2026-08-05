@@ -87,8 +87,11 @@ POS_METRICS = {
         "carries":    ("Carries", 0, True, "Volume"),
         "car_pg":     ("Carries / game", 1, True, "Volume"),
         "rec_yds":    ("Receiving yards", 0, True, "Volume"),
+        "rec_ypg":    ("Receiving yards / game", 1, True, "Volume"),
         "rec":        ("Receptions", 0, True, "Volume"),
         "rec_pg":     ("Receptions / game", 1, True, "Volume"),
+        "targets":    ("Targets", 0, True, "Volume"),
+        "tgt_pg":     ("Targets / game", 1, True, "Volume"),
         "rush_td":    ("Rushing TDs", 0, True, "Volume"),
         "rec_td":     ("Receiving TDs", 0, True, "Volume"),
         "fd_pg":      ("Rushing first downs / game", 1, True, "Efficiency"),
@@ -103,6 +106,8 @@ POS_METRICS = {
         "rec_ypg":    ("Receiving yards / game", 1, True, "Volume"),
         "rec":        ("Receptions", 0, True, "Volume"),
         "rec_pg":     ("Receptions / game", 1, True, "Volume"),
+        "targets":    ("Targets", 0, True, "Volume"),
+        "tgt_pg":     ("Targets / game", 1, True, "Volume"),
         "td":         ("Receiving TDs", 0, True, "Volume"),
         "ypr":        ("Yards / reception", 1, True, "Efficiency"),
         "air_pg":     ("Air yards / game", 1, True, "Efficiency"),
@@ -490,8 +495,11 @@ def pos_metrics_from_sums(pos, s, gp):
             "carries":  g("carries"),
             "car_pg":   safe_div(g("carries"), gp),
             "rec_yds":  g("receiving_yards"),
+            "rec_ypg":  safe_div(g("receiving_yards"), gp),
             "rec":      g("receptions"),
             "rec_pg":   safe_div(g("receptions"), gp),
+            "targets":  g("targets"),
+            "tgt_pg":   safe_div(g("targets"), gp),
             "rush_td":  g("rushing_tds"),
             "rec_td":   g("receiving_tds"),
             "fd_pg":    safe_div(g("rushing_first_downs"), gp),
@@ -505,6 +513,8 @@ def pos_metrics_from_sums(pos, s, gp):
         "rec_ypg": safe_div(g("receiving_yards"), gp),
         "rec":     g("receptions"),
         "rec_pg":  safe_div(g("receptions"), gp),
+        "targets": g("targets"),
+        "tgt_pg":  safe_div(g("targets"), gp),
         "td":      g("receiving_tds"),
         "ypr":     safe_div(g("receiving_yards"), g("receptions")),
         "air_pg":  safe_div(g("receiving_air_yards"), gp),
@@ -1337,6 +1347,7 @@ def build_player_log(player_df, pos, latest_matchup, team_week_totals=None):
         cum_metrics = pos_metrics_from_sums(pos, cum_raw, cum_games)  # through this week
 
         tier = None
+        rank = None
         if latest_matchup and opp in latest_matchup.get("teams", {}):
             def_block = latest_matchup["teams"][opp].get("def", {}).get(pos, {})
             rank = def_block.get(primary_key, {}).get("r")
@@ -1344,7 +1355,7 @@ def build_player_log(player_df, pos, latest_matchup, team_week_totals=None):
                 tier = tier_of(rank)
 
         entry = {
-            "week": int(row["week"]), "opp": opp, "tier": tier,
+            "week": int(row["week"]), "opp": opp, "tier": tier, "rank": rank,
             "m": {k: round(game_metrics.get(k, 0), 1) for k in volume_keys},
             "cum": {k: round(cum_metrics.get(k, 0), 1) for k in rate_keys},
             "dk": round(dk_pts, 1),
@@ -1352,7 +1363,7 @@ def build_player_log(player_df, pos, latest_matchup, team_week_totals=None):
         }
         log.append(entry)
         if tier:
-            tier_rows[tier].append(entry["m"])
+            tier_rows[tier].append(entry)
 
     dk_scores_sorted = sorted(dk_scores, reverse=True)
     ceiling = {
@@ -1361,15 +1372,20 @@ def build_player_log(player_df, pos, latest_matchup, team_week_totals=None):
         "top3avg": round(sum(dk_scores_sorted[:3]) / min(3, len(dk_scores_sorted)), 1) if dk_scores_sorted else 0,
     }
 
+    def tier_avg(rows, getter):
+        vals = [v for v in (getter(r) for r in rows) if v is not None]
+        return round(sum(vals) / len(vals), 1) if vals else None
+
     splits = {}
     for tier, rows in tier_rows.items():
         if not rows:
             splits[tier] = {"games": 0, "m": {}}
             continue
-        splits[tier] = {
-            "games": len(rows),
-            "m": {k: round(sum(r[k] for r in rows) / len(rows), 1) for k in volume_keys},
-        }
+        m = {k: tier_avg(rows, lambda r, k=k: r["m"].get(k)) for k in volume_keys}
+        m["dk"] = tier_avg(rows, lambda r: r["dk"])
+        m["rush_share"] = tier_avg(rows, lambda r: r["rush_share"])
+        m["target_share"] = tier_avg(rows, lambda r: r["target_share"])
+        splits[tier] = {"games": len(rows), "m": m}
     return log, splits, ceiling
 
 

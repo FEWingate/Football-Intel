@@ -9,8 +9,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/fi-styles.css">
 <style>
-.browse-layout{display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start}
-#browseCol{border-right:1px solid var(--border);padding-right:16px}
+.browse-layout{display:grid;grid-template-columns:280px 24px 1fr;gap:12px;align-items:start;position:relative}
+.browse-layout.collapsed{grid-template-columns:0px 24px 1fr}
+.browse-layout.collapsed #browseCol{overflow:hidden;width:0;padding:0}
+.browse-collapse-btn{
+  background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);
+  color:var(--text-dim);cursor:pointer;font-family:var(--font-mono);font-size:13px;
+  width:24px;height:32px;align-self:start;margin-top:36px;
+}
+.browse-collapse-btn:hover{color:var(--text);border-color:var(--border2)}
+#browseCol{padding-right:0}
 .browse-search{
   width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);
   color:var(--text);font-size:12px;padding:8px 12px;margin-bottom:10px;
@@ -58,6 +66,16 @@
 
 .lead-wrap{overflow:auto;max-height:420px;border:1px solid var(--border);border-radius:var(--radius-lg);margin-top:10px}
 .lead-table{width:100%;border-collapse:separate;border-spacing:0}
+.compare-table{width:auto;table-layout:fixed}
+.compare-table th, .compare-table td{width:170px}
+.compare-table th.name-col, .compare-table td.name-col{width:220px}
+.compare-player-head{text-align:center !important;padding:14px 10px !important;vertical-align:top}
+.compare-headshot-lg{width:64px;height:64px;border-radius:50%;object-fit:cover;background:var(--surface2);
+  border:2px solid var(--border);display:block;margin:0 auto 8px}
+.cph-name{font-family:var(--font-display);font-weight:700;font-size:14px;color:var(--text);
+  text-transform:none;letter-spacing:0;line-height:1.25;white-space:normal;overflow-wrap:break-word}
+.cph-team{font-family:var(--font-mono);font-size:10px;color:var(--text-dim);
+  text-transform:none;letter-spacing:0;margin-top:2px}
 .lead-table thead th{
   padding:9px 12px;text-align:right;font-family:var(--font-mono);font-size:9px;
   letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap;
@@ -79,8 +97,10 @@
 .subsect{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.18em;
   text-transform:uppercase;color:var(--text-dim);padding:14px 0 3px}
 @media(max-width:900px){
-  .browse-layout{grid-template-columns:1fr}
-  #browseCol{border-right:none;padding-right:0;border-bottom:1px solid var(--border);padding-bottom:16px}
+  .browse-layout, .browse-layout.collapsed{grid-template-columns:1fr}
+  .browse-layout.collapsed #browseCol{width:auto;overflow:visible;padding:0}
+  #browseCol{border-bottom:1px solid var(--border);padding-bottom:16px}
+  .browse-collapse-btn{display:none}
 }
 </style>
 </head>
@@ -91,6 +111,7 @@ const main = fiShell({ page:'players', pageLabel:'Players', status:'loading' });
 
 let PLAYERSTATS = null;
 let browsePos = 'RB';
+let browseCollapsed = false;
 let browseSearch = '';
 let activePlayer = null;
 let activeSec = 'season'; // 'season' | 'career' | 'window' | 'log'
@@ -106,9 +127,11 @@ main.innerHTML = `
   <div class="tabs" id="viewTabs" role="tablist">
     <button role="tab" data-view="profile" aria-selected="true">Player Profile</button>
     <button role="tab" data-view="committee" aria-selected="false">Committee View</button>
+    <button role="tab" data-view="compare" aria-selected="false">Compare</button>
   </div>
   <div id="profileView"></div>
-  <div id="committeeView" style="display:none"></div>`;
+  <div id="committeeView" style="display:none"></div>
+  <div id="compareView" style="display:none"></div>`;
 
 const $ = id => document.getElementById(id);
 
@@ -135,7 +158,9 @@ async function load(){
     const view = b.dataset.view;
     $("profileView").style.display = view==='profile' ? '' : 'none';
     $("committeeView").style.display = view==='committee' ? '' : 'none';
+    $("compareView").style.display = view==='compare' ? '' : 'none';
     if(view==='committee') renderCommittee();
+    if(view==='compare') renderCompareView();
   });
 
   renderProfileView();
@@ -144,14 +169,21 @@ async function load(){
 /* ── PLAYER PROFILE VIEW ─────────────────────────────────────────── */
 function renderProfileView(){
   $("profileView").innerHTML = `
-    <div class="browse-layout">
+    <div class="browse-layout${browseCollapsed?' collapsed':''}" id="browseLayout">
       <div id="browseCol">
         <div class="tabs" id="browsePosTabs" role="tablist"></div>
         <input class="browse-search" id="browseSearchBox" placeholder="Search players…">
         <div class="browse-list" id="browseList"></div>
       </div>
+      <button class="browse-collapse-btn" id="browseCollapseBtn" title="${browseCollapsed?'Show list':'Hide list'}">${browseCollapsed?'›':'‹'}</button>
       <div id="profilePanel"><div class="empty">Select a player from the list to see their profile.</div></div>
     </div>`;
+
+  $("browseCollapseBtn").onclick = () => {
+    browseCollapsed = !browseCollapsed;
+    renderProfileView();
+    if(activePlayer) renderProfilePanel();
+  };
 
   const positions = ['QB','RB','WR','TE'];
   $("browsePosTabs").innerHTML = positions.map(p =>
@@ -292,6 +324,20 @@ function chartValue(g, key){
   return g.m[key];
 }
 
+function splitCardsHTML(p, active){
+  const tiers = [['top','vs Top 10'], ['mid','vs Middle 12'], ['bot','vs Bottom 10']];
+  return `<div class="split-cards">${tiers.map(([key,label]) => {
+    const split = p.splits[key];
+    const v = split && split.m ? split.m[active.key] : null;
+    const vText = v == null ? '—' : (active.pct ? `${v}%` : v);
+    return `<div class="split-card ${key}">
+      <div class="sc-label">${label}</div>
+      <div class="sc-games">${split ? split.games : 0} games</div>
+      <div class="sc-value">${vText}</div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
 function renderWindow(box, p){
   const log = p.log.slice().sort((a,b)=>a.week-b.week);
   const recent = log.slice(-windowSize);
@@ -314,6 +360,8 @@ function renderWindow(box, p){
   </div>`;
 
   const active = stats.find(s => s.key === chartStat);
+  h += splitCardsHTML(p, active);
+
   h += `<div class="window-chart">`;
   const vals = recent.map(g => chartValue(g, chartStat) || 0);
   const maxVal = Math.max(1, ...vals);
@@ -324,7 +372,7 @@ function renderWindow(box, p){
     const vText = active.pct ? `${v}%` : v;
     h += `<div class="window-bar-wrap">
       <div class="window-bar-value">${vText}</div>
-      <div class="window-bar ${tier}" style="height:${pct}%" title="Wk ${g.week} vs ${esc(g.opp||'?')}: ${vText} ${esc(active.label)} (${TIER_LABEL[tier]||'—'})"></div>
+      <div class="window-bar ${tier}" style="height:${pct}%" title="Wk ${g.week} vs ${esc(g.opp||'?')}: ${vText} ${esc(active.label)} (${TIER_LABEL[tier]||'—'}${g.rank?' #'+g.rank:''})"></div>
       <div class="window-wk">${g.week}</div>
     </div>`;
   });
@@ -365,7 +413,7 @@ function renderGameLogFull(box, p){
     h += `<tr>
       <td class="name-col">${g.week}</td>
       <td>${g.opp ? fiLogoHTML(g.opp,16)+esc(g.opp) : '—'}</td>
-      <td>${g.tier ? `<span class="tier-badge ${g.tier}">${TIER_LABEL[g.tier]}</span>` : '—'}</td>
+      <td>${g.tier ? `<span class="tier-badge ${g.tier}">${TIER_LABEL[g.tier]}</span> <span class="cell-val">#${g.rank}</span>` : '—'}</td>
       ${volKeys.map(k=>`<td><span class="cell-val">${fmtVal(g.m[k])}</span></td>`).join('')}
       <td><span class="cell-val">${fmtVal(g.dk)}</span></td>
     </tr>`;
@@ -408,7 +456,7 @@ function committeeTable(pos, cols){
 
   if(!rows.length) return `<div class="empty">No ${pos === 'RB' ? 'running backs' : 'wide receivers'} on this team this season.</div>`;
 
-  let h = `<div class="lead-wrap" style="max-height:none"><table class="lead-table"><thead><tr>
+  let h = `<div class="lead-wrap" style="max-height:calc(100vh - 300px)"><table class="lead-table"><thead><tr>
     <th class="name-col">Player</th><th>GP</th>
     ${cols.map(c=>`<th>${esc(c.label)}</th>`).join('')}
   </tr></thead><tbody>`;
@@ -456,6 +504,166 @@ function renderCommitteeTables(){
         openProfile(p, pos);
       };
     });
+  });
+}
+
+/* ── COMPARE VIEW ────────────────────────────────────────────────── */
+const COMPARE_MAX = 4;
+let comparePos = 'RB';
+let comparePlayers = [];
+let compareSearch = '';
+let compareHorizon = 'season'; // 'season' | 'career'
+
+function renderCompareView(){
+  $("compareView").innerHTML = `
+    <div class="tabs" id="comparePosTabs" role="tablist"></div>
+    <div class="lineup-note" style="margin:6px 0 14px">
+      Compare up to ${COMPARE_MAX} players at the same position, side by side. Search below to add.
+    </div>
+    <input class="browse-search" id="compareSearchBox" placeholder="Search players to compare…" style="max-width:400px">
+    <div id="compareSearchResults"></div>
+    <div id="compareChips" class="excluded-chips" style="margin:14px 0"></div>
+    <div id="compareTableWrap"></div>`;
+
+  const positions = ['QB','RB','WR','TE'];
+  $("comparePosTabs").innerHTML = positions.map(p =>
+    `<button role="tab" aria-selected="${p===comparePos}" data-pos="${p}">${p}</button>`).join('');
+  $("comparePosTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    if(b.dataset.pos !== comparePos) comparePlayers = []; // switching position clears the comparison
+    comparePos = b.dataset.pos;
+    $("comparePosTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    compareSearch = ''; $("compareSearchBox").value = '';
+    renderCompareBody();
+  });
+  $("compareSearchBox").oninput = e => { compareSearch = e.target.value; renderCompareSearchResults(); };
+
+  renderCompareBody();
+}
+
+function renderCompareBody(){
+  renderCompareSearchResults();
+  renderCompareChips();
+  renderCompareTable();
+}
+
+function renderCompareSearchResults(){
+  const term = compareSearch.trim().toLowerCase();
+  const box = $("compareSearchResults");
+  if(term.length < 2){ box.innerHTML = ''; return; }
+  const selectedNames = new Set(comparePlayers.map(p=>p.name));
+  const atMax = comparePlayers.length >= COMPARE_MAX;
+  const results = PLAYERSTATS.players[comparePos]
+    .filter(p => !selectedNames.has(p.name))
+    .filter(p => p.name.toLowerCase().includes(term))
+    .slice(0, 12);
+
+  box.innerHTML = results.map(p => `
+    <div class="search-result${atMax?' disabled':''}" data-name="${esc(p.name)}">
+      <img class="browse-headshot" src="${esc(p.headshot||'')}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+      <span class="sr-name">${esc(p.name)} · ${esc(p.team)}</span>
+    </div>`).join('') || `<div class="empty" style="padding:10px 4px">No matches.</div>`;
+
+  box.querySelectorAll('.search-result:not(.disabled)').forEach(el => {
+    el.onclick = () => {
+      const p = PLAYERSTATS.players[comparePos].find(x => x.name === el.dataset.name);
+      if(p && comparePlayers.length < COMPARE_MAX){
+        comparePlayers.push(p);
+        compareSearch = ''; $("compareSearchBox").value = '';
+        renderCompareBody();
+      }
+    };
+  });
+}
+
+function renderCompareChips(){
+  $("compareChips").innerHTML = comparePlayers.map(p =>
+    `<span class="excluded-chip" data-name="${esc(p.name)}" style="color:var(--primary);background:rgba(163,230,53,.08);border-color:rgba(163,230,53,.3)">
+      ${esc(p.name)} ✕
+    </span>`).join('');
+  $("compareChips").querySelectorAll('.excluded-chip').forEach(el => {
+    el.onclick = () => {
+      comparePlayers = comparePlayers.filter(p => p.name !== el.dataset.name);
+      renderCompareBody();
+    };
+  });
+}
+
+function renderCompareTable(){
+  const wrap = $("compareTableWrap");
+  if(comparePlayers.length < 2){
+    wrap.innerHTML = `<div class="empty">Add at least 2 players to compare.</div>`;
+    return;
+  }
+  const cats = PLAYERSTATS.labels[comparePos];
+  const PCT_KEYS = new Set(['rush_share','target_share']);
+
+  let h = `<div class="tabs" id="compareHorizonTabs" role="tablist">
+    <button role="tab" data-h="season" aria-selected="${compareHorizon==='season'}">Season</button>
+    <button role="tab" data-h="career" aria-selected="${compareHorizon==='career'}">Career</button>
+  </div>
+  <div class="lead-wrap" style="max-height:calc(100vh - 260px);margin-top:10px"><table class="lead-table compare-table"><thead><tr>
+    <th class="name-col">Stat</th>
+    ${comparePlayers.map(p => `<th class="compare-player-head">
+      <img class="compare-headshot-lg" src="${esc(p.headshot||'')}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+      <div class="cph-name">${esc(p.name)}</div>
+      <div class="cph-team">${esc(p.team)}</div>
+    </th>`).join('')}
+  </tr></thead><tbody>
+    <tr><td class="name-col">Games</td>
+      ${comparePlayers.map(p => `<td><span class="cell-val">${p[compareHorizon].games}</span></td>`).join('')}
+    </tr>`;
+
+  for(const [cat, labels] of Object.entries(cats)){
+    h += `<tr><td class="name-col" colspan="${comparePlayers.length+1}" style="background:var(--surface2);font-family:var(--font-mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim)">${esc(cat)}</td></tr>`;
+    for(const [k, meta] of Object.entries(labels)){
+      h += `<tr><td class="name-col">${esc(meta.l)}</td>`;
+      const rowVals = comparePlayers.map(p => p[compareHorizon].m[k]);
+      const validVals = rowVals.filter(v => v != null);
+      const best = validVals.length ? (meta.inv ? Math.min(...validVals) : Math.max(...validVals)) : null;
+      comparePlayers.forEach((p,i) => {
+        const v = rowVals[i];
+        const text = v == null ? '—' : (PCT_KEYS.has(k) ? `${fmtVal(v)}%` : fmtVal(v));
+        const isBest = v != null && v === best && validVals.length > 1;
+        h += `<td><span class="cell-val"${isBest?' style="color:var(--primary);font-weight:700"':''}>${text}</span></td>`;
+      });
+      h += `</tr>`;
+    }
+  }
+
+  const TIER_STAT_KEYS = {
+    QB: ['pass_yds'],
+    RB: ['rush_yds', 'rec_yds', 'rec'],
+    WR: ['rec_yds', 'rec'],
+    TE: ['rec_yds', 'rec'],
+  };
+  const tierKeys = (TIER_STAT_KEYS[comparePos] || [primaryStatKey(comparePos)])
+    .filter(k => cats.Volume && cats.Volume[k]); // guard against a key not existing for this position
+
+  h += `<tr><td class="name-col" colspan="${comparePlayers.length+1}" style="background:var(--surface2);font-family:var(--font-mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim)">Vs defense tier — per game</td></tr>`;
+  tierKeys.forEach(statKey => {
+    const statLabel = cats.Volume[statKey].l;
+    h += `<tr><td class="name-col" style="font-style:italic;color:var(--text-dim)" colspan="${comparePlayers.length+1}">${esc(statLabel)}</td></tr>`;
+    [['top','Vs Top 10'], ['mid','Vs Middle 12'], ['bot','Vs Bottom 10']].forEach(([tierKey, tierLabel]) => {
+      h += `<tr><td class="name-col">${esc(tierLabel)}</td>`;
+      const rowVals = comparePlayers.map(p => p.splits?.[tierKey]?.m?.[statKey]);
+      const validVals = rowVals.filter(v => v != null);
+      const best = validVals.length ? Math.max(...validVals) : null;
+      comparePlayers.forEach((p,i) => {
+        const v = rowVals[i];
+        const games = p.splits?.[tierKey]?.games || 0;
+        const text = v == null ? '—' : `${fmtVal(v)} <span style="color:var(--text-dim);font-size:10px">(${games}g)</span>`;
+        const isBest = v != null && v === best && validVals.length > 1;
+        h += `<td><span class="cell-val"${isBest?' style="color:var(--primary);font-weight:700"':''}>${text}</span></td>`;
+      });
+      h += `</tr>`;
+    });
+  });
+
+  h += `</tbody></table></div>`;
+  wrap.innerHTML = h;
+
+  wrap.querySelectorAll('#compareHorizonTabs button').forEach(b => b.onclick = () => {
+    compareHorizon = b.dataset.h; renderCompareTable();
   });
 }
 
