@@ -33,6 +33,7 @@
 .browse-row .br-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .browse-row .br-val{font-family:var(--font-mono);font-size:10.5px;color:var(--text-dim);flex:none}
 .browse-headshot{width:22px;height:22px;border-radius:50%;object-fit:cover;background:var(--surface2);flex:none}
+.rank-num{font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-right:6px;display:inline-block;width:16px}
 
 .profile-head{display:flex;align-items:center;gap:16px;margin-bottom:16px}
 .profile-headshot{width:76px;height:76px;border-radius:50%;object-fit:cover;background:var(--surface2);
@@ -128,10 +129,12 @@ main.innerHTML = `
     <button role="tab" data-view="profile" aria-selected="true">Player Profile</button>
     <button role="tab" data-view="committee" aria-selected="false">Committee View</button>
     <button role="tab" data-view="compare" aria-selected="false">Compare</button>
+    <button role="tab" data-view="tierlb" aria-selected="false">Tier Leaderboard</button>
   </div>
   <div id="profileView"></div>
   <div id="committeeView" style="display:none"></div>
-  <div id="compareView" style="display:none"></div>`;
+  <div id="compareView" style="display:none"></div>
+  <div id="tierView" style="display:none"></div>`;
 
 const $ = id => document.getElementById(id);
 
@@ -159,8 +162,10 @@ async function load(){
     $("profileView").style.display = view==='profile' ? '' : 'none';
     $("committeeView").style.display = view==='committee' ? '' : 'none';
     $("compareView").style.display = view==='compare' ? '' : 'none';
+    $("tierView").style.display = view==='tierlb' ? '' : 'none';
     if(view==='committee') renderCommittee();
     if(view==='compare') renderCompareView();
+    if(view==='tierlb') renderTierLeaderboard();
   });
 
   renderProfileView();
@@ -233,6 +238,12 @@ function fmtVal(v){
 }
 
 const TIER_LABEL = { top: 'Top 10', mid: 'Middle 12', bot: 'Bottom 10' };
+const TIER_STAT_KEYS = {
+  QB: ['pass_yds'],
+  RB: ['rush_yds', 'rec_yds', 'rec'],
+  WR: ['rec_yds', 'rec'],
+  TE: ['rec_yds', 'rec'],
+};
 
 function openProfile(p, pos){
   activePlayer = p; activePlayer.pos = pos; activeSec = 'season';
@@ -278,11 +289,29 @@ function fiTeamLogoInline(team){ return fiLogoHTML(team, 16); }
 function renderProfileBody(){
   const box = $("profileBody");
   const p = activePlayer;
-  if(activeSec === 'season') box.innerHTML = statBlockHTML(p.season.m, `${p.season.games} games`, p.pos);
+  if(activeSec === 'season') box.innerHTML = statBlockHTML(p.season.m, `${p.season.games} games`, p.pos)
+    + tierProfileSectionHTML(p);
   else if(activeSec === 'career') box.innerHTML = statBlockHTML(p.career.m,
     `${p.career.games} games · through ${p.career.through}`, p.pos);
   else if(activeSec === 'window') renderWindow(box, p);
   else renderGameLogFull(box, p);
+}
+
+// Season-only (splits aren't tracked across career/team changes — same
+// scoping decision as Usage). Reuses the same per-stat card the L5/L10
+// view already shows, just made visible directly on Season too, since the
+// underlying data is season-long regardless of which tab it's viewed from.
+function tierProfileSectionHTML(p){
+  const cats = PLAYERSTATS.labels[p.pos];
+  const statKeys = (TIER_STAT_KEYS[p.pos] || [primaryStatKey(p.pos)])
+    .filter(k => cats.Volume && cats.Volume[k]);
+  let h = `<div class="subsect" style="padding-top:22px">Vs Defense Tier — Season</div>`;
+  statKeys.forEach(statKey => {
+    const label = cats.Volume[statKey].l;
+    h += `<div style="font-size:11px;color:var(--text-mid);margin:10px 0 2px">${esc(label)}</div>`;
+    h += splitCardsHTML(p, { key: statKey, label, pct: false });
+  });
+  return h;
 }
 
 function statBlockHTML(m, horizonNote, pos){
@@ -630,12 +659,6 @@ function renderCompareTable(){
     }
   }
 
-  const TIER_STAT_KEYS = {
-    QB: ['pass_yds'],
-    RB: ['rush_yds', 'rec_yds', 'rec'],
-    WR: ['rec_yds', 'rec'],
-    TE: ['rec_yds', 'rec'],
-  };
   const tierKeys = (TIER_STAT_KEYS[comparePos] || [primaryStatKey(comparePos)])
     .filter(k => cats.Volume && cats.Volume[k]); // guard against a key not existing for this position
 
@@ -664,6 +687,138 @@ function renderCompareTable(){
 
   wrap.querySelectorAll('#compareHorizonTabs button').forEach(b => b.onclick = () => {
     compareHorizon = b.dataset.h; renderCompareTable();
+  });
+}
+
+/* ── TIER LEADERBOARD ────────────────────────────────────────────── */
+const TIER_LB_STATS = {
+  QB: [{key:'pass_yds', pgKey:'pass_ypg', label:'Passing Yards'}],
+  RB: [{key:'rush_yds', pgKey:'rush_ypg', label:'Rushing Yards'},
+       {key:'rec_yds', pgKey:'rec_ypg', label:'Receiving Yards'},
+       {key:'rec', pgKey:'rec_pg', label:'Receptions'}],
+  WR: [{key:'rec_yds', pgKey:'rec_ypg', label:'Receiving Yards'},
+       {key:'rec', pgKey:'rec_pg', label:'Receptions'}],
+  TE: [{key:'rec_yds', pgKey:'rec_ypg', label:'Receiving Yards'},
+       {key:'rec', pgKey:'rec_pg', label:'Receptions'}],
+};
+let tierPos = 'QB';
+let tierStat = 'pass_yds';
+let tierSelected = 'top'; // 'top' | 'mid' | 'bot'
+let tierSortKey = 'season'; // 'season' | 'pergame' | 'tier'
+let tierSortDir = 'desc';
+
+const TIER_OPTIONS = [['top','Vs Top 10'], ['mid','Vs Middle 12'], ['bot','Vs Bottom 10']];
+
+function renderTierLeaderboard(){
+  $("tierView").innerHTML = `
+    <div class="tabs" id="tierPosTabs" role="tablist"></div>
+    <div class="tabs" id="tierStatTabs" role="tablist"></div>
+    <div class="lineup-note" style="margin:10px 0 4px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span>Top 25 by season total · click any column to sort · defense tier:</span>
+      <select class="wk-select" id="tierSelectDropdown"></select>
+    </div>
+    <div id="tierTableWrap"></div>`;
+
+  const positions = ['QB','RB','WR','TE'];
+  $("tierPosTabs").innerHTML = positions.map(p =>
+    `<button role="tab" aria-selected="${p===tierPos}" data-pos="${p}">${p}</button>`).join('');
+  $("tierPosTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    tierPos = b.dataset.pos;
+    tierStat = TIER_LB_STATS[tierPos][0].key; // reset to first stat option for the new position
+    tierSortKey = 'season'; tierSortDir = 'desc';
+    $("tierPosTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    renderTierStatTabs();
+    renderTierTable();
+  });
+
+  $("tierSelectDropdown").innerHTML = TIER_OPTIONS.map(([key,label]) =>
+    `<option value="${key}"${key===tierSelected?' selected':''}>${label}</option>`).join('');
+  $("tierSelectDropdown").onchange = e => {
+    tierSelected = e.target.value;
+    if(tierSortKey === 'tier') tierSortDir = 'desc'; // fresh tier, start from the top again
+    renderTierTable();
+  };
+
+  renderTierStatTabs();
+  renderTierTable();
+}
+
+function renderTierStatTabs(){
+  const opts = TIER_LB_STATS[tierPos];
+  $("tierStatTabs").innerHTML = opts.map(s =>
+    `<button role="tab" aria-selected="${s.key===tierStat}" data-key="${s.key}">${esc(s.label)}</button>`).join('');
+  $("tierStatTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    tierStat = b.dataset.key;
+    tierSortKey = 'season'; tierSortDir = 'desc';
+    $("tierStatTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    renderTierTable();
+  });
+}
+
+function renderTierTable(){
+  const cats = PLAYERSTATS.labels[tierPos];
+  const statConfig = TIER_LB_STATS[tierPos].find(s => s.key === tierStat);
+  const statLabel = statConfig.label;
+  const pgKey = statConfig.pgKey;
+  const hasPg = cats.Volume && cats.Volume[pgKey];
+  const tierLabel = TIER_OPTIONS.find(([k]) => k === tierSelected)[1];
+
+  let rows = PLAYERSTATS.players[tierPos].filter(p => (p.season.m[tierStat] || 0) > 0);
+
+  const sortVal = p => {
+    if(tierSortKey === 'season') return p.season.m[tierStat] || 0;
+    if(tierSortKey === 'pergame') return hasPg ? (p.season.m[pgKey] || 0) : 0;
+    return p.splits?.[tierSelected]?.m?.[tierStat] ?? -Infinity; // players with no games in this tier sort last
+  };
+  rows.sort((a,b) => tierSortDir==='desc' ? sortVal(b)-sortVal(a) : sortVal(a)-sortVal(b));
+  rows = rows.slice(0, 25);
+
+  const sortArrow = key => key===tierSortKey ? (tierSortDir==='desc'?' ▾':' ▴') : '';
+  let h = `<div class="lead-wrap" style="max-height:calc(100vh - 320px)"><table class="lead-table"><thead><tr>
+    <th class="name-col">Player</th><th>GP</th>
+    <th data-sort="season" class="${tierSortKey==='season'?'sorted':''}" style="cursor:pointer">${esc(statLabel)}${sortArrow('season')}</th>
+    ${hasPg ? `<th data-sort="pergame" class="${tierSortKey==='pergame'?'sorted':''}" style="cursor:pointer">Per Game${sortArrow('pergame')}</th>` : ''}
+    <th data-sort="tier" class="${tierSortKey==='tier'?'sorted':''}" style="cursor:pointer">${esc(tierLabel)}${sortArrow('tier')}</th>
+  </tr></thead><tbody>`;
+
+  rows.forEach((p, i) => {
+    const total = p.season.m[tierStat];
+    const perGame = hasPg ? p.season.m[pgKey] : null;
+    const tv = p.splits?.[tierSelected]?.m?.[tierStat];
+    const tGames = p.splits?.[tierSelected]?.games || 0;
+    const tText = tv == null ? '—' : `${fmtVal(tv)} <span style="color:var(--text-dim);font-size:10px">(${tGames}g)</span>`;
+    h += `<tr data-name="${esc(p.name)}" style="cursor:pointer">
+      <td class="name-col"><span class="rank-num">${i+1}</span>
+        <img class="browse-headshot" src="${esc(p.headshot||'')}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        ${esc(p.name)} <span style="color:var(--text-dim);font-size:10px">${esc(p.team)}</span></td>
+      <td><span class="cell-val">${p.season.games}</span></td>
+      <td><span class="cell-val">${fmtVal(total)}</span></td>
+      ${hasPg ? `<td><span class="cell-val">${fmtVal(perGame)}</span></td>` : ''}
+      <td><span class="cell-val">${tText}</span></td>
+    </tr>`;
+  });
+  h += `</tbody></table></div>`;
+
+  $("tierTableWrap").innerHTML = h;
+  $("tierTableWrap").querySelectorAll('th[data-sort]').forEach(th => {
+    th.onclick = () => {
+      const key = th.dataset.sort;
+      if(key === tierSortKey) tierSortDir = tierSortDir==='desc' ? 'asc' : 'desc';
+      else { tierSortKey = key; tierSortDir = 'desc'; }
+      renderTierTable();
+    };
+  });
+  $("tierTableWrap").querySelectorAll('tr[data-name]').forEach(el => {
+    el.onclick = () => {
+      const p = PLAYERSTATS.players[tierPos].find(x => x.name === el.dataset.name);
+      $("viewTabs").querySelectorAll("button").forEach(x=>
+        x.setAttribute("aria-selected", String(x.dataset.view==='profile')));
+      $("profileView").style.display = '';
+      $("tierView").style.display = 'none';
+      browsePos = tierPos;
+      renderProfileView();
+      openProfile(p, tierPos);
+    };
   });
 }
 
