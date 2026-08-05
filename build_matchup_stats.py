@@ -80,6 +80,8 @@ POS_METRICS = {
         "int_pg":     ("Interceptions / game", 1, False, "Protection"),
     },
     "RB": {
+        "rush_share": ("Rush share", 1, True, "Usage"),
+        "target_share": ("Target share", 1, True, "Usage"),
         "rush_yds":   ("Rushing yards", 0, True, "Volume"),
         "rush_ypg":   ("Rushing yards / game", 1, True, "Volume"),
         "carries":    ("Carries", 0, True, "Volume"),
@@ -96,6 +98,7 @@ POS_METRICS = {
         "r40_pg":     ("40+ yd runs / game", 2, True, "Explosive"),
     },
     "WR": {
+        "target_share": ("Target share", 1, True, "Usage"),
         "rec_yds":    ("Receiving yards", 0, True, "Volume"),
         "rec_ypg":    ("Receiving yards / game", 1, True, "Volume"),
         "rec":        ("Receptions", 0, True, "Volume"),
@@ -112,6 +115,16 @@ POS_METRICS = {
     },
 }
 POS_METRICS["TE"] = dict(POS_METRICS["WR"])
+
+# The weekly build() below aggregates ALL players at a position into one
+# team-position blob (e.g. "KC's WR corps this week") — rush/target share
+# is a per-PLAYER usage concept (their slice of the team's looks) that
+# doesn't mean anything at that aggregate level, and pos_metrics_from_sums()
+# doesn't compute it there anyway (only build_player_stats() injects it,
+# per-player, with the team-week denominator that requires). Weekly
+# matchup/context/threats builders use this filtered view instead.
+POS_METRICS_WEEKLY = {p: {k: v for k, v in metrics.items() if v[3] != "Usage"}
+                       for p, metrics in POS_METRICS.items()}
 
 
 # Per-GAME metrics for the contextual game log. "/game" rates are omitted here
@@ -591,7 +604,7 @@ def build(week):
     out_pos_off, out_pos_def = {}, {}
     for p in POSITIONS:
         out_pos_off[p], out_pos_def[p] = {}, {}
-        for m, (_lbl, dec, off_hb, _grp) in POS_METRICS[p].items():
+        for m, (_lbl, dec, off_hb, _grp) in POS_METRICS_WEEKLY[p].items():
             out_pos_off[p][m] = pack({t: pos_off[p][t][m] for t in all_teams}, off_hb, dec)
             out_pos_def[p][m] = pack({t: pos_def[p][t][m] for t in all_teams}, not off_hb, dec)
 
@@ -601,8 +614,8 @@ def build(week):
             "record": records[t], "gp": len(wl.get(t, [])),
             "team_off": {m: out_team_off[m][t] for m in TEAM_OFF},
             "team_def": {m: out_team_def[m][t] for m in TEAM_DEF},
-            "off": {p: {m: out_pos_off[p][m][t] for m in POS_METRICS[p]} for p in POSITIONS},
-            "def": {p: {m: out_pos_def[p][m][t] for m in POS_METRICS[p]} for p in POSITIONS},
+            "off": {p: {m: out_pos_off[p][m][t] for m in POS_METRICS_WEEKLY[p]} for p in POSITIONS},
+            "def": {p: {m: out_pos_def[p][m][t] for m in POS_METRICS_WEEKLY[p]} for p in POSITIONS},
         }
 
     payload = {
@@ -612,9 +625,9 @@ def build(week):
         "labels": {
             "team_off": {m: TEAM_OFF[m][0] for m in TEAM_OFF},
             "team_def": {m: TEAM_DEF[m][0] for m in TEAM_DEF},
-            "pos": {p: {m: {"l": POS_METRICS[p][m][0], "g": POS_METRICS[p][m][3],
-                            "inv": not POS_METRICS[p][m][2]}
-                        for m in POS_METRICS[p]} for p in POSITIONS},
+            "pos": {p: {m: {"l": POS_METRICS_WEEKLY[p][m][0], "g": POS_METRICS_WEEKLY[p][m][3],
+                            "inv": not POS_METRICS_WEEKLY[p][m][2]}
+                        for m in POS_METRICS_WEEKLY[p]} for p in POSITIONS},
         },
         "games": [{
             "game_id": f"{SEASON}_{week:02d}_{g['away_team']}_{g['home_team']}",
@@ -1288,7 +1301,7 @@ def build_player_log(player_df, pos, latest_matchup):
     game" are identical and the per-game column is meaningless."""
     volume_keys = [k for k, (_l, _d, _hb, grp) in POS_METRICS[pos].items() if grp == "Volume"]
     rate_keys = {k for k in volume_keys if k.endswith("_pg") or k.endswith("_ypg")}
-    primary_key = list(POS_METRICS[pos].keys())[0]
+    primary_key = volume_keys[0]
 
     log = []
     tier_rows = {"top": [], "mid": [], "bot": []}
@@ -1388,12 +1401,38 @@ def build_player_stats():
                     .groupby(["player_id", "pos"])["team"].last().to_dict())
     player_weeks = {key: sub for key, sub in stats.groupby(["player_id", "pos"])}
 
+    # Team-week totals for carries/targets, used to compute each player's
+    # rush/target share. nflverse ships target_share pre-computed per game,
+    # but not season-level or rush_share at all — both are simple enough to
+    # derive ourselves the same way: player's total over their games /
+    # the matching team-week totals for those SAME (team, week) pairs,
+    # which correctly handles a player traded mid-season.
+    team_week_totals = stats.groupby(["team", "week"])[["carries", "targets"]].sum()
+
+    def season_share(player_df, col):
+        player_total = player_df[col].sum()
+        team_total = 0.0
+        for _, row in player_df.iterrows():
+            key = (row["team"], row["week"])
+            if key in team_week_totals.index:
+                team_total += team_week_totals.loc[key, col]
+        if team_total <= 0:
+            return None
+        return round(100 * player_total / team_total, 1)
+
     players_out = {p: [] for p in POSITIONS}
     for (pid, pos), gp in games_played.items():
         name = latest_name.get((pid, pos), "")
         team = latest_team.get((pid, pos), "")
         s = sums.loc[(pid, pos)].to_dict()
         season_metrics = pos_metrics_from_sums(pos, s, gp)
+
+        pdf = player_weeks[(pid, pos)]
+        if pos == "RB":
+            season_metrics["rush_share"] = season_share(pdf, "carries")
+            season_metrics["target_share"] = season_share(pdf, "targets")
+        elif pos in ("WR", "TE"):
+            season_metrics["target_share"] = season_share(pdf, "targets")
 
         cb_key = f"{pid}|{pos}"
         cb_entry = career_base.get(cb_key)
@@ -1403,12 +1442,16 @@ def build_player_stats():
             for c in RAW_COLS:
                 career_raw[c] = career_raw.get(c, 0) + cb_entry["raw"].get(c, 0)
         career_metrics = pos_metrics_from_sums(pos, career_raw, career_gp)
+        # Usage share is deliberately season-only, not career — aggregating
+        # target share across team changes and different offenses over many
+        # years isn't a meaningful number the way a season snapshot is.
 
         log, splits_acc, ceiling = build_player_log(player_weeks[(pid, pos)], pos, latest_matchup)
 
         players_out[pos].append({
             "name": name, "team": team, "games": gp,
-            "season": {"games": gp, "m": {k: round(v, 2) for k, v in season_metrics.items()}},
+            "season": {"games": gp, "m": {k: (round(v, 2) if v is not None else None)
+                                           for k, v in season_metrics.items()}},
             "career": {"games": career_gp, "through": career_through,
                        "m": {k: round(v, 2) for k, v in career_metrics.items()}},
             "log": log, "splits": splits_acc, "ceiling": ceiling,

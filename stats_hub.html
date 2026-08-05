@@ -415,7 +415,12 @@ function renderPlayersTable(){
     </tr></thead>`;
 
     let body = '<tbody>' + rows.map((row,i) => {
-      const cells = keys.map(k => `<td><span class="cell-val">${fmtVal(row.season.m[k])}</span></td>`).join('');
+      const PCT_KEYS = new Set(['rush_share','target_share']);
+      const cells = keys.map(k => {
+        const v = row.season.m[k];
+        const text = (v!=null && PCT_KEYS.has(k)) ? `${fmtVal(v)}%` : fmtVal(v);
+        return `<td><span class="cell-val">${text}</span></td>`;
+      }).join('');
       return `<tr data-idx="${i}" style="cursor:pointer">
         <td class="team-col"><span class="rank-num">${i+1}</span>${fiLogoHTML(row.team,20)}${esc(row.name)}</td>
         <td><span class="cell-val">${row.games}</span></td>
@@ -474,11 +479,14 @@ function renderPlayerModalBody(){
 
 function statBlockHTML(m, horizonNote){
   const cats = PLAYERSTATS.labels[playerPos];
+  const PCT_KEYS = new Set(['rush_share','target_share']);
   let h = `<div class="empty" style="padding:8px 0 4px;text-align:left;font-size:10px">${horizonNote}</div>`;
   for(const [cat, labels] of Object.entries(cats)){
     h += `<div class="subsect">${esc(cat)}</div><table class="stat-table"><tbody>`;
     for(const [k, meta] of Object.entries(labels)){
-      h += `<tr><td>${esc(meta.l)}</td><td class="num">${fmtVal(m[k])}</td></tr>`;
+      const v = m[k];
+      const text = (v!=null && PCT_KEYS.has(k)) ? `${fmtVal(v)}%` : fmtVal(v);
+      h += `<tr><td>${esc(meta.l)}</td><td class="num">${text}</td></tr>`;
     }
     h += `</tbody></table>`;
   }
