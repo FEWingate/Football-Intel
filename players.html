@@ -206,6 +206,13 @@ function openProfile(p, pos){
   activePlayer = p; activePlayer.pos = pos; activeSec = 'season';
   renderBrowseList(); // refresh active highlight
   renderProfilePanel();
+  // On mobile the two-column layout collapses to a single stacked column
+  // (browse list, then profile panel), so the panel renders below the
+  // entire list — scroll to it so tapping a player doesn't leave you
+  // stuck scrolling past everyone else to see who you picked.
+  if(window.innerWidth <= 900){
+    $("profilePanel").scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 function renderProfilePanel(){
