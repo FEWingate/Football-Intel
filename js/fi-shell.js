@@ -11,7 +11,7 @@ const NAV = [
   { key: 'matchup',  label: 'Matchup Stats',ico: '⚔️', href: 'matchup_stats.html' },
   { key: 'context',  label: 'Contextual',   ico: '📊', href: 'contextual_stats.html' },
   { key: 'teams',    label: 'Teams',        ico: '🛡️', href: 'teams.html' },
-  { key: 'players',  label: 'Players',      ico: '👤' },
+  { key: 'players',  label: 'Players',      ico: '👤', href: 'players.html' },
   { key: 'dfs',      label: 'DFS Center',   ico: '💰', href: 'dfs_center.html' },
   { key: 'props',    label: 'Prop Center',  ico: '🎯' },
   { key: 'injuries', label: 'Injuries',     ico: '🩹' },

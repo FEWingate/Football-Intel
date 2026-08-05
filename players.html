@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Players — Football Intel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/fi-styles.css">
+<style>
+.browse-layout{display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start}
+#browseCol{border-right:1px solid var(--border);padding-right:16px}
+.browse-search{
+  width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);
+  color:var(--text);font-size:12px;padding:8px 12px;margin-bottom:10px;
+}
+.browse-list{max-height:calc(100vh - 260px);overflow:auto}
+.browse-row{
+  display:flex;align-items:center;gap:8px;padding:7px 6px;border-radius:var(--radius-sm);
+  cursor:pointer;font-size:12px;
+}
+.browse-row:hover{background:var(--surface2)}
+.browse-row.active{background:var(--surface2);border:1px solid var(--primary)}
+.browse-row .br-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.browse-row .br-val{font-family:var(--font-mono);font-size:10.5px;color:var(--text-dim);flex:none}
+.browse-headshot{width:22px;height:22px;border-radius:50%;object-fit:cover;background:var(--surface2);flex:none}
+
+.profile-head{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+.profile-headshot{width:76px;height:76px;border-radius:50%;object-fit:cover;background:var(--surface2);
+  border:2px solid var(--border)}
+.profile-name{font-family:var(--font-display);font-weight:800;font-size:24px;letter-spacing:-.02em}
+.profile-sub{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);margin-top:3px}
+
+.tier-badge{
+  font-family:var(--font-mono);font-size:8px;letter-spacing:.06em;font-weight:700;
+  border-radius:3px;padding:2px 6px;text-transform:uppercase;
+}
+.tier-badge.top{color:var(--accent-red);background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.3)}
+.tier-badge.mid{color:var(--text-mid);background:var(--surface2);border:1px solid var(--border)}
+.tier-badge.bot{color:var(--accent-green);background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3)}
+
+.window-chart{display:flex;align-items:flex-end;gap:8px;height:220px;margin:16px 0 8px;padding:24px 4px 0}
+.window-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.window-bar-value{font-family:var(--font-mono);font-weight:700;font-size:13px;color:var(--text);white-space:nowrap}
+.window-bar{width:100%;border-radius:3px 3px 0 0;min-height:3px}
+.window-bar.top{background:var(--accent-red)}
+.window-bar.mid{background:var(--text-dim)}
+.window-bar.bot{background:var(--accent-green)}
+.window-wk{font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-top:2px}
+
+.split-cards{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin:10px 0 4px}
+.split-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px}
+.split-card .sc-label{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim)}
+.split-card .sc-games{font-family:var(--font-mono);font-size:9px;color:var(--text-dim);margin-top:1px}
+.split-card .sc-value{font-family:var(--font-display);font-weight:800;font-size:20px;margin-top:6px;letter-spacing:-.02em}
+.split-card.top{border-color:rgba(244,63,94,.3)} .split-card.bot{border-color:rgba(74,222,128,.3)}
+
+.lead-wrap{overflow:auto;max-height:420px;border:1px solid var(--border);border-radius:var(--radius-lg);margin-top:10px}
+.lead-table{width:100%;border-collapse:separate;border-spacing:0}
+.lead-table thead th{
+  padding:9px 12px;text-align:right;font-family:var(--font-mono);font-size:9px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap;
+  position:sticky;top:0;background:var(--surface2);z-index:2;border-bottom:1px solid var(--border);
+}
+.lead-table thead th.name-col{text-align:left;left:0;z-index:3}
+.lead-table td{padding:8px 12px;font-size:12px;text-align:right;border-bottom:1px solid var(--hairline);white-space:nowrap}
+.lead-table tbody tr:last-child td{border-bottom:0}
+.lead-table tbody tr:hover td{background:var(--surface2)}
+.lead-table td.name-col{text-align:left;position:sticky;left:0;background:var(--surface);z-index:1;
+  display:flex;align-items:center;gap:8px}
+.cell-val{font-family:var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text-mid);font-size:12px}
+
+.committee-team-sel{margin-bottom:20px}
+.wk-select{
+  background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);
+  color:var(--text);font-family:var(--font-mono);font-size:11px;padding:6px 10px;cursor:pointer;
+}
+.subsect{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--text-dim);padding:14px 0 3px}
+@media(max-width:900px){
+  .browse-layout{grid-template-columns:1fr}
+  #browseCol{border-right:none;padding-right:0;border-bottom:1px solid var(--border);padding-bottom:16px}
+}
+</style>
+</head>
+<body>
+<script src="js/fi-shell.js"></script>
+<script>
+const main = fiShell({ page:'players', pageLabel:'Players', status:'loading' });
+
+let PLAYERSTATS = null;
+let browsePos = 'RB';
+let browseSearch = '';
+let activePlayer = null;
+let activeSec = 'season'; // 'season' | 'career' | 'window' | 'log'
+let windowSize = 5; // 5 | 10
+let chartStat = 'dk'; // which stat drives the L5/L10 bar chart
+let committeeTeam = null;
+
+main.innerHTML = `
+  <div class="bar">
+    <span class="lbl">Players</span>
+    <div class="legend"><span>Season totals so far · click a player to see the full profile</span></div>
+  </div>
+  <div class="tabs" id="viewTabs" role="tablist">
+    <button role="tab" data-view="profile" aria-selected="true">Player Profile</button>
+    <button role="tab" data-view="committee" aria-selected="false">Committee View</button>
+  </div>
+  <div id="profileView"></div>
+  <div id="committeeView" style="display:none"></div>`;
+
+const $ = id => document.getElementById(id);
+
+async function load(){
+  fiStatus("Loading","loading");
+  try{
+    const res = await fetch(`players/latest.json`);
+    if(res.ok) PLAYERSTATS = await res.json();
+  }catch(e){}
+
+  if(!PLAYERSTATS){
+    fiStatus("No data","error"); fiUpdated("");
+    $("profileView").innerHTML = `<div class="empty">
+      No player data found.<br>
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+
+  fiStatus("Ready");
+  fiUpdated(`season · ${PLAYERSTATS.data_horizon}`);
+
+  $("viewTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    $("viewTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    const view = b.dataset.view;
+    $("profileView").style.display = view==='profile' ? '' : 'none';
+    $("committeeView").style.display = view==='committee' ? '' : 'none';
+    if(view==='committee') renderCommittee();
+  });
+
+  renderProfileView();
+}
+
+/* ── PLAYER PROFILE VIEW ─────────────────────────────────────────── */
+function renderProfileView(){
+  $("profileView").innerHTML = `
+    <div class="browse-layout">
+      <div id="browseCol">
+        <div class="tabs" id="browsePosTabs" role="tablist"></div>
+        <input class="browse-search" id="browseSearchBox" placeholder="Search players…">
+        <div class="browse-list" id="browseList"></div>
+      </div>
+      <div id="profilePanel"><div class="empty">Select a player from the list to see their profile.</div></div>
+    </div>`;
+
+  const positions = ['QB','RB','WR','TE'];
+  $("browsePosTabs").innerHTML = positions.map(p =>
+    `<button role="tab" aria-selected="${p===browsePos}" data-pos="${p}">${p}</button>`).join('');
+  $("browsePosTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    $("browsePosTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    browsePos = b.dataset.pos;
+    renderBrowseList();
+  });
+  $("browseSearchBox").oninput = e => { browseSearch = e.target.value.toLowerCase(); renderBrowseList(); };
+  renderBrowseList();
+}
+
+function primaryStatKey(pos){
+  const cats = PLAYERSTATS.labels[pos];
+  const vol = cats['Volume'] || Object.values(cats)[0];
+  return Object.keys(vol)[0];
+}
+
+function renderBrowseList(){
+  const term = browseSearch.trim();
+  const key = primaryStatKey(browsePos);
+  let list = PLAYERSTATS.players[browsePos].slice();
+  if(term) list = list.filter(p => p.name.toLowerCase().includes(term));
+  else list.sort((a,b) => (b.season.m[key]||0) - (a.season.m[key]||0));
+  list = list.slice(0, 60);
+
+  $("browseList").innerHTML = list.map(p => `
+    <div class="browse-row${activePlayer && activePlayer.name===p.name && activePlayer.pos===browsePos ? ' active':''}"
+         data-name="${esc(p.name)}">
+      <img class="browse-headshot" src="${esc(p.headshot||'')}" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+      <span class="br-name">${esc(p.name)}</span>
+      <span class="br-val">${fmtVal(p.season.m[key])}</span>
+    </div>`).join('') || `<div class="empty" style="padding:20px 4px">No matches.</div>`;
+
+  $("browseList").querySelectorAll(".browse-row").forEach(el => {
+    el.onclick = () => {
+      const p = PLAYERSTATS.players[browsePos].find(x => x.name === el.dataset.name);
+      openProfile(p, browsePos);
+    };
+  });
+}
+
+function fmtVal(v){
+  if(v === null || v === undefined) return '—';
+  return Number.isInteger(v) ? String(v) : v.toFixed(1);
+}
+
+const TIER_LABEL = { top: 'Top 10', mid: 'Middle 12', bot: 'Bottom 10' };
+
+function openProfile(p, pos){
+  activePlayer = p; activePlayer.pos = pos; activeSec = 'season';
+  renderBrowseList(); // refresh active highlight
+  renderProfilePanel();
+}
+
+function renderProfilePanel(){
+  const p = activePlayer, pos = p.pos;
+  $("profilePanel").innerHTML = `
+    <div class="profile-head">
+      <img class="profile-headshot" src="${esc(p.headshot||'')}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+      <div>
+        <div class="profile-name">${esc(p.name)}</div>
+        <div class="profile-sub">${pos} · ${fiTeamLogoInline(p.team)} ${esc(p.team)} · ${p.games} games this season</div>
+      </div>
+    </div>
+    <div class="tabs" id="profileSecTabs" role="tablist">
+      <button role="tab" data-sec="season" aria-selected="true">Season</button>
+      <button role="tab" data-sec="career" aria-selected="false">Career</button>
+      <button role="tab" data-sec="window" aria-selected="false">L5 / L10</button>
+      <button role="tab" data-sec="log" aria-selected="false">Game Log</button>
+    </div>
+    <div id="profileBody"></div>`;
+
+  $("profileSecTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    $("profileSecTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    activeSec = b.dataset.sec;
+    renderProfileBody();
+  });
+  renderProfileBody();
+}
+
+function fiTeamLogoInline(team){ return fiLogoHTML(team, 16); }
+
+function renderProfileBody(){
+  const box = $("profileBody");
+  const p = activePlayer;
+  if(activeSec === 'season') box.innerHTML = statBlockHTML(p.season.m, `${p.season.games} games`, p.pos);
+  else if(activeSec === 'career') box.innerHTML = statBlockHTML(p.career.m,
+    `${p.career.games} games · through ${p.career.through}`, p.pos);
+  else if(activeSec === 'window') renderWindow(box, p);
+  else renderGameLogFull(box, p);
+}
+
+function statBlockHTML(m, horizonNote, pos){
+  const cats = PLAYERSTATS.labels[pos];
+  const PCT_KEYS = new Set(['rush_share','target_share']);
+  let h = `<div class="empty" style="padding:8px 0 4px;text-align:left;font-size:10px">${horizonNote}</div>`;
+  for(const [cat, labels] of Object.entries(cats)){
+    h += `<div class="subsect">${esc(cat)}</div><table class="stat-table"><tbody>`;
+    for(const [k, meta] of Object.entries(labels)){
+      const v = m[k];
+      const text = (v!=null && PCT_KEYS.has(k)) ? `${fmtVal(v)}%` : fmtVal(v);
+      h += `<tr><td>${esc(meta.l)}</td><td class="num">${text}</td></tr>`;
+    }
+    h += `</tbody></table>`;
+  }
+  return h;
+}
+
+/* L5/L10: rolling window aggregated from the per-game log. The bar chart
+   is switchable between any raw per-game stat (not the cumulative _pg/_ypg
+   rate keys — those trend toward a season average and would flatten the
+   chart, not show game-to-game swings), DK fantasy points, and per-game
+   usage share where the position supports it. Every window explicitly
+   shows the defense tier faced each game, never just a bare number. */
+function chartableStats(p){
+  const volKeys = Object.keys(PLAYERSTATS.labels[p.pos].Volume)
+    .filter(k => !k.endsWith('_pg') && !k.endsWith('_ypg'));
+  const opts = volKeys.map(k => ({ key:k, label: PLAYERSTATS.labels[p.pos].Volume[k].l, pct:false }));
+  opts.push({ key:'dk', label:'DK Fantasy Points', pct:false });
+  const hasRushShare = p.pos === 'RB' && p.log.some(g => g.rush_share != null);
+  const hasTargetShare = ['RB','WR','TE'].includes(p.pos) && p.log.some(g => g.target_share != null);
+  if(hasRushShare) opts.push({ key:'rush_share', label:'Rush Share', pct:true });
+  if(hasTargetShare) opts.push({ key:'target_share', label:'Target Share', pct:true });
+  return opts;
+}
+
+function chartValue(g, key){
+  if(key === 'dk' || key === 'rush_share' || key === 'target_share') return g[key];
+  return g.m[key];
+}
+
+function renderWindow(box, p){
+  const log = p.log.slice().sort((a,b)=>a.week-b.week);
+  const recent = log.slice(-windowSize);
+  const volKeys = Object.keys(PLAYERSTATS.labels[p.pos].Volume);
+  const stats = chartableStats(p);
+  if(!stats.find(s => s.key === chartStat)) chartStat = 'dk'; // reset if switching to a player without this stat
+
+  const sums = {};
+  volKeys.forEach(k => { sums[k] = recent.reduce((s,g)=>s+(g.m[k]||0),0); });
+  const dkSum = recent.reduce((s,g)=>s+(g.dk||0),0);
+  const n = recent.length || 1;
+
+  let h = `<div class="tabs" id="winSizeTabs" role="tablist">
+    <button role="tab" data-n="5" aria-selected="${windowSize===5}">Last 5</button>
+    <button role="tab" data-n="10" aria-selected="${windowSize===10}">Last 10</button>
+  </div>`;
+
+  h += `<div class="tabs" id="chartStatTabs" role="tablist">
+    ${stats.map(s => `<button role="tab" data-key="${s.key}" aria-selected="${chartStat===s.key}">${esc(s.label)}</button>`).join('')}
+  </div>`;
+
+  const active = stats.find(s => s.key === chartStat);
+  h += `<div class="window-chart">`;
+  const vals = recent.map(g => chartValue(g, chartStat) || 0);
+  const maxVal = Math.max(1, ...vals);
+  recent.forEach(g => {
+    const v = chartValue(g, chartStat) || 0;
+    const pct = Math.max(4, Math.round(70*v/maxVal)); // capped so labels never crowd the top
+    const tier = g.tier || 'mid';
+    const vText = active.pct ? `${v}%` : v;
+    h += `<div class="window-bar-wrap">
+      <div class="window-bar-value">${vText}</div>
+      <div class="window-bar ${tier}" style="height:${pct}%" title="Wk ${g.week} vs ${esc(g.opp||'?')}: ${vText} ${esc(active.label)} (${TIER_LABEL[tier]||'—'})"></div>
+      <div class="window-wk">${g.week}</div>
+    </div>`;
+  });
+  h += `</div>
+  <div class="empty" style="padding:2px 0 10px;text-align:left;font-size:10px">
+    Bar height = ${esc(active.label)} that game · color = defense tier faced (
+    <span class="tier-badge top" style="margin:0 2px">Top 10</span>
+    <span class="tier-badge mid" style="margin:0 2px">Mid 12</span>
+    <span class="tier-badge bot" style="margin:0 2px">Bottom 10</span>)
+  </div>`;
+
+  h += `<div class="subsect">Last ${recent.length} games — totals &amp; per-game</div><table class="stat-table"><tbody>`;
+  volKeys.forEach(k => {
+    const lbl = PLAYERSTATS.labels[p.pos].Volume[k].l;
+    h += `<tr><td>${esc(lbl)}</td><td class="num">${fmtVal(sums[k])} tot · ${fmtVal(sums[k]/n)}/gm</td></tr>`;
+  });
+  h += `<tr><td>DK Fantasy Points</td><td class="num">${fmtVal(dkSum)} tot · ${fmtVal(dkSum/n)}/gm</td></tr>`;
+  h += `</tbody></table>`;
+
+  box.innerHTML = h;
+  box.querySelectorAll('#winSizeTabs button').forEach(b => b.onclick = () => {
+    windowSize = Number(b.dataset.n); renderWindow(box, p);
+  });
+  box.querySelectorAll('#chartStatTabs button').forEach(b => b.onclick = () => {
+    chartStat = b.dataset.key; renderWindow(box, p);
+  });
+}
+
+function renderGameLogFull(box, p){
+  const volKeys = Object.keys(PLAYERSTATS.labels[p.pos].Volume);
+  const volLabels = PLAYERSTATS.labels[p.pos].Volume;
+
+  let h = `<div class="lead-wrap"><table class="lead-table"><thead><tr>
+    <th class="name-col">Week</th><th>Opp</th><th>Tier</th>
+    ${volKeys.map(k=>`<th>${esc(volLabels[k].l)}</th>`).join('')}<th>DK Pts</th>
+  </tr></thead><tbody>`;
+  p.log.slice().reverse().forEach(g => {
+    h += `<tr>
+      <td class="name-col">${g.week}</td>
+      <td>${g.opp ? fiLogoHTML(g.opp,16)+esc(g.opp) : '—'}</td>
+      <td>${g.tier ? `<span class="tier-badge ${g.tier}">${TIER_LABEL[g.tier]}</span>` : '—'}</td>
+      ${volKeys.map(k=>`<td><span class="cell-val">${fmtVal(g.m[k])}</span></td>`).join('')}
+      <td><span class="cell-val">${fmtVal(g.dk)}</span></td>
+    </tr>`;
+  });
+  h += `</tbody></table></div>`;
+  box.innerHTML = h;
+}
+
+/* ── COMMITTEE VIEW ──────────────────────────────────────────────── */
+function allTeamsWithRoster(){
+  const teams = new Set();
+  ['RB','WR'].forEach(pos => PLAYERSTATS.players[pos].forEach(p => teams.add(p.team)));
+  return [...teams].sort();
+}
+
+function renderCommittee(){
+  const teams = allTeamsWithRoster();
+  if(!committeeTeam) committeeTeam = teams[0];
+
+  $("committeeView").innerHTML = `
+    <div class="committee-team-sel">
+      <select class="wk-select" id="committeeTeamSel"></select>
+    </div>
+    <div class="sect"><h3>Running backs — carry &amp; target share</h3><span class="rule"></span></div>
+    <div id="committeeRB"></div>
+    <div class="sect" style="margin-top:24px"><h3>Wide receivers — target share</h3><span class="rule"></span></div>
+    <div id="committeeWR"></div>`;
+
+  $("committeeTeamSel").innerHTML = teams.map(t =>
+    `<option value="${t}"${t===committeeTeam?' selected':''}>${FI_TEAM_NAME[t]||t}</option>`).join('');
+  $("committeeTeamSel").onchange = e => { committeeTeam = e.target.value; renderCommitteeTables(); };
+
+  renderCommitteeTables();
+}
+
+function committeeTable(pos, cols){
+  const rows = PLAYERSTATS.players[pos]
+    .filter(p => p.team === committeeTeam)
+    .sort((a,b) => (b.season.m[cols[0].key]||0) - (a.season.m[cols[0].key]||0));
+
+  if(!rows.length) return `<div class="empty">No ${pos === 'RB' ? 'running backs' : 'wide receivers'} on this team this season.</div>`;
+
+  let h = `<div class="lead-wrap" style="max-height:none"><table class="lead-table"><thead><tr>
+    <th class="name-col">Player</th><th>GP</th>
+    ${cols.map(c=>`<th>${esc(c.label)}</th>`).join('')}
+  </tr></thead><tbody>`;
+  rows.forEach(p => {
+    h += `<tr data-name="${esc(p.name)}" style="cursor:pointer">
+      <td class="name-col">${p.headshot?`<img class="browse-headshot" src="${esc(p.headshot)}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">`:''}${esc(p.name)}</td>
+      <td><span class="cell-val">${p.games}</span></td>
+      ${cols.map(c => {
+        const v = p.season.m[c.key];
+        const text = c.pct ? (v!=null?`${fmtVal(v)}%`:'—') : fmtVal(v);
+        return `<td><span class="cell-val">${text}</span></td>`;
+      }).join('')}
+    </tr>`;
+  });
+  h += `</tbody></table></div>`;
+  return h;
+}
+
+function renderCommitteeTables(){
+  $("committeeRB").innerHTML = committeeTable('RB', [
+    { key:'rush_share', label:'Rush Share', pct:true },
+    { key:'target_share', label:'Target Share', pct:true },
+    { key:'carries', label:'Carries' },
+    { key:'rush_yds', label:'Rush Yds' },
+    { key:'rec', label:'Receptions' },
+  ]);
+  $("committeeWR").innerHTML = committeeTable('WR', [
+    { key:'target_share', label:'Target Share', pct:true },
+    { key:'rec', label:'Receptions' },
+    { key:'rec_yds', label:'Rec Yds' },
+  ]);
+
+  ['committeeRB','committeeWR'].forEach(id => {
+    $(id).querySelectorAll('tr[data-name]').forEach(el => {
+      el.onclick = () => {
+        const pos = id === 'committeeRB' ? 'RB' : 'WR';
+        const p = PLAYERSTATS.players[pos].find(x => x.name === el.dataset.name);
+        // jump to profile view for this player
+        $("viewTabs").querySelectorAll("button").forEach(x=>
+          x.setAttribute("aria-selected", String(x.dataset.view==='profile')));
+        $("profileView").style.display = '';
+        $("committeeView").style.display = 'none';
+        browsePos = pos;
+        renderProfileView();
+        openProfile(p, pos);
+      };
+    });
+  });
+}
+
+load();
+</script>
+</body>
+</html>

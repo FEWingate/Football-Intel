@@ -446,12 +446,12 @@ def norm_players(df):
         df = df[df["season_type"] == "REG"]
     if "season" in df.columns:
         df = df[df["season"] == SEASON]
-    cols = ["player_id", "name", "position", "team", "opponent_team", "week"] + RAW_COLS
+    cols = ["player_id", "name", "position", "team", "opponent_team", "week", "headshot_url"] + RAW_COLS
     for c in cols:
         if c not in df.columns:
             df[c] = 0
     df = df[cols].copy()
-    num = [c for c in cols if c not in ("player_id", "name", "position", "team", "opponent_team")]
+    num = [c for c in cols if c not in ("player_id", "name", "position", "team", "opponent_team", "headshot_url")]
     df[num] = df[num].fillna(0)
     df["pos"] = df["position"].map(POS_MAP)
     return df[df["pos"].notna()]
@@ -1288,7 +1288,7 @@ def dk_points_for_game(s):
     return pts
 
 
-def build_player_log(player_df, pos, latest_matchup):
+def build_player_log(player_df, pos, latest_matchup, team_week_totals=None):
     """One player's game-by-game log, each game tagged with the tier
     (top/mid/bot) of the defense-vs-position rank their opponent held that
     week, plus average production split by tier. The Volume-group stats
@@ -1298,7 +1298,12 @@ def build_player_log(player_df, pos, latest_matchup):
     single game's total. Rate stats (_pg/_ypg suffix, e.g. Passing Yards /
     Game) show the running season-to-date average THROUGH that week, not
     that game's own total divided by 1 — otherwise "yards" and "yards /
-    game" are identical and the per-game column is meaningless."""
+    game" are identical and the per-game column is meaningless.
+
+    Also tags each game with that week's own rush/target share (this
+    player's carries or targets ÷ the team's total that same week) for
+    RB/WR/TE — the L5/L10 usage-trend chart on the Players page needs a
+    per-game number, not just the season aggregate computed elsewhere."""
     volume_keys = [k for k, (_l, _d, _hb, grp) in POS_METRICS[pos].items() if grp == "Volume"]
     rate_keys = {k for k in volume_keys if k.endswith("_pg") or k.endswith("_ypg")}
     primary_key = volume_keys[0]
@@ -1314,6 +1319,17 @@ def build_player_log(player_df, pos, latest_matchup):
         game_metrics = pos_metrics_from_sums(pos, s, 1)  # this game's own totals
         dk_pts = dk_points_for_game(s)
         dk_scores.append(dk_pts)
+
+        game_rush_share = game_target_share = None
+        if team_week_totals is not None:
+            key = (row["team"], row["week"])
+            if key in team_week_totals.index:
+                team_carries = team_week_totals.loc[key, "carries"]
+                team_targets = team_week_totals.loc[key, "targets"]
+                if pos == "RB" and team_carries > 0:
+                    game_rush_share = round(100 * s.get("carries", 0) / team_carries, 1)
+                if pos in ("RB", "WR", "TE") and team_targets > 0:
+                    game_target_share = round(100 * s.get("targets", 0) / team_targets, 1)
 
         cum_games += 1
         for c in RAW_COLS:
@@ -1332,6 +1348,7 @@ def build_player_log(player_df, pos, latest_matchup):
             "m": {k: round(game_metrics.get(k, 0), 1) for k in volume_keys},
             "cum": {k: round(cum_metrics.get(k, 0), 1) for k in rate_keys},
             "dk": round(dk_pts, 1),
+            "rush_share": game_rush_share, "target_share": game_target_share,
         }
         log.append(entry)
         if tier:
@@ -1399,6 +1416,8 @@ def build_player_stats():
                     .groupby(["player_id", "pos"])["name"].last().to_dict())
     latest_team = (stats.sort_values("week")
                     .groupby(["player_id", "pos"])["team"].last().to_dict())
+    latest_headshot = (stats.sort_values("week")
+                        .groupby(["player_id", "pos"])["headshot_url"].last().to_dict())
     player_weeks = {key: sub for key, sub in stats.groupby(["player_id", "pos"])}
 
     # Team-week totals for carries/targets, used to compute each player's
@@ -1424,6 +1443,9 @@ def build_player_stats():
     for (pid, pos), gp in games_played.items():
         name = latest_name.get((pid, pos), "")
         team = latest_team.get((pid, pos), "")
+        headshot = latest_headshot.get((pid, pos), "")
+        if pd.isna(headshot):
+            headshot = ""
         s = sums.loc[(pid, pos)].to_dict()
         season_metrics = pos_metrics_from_sums(pos, s, gp)
 
@@ -1446,10 +1468,10 @@ def build_player_stats():
         # target share across team changes and different offenses over many
         # years isn't a meaningful number the way a season snapshot is.
 
-        log, splits_acc, ceiling = build_player_log(player_weeks[(pid, pos)], pos, latest_matchup)
+        log, splits_acc, ceiling = build_player_log(player_weeks[(pid, pos)], pos, latest_matchup, team_week_totals)
 
         players_out[pos].append({
-            "name": name, "team": team, "games": gp,
+            "name": name, "team": team, "games": gp, "headshot": headshot,
             "season": {"games": gp, "m": {k: (round(v, 2) if v is not None else None)
                                            for k, v in season_metrics.items()}},
             "career": {"games": career_gp, "through": career_through,
