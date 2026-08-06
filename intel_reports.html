@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Intel Reports — Football Intel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/fi-styles.css">
+<style>
+.report-intro{font-size:12.5px;color:var(--text-mid);line-height:1.6;max-width:820px;margin-bottom:20px}
+.report-controls{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.search-box{
+  background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);
+  color:var(--text);font-size:12px;padding:8px 12px;width:220px;
+}
+.intel-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.intel-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px}
+.ic-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ic-headshot{width:44px;height:44px;border-radius:50%;object-fit:cover;background:var(--surface2);
+  border:2px solid var(--border);flex:none}
+.ic-name{font-family:var(--font-display);font-weight:700;font-size:15px}
+.ic-team{font-family:var(--font-mono);font-size:10px;color:var(--text-dim)}
+.ic-matchup{
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:11px;color:var(--text-mid);
+  padding:8px 10px;background:var(--surface2);border-radius:var(--radius-sm);margin-bottom:12px;
+}
+.fav-badge{font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:.05em;
+  padding:2px 6px;border-radius:3px;text-transform:uppercase}
+.fav-badge.yes{color:var(--accent-green);background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3)}
+.fav-badge.no{color:var(--accent-red);background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.3)}
+.fav-badge.mid{color:var(--text-mid);background:var(--surface2);border:1px solid var(--border)}
+.ic-section-label{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--text-dim);margin:12px 0 6px}
+.ic-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;font-size:12px}
+.ic-row-label{color:var(--text-mid);flex:1;min-width:0}
+.hit-badge{
+  font-family:var(--font-mono);font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;
+  white-space:nowrap;flex:none;
+}
+.hit-badge.hit{color:var(--accent-green);background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3)}
+.hit-badge.miss{color:var(--accent-red);background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.3)}
+.hit-badge .n{color:var(--text-dim);font-weight:400;font-size:9px;margin-left:3px}
+@media(max-width:520px){ .intel-grid{grid-template-columns:1fr} }
+.intel-card{cursor:pointer}
+.intel-card:hover{border-color:var(--border2)}
+.lead-wrap{overflow:auto;max-height:calc(100vh - 220px);border:1px solid var(--border);border-radius:var(--radius-lg)}
+.lead-table{width:100%;border-collapse:separate;border-spacing:0}
+.lead-table thead th{
+  padding:9px 12px;text-align:right;font-family:var(--font-mono);font-size:9px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap;
+  position:sticky;top:0;background:var(--surface2);z-index:2;border-bottom:1px solid var(--border);
+}
+.lead-table thead th.name-col{text-align:left;left:0;z-index:3}
+.lead-table td{padding:8px 12px;font-size:12px;text-align:right;border-bottom:1px solid var(--hairline);white-space:nowrap}
+.lead-table tbody tr:last-child td{border-bottom:0}
+.lead-table tbody tr:hover td{background:var(--surface2)}
+.lead-table td.name-col{text-align:left;position:sticky;left:0;background:var(--surface);z-index:1}
+.cell-val{font-family:var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text-mid);font-size:12px}
+.log-hit{color:var(--accent-green)} .log-miss{color:var(--accent-red)}
+.rank-chip{font-family:var(--font-mono);font-size:10px;color:var(--text-dim)}
+.caveat{
+  background:rgba(250,204,21,.07);border:1px solid rgba(250,204,21,.3);border-radius:var(--radius);
+  padding:10px 14px;font-size:11.5px;color:var(--text-mid);margin-bottom:16px;line-height:1.5;
+}
+.caveat b{color:var(--accent-gold)}
+.intel-card.watch{border-color:var(--accent-gold);background:rgba(250,204,21,.04)}
+.watch-badge{
+  display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:9px;font-weight:700;
+  letter-spacing:.05em;color:var(--accent-gold);background:rgba(250,204,21,.1);
+  border:1px solid rgba(250,204,21,.35);border-radius:3px;padding:2px 7px;text-transform:uppercase;
+  margin-bottom:10px;
+}
+.prop-box{
+  background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:10px 12px;margin-bottom:12px;
+}
+.prop-input-row{display:flex;align-items:center;gap:8px}
+.prop-input-row label{font-family:var(--font-mono);font-size:9.5px;color:var(--text-dim);white-space:nowrap}
+.prop-input{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);
+  color:var(--text);font-family:var(--font-mono);font-size:12px;padding:5px 8px;width:80px;
+}
+.prop-clear{
+  background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:11px;
+  padding:4px 6px;margin-left:auto;
+}
+.prop-clear:hover{color:var(--accent-red)}
+.prop-result{margin-top:8px;font-size:11.5px;color:var(--text-mid);display:none}
+.prop-result.show{display:block}
+.prop-result-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:5px}
+.prop-verdict{
+  font-family:var(--font-mono);font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:4px;white-space:nowrap;
+}
+.prop-verdict.under{color:var(--accent-green);background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3)}
+.prop-verdict.over{color:var(--accent-red);background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.3)}
+.prop-verdict.flat{color:var(--text-dim);background:var(--surface);border:1px solid var(--border)}
+.prop-stale{font-size:9.5px;color:var(--accent-gold);margin-top:4px}
+</style>
+</head>
+<body>
+<script src="js/fi-shell.js"></script>
+<script>
+const main = fiShell({ page:'reports', pageLabel:'Intel Reports', status:'loading' });
+
+let INTEL = null;
+let activeReport = 'qb'; // 'qb' | 'rb'
+let sortKey = 'watch';
+let searchTerm = '';
+let rbSortKey = 'gap';
+let rbSearchTerm = '';
+
+main.innerHTML = `
+  <div class="bar">
+    <span class="lbl">Intel Reports</span>
+    <div class="legend"><span>Hidden Intelligence — patterns most sites don't show you</span></div>
+  </div>
+  <div class="tabs" id="reportTabs" role="tablist">
+    <button role="tab" data-r="qb" aria-selected="true">QB Passing vs. Run Game</button>
+    <button role="tab" data-r="rb" aria-selected="false">RB Rushing vs. Passing Game</button>
+  </div>
+  <div id="body"></div>
+  <div class="modal-overlay" id="scrim"></div>
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="modal-header">
+      <div class="modal-title" id="mTitle"></div>
+      <div class="modal-subtitle" id="mSub"></div>
+      <button class="modal-close" id="mClose" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body" id="mBody"></div>
+  </div>`;
+
+const $ = id => document.getElementById(id);
+
+async function load(){
+  fiStatus("Loading","loading");
+  try{
+    const res = await fetch(`intel/latest.json`);
+    if(res.ok) INTEL = await res.json();
+  }catch(e){}
+
+  if(!INTEL || !Object.keys(INTEL.teams||{}).length){
+    fiStatus("No data","error"); fiUpdated("");
+    $("body").innerHTML = `<div class="empty">
+      No Intel Reports data found yet.<br>
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+
+  fiStatus("Ready");
+  fiUpdated(`${INTEL.season} · as of week ${INTEL.as_of_week}`);
+
+  $("reportTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    activeReport = b.dataset.r;
+    $("reportTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    render();
+  });
+
+  render();
+}
+
+function render(){
+  if(activeReport === 'qb') renderQBReport();
+  else renderRBReport();
+}
+
+function esc2(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+// A QB is "on watch" this week if: the run game has a genuinely favorable
+// matchup (weak run D, likely to be hot) AND this specific QB has
+// historically struggled to hit his own passing average in exactly that
+// scenario. Requires a real sample (4+ games) in the run-hot bucket —
+// otherwise a QB with one bad game could get flagged off pure noise.
+/* ── PROP LINE INPUT ─────────────────────────────────────────────── */
+const PROP_STORE_KEY = 'fi_intel_prop_lines_v1';
+
+function loadPropLines(){
+  try{ return JSON.parse(localStorage.getItem(PROP_STORE_KEY) || '{}'); }
+  catch(e){ return {}; }
+}
+function savePropLine(team, line){
+  const store = loadPropLines();
+  store[team] = { line, week: INTEL.as_of_week };
+  try{ localStorage.setItem(PROP_STORE_KEY, JSON.stringify(store)); }catch(e){}
+}
+function clearPropLine(team){
+  const store = loadPropLines();
+  delete store[team];
+  try{ localStorage.setItem(PROP_STORE_KEY, JSON.stringify(store)); }catch(e){}
+}
+
+// Vs a real, user-entered line (not the QB's own season average) — split
+// by whether the run game was hot or cold that game, since that's the
+// whole point: checking the actual bettable number against exactly the
+// scenario (favorable run spot) the strategy is built around.
+function computePropResult(team, line){
+  const t = INTEL.teams[team];
+  if(!t || !t.log || !t.log.length) return null;
+  const hot = t.log.filter(g => g.run_hit);
+  const cold = t.log.filter(g => !g.run_hit);
+  const underRate = games => {
+    if(!games.length) return null;
+    const unders = games.filter(g => g.qb_pass_yds < line).length;
+    return { pct: Math.round(1000*unders/games.length)/10, unders, n: games.length };
+  };
+  return { hot: underRate(hot), cold: underRate(cold) };
+}
+
+function propVerdictBadge(pct){
+  if(pct == null) return `<span class="prop-verdict flat">no data</span>`;
+  if(pct >= 60) return `<span class="prop-verdict under">Leans Under</span>`;
+  if(pct <= 40) return `<span class="prop-verdict over">Leans Over</span>`;
+  return `<span class="prop-verdict flat">No clear lean</span>`;
+}
+
+function renderPropResult(team){
+  const box = document.getElementById(`propResult_${team}`);
+  if(!box) return;
+  const input = document.getElementById(`propInput_${team}`);
+  const val = parseFloat(input.value);
+  if(!val || val <= 0){
+    box.classList.remove('show'); box.innerHTML = '';
+    clearPropLine(team);
+    return;
+  }
+  savePropLine(team, val);
+  const res = computePropResult(team, val);
+  const fmtRow = (label, r) => {
+    if(!r) return `<div class="prop-result-row"><span>${label}</span><span class="prop-verdict flat">no games</span></div>`;
+    return `<div class="prop-result-row"><span>${label} (${r.unders}/${r.n} under)</span>${propVerdictBadge(r.pct)}</div>`;
+  };
+  box.innerHTML = fmtRow('Run game HOT →', res.hot) + fmtRow('Run game COLD →', res.cold);
+  box.classList.add('show');
+}
+
+function matchupTierBadge(tier){
+  if(tier === 'bot') return `<span class="fav-badge yes">Favorable run spot</span>`;
+  if(tier === 'top') return `<span class="fav-badge no">Tough run spot</span>`;
+  if(tier === 'mid') return `<span class="fav-badge mid">Neutral run spot</span>`;
+  return '';
+}
+
+const WATCH_THRESHOLD = 35;
+const WATCH_MIN_N = 4;
+function isWatchFlag(t){
+  return t.run_matchup_tier === 'bot'
+    && t.qb_hit_rate_run_hot != null
+    && t.qb_hit_rate_run_hot < WATCH_THRESHOLD
+    && t.qb_hit_rate_run_hot_n >= WATCH_MIN_N;
+}
+
+function renderQBReport(){
+  $("body").innerHTML = `
+    <div class="sect"><h3>QB Passing vs. Run Game — Hit Rate Correlation</h3><span class="rule"></span></div>
+    <div class="report-intro">
+      Does a team's starting QB reach his own season passing average more or less often depending on whether the
+      run game is having a good day — and does it work the same way in reverse? Each card shows both directions,
+      using each QB's own games only (no blending across a benched starter), with the sample size shown next to
+      every number so a real pattern is easy to tell apart from a small-sample fluke.
+    </div>
+    <div class="report-controls">
+      <input class="search-box" id="searchBox" placeholder="Search team or QB…">
+      <div class="tabs" id="sortTabs" role="tablist"></div>
+    </div>
+    <div id="watchBanner"></div>
+    <div class="intel-grid" id="intelGrid"></div>`;
+
+  $("searchBox").oninput = e => { searchTerm = e.target.value.toLowerCase(); renderGrid(); };
+
+  const sorts = [['watch',"This week's watch list"], ['gap','Strongest pattern'], ['team','Team A–Z']];
+  $("sortTabs").innerHTML = sorts.map(([k,l]) =>
+    `<button role="tab" aria-selected="${k===sortKey}" data-k="${k}">${l}</button>`).join('');
+  $("sortTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    sortKey = b.dataset.k;
+    $("sortTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    renderGrid();
+  });
+
+  renderGrid();
+}
+
+function hitBadge(rate, n){
+  if(rate == null) return `<span class="hit-badge miss">no data</span>`;
+  const isHit = rate >= 50;
+  const displayRate = isHit ? rate : Math.round((100 - rate) * 10) / 10;
+  return `<span class="hit-badge ${isHit?'hit':'miss'}">${isHit?'Usually hits':'Usually falls short'}
+    (${displayRate}%)<span class="n">${n}g</span></span>`;
+}
+
+function renderGrid(){
+  const savedLines = loadPropLines();
+  let teams = Object.entries(INTEL.teams).map(([team, v]) => ({ team, ...v }));
+  teams = teams.filter(t =>
+    !searchTerm || t.team.toLowerCase().includes(searchTerm) || (t.qb_name||'').toLowerCase().includes(searchTerm));
+
+  const gap = t => {
+    const vals = [t.qb_hit_rate_run_hot, t.qb_hit_rate_run_cold].filter(v => v != null);
+    return vals.length === 2 ? Math.abs(vals[0]-vals[1]) : -1;
+  };
+
+  if(sortKey === 'team'){
+    teams.sort((a,b) => a.team.localeCompare(b.team));
+  } else if(sortKey === 'watch'){
+    teams.sort((a,b) => (isWatchFlag(b) - isWatchFlag(a)) || (gap(b) - gap(a)));
+  } else {
+    teams.sort((a,b) => gap(b) - gap(a));
+  }
+
+  const watchCount = Object.values(INTEL.teams).filter(isWatchFlag).length;
+  $("watchBanner").innerHTML = watchCount
+    ? `<div class="caveat"><b>${watchCount} QB${watchCount===1?'':'s'} on watch this week</b> —
+       favorable run matchup, and historically a sub-${WATCH_THRESHOLD}% hit rate on their own passing average
+       when the run game gets going. Flagged with ⚠️ below.</div>`
+    : `<div class="caveat">No QBs meet the watch criteria (favorable run spot + sub-${WATCH_THRESHOLD}%
+       hit rate when run game is hot, min ${WATCH_MIN_N} games) this week.</div>`;
+
+  $("intelGrid").innerHTML = teams.map(t => `
+    <div class="intel-card${isWatchFlag(t)?' watch':''}" data-team="${esc2(t.team)}">
+      ${isWatchFlag(t) ? `<div class="watch-badge">⚠️ Watch this week</div>` : ''}
+      <div class="ic-head">
+        <img class="ic-headshot" src="${esc2(t.qb_headshot||'')}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div>
+          <div class="ic-name">${esc2(t.qb_name)}</div>
+          <div class="ic-team">${esc2(t.team)} · ${t.starts} start${t.starts===1?'':'s'} · avg ${t.qb_season_avg} pass yds/gm</div>
+        </div>
+      </div>
+      <div class="ic-matchup">
+        ${t.upcoming_opponent
+          ? `${fiLogoHTML(t.upcoming_opponent,16)}<span>vs ${esc2(t.upcoming_opponent)} · Run D #${t.opp_run_def_rank}</span>
+             ${matchupTierBadge(t.run_matchup_tier)}`
+          : `<span>No upcoming game scheduled</span>`}
+      </div>
+
+      <div class="prop-box" data-noclick="1">
+        <div class="prop-input-row">
+          <label for="propInput_${esc2(t.team)}">Prop line (pass yds)</label>
+          <input class="prop-input" type="number" step="0.5" id="propInput_${esc2(t.team)}"
+                 value="${savedLines[t.team] ? savedLines[t.team].line : ''}" placeholder="225.5">
+          <button class="prop-clear" id="propClear_${esc2(t.team)}">✕ clear</button>
+        </div>
+        <div class="prop-result" id="propResult_${esc2(t.team)}"></div>
+        ${savedLines[t.team] && savedLines[t.team].week !== INTEL.as_of_week
+          ? `<div class="prop-stale">⚠ line saved for week ${savedLines[t.team].week}, this is week ${INTEL.as_of_week}</div>` : ''}
+      </div>
+
+      <div class="ic-section-label">Passing game</div>
+      <div class="ic-row"><span class="ic-row-label">When run game is HOT →</span>
+        ${hitBadge(t.qb_hit_rate_run_hot, t.qb_hit_rate_run_hot_n)}</div>
+      <div class="ic-row"><span class="ic-row-label">When run game is COLD →</span>
+        ${hitBadge(t.qb_hit_rate_run_cold, t.qb_hit_rate_run_cold_n)}</div>
+
+      <div class="ic-section-label">Run game</div>
+      <div class="ic-row"><span class="ic-row-label">When QB is HOT →</span>
+        ${hitBadge(t.run_hit_rate_qb_hot, t.run_hit_rate_qb_hot_n)}</div>
+      <div class="ic-row"><span class="ic-row-label">When QB is COLD →</span>
+        ${hitBadge(t.run_hit_rate_qb_cold, t.run_hit_rate_qb_cold_n)}</div>
+    </div>`).join('') || `<div class="empty">No teams match that search.</div>`;
+
+  $("intelGrid").querySelectorAll('.intel-card').forEach(el => {
+    el.onclick = (e) => {
+      if(e.target.closest('[data-noclick]')) return; // clicks inside the prop box shouldn't open the modal
+      openGameLog(el.dataset.team);
+    };
+  });
+
+  teams.forEach(t => {
+    const input = document.getElementById(`propInput_${t.team}`);
+    const clearBtn = document.getElementById(`propClear_${t.team}`);
+    if(!input) return;
+    input.oninput = () => renderPropResult(t.team);
+    input.onclick = e => e.stopPropagation();
+    clearBtn.onclick = (e) => { e.stopPropagation(); input.value = ''; renderPropResult(t.team); };
+    if(input.value) renderPropResult(t.team); // show result immediately for a restored saved line
+  });
+}
+
+/* ── GAME LOG MODAL ──────────────────────────────────────────────── */
+/* ── RB REPORT (reverse signal) ──────────────────────────────────── */
+function renderRBReport(){
+  $("body").innerHTML = `
+    <div class="sect"><h3>RB Rushing vs. Passing Game — Hit Rate Correlation</h3><span class="rule"></span></div>
+    <div class="report-intro">
+      The same relationship, reversed: does each team's lead back reach his own season rushing average more or
+      less often depending on whether the starting QB had a hot or cold passing game — and the same thing in
+      reverse. Useful for rushing-yards props the same way the QB report is useful for passing-yards props.
+      Matchup context below still uses the opponent's run-defense rank, since that's the most direct signal for
+      rushing yards specifically.
+    </div>
+    <div class="report-controls">
+      <input class="search-box" id="rbSearchBox" placeholder="Search team or RB…">
+      <div class="tabs" id="rbSortTabs" role="tablist"></div>
+    </div>
+    <div class="intel-grid" id="rbIntelGrid"></div>`;
+
+  $("rbSearchBox").oninput = e => { rbSearchTerm = e.target.value.toLowerCase(); renderRbGrid(); };
+
+  const sorts = [['gap','Strongest pattern'], ['team','Team A–Z']];
+  $("rbSortTabs").innerHTML = sorts.map(([k,l]) =>
+    `<button role="tab" aria-selected="${k===rbSortKey}" data-k="${k}">${l}</button>`).join('');
+  $("rbSortTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    rbSortKey = b.dataset.k;
+    $("rbSortTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    renderRbGrid();
+  });
+
+  renderRbGrid();
+}
+
+function computeRbPropResult(team, line){
+  const t = INTEL.rb_teams[team];
+  if(!t || !t.log || !t.log.length) return null;
+  const qbHot = t.log.filter(g => g.qb_hit);
+  const qbCold = t.log.filter(g => !g.qb_hit);
+  const underRate = games => {
+    if(!games.length) return null;
+    const unders = games.filter(g => g.rb_rush_yds < line).length;
+    return { pct: Math.round(1000*unders/games.length)/10, unders, n: games.length };
+  };
+  return { hot: underRate(qbHot), cold: underRate(qbCold) };
+}
+
+function renderRbPropResult(team){
+  const box = document.getElementById(`rbPropResult_${team}`);
+  if(!box) return;
+  const input = document.getElementById(`rbPropInput_${team}`);
+  const val = parseFloat(input.value);
+  if(!val || val <= 0){
+    box.classList.remove('show'); box.innerHTML = '';
+    clearPropLine('RB_'+team);
+    return;
+  }
+  savePropLine('RB_'+team, val);
+  const res = computeRbPropResult(team, val);
+  const fmtRow = (label, r) => {
+    if(!r) return `<div class="prop-result-row"><span>${label}</span><span class="prop-verdict flat">no games</span></div>`;
+    return `<div class="prop-result-row"><span>${label} (${r.unders}/${r.n} under)</span>${propVerdictBadge(r.pct)}</div>`;
+  };
+  box.innerHTML = fmtRow('QB HOT →', res.hot) + fmtRow('QB COLD →', res.cold);
+  box.classList.add('show');
+}
+
+function renderRbGrid(){
+  const savedLines = loadPropLines();
+  let teams = Object.entries(INTEL.rb_teams).map(([team, v]) => ({ team, ...v }));
+  teams = teams.filter(t =>
+    !rbSearchTerm || t.team.toLowerCase().includes(rbSearchTerm) || (t.rb_name||'').toLowerCase().includes(rbSearchTerm));
+
+  const gap = t => {
+    const vals = [t.rb_hit_rate_qb_hot, t.rb_hit_rate_qb_cold].filter(v => v != null);
+    return vals.length === 2 ? Math.abs(vals[0]-vals[1]) : -1;
+  };
+  if(rbSortKey === 'team') teams.sort((a,b) => a.team.localeCompare(b.team));
+  else teams.sort((a,b) => gap(b) - gap(a));
+
+  $("rbIntelGrid").innerHTML = teams.map(t => {
+    const saved = savedLines['RB_'+t.team];
+    return `
+    <div class="intel-card" data-team="${esc2(t.team)}" data-kind="rb">
+      <div class="ic-head">
+        <img class="ic-headshot" src="${esc2(t.rb_headshot||'')}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div>
+          <div class="ic-name">${esc2(t.rb_name)}</div>
+          <div class="ic-team">${esc2(t.team)} · ${t.starts} games · avg ${t.rb_season_avg} rush yds/gm</div>
+        </div>
+      </div>
+      <div class="ic-matchup">
+        ${t.upcoming_opponent
+          ? `${fiLogoHTML(t.upcoming_opponent,16)}<span>vs ${esc2(t.upcoming_opponent)} · Run D #${t.opp_run_def_rank}</span>
+             ${matchupTierBadge(t.run_matchup_tier)}`
+          : `<span>No upcoming game scheduled</span>`}
+      </div>
+
+      <div class="prop-box" data-noclick="1">
+        <div class="prop-input-row">
+          <label for="rbPropInput_${esc2(t.team)}">Prop line (rush yds)</label>
+          <input class="prop-input" type="number" step="0.5" id="rbPropInput_${esc2(t.team)}"
+                 value="${saved ? saved.line : ''}" placeholder="75.5">
+          <button class="prop-clear" id="rbPropClear_${esc2(t.team)}">✕ clear</button>
+        </div>
+        <div class="prop-result" id="rbPropResult_${esc2(t.team)}"></div>
+        ${saved && saved.week !== INTEL.as_of_week
+          ? `<div class="prop-stale">⚠ line saved for week ${saved.week}, this is week ${INTEL.as_of_week}</div>` : ''}
+      </div>
+
+      <div class="ic-section-label">Rushing (his own average)</div>
+      <div class="ic-row"><span class="ic-row-label">When QB is HOT →</span>
+        ${hitBadge(t.rb_hit_rate_qb_hot, t.rb_hit_rate_qb_hot_n)}</div>
+      <div class="ic-row"><span class="ic-row-label">When QB is COLD →</span>
+        ${hitBadge(t.rb_hit_rate_qb_cold, t.rb_hit_rate_qb_cold_n)}</div>
+
+      <div class="ic-section-label">Passing (team's QB)</div>
+      <div class="ic-row"><span class="ic-row-label">When RB is HOT →</span>
+        ${hitBadge(t.qb_hit_rate_rb_hot, t.qb_hit_rate_rb_hot_n)}</div>
+      <div class="ic-row"><span class="ic-row-label">When RB is COLD →</span>
+        ${hitBadge(t.qb_hit_rate_rb_cold, t.qb_hit_rate_rb_cold_n)}</div>
+    </div>`;
+  }).join('') || `<div class="empty">No teams match that search.</div>`;
+
+  $("rbIntelGrid").querySelectorAll('.intel-card').forEach(el => {
+    el.onclick = (e) => {
+      if(e.target.closest('[data-noclick]')) return;
+      openGameLog(el.dataset.team, 'rb');
+    };
+  });
+
+  teams.forEach(t => {
+    const input = document.getElementById(`rbPropInput_${t.team}`);
+    const clearBtn = document.getElementById(`rbPropClear_${t.team}`);
+    if(!input) return;
+    input.oninput = () => renderRbPropResult(t.team);
+    input.onclick = e => e.stopPropagation();
+    clearBtn.onclick = (e) => { e.stopPropagation(); input.value = ''; renderRbPropResult(t.team); };
+    if(input.value) renderRbPropResult(t.team);
+  });
+}
+
+function openGameLog(team, kind){
+  kind = kind || 'qb';
+  const t = kind === 'qb' ? INTEL.teams[team] : INTEL.rb_teams[team];
+  if(!t) return;
+
+  if(kind === 'qb'){
+    $("mTitle").textContent = `${t.qb_name} — ${team}`;
+    $("mSub").textContent = `${t.starts} starts · season avg ${t.qb_season_avg} pass yds/gm · team avg ${t.team_rush_avg} rush yds/gm`;
+  } else {
+    $("mTitle").textContent = `${t.rb_name} — ${team}`;
+    $("mSub").textContent = `${t.starts} games · season avg ${t.rb_season_avg} rush yds/gm`;
+  }
+
+  const rushLabel = kind === 'qb' ? 'Team Rush Yds' : 'RB Rush Yds';
+  const rushKey = kind === 'qb' ? 'team_rush_yds' : 'rb_rush_yds';
+  const rushHitKey = kind === 'qb' ? 'run_hit' : 'rb_hit';
+
+  const rows = t.log.slice().sort((a,b) => b.week - a.week);
+  let h = `<div class="lead-wrap"><table class="lead-table"><thead><tr>
+    <th class="name-col">Week</th><th>Opponent</th>
+    <th>Opp vs Run</th><th>Opp vs Pass</th>
+    <th>${rushLabel}</th><th>QB Pass Yds</th>
+  </tr></thead><tbody>`;
+  rows.forEach(g => {
+    h += `<tr>
+      <td class="name-col">${g.week}</td>
+      <td>${g.opponent ? fiLogoHTML(g.opponent,16)+esc2(g.opponent) : '—'}</td>
+      <td><span class="rank-chip">${g.opp_run_def_rank ? '#'+g.opp_run_def_rank : '—'}</span></td>
+      <td><span class="rank-chip">${g.opp_pass_def_rank ? '#'+g.opp_pass_def_rank : '—'}</span></td>
+      <td><span class="cell-val ${g[rushHitKey]?'log-hit':'log-miss'}">${g[rushKey]}</span></td>
+      <td><span class="cell-val ${g.qb_hit?'log-hit':'log-miss'}">${g.qb_pass_yds != null ? g.qb_pass_yds : '—'}</span></td>
+    </tr>`;
+  });
+  h += `</tbody></table></div>
+  <div class="empty" style="padding:10px 4px;text-align:left;font-size:10px">
+    Green = hit that game's own season average · Red = fell short · ranks are each opponent's current defensive rank.
+  </div>`;
+  $("mBody").innerHTML = h;
+
+  $("scrim").classList.add("open"); $("modal").classList.add("open");
+  $("mClose").focus();
+}
+
+function closeModal(){
+  $("scrim").classList.remove("open"); $("modal").classList.remove("open");
+}
+$("mClose").addEventListener("click", closeModal);
+$("scrim").addEventListener("click", closeModal);
+document.addEventListener("keydown", e => { if(e.key === "Escape") closeModal(); });
+
+load();
+</script>
+</body>
+</html>

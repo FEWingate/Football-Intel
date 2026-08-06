@@ -1622,6 +1622,220 @@ def build_games_only(week):
     build_games(week, all_teams, records, week_games, prior_games, stats)
 
 
+def build_intel_reports(week=None):
+    """Hidden Intelligence: how often does a team's starting QB reach his
+    own season passing average when the run game is hot vs cold that same
+    game — and the same relationship in reverse (run game vs QB hot/cold).
+    Both directions, because a real correlation should show up either way
+    you slice it; a one-directional finding is more likely noise.
+
+    Also tags each team with their week `week` opponent's run-defense
+    rank, so the historical pattern comes with real forward-looking
+    context instead of being purely descriptive. Reads teamstats/latest.json
+    for run-defense-allowed rather than re-deriving it — must be built
+    first in the same pipeline run.
+    """
+    print(f"Building Intel Reports for {SEASON}...")
+    games = fetch_csv(GAMES_URL)
+    as_of_week = week or current_week(games)
+    if as_of_week is None:
+        sys.exit(f"FATAL: no {SEASON} schedule found in nflverse yet.")
+
+    reg = games[(games["season"] == SEASON) & (games["game_type"] == "REG")].copy()
+    played = reg[reg["home_score"].notna()]
+
+    # --- starting QB per team-week (most attempts that week, min volume) ---
+    players = fetch_csv(PLAYER_STATS_URLS)
+    players = players[(players.get("season_type") == "REG") if "season_type" in players.columns
+                       else pd.Series(True, index=players.index)]
+    qb = players[(players["position"] == "QB") & (players["attempts"].fillna(0) >= 10)
+                 & (players["week"] < as_of_week)].copy()
+    if qb.empty:
+        print("  No qualifying QB games yet this season — skipping.")
+        os.makedirs("intel", exist_ok=True)
+        with open("intel/latest.json", "w") as f:
+            json.dump({"season": SEASON, "as_of_week": as_of_week, "teams": {}, "rb_teams": {}}, f)
+        return
+    starters = qb.loc[qb.groupby(["team", "week"])["attempts"].idxmax()].copy()
+    qb_season_avg = starters.groupby("player_id")["passing_yards"].mean().rename("qb_season_avg")
+    qb_starts = starters.groupby("player_id").size().rename("qb_starts")
+    starters = starters.join(qb_season_avg, on="player_id").join(qb_starts, on="player_id")
+    headshots = starters.groupby("player_id")["headshot_url"].last() if "headshot_url" in starters.columns else {}
+
+    starters = starters[["team", "week", "player_id", "player_display_name", "passing_yards",
+                          "qb_season_avg", "qb_starts"] +
+                         (["headshot_url"] if "headshot_url" in starters.columns else [])]
+
+    # --- team rushing yards per week + season average ---
+    team_stats = fetch_csv(TEAM_STATS_URL)
+    team_stats = team_stats[team_stats["season_type"] == "REG"] if "season_type" in team_stats.columns else team_stats
+    team_stats = team_stats[team_stats["week"] < as_of_week]
+    team_rush = team_stats[["team", "week", "rushing_yards"]].copy()
+    team_rush_avg = team_rush.groupby("team")["rushing_yards"].mean().rename("team_rush_avg")
+    team_rush = team_rush.join(team_rush_avg, on="team")
+
+    merged = starters.merge(team_rush, on=["team", "week"], how="inner")
+    merged["run_hot"] = merged["rushing_yards"] >= merged["team_rush_avg"]
+    merged["qb_hot"] = merged["passing_yards"] >= merged["qb_season_avg"]
+
+    # --- run-defense rank for upcoming-opponent context (from teamstats, already built) ---
+    run_def_rank = {}
+    pass_def_rank = {}
+    try:
+        with open("teamstats/latest.json") as f:
+            ts = json.load(f)
+        rush_allowed = {t: v["defense"]["Run Defense"]["rush_yds_allowed"]["avg"]
+                         for t, v in ts["teams"].items()}
+        pass_allowed = {t: v["defense"]["Pass Defense"]["pass_yds_allowed"]["avg"]
+                         for t, v in ts["teams"].items()}
+        run_def_rank = {t: i + 1 for i, t in enumerate(sorted(rush_allowed, key=lambda t: rush_allowed[t]))}
+        pass_def_rank = {t: i + 1 for i, t in enumerate(sorted(pass_allowed, key=lambda t: pass_allowed[t]))}
+    except FileNotFoundError:
+        print("  WARNING: teamstats/latest.json not found — run build_team_stats() first "
+              "for upcoming-matchup context. Continuing without it.")
+
+    # --- upcoming opponent per team, for the week being previewed ---
+    upcoming = {}
+    wk_games = reg[reg["week"] == as_of_week]
+    for _, g in wk_games.iterrows():
+        upcoming[g["away_team"]] = g["home_team"]
+        upcoming[g["home_team"]] = g["away_team"]
+
+    # every played game's opponent, for the drill-down log (not just upcoming)
+    opponent_of = {}
+    for _, g in played.iterrows():
+        opponent_of[(g["away_team"], g["week"])] = g["home_team"]
+        opponent_of[(g["home_team"], g["week"])] = g["away_team"]
+
+    def rate(sub):
+        return (round(100 * sub["qb_hot"].mean(), 1), len(sub)) if len(sub) else (None, 0)
+
+    out = {}
+    for team, g in merged.groupby("team"):
+        # the real starter = most starts this season, not whoever played most
+        # recently — a late-season rest game for a backup shouldn't hijack
+        # the report, and shouldn't blend into the primary QB's sample either
+        primary_pid = g.groupby("player_id").size().idxmax()
+        g = g[g["player_id"] == primary_pid].sort_values("week")
+
+        pid = primary_pid
+        name = g["player_display_name"].iloc[-1] if "player_display_name" in g.columns else str(pid)
+        headshot = headshots.get(pid, "") if hasattr(headshots, "get") else ""
+
+        run_hot = g[g["run_hot"]]
+        run_cold = g[~g["run_hot"]]
+        qb_hot = g[g["qb_hot"]]
+        qb_cold = g[~g["qb_hot"]]
+
+        qb_rate_hot, qb_n_hot = (round(100 * run_hot["qb_hot"].mean(), 1), len(run_hot)) if len(run_hot) else (None, 0)
+        qb_rate_cold, qb_n_cold = (round(100 * run_cold["qb_hot"].mean(), 1), len(run_cold)) if len(run_cold) else (None, 0)
+        run_rate_hot, run_n_hot = (round(100 * qb_hot["run_hot"].mean(), 1), len(qb_hot)) if len(qb_hot) else (None, 0)
+        run_rate_cold, run_n_cold = (round(100 * qb_cold["run_hot"].mean(), 1), len(qb_cold)) if len(qb_cold) else (None, 0)
+
+        opp = upcoming.get(team)
+        opp_rank = run_def_rank.get(opp) if opp else None
+        # Same Top 10 / Middle 12 / Bottom 10 convention used everywhere
+        # else on the site: bottom-10 run D (softest) = favorable for the
+        # offense, top-10 (toughest) = tough spot, middle-12 = neutral.
+        run_matchup_tier = tier_of(opp_rank) if opp_rank is not None else None
+
+        log = []
+        for _, row in g.iterrows():
+            game_opp = opponent_of.get((team, row["week"]))
+            log.append({
+                "week": int(row["week"]), "opponent": game_opp,
+                "qb_pass_yds": round(row["passing_yards"], 1), "qb_hit": bool(row["qb_hot"]),
+                "team_rush_yds": round(row["rushing_yards"], 1), "run_hit": bool(row["run_hot"]),
+                "opp_run_def_rank": run_def_rank.get(game_opp), "opp_pass_def_rank": pass_def_rank.get(game_opp),
+            })
+
+        out[team] = {
+            "qb_name": name, "qb_headshot": headshot,
+            "starts": int(g["player_id"].count()),
+            "qb_season_avg": round(g["qb_season_avg"].iloc[-1], 1),
+            "team_rush_avg": round(g["team_rush_avg"].iloc[-1], 1),
+            "upcoming_opponent": opp, "opp_run_def_rank": opp_rank, "run_matchup_tier": run_matchup_tier,
+            "qb_hit_rate_run_hot": qb_rate_hot, "qb_hit_rate_run_hot_n": qb_n_hot,
+            "qb_hit_rate_run_cold": qb_rate_cold, "qb_hit_rate_run_cold_n": qb_n_cold,
+            "run_hit_rate_qb_hot": run_rate_hot, "run_hit_rate_qb_hot_n": run_n_hot,
+            "run_hit_rate_qb_cold": run_rate_cold, "run_hit_rate_qb_cold_n": run_n_cold,
+            "log": log,
+        }
+
+    # --- RB side: same relationship, reversed — does the lead back's own
+    # rushing production correlate with whether the QB had a hot or cold
+    # passing game, and vice versa. Reuses merged's qb_hot per team-week
+    # rather than recomputing it. ---
+    rb = players[(players["position"] == "RB") & (players["carries"].fillna(0) >= 8)
+                 & (players["week"] < as_of_week)].copy()
+    rb_out = {}
+    if not rb.empty:
+        rb_leaders = rb.loc[rb.groupby(["team", "week"])["carries"].idxmax()].copy()
+        rb_season_avg = rb_leaders.groupby("player_id")["rushing_yards"].mean().rename("rb_season_avg")
+        rb_leaders = rb_leaders.join(rb_season_avg, on="player_id")
+        rb_headshots = (rb_leaders.groupby("player_id")["headshot_url"].last()
+                         if "headshot_url" in rb_leaders.columns else {})
+
+        qb_hot_lookup = merged.set_index(["team", "week"])["qb_hot"]
+        qb_yds_lookup = merged.set_index(["team", "week"])["passing_yards"]
+        rb_leaders = rb_leaders.join(qb_hot_lookup, on=["team", "week"])
+        rb_leaders = rb_leaders.join(qb_yds_lookup, on=["team", "week"], rsuffix="_qb")
+        rb_leaders = rb_leaders.dropna(subset=["qb_hot"])  # only games where we also know the QB's game
+        rb_leaders["rb_hot"] = rb_leaders["rushing_yards"] >= rb_leaders["rb_season_avg"]
+
+        for team, g in rb_leaders.groupby("team"):
+            primary_pid = g.groupby("player_id").size().idxmax()
+            g = g[g["player_id"] == primary_pid].sort_values("week")
+            if len(g) < 2:
+                continue
+
+            pid = primary_pid
+            name = g["player_display_name"].iloc[-1] if "player_display_name" in g.columns else str(pid)
+            headshot = rb_headshots.get(pid, "") if hasattr(rb_headshots, "get") else ""
+
+            qb_hot_g = g[g["qb_hot"]]
+            qb_cold_g = g[~g["qb_hot"]]
+            rb_hot_g = g[g["rb_hot"]]
+            rb_cold_g = g[~g["rb_hot"]]
+
+            rb_rate_hot, rb_n_hot = (round(100*qb_hot_g["rb_hot"].mean(),1), len(qb_hot_g)) if len(qb_hot_g) else (None,0)
+            rb_rate_cold, rb_n_cold = (round(100*qb_cold_g["rb_hot"].mean(),1), len(qb_cold_g)) if len(qb_cold_g) else (None,0)
+            qb_rate_hot2, qb_n_hot2 = (round(100*rb_hot_g["qb_hot"].mean(),1), len(rb_hot_g)) if len(rb_hot_g) else (None,0)
+            qb_rate_cold2, qb_n_cold2 = (round(100*rb_cold_g["qb_hot"].mean(),1), len(rb_cold_g)) if len(rb_cold_g) else (None,0)
+
+            opp = upcoming.get(team)
+            opp_rank = run_def_rank.get(opp) if opp else None
+            run_matchup_tier = tier_of(opp_rank) if opp_rank is not None else None
+
+            rb_log = []
+            for _, row in g.iterrows():
+                game_opp = opponent_of.get((team, row["week"]))
+                qb_yds = row["passing_yards_qb"] if "passing_yards_qb" in row.index else row.get("passing_yards")
+                rb_log.append({
+                    "week": int(row["week"]), "opponent": game_opp,
+                    "rb_rush_yds": round(row["rushing_yards"], 1), "rb_hit": bool(row["rb_hot"]),
+                    "qb_pass_yds": round(qb_yds, 1) if pd.notna(qb_yds) else None, "qb_hit": bool(row["qb_hot"]),
+                    "opp_run_def_rank": run_def_rank.get(game_opp), "opp_pass_def_rank": pass_def_rank.get(game_opp),
+                })
+
+            rb_out[team] = {
+                "rb_name": name, "rb_headshot": headshot,
+                "starts": int(g["player_id"].count()),
+                "rb_season_avg": round(g["rb_season_avg"].iloc[-1], 1),
+                "upcoming_opponent": opp, "opp_run_def_rank": opp_rank, "run_matchup_tier": run_matchup_tier,
+                "rb_hit_rate_qb_hot": rb_rate_hot, "rb_hit_rate_qb_hot_n": rb_n_hot,
+                "rb_hit_rate_qb_cold": rb_rate_cold, "rb_hit_rate_qb_cold_n": rb_n_cold,
+                "qb_hit_rate_rb_hot": qb_rate_hot2, "qb_hit_rate_rb_hot_n": qb_n_hot2,
+                "qb_hit_rate_rb_cold": qb_rate_cold2, "qb_hit_rate_rb_cold_n": qb_n_cold2,
+                "log": rb_log,
+            }
+
+    os.makedirs("intel", exist_ok=True)
+    with open("intel/latest.json", "w") as f:
+        json.dump({"season": SEASON, "as_of_week": as_of_week, "teams": out, "rb_teams": rb_out}, f)
+    print(f"Wrote intel/latest.json — {len(out)} QB teams, {len(rb_out)} RB teams, as of week {as_of_week}")
+
+
 def current_week(games):
     """The next week that hasn't been played yet — the one to preview."""
     reg = games[(games["season"] == SEASON) & (games["game_type"] == "REG")]
@@ -1698,3 +1912,10 @@ if __name__ == "__main__":
         build_player_stats()
     except SystemExit as e:
         print(f"  player stats: skipped — {e}")
+
+    # 5. Intel Reports: Hidden Intelligence findings. Depends on teamstats/
+    # latest.json (run-defense ranks) already being written, hence last.
+    try:
+        build_intel_reports()
+    except SystemExit as e:
+        print(f"  intel reports: skipped — {e}")
