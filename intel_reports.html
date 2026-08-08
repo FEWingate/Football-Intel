@@ -106,7 +106,8 @@ const main = fiShell({ page:'reports', pageLabel:'Intel Reports', status:'loadin
 
 let INTEL = null;
 let BLITZ = null;
-let activeReport = 'qb'; // 'qb' | 'rb' | 'blitz'
+let COVERAGE = null;
+let activeReport = 'qb'; // 'qb' | 'rb' | 'blitz' | 'coverage'
 let sortKey = 'watch';
 let searchTerm = '';
 let rbSortKey = 'watch';
@@ -114,6 +115,8 @@ let rbSearchTerm = '';
 let blitzPos = 'QB';
 let blitzSortKey = 'watch';
 let blitzSearchTerm = '';
+let coveragePos = 'QB';
+let coverageSearchTerm = '';
 
 main.innerHTML = `
   <div class="bar">
@@ -124,6 +127,7 @@ main.innerHTML = `
     <button role="tab" data-r="qb" aria-selected="true">QB Passing vs. Run Game</button>
     <button role="tab" data-r="rb" aria-selected="false">RB Rushing vs. Passing Game</button>
     <button role="tab" data-r="blitz" aria-selected="false">Blitz Impact</button>
+    <button role="tab" data-r="coverage" aria-selected="false">Coverage Breakdown</button>
   </div>
   <div id="body"></div>
   <div class="modal-overlay" id="scrim"></div>
@@ -143,6 +147,10 @@ async function load(){
   try{
     const res = await fetch(`intel/latest.json`);
     if(res.ok) INTEL = await res.json();
+  }catch(e){}
+  try{
+    const resC = await fetch(`intel/coverage.json`);
+    if(resC.ok) COVERAGE = await resC.json();
   }catch(e){}
   try{
     const res2 = await fetch(`intel/blitz.json`);
@@ -172,7 +180,8 @@ async function load(){
 function render(){
   if(activeReport === 'qb') renderQBReport();
   else if(activeReport === 'rb') renderRBReport();
-  else renderBlitzReport();
+  else if(activeReport === 'blitz') renderBlitzReport();
+  else renderCoverageReport();
 }
 
 function esc2(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
@@ -725,6 +734,133 @@ function openBlitzGameLog(team){
     blitz rate compared against his own season average blitz rate faced · Blitz Success Rate is how
     often the blitz actually worked for the defense that game (small play counts per game, so treat with
     caution — shown with the play count next to it).
+  </div>`;
+  $("mBody").innerHTML = h;
+
+  $("scrim").classList.add("open"); $("modal").classList.add("open");
+  $("mClose").focus();
+}
+
+/* ── COVERAGE BREAKDOWN REPORT (historical, season retrospective) ──── */
+const COVERAGE_LABELS = {
+  MAN_COVERAGE: 'Man Coverage', ZONE_COVERAGE: 'Zone Coverage',
+  COVER_0: 'Cover 0', COVER_1: 'Cover 1', COVER_2: 'Cover 2', COVER_3: 'Cover 3',
+  COVER_4: 'Cover 4', COVER_6: 'Cover 6', COVER_9: 'Cover 9', '2_MAN': '2-Man',
+  COMBO: 'Combo', BLOWN: 'Blown Coverage',
+};
+
+function renderCoverageReport(){
+  if(!COVERAGE || !COVERAGE.available){
+    $("body").innerHTML = `<div class="empty">
+      No Coverage Breakdown data available for ${COVERAGE?COVERAGE.season:'this season'} yet.<br>
+      This report uses nflverse's participation data, which is only released after the full season
+      (including playoffs) concludes — it doesn't update during a live season. Run
+      <b>python3 build_matchup_stats.py all</b> again once that season is fully over.</div>`;
+    return;
+  }
+  $("body").innerHTML = `
+    <div class="sect"><h3>Coverage Breakdown — ${COVERAGE.season} Season Retrospective</h3><span class="rule"></span></div>
+    <div class="report-intro">
+      How did each team's starting QB (and their target leader) actually perform against man vs. zone
+      coverage, and against specific calls like Cover 2 or Cover 3, over the full ${COVERAGE.season} season?
+      This is deliberately a look-back, not a "this week" report — coverage-scheme charting only gets
+      released once a season fully wraps up, so there's no forward-looking matchup angle here, just real
+      season totals. Coverage types with fewer than 10 plays are hidden — too small a sample to mean anything.
+    </div>
+    <div class="report-controls">
+      <div class="tabs" id="coveragePosTabs" role="tablist">
+        <button role="tab" data-p="QB" aria-selected="true">QB</button>
+        <button role="tab" data-p="WR" aria-selected="false">WR</button>
+      </div>
+      <input class="search-box" id="coverageSearchBox" placeholder="Search team or player…">
+    </div>
+    <div class="intel-grid" id="coverageGrid"></div>`;
+
+  $("coveragePosTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    coveragePos = b.dataset.p;
+    $("coveragePosTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    renderCoverageGrid();
+  });
+  $("coverageSearchBox").oninput = e => { coverageSearchTerm = e.target.value.toLowerCase(); renderCoverageGrid(); };
+
+  renderCoverageGrid();
+}
+
+function coverageTableHTML(splits, title){
+  const rows = Object.entries(splits).sort((a,b) => b[1].n - a[1].n);
+  if(!rows.length) return '';
+  return `
+    <div class="ic-section-label">${title}</div>
+    <div class="lead-wrap" style="max-height:none"><table class="lead-table"><thead><tr>
+      <th class="name-col">Coverage</th><th>Plays</th><th>Yds/Play</th><th>Comp%</th><th>Success%</th>
+    </tr></thead><tbody>
+      ${rows.map(([key, s]) => `<tr>
+        <td class="name-col">${esc2(COVERAGE_LABELS[key]||key)}</td>
+        <td><span class="cell-val">${s.n}</span></td>
+        <td><span class="cell-val">${s.yds_per_play}</span></td>
+        <td><span class="cell-val">${s.comp_pct!=null?s.comp_pct+'%':'—'}</span></td>
+        <td><span class="cell-val">${s.success_pct}%</span></td>
+      </tr>`).join('')}
+    </tbody></table></div>`;
+}
+
+function renderCoverageGrid(){
+  const dataset = coveragePos === 'QB' ? (COVERAGE.qb_teams||{}) : (COVERAGE.wr_teams||{});
+  let teams = Object.entries(dataset).map(([team, v]) => ({ team, ...v }));
+  teams = teams.filter(t =>
+    !coverageSearchTerm || t.team.toLowerCase().includes(coverageSearchTerm) || (t.name||'').toLowerCase().includes(coverageSearchTerm));
+  teams.sort((a,b) => a.team.localeCompare(b.team));
+
+  $("coverageGrid").innerHTML = teams.map(t => `
+    <div class="intel-card" data-team="${esc2(t.team)}">
+      <div class="ic-head">
+        <img class="ic-headshot" src="${esc2(t.headshot||'')}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div>
+          <div class="ic-name">${esc2(t.name)}</div>
+          <div class="ic-team">${esc2(t.team)} · ${coveragePos==='QB' ? (t.starts+' starts') : (t.targets+' targets')}</div>
+        </div>
+      </div>
+      ${coverageTableHTML(t.man_zone, 'Man vs Zone')}
+      ${coverageTableHTML(t.by_coverage, 'By Specific Coverage (min 10 plays)')}
+    </div>`).join('') || `<div class="empty">No players match that search.</div>`;
+
+  $("coverageGrid").querySelectorAll('.intel-card').forEach(el => {
+    el.onclick = () => openCoverageGameLog(el.dataset.team);
+  });
+}
+
+function openCoverageGameLog(team){
+  const dataset = coveragePos === 'QB' ? (COVERAGE.qb_teams||{}) : (COVERAGE.wr_teams||{});
+  const t = dataset[team];
+  if(!t || !t.log) return;
+
+  $("mTitle").textContent = `${t.name} — ${team}`;
+  $("mSub").textContent = `${t.log.length} games · ${COVERAGE.season} season`;
+
+  const rows = t.log.slice().sort((a,b) => b.week - a.week);
+  const yardLabel = coveragePos === 'QB' ? 'Pass Yds' : 'Rec Yds';
+  let h = `<div class="lead-wrap"><table class="lead-table"><thead><tr>
+    <th class="name-col">Week</th><th>Opponent</th><th>W/L</th>
+    <th>Man %</th><th>Zone %</th><th>${yardLabel}</th><th>Comp %</th><th>TD</th>
+  </tr></thead><tbody>`;
+  rows.forEach(g => {
+    const resultClass = g.result === 'W' ? 'log-hit' : (g.result === 'L' ? 'log-miss' : '');
+    h += `<tr>
+      <td class="name-col">${g.week}</td>
+      <td>${g.opponent ? fiLogoHTML(g.opponent,16)+esc2(g.opponent) : '—'}</td>
+      <td><span class="cell-val ${resultClass}">${g.result||'—'}</span></td>
+      <td><span class="rank-chip">${g.man_pct!=null?g.man_pct+'%':'—'}</span></td>
+      <td><span class="rank-chip">${g.zone_pct!=null?g.zone_pct+'%':'—'}</span></td>
+      <td><span class="cell-val">${g.yds!=null?g.yds:'—'}</span></td>
+      <td><span class="cell-val">${g.comp_pct!=null?g.comp_pct+'%':'—'}</span></td>
+      <td><span class="cell-val">${g.td!=null?g.td:'—'}</span></td>
+    </tr>`;
+  });
+  h += `</tbody></table></div>
+  <div class="empty" style="padding:10px 4px;text-align:left;font-size:10px">
+    Man%/Zone% are that specific game's coverage rate faced (small per-game play counts —
+    hover isn't shown here but treat any game with very few plays cautiously, same as everywhere
+    else this site shows a per-game split). Green/red on W/L is just the game result, not a stat judgment.
   </div>`;
   $("mBody").innerHTML = h;
 
