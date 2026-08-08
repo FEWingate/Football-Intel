@@ -105,11 +105,15 @@
 const main = fiShell({ page:'reports', pageLabel:'Intel Reports', status:'loading' });
 
 let INTEL = null;
-let activeReport = 'qb'; // 'qb' | 'rb'
+let BLITZ = null;
+let activeReport = 'qb'; // 'qb' | 'rb' | 'blitz'
 let sortKey = 'watch';
 let searchTerm = '';
 let rbSortKey = 'watch';
 let rbSearchTerm = '';
+let blitzPos = 'QB';
+let blitzSortKey = 'watch';
+let blitzSearchTerm = '';
 
 main.innerHTML = `
   <div class="bar">
@@ -119,6 +123,7 @@ main.innerHTML = `
   <div class="tabs" id="reportTabs" role="tablist">
     <button role="tab" data-r="qb" aria-selected="true">QB Passing vs. Run Game</button>
     <button role="tab" data-r="rb" aria-selected="false">RB Rushing vs. Passing Game</button>
+    <button role="tab" data-r="blitz" aria-selected="false">Blitz Impact</button>
   </div>
   <div id="body"></div>
   <div class="modal-overlay" id="scrim"></div>
@@ -138,6 +143,10 @@ async function load(){
   try{
     const res = await fetch(`intel/latest.json`);
     if(res.ok) INTEL = await res.json();
+  }catch(e){}
+  try{
+    const res2 = await fetch(`intel/blitz.json`);
+    if(res2.ok) BLITZ = await res2.json();
   }catch(e){}
 
   if(!INTEL || !Object.keys(INTEL.teams||{}).length){
@@ -162,7 +171,8 @@ async function load(){
 
 function render(){
   if(activeReport === 'qb') renderQBReport();
-  else renderRBReport();
+  else if(activeReport === 'rb') renderRBReport();
+  else renderBlitzReport();
 }
 
 function esc2(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
@@ -271,6 +281,17 @@ function isRbWatchFlag(t){
     && t.rb_hit_rate_qb_hot != null
     && t.rb_hit_rate_qb_hot < WATCH_THRESHOLD
     && t.rb_hit_rate_qb_hot_n >= WATCH_MIN_N;
+}
+
+// Same mirror pattern again: opponent is a top-10 blitz-heavy defense
+// (likely to blitz a lot this week) + this player's own history shows a
+// low hit rate specifically in his high-blitz games. Works for both QB
+// and WR since both share the same field names.
+function isBlitzWatchFlag(t){
+  return t.blitz_matchup_tier === 'top'
+    && t.hit_rate_blitz_high != null
+    && t.hit_rate_blitz_high < WATCH_THRESHOLD
+    && t.hit_rate_blitz_high_n >= WATCH_MIN_N;
 }
 
 function renderQBReport(){
@@ -552,6 +573,163 @@ function renderRbGrid(){
     clearBtn.onclick = (e) => { e.stopPropagation(); input.value = ''; renderRbPropResult(t.team); };
     if(input.value) renderRbPropResult(t.team);
   });
+}
+
+/* ── BLITZ IMPACT REPORT ─────────────────────────────────────────── */
+function renderBlitzReport(){
+  if(!BLITZ || (!Object.keys(BLITZ.qb_teams||{}).length && !Object.keys(BLITZ.wr_teams||{}).length)){
+    $("body").innerHTML = `<div class="empty">
+      No Blitz Impact data found yet.<br>
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+  $("body").innerHTML = `
+    <div class="sect"><h3>Blitz Impact — Real Per-Play Splits</h3><span class="rule"></span></div>
+    <div class="report-intro">
+      Does this specific player's own performance actually change when the defense sends extra rushers?
+      Real play-by-play splits (5+ rushers = blitz), not a season average with a theory attached.
+      Completion % reliably drops under blitz league-wide, but EPA/play often doesn't — fewer completions,
+      but bigger plays when it connects, since a blitz means fewer defenders in coverage. RB isn't included
+      here: blitzing is a pass-rush decision and doesn't apply to run plays, and a direct test showed no real
+      link between a defense's blitz rate and rushing efficiency (r=-0.005) — so there's no honest signal to show.
+      <br><br>Blitz charting data courtesy of <a href="https://www.ftndata.com" target="_blank" style="color:var(--primary)">FTN Data via nflverse</a>.
+    </div>
+    <div class="report-controls">
+      <div class="tabs" id="blitzPosTabs" role="tablist">
+        <button role="tab" data-p="QB" aria-selected="true">QB</button>
+        <button role="tab" data-p="WR" aria-selected="false">WR</button>
+      </div>
+      <input class="search-box" id="blitzSearchBox" placeholder="Search team or player…">
+      <div class="tabs" id="blitzSortTabs" role="tablist"></div>
+    </div>
+    <div id="blitzWatchBanner"></div>
+    <div class="intel-grid" id="blitzGrid"></div>`;
+
+  $("blitzPosTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    blitzPos = b.dataset.p;
+    $("blitzPosTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    renderBlitzGrid();
+  });
+  $("blitzSearchBox").oninput = e => { blitzSearchTerm = e.target.value.toLowerCase(); renderBlitzGrid(); };
+
+  const sorts = [['watch',"This week's watch list"], ['team','Team A–Z']];
+  $("blitzSortTabs").innerHTML = sorts.map(([k,l]) =>
+    `<button role="tab" aria-selected="${k===blitzSortKey}" data-k="${k}">${l}</button>`).join('');
+  $("blitzSortTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    blitzSortKey = b.dataset.k;
+    $("blitzSortTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    renderBlitzGrid();
+  });
+
+  renderBlitzGrid();
+}
+
+function blitzStatRow(label, blitzVal, cleanVal, higherBetter, isPct){
+  const fmt = v => v == null ? '—' : (isPct ? `${v}%` : v);
+  const bothKnown = blitzVal != null && cleanVal != null;
+  const blitzBetter = bothKnown && (higherBetter ? blitzVal > cleanVal : blitzVal < cleanVal);
+  const cleanBetter = bothKnown && (higherBetter ? cleanVal > blitzVal : cleanVal < blitzVal);
+  return `<div class="ic-row">
+    <span class="ic-row-label">${label}</span>
+    <span style="display:flex;gap:14px">
+      <span style="font-family:var(--font-mono);font-size:12px;${blitzBetter?'color:var(--primary);font-weight:700':'color:var(--text-mid)'}">${fmt(blitzVal)}</span>
+      <span style="color:var(--text-dim)">vs</span>
+      <span style="font-family:var(--font-mono);font-size:12px;${cleanBetter?'color:var(--primary);font-weight:700':'color:var(--text-mid)'}">${fmt(cleanVal)}</span>
+    </span>
+  </div>`;
+}
+
+function renderBlitzGrid(){
+  const dataset = blitzPos === 'QB' ? (BLITZ.qb_teams||{}) : (BLITZ.wr_teams||{});
+  let teams = Object.entries(dataset).map(([team, v]) => ({ team, ...v }));
+  teams = teams.filter(t =>
+    !blitzSearchTerm || t.team.toLowerCase().includes(blitzSearchTerm) || (t.name||'').toLowerCase().includes(blitzSearchTerm));
+
+  if(blitzSortKey === 'watch'){
+    teams.sort((a,b) => (isBlitzWatchFlag(b) - isBlitzWatchFlag(a)) || a.team.localeCompare(b.team));
+  } else {
+    teams.sort((a,b) => a.team.localeCompare(b.team));
+  }
+
+  const watchCount = Object.values(dataset).filter(isBlitzWatchFlag).length;
+  const posLabel = blitzPos === 'QB' ? 'QB' : 'WR';
+  $("blitzWatchBanner").innerHTML = watchCount
+    ? `<div class="caveat"><b>${watchCount} ${posLabel}${watchCount===1?'':'s'} on watch this week</b> —
+       opponent is a top-10 blitz-heavy defense, and historically a sub-${WATCH_THRESHOLD}% hit rate on this
+       player's own season average specifically in his high-blitz games. Flagged with ⚠️ below.</div>`
+    : `<div class="caveat">No ${posLabel}s meet the watch criteria (top-10 blitz-heavy opponent + sub-${WATCH_THRESHOLD}%
+       hit rate in high-blitz games, min ${WATCH_MIN_N} games) this week.</div>`;
+
+  $("blitzGrid").innerHTML = teams.map(t => {
+    const bv = t.vs_blitz || {}, cv = t.vs_no_blitz || {};
+    return `
+    <div class="intel-card${isBlitzWatchFlag(t)?' watch':''}" data-team="${esc2(t.team)}">
+      ${isBlitzWatchFlag(t) ? `<div class="watch-badge">⚠️ Watch this week</div>` : ''}
+      <div class="ic-head">
+        <img class="ic-headshot" src="${esc2(t.headshot||'')}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div>
+          <div class="ic-name">${esc2(t.name)}</div>
+          <div class="ic-team">${esc2(t.team)} · ${blitzPos==='QB' ? (t.starts+' starts') : (t.targets+' targets')}</div>
+        </div>
+      </div>
+      <div class="ic-matchup">
+        ${t.upcoming_opponent
+          ? `${fiLogoHTML(t.team,16)}<span>${esc2(t.team)}</span> vs ${fiLogoHTML(t.upcoming_opponent,16)}<span>${esc2(t.upcoming_opponent)} · Blitz Rate #${t.opp_blitz_rank} (${t.opp_blitz_rate}%) · Blitz Success #${t.opp_blitz_success_rank} (${t.opp_blitz_success_rate}%)</span>`
+          : `<span>No upcoming game scheduled</span>`}
+      </div>
+      <div class="ic-section-label">${blitzPos==='QB'?'Reaches his own passing avg':'Reaches his own receiving avg'} — season blitz rate faced: ${t.season_blitz_rate!=null?t.season_blitz_rate+'%':'—'}</div>
+      <div class="ic-row"><span class="ic-row-label">When facing a HIGH-blitz game →</span>
+        ${hitBadge(t.hit_rate_blitz_high, t.hit_rate_blitz_high_n)}</div>
+      <div class="ic-row"><span class="ic-row-label">When facing a LOW-blitz game →</span>
+        ${hitBadge(t.hit_rate_blitz_low, t.hit_rate_blitz_low_n)}</div>
+
+      <div class="ic-section-label">Vs Blitz (${bv.n||0}g) &nbsp;·&nbsp; Vs No Blitz (${cv.n||0}g)</div>
+      ${blitzPos==='QB' ? blitzStatRow('Completion %', bv.comp_pct, cv.comp_pct, true, true) : blitzStatRow('Catch Rate', bv.comp_pct, cv.comp_pct, true, true)}
+      ${blitzStatRow('Yards / Play', bv.yds_per_play, cv.yds_per_play, true, false)}
+      ${blitzStatRow('EPA / Play', bv.epa_per_play, cv.epa_per_play, true, false)}
+      ${blitzStatRow('Success Rate', bv.success_pct, cv.success_pct, true, true)}
+    </div>`;
+  }).join('') || `<div class="empty">No players match that search.</div>`;
+
+  $("blitzGrid").querySelectorAll('.intel-card').forEach(el => {
+    el.onclick = () => openBlitzGameLog(el.dataset.team);
+  });
+}
+
+function openBlitzGameLog(team){
+  const dataset = blitzPos === 'QB' ? (BLITZ.qb_teams||{}) : (BLITZ.wr_teams||{});
+  const t = dataset[team];
+  if(!t || !t.log) return;
+
+  $("mTitle").textContent = `${t.name} — ${team}`;
+  const yardLabel = blitzPos === 'QB' ? 'pass yds/gm' : 'rec yds/gm';
+  $("mSub").textContent = `${t.log.length} games · season avg ${t.season_avg} ${yardLabel} · season blitz rate faced ${t.season_blitz_rate}%`;
+
+  const rows = t.log.slice().sort((a,b) => b.week - a.week);
+  let h = `<div class="lead-wrap"><table class="lead-table"><thead><tr>
+    <th class="name-col">Week</th><th>Opponent</th>
+    <th>Blitz Rate That Game</th><th>Blitz Success Rate</th><th>${blitzPos==='QB'?'Pass Yds':'Rec Yds'}</th>
+  </tr></thead><tbody>`;
+  rows.forEach(g => {
+    h += `<tr>
+      <td class="name-col">${g.week}</td>
+      <td>${g.opponent ? fiLogoHTML(g.opponent,16)+esc2(g.opponent) : '—'}</td>
+      <td><span class="rank-chip">${g.game_blitz_rate}% ${g.was_high?'(high)':'(low)'}</span></td>
+      <td><span class="rank-chip">${g.blitz_plays_n ? g.blitz_success_rate+'% ('+g.blitz_plays_n+'p)' : '—'}</span></td>
+      <td><span class="cell-val ${g.hit?'log-hit':'log-miss'}">${g.yds}</span></td>
+    </tr>`;
+  });
+  h += `</tbody></table></div>
+  <div class="empty" style="padding:10px 4px;text-align:left;font-size:10px">
+    Green = hit his own season average that game · Red = fell short · "high"/"low" is that game's
+    blitz rate compared against his own season average blitz rate faced · Blitz Success Rate is how
+    often the blitz actually worked for the defense that game (small play counts per game, so treat with
+    caution — shown with the play count next to it).
+  </div>`;
+  $("mBody").innerHTML = h;
+
+  $("scrim").classList.add("open"); $("modal").classList.add("open");
+  $("mClose").focus();
 }
 
 function openGameLog(team, kind){

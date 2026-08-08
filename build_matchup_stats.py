@@ -37,6 +37,7 @@ PLAYER_STATS_URLS = [
 GAMES_URL = "https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv"
 TEAM_STATS_URL = f"https://github.com/nflverse/nflverse-data/releases/download/stats_team/stats_team_week_{SEASON}.csv"
 PBP_URL = f"https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_{SEASON}.csv.gz"
+FTN_CHARTING_URL = f"https://github.com/nflverse/nflverse-data/releases/download/ftn_charting/ftn_charting_{SEASON}.csv"
 
 POS_MAP = {"QB": "QB", "RB": "RB", "FB": "RB", "WR": "WR", "TE": "TE"}
 POSITIONS = ["QB", "RB", "WR", "TE"]
@@ -1874,6 +1875,232 @@ def build_intel_reports(week=None):
     print(f"Wrote intel/latest.json — {len(out)} QB teams, {len(rb_out)} RB teams, as of week {as_of_week}")
 
 
+def build_blitz_report(week=None):
+    """Hidden Intelligence: does a player's own performance actually change
+    when the defense sends extra rushers? Real per-play splits (blitz vs
+    non-blitz), not season averages padded with assumptions.
+
+    RB is deliberately excluded. Blitzing is a pass-rush decision — the
+    charting data confirms n_pass_rushers is ~0 on run plays, meaning
+    "was this run blitzed" isn't a coherent question — and a direct test
+    (rushing yards vs. opponent's season blitz rate) showed essentially no
+    correlation (r=-0.005, 4.55 vs 4.41 yards/carry across the top and
+    bottom quartile of blitz-heavy defenses). Building a "watch" signal on
+    that would repeat the same mistake the pass-defense RB badge already
+    made once — a plausible-sounding theory the data doesn't back up.
+    QB and WR get a report because blitzing acts directly on their own
+    plays; RB doesn't get one because the data says there's nothing there.
+
+    Requires FTN Charting data (nflverse_data/ftn_charting), which is
+    released under CC-BY-SA 4.0 — must be credited to "FTN Data via
+    nflverse" wherever this is shown.
+    """
+    print(f"Building Blitz Impact Report for {SEASON}...")
+    games = fetch_csv(GAMES_URL)
+    as_of_week = week or current_week(games)
+    if as_of_week is None:
+        sys.exit(f"FATAL: no {SEASON} schedule found in nflverse yet.")
+
+    pbp = fetch_pbp()
+    pbp = pbp[(pbp["season_type"] == "REG") & (pbp["week"] < as_of_week)]
+    keep_cols = ["play_id", "game_id", "play_type", "epa", "yards_gained", "complete_pass", "success",
+                 "passer_player_id", "passer_player_name", "receiver_player_id",
+                 "receiver_player_name", "posteam", "defteam", "week"]
+    pbp = pbp[[c for c in keep_cols if c in pbp.columns]].copy()
+
+    try:
+        ftn = fetch_csv(FTN_CHARTING_URL)
+    except SystemExit:
+        print("  FTN Charting data not available yet this season — skipping blitz report.")
+        os.makedirs("intel", exist_ok=True)
+        with open("intel/blitz.json", "w") as f:
+            json.dump({"season": SEASON, "as_of_week": as_of_week, "qb_teams": {}, "wr_teams": {}}, f)
+        return
+    ftn = ftn[["nflverse_game_id", "nflverse_play_id", "n_pass_rushers"]].dropna(subset=["n_pass_rushers"])
+
+    merged = pbp.merge(ftn, left_on=["game_id", "play_id"],
+                        right_on=["nflverse_game_id", "nflverse_play_id"], how="inner")
+    merged["is_blitz"] = merged["n_pass_rushers"] >= 5
+    passes = merged[merged["play_type"] == "pass"].copy()
+
+    # each defense's own season blitz rate — real, stable team tendency,
+    # used as forward-looking matchup context (unlike the disproven RB link)
+    def_blitz_rate = passes.groupby("defteam")["is_blitz"].mean()
+    blitz_rank = {t: i + 1 for i, t in
+                  enumerate(sorted(def_blitz_rate.index, key=lambda t: -def_blitz_rate[t]))}  # rank 1 = blitzes most
+    # top tier = 10 most blitz-heavy defenses (rank 1-10), since blitz_rank
+    # is already sorted so rank 1 = highest blitz rate
+    blitz_matchup_tier = {t: tier_of(r) for t, r in blitz_rank.items()}
+
+    # How OFTEN a defense blitzes and how WELL it works for them are
+    # different things — a defense can blitz constantly and still not get
+    # home. nflverse's `success` field is from the OFFENSE's perspective
+    # (1 = the offense gained a meaningful, down-and-distance-adjusted
+    # amount of yardage), so a blitz "succeeds" for the DEFENSE specifically
+    # when the offense's play does NOT succeed on that snap.
+    blitz_plays = passes[passes["is_blitz"]]
+    def_blitz_success_rate = (1 - blitz_plays.groupby("defteam")["success"].mean())
+    blitz_success_rank = {t: i + 1 for i, t in
+                           enumerate(sorted(def_blitz_success_rate.index, key=lambda t: -def_blitz_success_rate[t]))}
+
+    upcoming = {}
+    reg = games[(games["season"] == SEASON) & (games["game_type"] == "REG")]
+    for _, g in reg[reg["week"] == as_of_week].iterrows():
+        upcoming[g["away_team"]] = g["home_team"]
+        upcoming[g["home_team"]] = g["away_team"]
+
+    # every played game's opponent, for the drill-down log
+    opponent_of = {}
+    for _, g in reg[reg["home_score"].notna()].iterrows():
+        opponent_of[(g["away_team"], g["week"])] = g["home_team"]
+        opponent_of[(g["home_team"], g["week"])] = g["away_team"]
+
+    players = fetch_csv(PLAYER_STATS_URLS)
+    if "season_type" in players.columns:
+        players = players[players["season_type"] == "REG"]
+    players = players[players["week"] < as_of_week]
+
+    def split_stats(sub, hit_col):
+        n = len(sub)
+        if n == 0:
+            return None
+        return {
+            "n": n,
+            "comp_pct": round(100 * sub[hit_col].mean(), 1) if hit_col else None,
+            "yds_per_play": round(sub["yards_gained"].mean(), 2),
+            "epa_per_play": round(sub["epa"].mean(), 3),
+            "success_pct": round(100 * sub["success"].mean(), 1) if "success" in sub.columns else None,
+        }
+
+    def game_level_hit_rate(pid_col, yds_col, primary_pid, prow, team):
+        """For one player: per-game blitz rate faced, classified high/low
+        against HIS OWN season average blitz rate faced (same convention
+        as the run-game report — compared to the player's own baseline,
+        not a league-wide threshold) — then the hit rate on his own season
+        yardage average in each bucket. Also returns the full per-game log
+        for the drill-down modal. Returns None if there's no real sample."""
+        own_plays = passes[passes[pid_col] == primary_pid]
+        if own_plays.empty:
+            return None
+        season_blitz_rate = own_plays["is_blitz"].mean()
+        per_game_blitz = own_plays.groupby("week")["is_blitz"].mean()
+
+        # per-game: among the blitzed plays specifically that week, how
+        # often did the blitz actually work for the defense (offense's
+        # play did NOT succeed)? Small per-game samples, so always paired
+        # with its own count — a 1-play "100%" week means nothing alone.
+        own_blitzed = own_plays[own_plays["is_blitz"]]
+        blitz_success_by_week = own_blitzed.groupby("week")["success"].agg(
+            blitz_plays_n="size", blitz_success_rate=lambda x: round(100 * (1 - x.mean()), 1))
+
+        yds_by_week = prow.set_index("week")[yds_col]
+        season_yds_avg = yds_by_week.mean()
+
+        hi_hits, hi_n, lo_hits, lo_n = 0, 0, 0, 0
+        log = []
+        for wk, yds in yds_by_week.items():
+            if wk not in per_game_blitz.index:
+                continue
+            hit = bool(yds >= season_yds_avg)
+            game_rate = per_game_blitz[wk]
+            is_high = game_rate >= season_blitz_rate
+            if is_high:
+                hi_n += 1; hi_hits += hit
+            else:
+                lo_n += 1; lo_hits += hit
+            bsw = blitz_success_by_week.loc[wk] if wk in blitz_success_by_week.index else None
+            log.append({
+                "week": int(wk), "opponent": opponent_of.get((team, wk)),
+                "yds": round(float(yds), 1), "hit": hit,
+                "game_blitz_rate": round(100 * game_rate, 1), "was_high": bool(is_high),
+                "blitz_success_rate": float(bsw["blitz_success_rate"]) if bsw is not None else None,
+                "blitz_plays_n": int(bsw["blitz_plays_n"]) if bsw is not None else 0,
+            })
+        return {
+            "season_blitz_rate": round(100 * season_blitz_rate, 1),
+            "hit_rate_blitz_high": round(100 * hi_hits / hi_n, 1) if hi_n else None, "hit_rate_blitz_high_n": hi_n,
+            "hit_rate_blitz_low": round(100 * lo_hits / lo_n, 1) if lo_n else None, "hit_rate_blitz_low_n": lo_n,
+            "log": sorted(log, key=lambda e: e["week"]),
+        }
+
+    # --- QB ---
+    qb_pool = players[(players["position"] == "QB") & (players["attempts"].fillna(0) >= 10)]
+    qb_starters = qb_pool.loc[qb_pool.groupby(["team", "week"])["attempts"].idxmax()]
+    qb_headshots = (qb_starters.groupby("player_id")["headshot_url"].last()
+                     if "headshot_url" in qb_starters.columns else {})
+
+    qb_out = {}
+    for team, g in qb_starters.groupby("team"):
+        primary_pid = g.groupby("player_id").size().idxmax()
+        prow = g[g["player_id"] == primary_pid].sort_values("week")
+        if len(prow) < 2:
+            continue
+        name = prow["player_display_name"].iloc[-1] if "player_display_name" in prow.columns else str(primary_pid)
+        own_passes = passes[passes["passer_player_id"] == primary_pid]
+        blitz_split = split_stats(own_passes[own_passes["is_blitz"]], "complete_pass")
+        clean_split = split_stats(own_passes[~own_passes["is_blitz"]], "complete_pass")
+        if blitz_split is None and clean_split is None:
+            continue
+        opp = upcoming.get(team)
+        qb_out[team] = {
+            "name": name, "headshot": qb_headshots.get(primary_pid, "") if hasattr(qb_headshots, "get") else "",
+            "starts": int(prow["player_id"].count()),
+            "season_avg": round(prow["passing_yards"].mean(), 1),
+            "upcoming_opponent": opp,
+            "opp_blitz_rate": round(100 * def_blitz_rate.get(opp, 0), 1) if opp in def_blitz_rate.index else None,
+            "opp_blitz_rank": blitz_rank.get(opp), "blitz_matchup_tier": blitz_matchup_tier.get(opp),
+            "opp_blitz_success_rate": round(100*def_blitz_success_rate.get(opp,0),1) if opp in def_blitz_success_rate.index else None,
+            "opp_blitz_success_rank": blitz_success_rank.get(opp),
+            "vs_blitz": blitz_split, "vs_no_blitz": clean_split,
+            **(game_level_hit_rate("passer_player_id", "passing_yards", primary_pid, prow, team) or {}),
+        }
+
+    # --- WR (primary = most targets this season, min 20 to avoid a 2-game
+    # sample skewing the split). Must filter to WR-position players FIRST —
+    # in today's NFL a team's leading target-getter is often a pass-catching
+    # TE (Trey McBride, Kyle Pitts, etc.), and without this filter those
+    # players show up mislabeled as "the WR" with no name resolving for them.
+    wr_ids = set(players[players["position"] == "WR"]["player_id"])
+    wr_targets = passes[passes["receiver_player_id"].isin(wr_ids)].groupby(
+        ["receiver_player_id", "posteam"]).size().rename("targets").reset_index()
+    wr_targets = wr_targets[wr_targets["targets"] >= 20]
+    wr_headshots = (players[players["position"] == "WR"].groupby("player_id")["headshot_url"].last()
+                     if "headshot_url" in players.columns else {})
+    name_lookup = players[players["position"] == "WR"].groupby("player_id")["player_display_name"].last()
+
+    wr_out = {}
+    for _, row in wr_targets.sort_values("targets", ascending=False).iterrows():
+        team = row["posteam"]
+        if team in wr_out:
+            continue  # already have this team's target leader
+        pid = row["receiver_player_id"]
+        own_targets = passes[passes["receiver_player_id"] == pid]
+        blitz_split = split_stats(own_targets[own_targets["is_blitz"]], "complete_pass")
+        clean_split = split_stats(own_targets[~own_targets["is_blitz"]], "complete_pass")
+        if blitz_split is None and clean_split is None:
+            continue
+        opp = upcoming.get(team)
+        prow = players[(players["player_id"] == pid) & (players["position"] == "WR")].sort_values("week")
+        wr_out[team] = {
+            "name": name_lookup.get(pid, str(pid)),
+            "headshot": wr_headshots.get(pid, "") if hasattr(wr_headshots, "get") else "",
+            "targets": int(row["targets"]),
+            "season_avg": round(prow["receiving_yards"].mean(), 1) if len(prow) else None,
+            "upcoming_opponent": opp,
+            "opp_blitz_rate": round(100 * def_blitz_rate.get(opp, 0), 1) if opp in def_blitz_rate.index else None,
+            "opp_blitz_rank": blitz_rank.get(opp), "blitz_matchup_tier": blitz_matchup_tier.get(opp),
+            "opp_blitz_success_rate": round(100*def_blitz_success_rate.get(opp,0),1) if opp in def_blitz_success_rate.index else None,
+            "opp_blitz_success_rank": blitz_success_rank.get(opp),
+            "vs_blitz": blitz_split, "vs_no_blitz": clean_split,
+            **(game_level_hit_rate("receiver_player_id", "receiving_yards", pid, prow, team) or {}),
+        }
+
+    os.makedirs("intel", exist_ok=True)
+    with open("intel/blitz.json", "w") as f:
+        json.dump({"season": SEASON, "as_of_week": as_of_week, "qb_teams": qb_out, "wr_teams": wr_out}, f)
+    print(f"Wrote intel/blitz.json — {len(qb_out)} QB teams, {len(wr_out)} WR teams, as of week {as_of_week}")
+
+
 def current_week(games):
     """The next week that hasn't been played yet — the one to preview."""
     reg = games[(games["season"] == SEASON) & (games["game_type"] == "REG")]
@@ -1957,3 +2184,9 @@ if __name__ == "__main__":
         build_intel_reports()
     except SystemExit as e:
         print(f"  intel reports: skipped — {e}")
+
+    # 6. Blitz Impact Report — separate file, own PBP/FTN-charting fetch.
+    try:
+        build_blitz_report()
+    except SystemExit as e:
+        print(f"  blitz report: skipped — {e}")
