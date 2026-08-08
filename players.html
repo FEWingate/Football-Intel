@@ -208,6 +208,16 @@ function primaryStatKey(pos){
   return Object.keys(vol)[0];
 }
 
+// Which matchup category (i.e. which stat's own defensive rank) governs a
+// given stat's tier. RB is the only position where this isn't just the
+// position's single primary stat — a defense can be genuinely different
+// against the run vs against RB receiving, so those need separate tiers.
+const RB_REC_STATS = new Set(['rec_yds','rec_ypg','rec','rec_pg','targets','tgt_pg','rec_td']);
+function matchupKeyFor(pos, statKey){
+  if(pos === 'RB') return RB_REC_STATS.has(statKey) ? 'rec_yds' : 'rush_yds';
+  return primaryStatKey(pos);
+}
+
 function renderBrowseList(){
   const term = browseSearch.trim();
   const key = primaryStatKey(browsePos);
@@ -355,13 +365,15 @@ function chartValue(g, key){
 
 function splitCardsHTML(p, active){
   const tiers = [['top','vs Top 10'], ['mid','vs Middle 12'], ['bot','vs Bottom 10']];
+  const mk = matchupKeyFor(p.pos, active.key);
   return `<div class="split-cards">${tiers.map(([key,label]) => {
     const split = p.splits[key];
     const v = split && split.m ? split.m[active.key] : null;
     const vText = v == null ? '—' : (active.pct ? `${v}%` : v);
+    const games = split && split.games ? (split.games[mk] || 0) : 0;
     return `<div class="split-card ${key}">
       <div class="sc-label">${label}</div>
-      <div class="sc-games">${split ? split.games : 0} games</div>
+      <div class="sc-games">${games} games</div>
       <div class="sc-value">${vText}</div>
     </div>`;
   }).join('')}</div>`;
@@ -511,6 +523,7 @@ function renderCommitteeTables(){
     { key:'carries', label:'Carries' },
     { key:'rush_yds', label:'Rush Yds' },
     { key:'rec', label:'Receptions' },
+    { key:'rec_yds', label:'Rec Yds' },
   ]);
   $("committeeWR").innerHTML = committeeTable('WR', [
     { key:'target_share', label:'Target Share', pct:true },
@@ -673,7 +686,7 @@ function renderCompareTable(){
       const best = validVals.length ? Math.max(...validVals) : null;
       comparePlayers.forEach((p,i) => {
         const v = rowVals[i];
-        const games = p.splits?.[tierKey]?.games || 0;
+        const games = p.splits?.[tierKey]?.games?.[matchupKeyFor(comparePos, statKey)] || 0;
         const text = v == null ? '—' : `${fmtVal(v)} <span style="color:var(--text-dim);font-size:10px">(${games}g)</span>`;
         const isBest = v != null && v === best && validVals.length > 1;
         h += `<td><span class="cell-val"${isBest?' style="color:var(--primary);font-weight:700"':''}>${text}</span></td>`;
@@ -785,7 +798,7 @@ function renderTierTable(){
     const total = p.season.m[tierStat];
     const perGame = hasPg ? p.season.m[pgKey] : null;
     const tv = p.splits?.[tierSelected]?.m?.[tierStat];
-    const tGames = p.splits?.[tierSelected]?.games || 0;
+    const tGames = p.splits?.[tierSelected]?.games?.[matchupKeyFor(tierPos, tierStat)] || 0;
     const tText = tv == null ? '—' : `${fmtVal(tv)} <span style="color:var(--text-dim);font-size:10px">(${tGames}g)</span>`;
     h += `<tr data-name="${esc(p.name)}" style="cursor:pointer">
       <td class="name-col"><span class="rank-num">${i+1}</span>

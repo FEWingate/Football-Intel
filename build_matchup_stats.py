@@ -1313,13 +1313,36 @@ def build_player_log(player_df, pos, latest_matchup, team_week_totals=None):
     Also tags each game with that week's own rush/target share (this
     player's carries or targets ÷ the team's total that same week) for
     RB/WR/TE — the L5/L10 usage-trend chart on the Players page needs a
-    per-game number, not just the season aggregate computed elsewhere."""
+    per-game number, not just the season aggregate computed elsewhere.
+
+    IMPORTANT — dual-threat positions get more than one tier per game.
+    A defense can be genuinely great against the run and mediocre against
+    RB receiving (or the reverse) — those are different matchups. RB is
+    tagged with BOTH a rushing tier (vs the defense's rush-yards-allowed
+    rank) and a receiving tier (vs the same defense's rank against RB
+    receiving yards specifically), and the splits system picks the correct
+    one per stat rather than applying one tier to every number shown. QB
+    and WR/TE only ever have one relevant matchup category, so this is a
+    no-op for them — `entry["tier"]`/`entry["rank"]` keep meaning exactly
+    what they always did for those positions."""
     volume_keys = [k for k, (_l, _d, _hb, grp) in POS_METRICS[pos].items() if grp == "Volume"]
     rate_keys = {k for k in volume_keys if k.endswith("_pg") or k.endswith("_ypg")}
     primary_key = volume_keys[0]
 
+    # Which matchup category (i.e. which stat's own defensive rank) governs
+    # each Volume stat's tier. RB is the only position with two categories.
+    if pos == "RB":
+        matchup_keys = ["rush_yds", "rec_yds"]
+        stat_category = {}
+        for k in volume_keys:
+            stat_category[k] = "rec_yds" if k in ("rec_yds", "rec_ypg", "rec", "rec_pg",
+                                                    "targets", "tgt_pg", "rec_td") else "rush_yds"
+    else:
+        matchup_keys = [primary_key]
+        stat_category = {k: primary_key for k in volume_keys}
+
     log = []
-    tier_rows = {"top": [], "mid": [], "bot": []}
+    tier_rows = {mk: {"top": [], "mid": [], "bot": []} for mk in matchup_keys}
     cum_raw = {c: 0.0 for c in RAW_COLS}
     cum_games = 0
     dk_scores = []
@@ -1346,24 +1369,28 @@ def build_player_log(player_df, pos, latest_matchup, team_week_totals=None):
             cum_raw[c] += s[c]
         cum_metrics = pos_metrics_from_sums(pos, cum_raw, cum_games)  # through this week
 
-        tier = None
-        rank = None
+        ranks, tiers = {}, {}
         if latest_matchup and opp in latest_matchup.get("teams", {}):
             def_block = latest_matchup["teams"][opp].get("def", {}).get(pos, {})
-            rank = def_block.get(primary_key, {}).get("r")
-            if rank is not None:
-                tier = tier_of(rank)
+            for mk in matchup_keys:
+                r = def_block.get(mk, {}).get("r")
+                if r is not None:
+                    ranks[mk] = r
+                    tiers[mk] = tier_of(r)
 
         entry = {
-            "week": int(row["week"]), "opp": opp, "tier": tier, "rank": rank,
+            "week": int(row["week"]), "opp": opp,
+            "tier": tiers.get(primary_key), "rank": ranks.get(primary_key),  # backward-compatible alias
+            "tiers": tiers, "ranks": ranks,  # full per-category breakdown (RB: rush_yds AND rec_yds)
             "m": {k: round(game_metrics.get(k, 0), 1) for k in volume_keys},
             "cum": {k: round(cum_metrics.get(k, 0), 1) for k in rate_keys},
             "dk": round(dk_pts, 1),
             "rush_share": game_rush_share, "target_share": game_target_share,
         }
         log.append(entry)
-        if tier:
-            tier_rows[tier].append(entry)
+        for mk in matchup_keys:
+            if mk in tiers:
+                tier_rows[mk][tiers[mk]].append(entry)
 
     dk_scores_sorted = sorted(dk_scores, reverse=True)
     ceiling = {
@@ -1377,15 +1404,20 @@ def build_player_log(player_df, pos, latest_matchup, team_week_totals=None):
         return round(sum(vals) / len(vals), 1) if vals else None
 
     splits = {}
-    for tier, rows in tier_rows.items():
-        if not rows:
-            splits[tier] = {"games": 0, "m": {}}
-            continue
-        m = {k: tier_avg(rows, lambda r, k=k: r["m"].get(k)) for k in volume_keys}
-        m["dk"] = tier_avg(rows, lambda r: r["dk"])
-        m["rush_share"] = tier_avg(rows, lambda r: r["rush_share"])
-        m["target_share"] = tier_avg(rows, lambda r: r["target_share"])
-        splits[tier] = {"games": len(rows), "m": m}
+    for tier in ("top", "mid", "bot"):
+        m = {}
+        games = {mk: len(tier_rows[mk][tier]) for mk in matchup_keys}
+        for k in volume_keys:
+            cat = stat_category[k]
+            m[k] = tier_avg(tier_rows[cat][tier], lambda r, k=k: r["m"].get(k))
+        # dk/share stats aren't tied to one matchup category the way a raw
+        # Volume stat is — use the primary category's games as the most
+        # representative "how'd the whole game go" sample.
+        primary_rows = tier_rows[primary_key][tier]
+        m["dk"] = tier_avg(primary_rows, lambda r: r["dk"])
+        m["rush_share"] = tier_avg(primary_rows, lambda r: r["rush_share"])
+        m["target_share"] = tier_avg(primary_rows, lambda r: r["target_share"])
+        splits[tier] = {"games": games, "m": m}
     return log, splits, ceiling
 
 
@@ -1738,6 +1770,8 @@ def build_intel_reports(week=None):
         # else on the site: bottom-10 run D (softest) = favorable for the
         # offense, top-10 (toughest) = tough spot, middle-12 = neutral.
         run_matchup_tier = tier_of(opp_rank) if opp_rank is not None else None
+        opp_pass_rank = pass_def_rank.get(opp) if opp else None
+        pass_matchup_tier = tier_of(opp_pass_rank) if opp_pass_rank is not None else None
 
         log = []
         for _, row in g.iterrows():
@@ -1755,6 +1789,7 @@ def build_intel_reports(week=None):
             "qb_season_avg": round(g["qb_season_avg"].iloc[-1], 1),
             "team_rush_avg": round(g["team_rush_avg"].iloc[-1], 1),
             "upcoming_opponent": opp, "opp_run_def_rank": opp_rank, "run_matchup_tier": run_matchup_tier,
+            "opp_pass_def_rank": opp_pass_rank, "pass_matchup_tier": pass_matchup_tier,
             "qb_hit_rate_run_hot": qb_rate_hot, "qb_hit_rate_run_hot_n": qb_n_hot,
             "qb_hit_rate_run_cold": qb_rate_cold, "qb_hit_rate_run_cold_n": qb_n_cold,
             "run_hit_rate_qb_hot": run_rate_hot, "run_hit_rate_qb_hot_n": run_n_hot,
@@ -1806,6 +1841,8 @@ def build_intel_reports(week=None):
             opp = upcoming.get(team)
             opp_rank = run_def_rank.get(opp) if opp else None
             run_matchup_tier = tier_of(opp_rank) if opp_rank is not None else None
+            opp_pass_rank = pass_def_rank.get(opp) if opp else None
+            pass_matchup_tier = tier_of(opp_pass_rank) if opp_pass_rank is not None else None
 
             rb_log = []
             for _, row in g.iterrows():
@@ -1823,6 +1860,7 @@ def build_intel_reports(week=None):
                 "starts": int(g["player_id"].count()),
                 "rb_season_avg": round(g["rb_season_avg"].iloc[-1], 1),
                 "upcoming_opponent": opp, "opp_run_def_rank": opp_rank, "run_matchup_tier": run_matchup_tier,
+                "opp_pass_def_rank": opp_pass_rank, "pass_matchup_tier": pass_matchup_tier,
                 "rb_hit_rate_qb_hot": rb_rate_hot, "rb_hit_rate_qb_hot_n": rb_n_hot,
                 "rb_hit_rate_qb_cold": rb_rate_cold, "rb_hit_rate_qb_cold_n": rb_n_cold,
                 "qb_hit_rate_rb_hot": qb_rate_hot2, "qb_hit_rate_rb_hot_n": qb_n_hot2,

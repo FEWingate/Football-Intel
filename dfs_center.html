@@ -478,9 +478,10 @@ function computeAll(players){
       p.matchupHistoryGames = 0;
       if(p.siteData && p.oppTier && primaryKey){
         const split = p.siteData.splits[p.oppTier];
-        if(split && split.games >= 2 && split.m[primaryKey] != null){
+        const gamesForKey = split && split.games ? (split.games[primaryKey] || 0) : 0;
+        if(split && gamesForKey >= 2 && split.m[primaryKey] != null){
           p.matchupHistoryRaw = split.m[primaryKey];
-          p.matchupHistoryGames = split.games;
+          p.matchupHistoryGames = gamesForKey;
         } else {
           p.matchupHistoryRaw = p.avgPts;
         }
