@@ -95,7 +95,7 @@ main.innerHTML = `
 
 const $ = id => document.getElementById(id);
 const pad = n => String(n).padStart(2,"0");
-let RECORDS = null, TEAMSTATS = null, activeTeam = null, activeSec = 'offense', lastFocus = null;
+let RECORDS = null, TEAMSTATS = null, COVERAGE = null, activeTeam = null, activeSec = 'offense', lastFocus = null;
 
 async function load(){
   fiStatus("Loading","loading");
@@ -140,6 +140,11 @@ async function load(){
     const res = await fetch(`teamstats/latest.json`);
     if(res.ok) TEAMSTATS = await res.json();
   }catch(e){ /* stats section just won't have data yet */ }
+
+  try{
+    const resC = await fetch(`intel/coverage.json`);
+    if(resC.ok) COVERAGE = await resC.json();
+  }catch(e){ /* coverage section just won't have data yet */ }
 
   fiStatus("Ready");
   fiUpdated(`through week ${latestWeek}`);
@@ -228,6 +233,25 @@ function openTeam(t, source){
   renderStats(); $("mClose").focus();
 }
 
+function coverageTendencyHTML(team){
+  if(!COVERAGE || !COVERAGE.available) return '';
+  const c = COVERAGE.team_coverage_rate ? COVERAGE.team_coverage_rate[team] : null;
+  if(!c) return '';
+  return `
+    <div class="subsect">Coverage Tendency — ${COVERAGE.season} Season</div>
+    <div style="display:flex;gap:0;border-radius:var(--radius);overflow:hidden;margin-bottom:4px;height:28px">
+      <div style="width:${c.zone_pct}%;background:rgba(163,230,53,.18);display:flex;align-items:center;padding:0 10px;
+        font-family:var(--font-mono);font-size:11px;white-space:nowrap">Zone ${c.zone_pct}%</div>
+      <div style="width:${c.man_pct}%;background:rgba(96,165,250,.18);display:flex;align-items:center;padding:0 10px;
+        font-family:var(--font-mono);font-size:11px;white-space:nowrap">Man ${c.man_pct}%</div>
+    </div>
+    <div class="empty" style="padding:0 0 12px;text-align:left;font-size:10px">
+      ${c.plays} coverage-charted plays, full season — this doesn't update during a live season (coverage
+      charting only releases once a season fully ends). See <a href="intel_reports.html" style="color:var(--primary)">
+      Intel Reports → Coverage Breakdown</a> for per-player detail.
+    </div>`;
+}
+
 function renderStats(){
   $("mToggle").querySelectorAll("button").forEach(b =>
     b.setAttribute("aria-pressed", String(b.dataset.sec === activeSec)));
@@ -244,6 +268,9 @@ function renderStats(){
   const data = teamData[activeSec];
   let h = `<div class="empty" style="padding:8px 0 4px;text-align:left;font-size:10px">
     ${TEAMSTATS.data_horizon} · ${teamData.games} games played</div>`;
+
+  if(activeSec === 'defense') h += coverageTendencyHTML(activeTeam);
+
   for(const [subgroup, cols] of Object.entries(labels)){
     h += `<div class="subsect">${esc(subgroup)}</div>
       <table class="stat-table"><thead><tr>
@@ -252,7 +279,7 @@ function renderStats(){
     for(const [col, label] of Object.entries(cols)){
       const cell = data[subgroup][col];
       const tot = cell.tot === null ? '—' : cell.tot.toLocaleString();
-      const avg = cell.tot === null ? `${cell.avg.toFixed(1)}%` : cell.avg;
+      const avg = cell.avg === null ? '—' : (cell.tot === null ? `${cell.avg.toFixed(1)}%` : cell.avg);
       h += `<tr><td>${esc(label)}</td><td class="num">${tot}</td><td class="num">${avg}</td></tr>`;
     }
     h += `</tbody></table>`;

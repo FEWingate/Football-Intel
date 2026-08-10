@@ -253,7 +253,7 @@ DOWN_DIST_SUBGROUP_NAME = "Down/Distance"
 # Defense mix opponent-groupby yardage with play-by-play explosive-play
 # counts, Down/Distance is pure play-by-play. All handled specially in
 # build_team_stats().
-CUSTOM_SUBGROUPS = {"Pass Defense", "Run Defense", DOWN_DIST_SUBGROUP_NAME}
+CUSTOM_SUBGROUPS = {"Pass Defense", "Run Defense", "Points Allowed", DOWN_DIST_SUBGROUP_NAME}
 
 TEAM_STATS_GROUPS = {
     "offense": {
@@ -321,6 +321,11 @@ TEAM_STATS_GROUPS = {
         },
     },
     "defense": {
+        "Points Allowed": {
+            "pts_allowed": ("Points Allowed", 0, False),
+            "pts_allowed_w": ("Points Allowed — Wins", 0, False),
+            "pts_allowed_l": ("Points Allowed — Losses", 0, False),
+        },
         "Pass Defense": PASS_DEF_COLS,
         "Run Defense": RUN_DEF_COLS,
         "Tackling": {
@@ -1565,6 +1570,43 @@ def build_team_stats():
         raise SystemExit(f"no {SEASON} team stats available yet")
 
     games_played = df.groupby("team").size().to_dict()
+
+    # Points allowed: a game-outcome fact (the final score), which simply
+    # doesn't exist in the play-derived stats_team_week file at all — has
+    # to come from the schedule/results data instead, same source used
+    # for W/L records elsewhere on the site. Split by result too, so you
+    # can see whether this defense's scoring actually tracks with winning.
+    games = fetch_csv(GAMES_URL)
+    reg = games[(games["season"] == SEASON) & (games["game_type"] == "REG") & (games["home_score"].notna())]
+    pts_allowed_sum, pts_allowed_gp = {}, {}
+    by_result_sum, by_result_gp = {}, {}  # team -> {"W":.., "L":.., "T":..}
+    for _, g in reg.iterrows():
+        away, home, away_score, home_score = g["away_team"], g["home_team"], g["away_score"], g["home_score"]
+        for team, own_score, opp_score in [(away, away_score, home_score), (home, home_score, away_score)]:
+            pts_allowed_sum[team] = pts_allowed_sum.get(team, 0) + opp_score
+            pts_allowed_gp[team] = pts_allowed_gp.get(team, 0) + 1
+            result = "T" if own_score == opp_score else ("W" if own_score > opp_score else "L")
+            by_result_sum.setdefault(team, {}).setdefault(result, 0)
+            by_result_gp.setdefault(team, {}).setdefault(result, 0)
+            by_result_sum[team][result] += opp_score
+            by_result_gp[team][result] += 1
+
+    def result_split_avg(team, result):
+        gp = by_result_gp.get(team, {}).get(result, 0)
+        if not gp:
+            return {"tot": None, "avg": None}
+        tot = by_result_sum[team][result]
+        return {"tot": int(tot), "avg": round(tot / gp, 1)}
+
+    points_allowed = {
+        t: {
+            "pts_allowed": {"tot": int(pts_allowed_sum[t]), "avg": round(pts_allowed_sum[t] / pts_allowed_gp[t], 1)},
+            "pts_allowed_w": result_split_avg(t, "W"),
+            "pts_allowed_l": result_split_avg(t, "L"),
+        }
+        for t in pts_allowed_sum
+    }
+
     all_cols = [c for section, grp in TEAM_STATS_GROUPS.items()
                 for sub, cols in grp.items() if sub not in CUSTOM_SUBGROUPS
                 for c in cols]
@@ -1585,6 +1627,9 @@ def build_team_stats():
             for sub, cols in subgroups.items():
                 if sub in ("Pass Defense", "Run Defense"):
                     entry[section][sub] = pass_run_def.get(t, {}).get(sub, {})
+                    continue
+                if sub == "Points Allowed":
+                    entry[section][sub] = points_allowed.get(t, {})
                     continue
                 if sub == DOWN_DIST_SUBGROUP_NAME:
                     entry[section][sub] = pbp_stats.get(t, {}).get(section, {}).get(sub, {})
@@ -1896,20 +1941,34 @@ def build_coverage_report():
               f"full season concludes. Skipping.")
         os.makedirs("intel", exist_ok=True)
         with open("intel/coverage.json", "w") as f:
-            json.dump({"season": SEASON, "available": False, "qb_teams": {}, "wr_teams": {}}, f)
+            json.dump({"season": SEASON, "available": False, "qb_teams": {}, "wr_teams": {}, "te_teams": {},
+                       "team_coverage_rate": {}}, f)
         return
     part = part[["nflverse_game_id", "play_id", "defense_man_zone_type", "defense_coverage_type"]]
 
     pbp = fetch_pbp()
     pbp = pbp[pbp["season_type"] == "REG"]
     keep_cols = ["play_id", "game_id", "play_type", "epa", "passing_yards", "receiving_yards",
-                 "complete_pass", "success", "passer_player_id", "receiver_player_id",
-                 "posteam", "week"]
+                 "yards_gained", "complete_pass", "success", "passer_player_id", "receiver_player_id",
+                 "posteam", "defteam", "week"]
     pbp = pbp[[c for c in keep_cols if c in pbp.columns]].copy()
 
     merged = pbp.merge(part, left_on=["game_id", "play_id"],
                         right_on=["nflverse_game_id", "play_id"], how="inner")
     passes = merged[merged["play_type"] == "pass"].copy()
+
+    # Team's own defensive coverage tendency (season-long, no threshold or
+    # classification this time — just the honest rate). Used on the Teams
+    # page's Defense tab as context, separate from any per-player split.
+    team_coverage_rate = {}
+    for team, grp in passes.dropna(subset=["defense_man_zone_type"]).groupby("defteam"):
+        n = len(grp)
+        zone_n = (grp["defense_man_zone_type"] == "ZONE_COVERAGE").sum()
+        team_coverage_rate[team] = {
+            "plays": int(n),
+            "zone_pct": round(100 * zone_n / n, 1),
+            "man_pct": round(100 * (n - zone_n) / n, 1),
+        }
 
     # per-game opponent + result (W/L), for the drill-down log
     games = fetch_csv(GAMES_URL)
@@ -1943,6 +2002,10 @@ def build_coverage_report():
                     "epa_per_play": round(grp["epa"].mean(), 3),
                     "success_pct": round(100 * grp["success"].mean(), 1),
                     "comp_pct": round(100 * grp["complete_pass"].mean(), 1) if "complete_pass" in grp.columns else None,
+                    "c10_pct": round(100 * (grp["yards_gained"] >= 10).mean(), 1),
+                    "c16_pct": round(100 * (grp["yards_gained"] >= 16).mean(), 1),
+                    "c20_pct": round(100 * (grp["yards_gained"] >= 20).mean(), 1),
+                    "c40_pct": round(100 * (grp["yards_gained"] >= 40).mean(), 1),
                 }
             return out
         return build("defense_man_zone_type"), build("defense_coverage_type")
@@ -1974,6 +2037,37 @@ def build_coverage_report():
             })
         return log
 
+    def man_zone_record(own, prow, team, yds_col):
+        """W-L record AND yards/game, both split by which coverage was
+        actually more common in each specific game (not a season-long
+        opponent label — that's the approach we tried and dropped, since
+        real defenses essentially never commit to man 60%+ of a season).
+        Whichever type had more snaps that particular game is what that
+        game counts toward. Yards/game here is a genuinely different
+        number from the play-level Yds/Play row — this one only uses
+        games where that coverage was the majority look, not every play
+        tagged with it regardless of which game it came from."""
+        by_week = own.dropna(subset=["defense_man_zone_type"]).groupby("week")
+        yds_by_week = prow.set_index("week")[yds_col]
+        record = {"MAN_COVERAGE": {"W": 0, "L": 0, "T": 0, "games": 0, "total_yds": 0.0},
+                   "ZONE_COVERAGE": {"W": 0, "L": 0, "T": 0, "games": 0, "total_yds": 0.0}}
+        for wk, grp in by_week:
+            man_n = (grp["defense_man_zone_type"] == "MAN_COVERAGE").sum()
+            zone_n = (grp["defense_man_zone_type"] == "ZONE_COVERAGE").sum()
+            if man_n == zone_n:
+                continue  # tied game, no clean majority — skip rather than guess
+            majority = "MAN_COVERAGE" if man_n > zone_n else "ZONE_COVERAGE"
+            result = result_of.get((team, wk))
+            if result in ("W", "L", "T"):
+                record[majority][result] += 1
+            if wk in yds_by_week.index:
+                record[majority]["games"] += 1
+                record[majority]["total_yds"] += float(yds_by_week[wk] or 0)
+        for bucket in record.values():
+            bucket["yds_per_game"] = round(bucket["total_yds"] / bucket["games"], 1) if bucket["games"] else None
+            del bucket["total_yds"]
+        return record
+
     players = fetch_csv(PLAYER_STATS_URLS)
     if "season_type" in players.columns:
         players = players[players["season_type"] == "REG"]
@@ -1991,53 +2085,69 @@ def build_coverage_report():
         if len(prow) < 2:
             continue
         name = prow["player_display_name"].iloc[-1] if "player_display_name" in prow.columns else str(primary_pid)
-        own = passes[passes["passer_player_id"] == primary_pid]
+        own = passes[(passes["passer_player_id"] == primary_pid) & (passes["week"].isin(prow["week"]))]
         if own.empty:
             continue
         man_zone, by_coverage = coverage_splits(own, "passing_yards")
         if not man_zone and not by_coverage:
             continue
+        season_comp_pct = (round(100 * prow["completions"].sum() / prow["attempts"].sum(), 1)
+                            if prow["attempts"].sum() else None)
         qb_out[team] = {
             "name": name, "headshot": qb_headshots.get(primary_pid, "") if hasattr(qb_headshots, "get") else "",
             "starts": int(prow["player_id"].count()),
+            "season_pass_yds_avg": round(prow["passing_yards"].mean(), 1), "season_comp_pct": season_comp_pct,
             "man_zone": man_zone, "by_coverage": by_coverage,
             "log": build_game_log(own, prow, team, "passing_tds", "passing_yards"),
+            "man_zone_record": man_zone_record(own, prow, team, "passing_yards"),
         }
 
-    # --- WR (primary = most targets, min 20, same filtering-to-real-WRs
-    # fix already applied in the blitz report — a team's leading
-    # target-getter is often a TE in today's NFL) ---
-    wr_ids = set(players[players["position"] == "WR"]["player_id"])
-    wr_targets = passes[passes["receiver_player_id"].isin(wr_ids)].groupby(
-        ["receiver_player_id", "posteam"]).size().rename("targets").reset_index()
-    wr_targets = wr_targets[wr_targets["targets"] >= 20]
-    wr_headshots = (players[players["position"] == "WR"].groupby("player_id")["headshot_url"].last()
-                     if "headshot_url" in players.columns else {})
-    name_lookup = players[players["position"] == "WR"].groupby("player_id")["player_display_name"].last()
+    # --- Pass catchers (WR, TE): primary = most targets at that position,
+    # min 20. Must filter to the specific position FIRST before picking a
+    # team's leader — the fix already applied in Blitz Impact, since a
+    # team's overall leading target-getter is often a TE even when you're
+    # trying to identify "the WR1" specifically, and vice versa isn't a
+    # concern but consistency matters. ---
+    def build_pass_catcher_group(position):
+        pos_ids = set(players[players["position"] == position]["player_id"])
+        pos_targets = passes[passes["receiver_player_id"].isin(pos_ids)].groupby(
+            ["receiver_player_id", "posteam"]).size().rename("targets").reset_index()
+        pos_targets = pos_targets[pos_targets["targets"] >= 20]
+        pos_headshots = (players[players["position"] == position].groupby("player_id")["headshot_url"].last()
+                          if "headshot_url" in players.columns else {})
+        pos_name_lookup = players[players["position"] == position].groupby("player_id")["player_display_name"].last()
 
-    wr_out = {}
-    for _, row in wr_targets.sort_values("targets", ascending=False).iterrows():
-        team = row["posteam"]
-        if team in wr_out:
-            continue
-        pid = row["receiver_player_id"]
-        own = passes[passes["receiver_player_id"] == pid]
-        man_zone, by_coverage = coverage_splits(own, "receiving_yards")
-        if not man_zone and not by_coverage:
-            continue
-        wr_prow = players[(players["player_id"] == pid) & (players["position"] == "WR")]
-        wr_out[team] = {
-            "name": name_lookup.get(pid, str(pid)),
-            "headshot": wr_headshots.get(pid, "") if hasattr(wr_headshots, "get") else "",
-            "targets": int(row["targets"]),
-            "man_zone": man_zone, "by_coverage": by_coverage,
-            "log": build_game_log(own, wr_prow, team, "receiving_tds", "receiving_yards"),
-        }
+        out = {}
+        for _, row in pos_targets.sort_values("targets", ascending=False).iterrows():
+            team = row["posteam"]
+            if team in out:
+                continue
+            pid = row["receiver_player_id"]
+            prow = players[(players["player_id"] == pid) & (players["position"] == position)]
+            own = passes[(passes["receiver_player_id"] == pid) & (passes["week"].isin(prow["week"]))]
+            man_zone, by_coverage = coverage_splits(own, "receiving_yards")
+            if not man_zone and not by_coverage:
+                continue
+            out[team] = {
+                "name": pos_name_lookup.get(pid, str(pid)),
+                "headshot": pos_headshots.get(pid, "") if hasattr(pos_headshots, "get") else "",
+                "targets": int(row["targets"]),
+                "season_rec_yds_avg": round(prow["receiving_yards"].mean(), 1),
+                "season_rec_pg": round(prow["receptions"].mean(), 1),
+                "man_zone": man_zone, "by_coverage": by_coverage,
+                "log": build_game_log(own, prow, team, "receiving_tds", "receiving_yards"),
+                "man_zone_record": man_zone_record(own, prow, team, "receiving_yards"),
+            }
+        return out
+
+    wr_out = build_pass_catcher_group("WR")
+    te_out = build_pass_catcher_group("TE")
 
     os.makedirs("intel", exist_ok=True)
     with open("intel/coverage.json", "w") as f:
-        json.dump({"season": SEASON, "available": True, "qb_teams": qb_out, "wr_teams": wr_out}, f)
-    print(f"Wrote intel/coverage.json — {len(qb_out)} QB teams, {len(wr_out)} WR teams")
+        json.dump({"season": SEASON, "available": True, "qb_teams": qb_out, "wr_teams": wr_out, "te_teams": te_out,
+                   "team_coverage_rate": team_coverage_rate}, f)
+    print(f"Wrote intel/coverage.json — {len(qb_out)} QB teams, {len(wr_out)} WR teams, {len(te_out)} TE teams")
 
 
 def build_blitz_report(week=None):

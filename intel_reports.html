@@ -116,6 +116,8 @@ let blitzPos = 'QB';
 let blitzSortKey = 'watch';
 let blitzSearchTerm = '';
 let coveragePos = 'QB';
+let coverageModalTeam = null;
+let coverageModalView = 'log'; // 'log' | 'splits'
 let coverageSearchTerm = '';
 
 main.innerHTML = `
@@ -742,6 +744,12 @@ function openBlitzGameLog(team){
 }
 
 /* ── COVERAGE BREAKDOWN REPORT (historical, season retrospective) ──── */
+function coverageDataset(pos){
+  if(pos === 'QB') return COVERAGE.qb_teams || {};
+  if(pos === 'TE') return COVERAGE.te_teams || {};
+  return COVERAGE.wr_teams || {};
+}
+
 const COVERAGE_LABELS = {
   MAN_COVERAGE: 'Man Coverage', ZONE_COVERAGE: 'Zone Coverage',
   COVER_0: 'Cover 0', COVER_1: 'Cover 1', COVER_2: 'Cover 2', COVER_3: 'Cover 3',
@@ -771,6 +779,7 @@ function renderCoverageReport(){
       <div class="tabs" id="coveragePosTabs" role="tablist">
         <button role="tab" data-p="QB" aria-selected="true">QB</button>
         <button role="tab" data-p="WR" aria-selected="false">WR</button>
+        <button role="tab" data-p="TE" aria-selected="false">TE</button>
       </div>
       <input class="search-box" id="coverageSearchBox" placeholder="Search team or player…">
     </div>
@@ -793,6 +802,7 @@ function coverageTableHTML(splits, title){
     <div class="ic-section-label">${title}</div>
     <div class="lead-wrap" style="max-height:none"><table class="lead-table"><thead><tr>
       <th class="name-col">Coverage</th><th>Plays</th><th>Yds/Play</th><th>Comp%</th><th>Success%</th>
+      <th>10+%</th><th>16+%</th><th>20+%</th><th>40+%</th>
     </tr></thead><tbody>
       ${rows.map(([key, s]) => `<tr>
         <td class="name-col">${esc2(COVERAGE_LABELS[key]||key)}</td>
@@ -800,12 +810,131 @@ function coverageTableHTML(splits, title){
         <td><span class="cell-val">${s.yds_per_play}</span></td>
         <td><span class="cell-val">${s.comp_pct!=null?s.comp_pct+'%':'—'}</span></td>
         <td><span class="cell-val">${s.success_pct}%</span></td>
+        <td><span class="cell-val">${s.c10_pct}%</span></td>
+        <td><span class="cell-val">${s.c16_pct}%</span></td>
+        <td><span class="cell-val">${s.c20_pct}%</span></td>
+        <td><span class="cell-val">${s.c40_pct}%</span></td>
       </tr>`).join('')}
     </tbody></table></div>`;
 }
 
+function manZoneSplitsHTML(manZone, record, pos){
+  const cols = [['MAN_COVERAGE','Man'], ['ZONE_COVERAGE','Zone']];
+  const statRows = [
+    ['Total Plays', s => s.n, false, null],
+    ['Yds / Play', s => s.yds_per_play, false, null],
+    ['Completion %', s => s.comp_pct, true, null],
+    ['EPA / Play', s => s.epa_per_play, false, null],
+    ['Success %', s => s.success_pct, true, null],
+    ['10+ Yd %', s => s.c10_pct, true, null],
+    ['16+ Yd %', s => s.c16_pct, true, null],
+    ['20+ Yd %', s => s.c20_pct, true, null],
+    ['40+ Yd %', s => s.c40_pct, true, null],
+  ];
+  return `
+    <div class="lead-wrap" style="max-height:none"><table class="lead-table"><thead><tr>
+      <th class="name-col">Stat</th>
+      ${cols.map(([key,label]) => `<th>${label}${manZone[key]?'':' (no plays)'}</th>`).join('')}
+    </tr></thead><tbody>
+      ${statRows.map(([label, getter, isPct]) => `<tr>
+        <td class="name-col">${label}</td>
+        ${cols.map(([key]) => {
+          const s = manZone[key];
+          const v = s ? getter(s) : null;
+          const text = v == null ? '—' : (isPct ? v+'%' : v);
+          return `<td><span class="cell-val">${text}</span></td>`;
+        }).join('')}
+      </tr>`).join('')}
+      <tr><td class="name-col">Yards / Game</td>
+        ${cols.map(([key]) => {
+          const r = record ? record[key] : null;
+          const text = (r && r.yds_per_game != null) ? r.yds_per_game : '—';
+          return `<td><span class="cell-val">${text}</span></td>`;
+        }).join('')}
+      </tr>
+      <tr><td class="name-col">W-L Record</td>
+        ${cols.map(([key]) => {
+          const r = record ? record[key] : null;
+          const text = r ? `${r.W}-${r.L}${r.T?'-'+r.T:''}` : '—';
+          return `<td><span class="cell-val">${text}</span></td>`;
+        }).join('')}
+      </tr>
+    </tbody></table></div>
+    <div class="empty" style="padding:10px 4px;text-align:left;font-size:10px">
+      Total Plays through Success % above are per-play splits (each play tagged man or zone directly from
+      charting data), season-long. Yards/Game and W-L Record are different: both are tied to whichever
+      coverage was actually more common in each specific game — whichever type had more snaps that game is
+      the bucket it counts toward. A tied game (equal snaps of each) isn't counted either direction.
+    </div>`;
+}
+
+function openCoverageModal(team){
+  const dataset = coverageDataset(coveragePos);
+  const t = dataset[team];
+  if(!t) return;
+  coverageModalTeam = team;
+  coverageModalView = coverageModalView || 'log';
+
+  $("mTitle").textContent = `${t.name} — ${team}`;
+  $("mSub").textContent = `${(t.log||[]).length} games · ${COVERAGE.season} season · ${seasonAvgLineHTML(t, coveragePos)}`;
+
+  $("mBody").innerHTML = `
+    <div class="tabs" id="coverageModalTabs" role="tablist" style="margin-bottom:12px">
+      <button role="tab" data-v="log" aria-selected="${coverageModalView==='log'}">Game Log</button>
+      <button role="tab" data-v="splits" aria-selected="${coverageModalView==='splits'}">Splits (Man / Zone)</button>
+    </div>
+    <div id="coverageModalBody"></div>`;
+
+  $("coverageModalTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    coverageModalView = b.dataset.v;
+    $("coverageModalTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    renderCoverageModalBody();
+  });
+
+  renderCoverageModalBody();
+
+  $("scrim").classList.add("open"); $("modal").classList.add("open");
+  $("mClose").focus();
+}
+
+function renderCoverageModalBody(){
+  const dataset = coverageDataset(coveragePos);
+  const t = dataset[coverageModalTeam];
+  if(!t) return;
+  $("coverageModalBody").innerHTML = coverageModalView === 'log'
+    ? coverageLogTableHTML(t.log, coveragePos)
+    : manZoneSplitsHTML(t.man_zone || {}, t.man_zone_record || {}, coveragePos);
+}
+
+function coverageLogTableHTML(log, pos){
+  if(!log || !log.length) return `<div class="empty">No game log available.</div>`;
+  const rows = log.slice().sort((a,b) => b.week - a.week);
+  const yardLabel = pos === 'QB' ? 'Pass Yds' : 'Rec Yds';
+  return `
+    <div class="lead-wrap"><table class="lead-table"><thead><tr>
+      <th class="name-col">Week</th><th>Opponent</th><th>W/L</th>
+      <th>Man %</th><th>Zone %</th><th>${yardLabel}</th><th>Comp %</th><th>TD</th>
+    </tr></thead><tbody>
+      ${rows.map(g => { const resultClass = g.result==='W'?'log-hit':(g.result==='L'?'log-miss':''); return `<tr>
+        <td class="name-col">${g.week}</td>
+        <td>${g.opponent ? fiLogoHTML(g.opponent,16)+esc2(g.opponent) : '—'}</td>
+        <td><span class="cell-val ${resultClass}">${g.result||'—'}</span></td>
+        <td><span class="rank-chip">${g.man_pct!=null?g.man_pct+'%':'—'}</span></td>
+        <td><span class="rank-chip">${g.zone_pct!=null?g.zone_pct+'%':'—'}</span></td>
+        <td><span class="cell-val">${g.yds!=null?g.yds:'—'}</span></td>
+        <td><span class="cell-val">${g.comp_pct!=null?g.comp_pct+'%':'—'}</span></td>
+        <td><span class="cell-val">${g.td!=null?g.td:'—'}</span></td>
+      </tr>`; }).join('')}
+    </tbody></table></div>`;
+}
+
+function seasonAvgLineHTML(t, pos){
+  if(pos === 'QB') return `${t.season_pass_yds_avg} pass yds/gm · ${t.season_comp_pct!=null?t.season_comp_pct+'%':'—'} comp`;
+  return `${t.season_rec_yds_avg} rec yds/gm · ${t.season_rec_pg} rec/gm`;
+}
+
 function renderCoverageGrid(){
-  const dataset = coveragePos === 'QB' ? (COVERAGE.qb_teams||{}) : (COVERAGE.wr_teams||{});
+  const dataset = coverageDataset(coveragePos);
   let teams = Object.entries(dataset).map(([team, v]) => ({ team, ...v }));
   teams = teams.filter(t =>
     !coverageSearchTerm || t.team.toLowerCase().includes(coverageSearchTerm) || (t.name||'').toLowerCase().includes(coverageSearchTerm));
@@ -818,54 +947,16 @@ function renderCoverageGrid(){
         <div>
           <div class="ic-name">${esc2(t.name)}</div>
           <div class="ic-team">${esc2(t.team)} · ${coveragePos==='QB' ? (t.starts+' starts') : (t.targets+' targets')}</div>
+          <div class="ic-team" style="color:var(--text-mid)">${seasonAvgLineHTML(t, coveragePos)}</div>
         </div>
       </div>
-      ${coverageTableHTML(t.man_zone, 'Man vs Zone')}
+      ${coverageTableHTML(t.man_zone, 'Man vs Zone (Play-Level)')}
       ${coverageTableHTML(t.by_coverage, 'By Specific Coverage (min 10 plays)')}
     </div>`).join('') || `<div class="empty">No players match that search.</div>`;
 
   $("coverageGrid").querySelectorAll('.intel-card').forEach(el => {
-    el.onclick = () => openCoverageGameLog(el.dataset.team);
+    el.onclick = () => openCoverageModal(el.dataset.team);
   });
-}
-
-function openCoverageGameLog(team){
-  const dataset = coveragePos === 'QB' ? (COVERAGE.qb_teams||{}) : (COVERAGE.wr_teams||{});
-  const t = dataset[team];
-  if(!t || !t.log) return;
-
-  $("mTitle").textContent = `${t.name} — ${team}`;
-  $("mSub").textContent = `${t.log.length} games · ${COVERAGE.season} season`;
-
-  const rows = t.log.slice().sort((a,b) => b.week - a.week);
-  const yardLabel = coveragePos === 'QB' ? 'Pass Yds' : 'Rec Yds';
-  let h = `<div class="lead-wrap"><table class="lead-table"><thead><tr>
-    <th class="name-col">Week</th><th>Opponent</th><th>W/L</th>
-    <th>Man %</th><th>Zone %</th><th>${yardLabel}</th><th>Comp %</th><th>TD</th>
-  </tr></thead><tbody>`;
-  rows.forEach(g => {
-    const resultClass = g.result === 'W' ? 'log-hit' : (g.result === 'L' ? 'log-miss' : '');
-    h += `<tr>
-      <td class="name-col">${g.week}</td>
-      <td>${g.opponent ? fiLogoHTML(g.opponent,16)+esc2(g.opponent) : '—'}</td>
-      <td><span class="cell-val ${resultClass}">${g.result||'—'}</span></td>
-      <td><span class="rank-chip">${g.man_pct!=null?g.man_pct+'%':'—'}</span></td>
-      <td><span class="rank-chip">${g.zone_pct!=null?g.zone_pct+'%':'—'}</span></td>
-      <td><span class="cell-val">${g.yds!=null?g.yds:'—'}</span></td>
-      <td><span class="cell-val">${g.comp_pct!=null?g.comp_pct+'%':'—'}</span></td>
-      <td><span class="cell-val">${g.td!=null?g.td:'—'}</span></td>
-    </tr>`;
-  });
-  h += `</tbody></table></div>
-  <div class="empty" style="padding:10px 4px;text-align:left;font-size:10px">
-    Man%/Zone% are that specific game's coverage rate faced (small per-game play counts —
-    hover isn't shown here but treat any game with very few plays cautiously, same as everywhere
-    else this site shows a per-game split). Green/red on W/L is just the game result, not a stat judgment.
-  </div>`;
-  $("mBody").innerHTML = h;
-
-  $("scrim").classList.add("open"); $("modal").classList.add("open");
-  $("mClose").focus();
 }
 
 function openGameLog(team, kind){
