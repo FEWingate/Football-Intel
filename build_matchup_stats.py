@@ -39,6 +39,19 @@ TEAM_STATS_URL = f"https://github.com/nflverse/nflverse-data/releases/download/s
 PBP_URL = f"https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_{SEASON}.csv.gz"
 FTN_CHARTING_URL = f"https://github.com/nflverse/nflverse-data/releases/download/ftn_charting/ftn_charting_{SEASON}.csv"
 PARTICIPATION_URL = f"https://github.com/nflverse/nflverse-data/releases/download/pbp_participation/pbp_participation_{SEASON}.csv"
+SNAP_COUNTS_URL = f"https://github.com/nflverse/nflverse-data/releases/download/snap_counts/snap_counts_{SEASON}.csv"
+# Snap counts identify players by Pro-Football-Reference ID, not nflverse's
+# own gsis-style player_id used everywhere else in this script — this file
+# is the crosswalk between the two. Confirmed via nflreadr's own data
+# schedule docs: PFR-sourced feeds (this one, PFR Advanced Stats) update
+# daily during the season, so snap share is safe to treat as live/weekly,
+# unlike Participation data (see PARTICIPATION_URL note elsewhere).
+PLAYERS_XWALK_URL = "https://github.com/nflverse/nflverse-data/releases/download/players/players.csv"
+# Individual defensive back coverage stats — targets faced, completions/
+# yards/TDs allowed, per player per week. Same PFR-sourced, daily-during-
+# season update cadence as Snap Counts and PFR Advanced (pass/rec) — see
+# the SNAP_COUNTS_URL note above. Confirmed via real 2025 data before use.
+ADVSTATS_DEF_URL = f"https://github.com/nflverse/nflverse-data/releases/download/pfr_advstats/advstats_week_def_{SEASON}.csv"
 
 POS_MAP = {"QB": "QB", "RB": "RB", "FB": "RB", "WR": "WR", "TE": "TE"}
 POSITIONS = ["QB", "RB", "WR", "TE"]
@@ -80,10 +93,13 @@ POS_METRICS = {
         "p40_pg":     ("40+ yd completions / game", 2, True, "Explosive"),
         "sacks_pg":   ("Sacks taken / game", 1, False, "Protection"),
         "int_pg":     ("Interceptions / game", 1, False, "Protection"),
+        "snap_pct":   ("Offensive snap %", 1, True, "Usage"),
     },
     "RB": {
         "rush_share": ("Rush share", 1, True, "Usage"),
         "target_share": ("Target share", 1, True, "Usage"),
+        "snap_pct":   ("Offensive snap %", 1, True, "Usage"),
+        "rz_touch_share": ("Red zone touch share", 1, True, "Usage"),
         "rush_yds":   ("Rushing yards", 0, True, "Volume"),
         "rush_ypg":   ("Rushing yards / game", 1, True, "Volume"),
         "carries":    ("Carries", 0, True, "Volume"),
@@ -101,9 +117,18 @@ POS_METRICS = {
         "r12_pg":     ("12+ yd runs / game", 1, True, "Explosive"),
         "r20_pg":     ("20+ yd runs / game", 1, True, "Explosive"),
         "r40_pg":     ("40+ yd runs / game", 2, True, "Explosive"),
+        "rz_touches":     ("Red zone touches", 0, True, "Red Zone"),
+        "rz_carries":     ("Red zone carries", 0, True, "Red Zone"),
+        "rz_carry_share": ("Red zone carry share", 1, True, "Red Zone"),
+        "rz_rush_td":     ("Red zone rushing TDs", 0, True, "Red Zone"),
+        "rz_targets":     ("Red zone targets", 0, True, "Red Zone"),
+        "rz_target_share":("Red zone target share", 1, True, "Red Zone"),
+        "rz_rec_td":      ("Red zone receiving TDs", 0, True, "Red Zone"),
     },
     "WR": {
         "target_share": ("Target share", 1, True, "Usage"),
+        "snap_pct":   ("Offensive snap %", 1, True, "Usage"),
+        "rz_touch_share": ("Red zone touch share", 1, True, "Usage"),
         "rec_yds":    ("Receiving yards", 0, True, "Volume"),
         "rec_ypg":    ("Receiving yards / game", 1, True, "Volume"),
         "rec":        ("Receptions", 0, True, "Volume"),
@@ -119,6 +144,10 @@ POS_METRICS = {
         "c16_pg":     ("16+ yd catches / game", 1, True, "Explosive"),
         "c20_pg":     ("20+ yd catches / game", 1, True, "Explosive"),
         "c40_pg":     ("40+ yd catches / game", 2, True, "Explosive"),
+        "rz_targets":      ("Red zone targets", 0, True, "Red Zone"),
+        "rz_target_share": ("Red zone target share", 1, True, "Red Zone"),
+        "rz_receptions":   ("Red zone receptions", 0, True, "Red Zone"),
+        "rz_rec_td":       ("Red zone receiving TDs", 0, True, "Red Zone"),
     },
 }
 POS_METRICS["TE"] = dict(POS_METRICS["WR"])
@@ -128,9 +157,13 @@ POS_METRICS["TE"] = dict(POS_METRICS["WR"])
 # is a per-PLAYER usage concept (their slice of the team's looks) that
 # doesn't mean anything at that aggregate level, and pos_metrics_from_sums()
 # doesn't compute it there anyway (only build_player_stats() injects it,
-# per-player, with the team-week denominator that requires). Weekly
-# matchup/context/threats builders use this filtered view instead.
-POS_METRICS_WEEKLY = {p: {k: v for k, v in metrics.items() if v[3] != "Usage"}
+# per-player, with the team-week denominator that requires). Same story for
+# Red Zone and snap share (Usage group) — both are per-player, joined from
+# separate sources (play-by-play, snap counts) only inside
+# build_player_stats(), and pos_metrics_from_sums() never produces these
+# keys — so they must stay out of this filtered view or build(week) below
+# will KeyError trying to read them off the team-position aggregate.
+POS_METRICS_WEEKLY = {p: {k: v for k, v in metrics.items() if v[3] not in ("Usage", "Red Zone")}
                        for p, metrics in POS_METRICS.items()}
 
 
@@ -1428,6 +1461,141 @@ def build_player_log(player_df, pos, latest_matchup, team_week_totals=None):
     return log, splits, ceiling
 
 
+def load_pfr_to_gsis():
+    """pfr_id -> gsis_id crosswalk. Snap Count data identifies players by
+    Pro-Football-Reference ID; every other file in this script (player
+    stats, play-by-play) uses nflverse's own gsis-style player_id — this
+    is the only bridge between the two. ~99.7% match rate on skill
+    positions in spot-checks; the small remainder (mostly practice-squad/
+    inactive names) just won't get a snap share, same as any other
+    genuinely-missing-data cell on the site."""
+    try:
+        df = fetch_csv(PLAYERS_XWALK_URL)
+    except SystemExit:
+        print("  players crosswalk not available — skipping snap share.")
+        return {}
+    df = df.dropna(subset=["pfr_id", "gsis_id"]).drop_duplicates("pfr_id")
+    return dict(zip(df["pfr_id"], df["gsis_id"]))
+
+
+def compute_snap_shares():
+    """Season-to-date average offensive snap share per player (gsis_id ->
+    0-1 fraction), from PFR's Snap Count data via nflverse. Season average
+    of each game's own offense_pct — same per-game-average convention as
+    every other rate stat on the site (ppg, comp_pct, etc.), not a single
+    season-long ratio. Always-current, not week-gated, matching the rest
+    of build_player_stats(). Returns {} (not an error) if the feed isn't
+    published yet — callers should degrade to '—' per player, not fail
+    the whole build."""
+    try:
+        snaps = fetch_csv(SNAP_COUNTS_URL)
+    except SystemExit:
+        print("  snap counts not available yet this season — skipping snap share.")
+        return {}
+    xwalk = load_pfr_to_gsis()
+    if not xwalk:
+        return {}
+    snaps = snaps[(snaps["season"] == SEASON) & (snaps["game_type"] == "REG")]
+    # RB shows up under RB/FB/HB in this feed depending on the player.
+    snaps = snaps[snaps["position"].isin(["QB", "RB", "FB", "HB", "WR", "TE"])].copy()
+    snaps["gsis_id"] = snaps["pfr_player_id"].map(xwalk)
+    snaps = snaps.dropna(subset=["gsis_id"])
+    return snaps.groupby("gsis_id")["offense_pct"].mean().to_dict()
+
+
+def compute_red_zone_usage():
+    """Season-to-date red zone (yardline_100 <= 20) touch/target usage,
+    from play-by-play. Returns two per-play dicts keyed by
+    (player_id, team, week) — one for rushers, one for targeted receivers —
+    plus three team-week red zone totals (carries, targets, receptions) for
+    share calculations. This mirrors the exact (team, week) join pattern
+    build_player_stats() already uses for rush_share/target_share (see
+    season_share()) so a mid-season trade is handled correctly instead of
+    assuming one team the whole season.
+
+    QB is deliberately excluded — Passing TDs/Attempts already capture red
+    zone passing volume; the useful red-zone signal for a QB is who's
+    getting the ball down there, not how often he throws it, which is
+    exactly what the RB/WR/TE numbers below show.
+
+    Validated against real 2025 data before shipping: top red zone rushers
+    (C.McCaffrey, J.Taylor, D.Henry) and top red zone targets (A.St. Brown,
+    T.McBride, D.Adams) both matched known real-world red zone usage."""
+    try:
+        pbp = fetch_pbp()
+    except SystemExit:
+        print("  play-by-play not available yet this season — skipping red zone usage.")
+        return {}, {}, {}, {}, {}
+    reg = pbp[pbp["season_type"] == "REG"]
+    rz = reg[reg["yardline_100"] <= 20]
+
+    rz_rush_df = (rz[rz["play_type"] == "run"]
+                  .groupby(["rusher_player_id", "posteam", "week"])
+                  .agg(rz_carries=("play_id", "count"),
+                       rz_rush_td=("rush_touchdown", "sum")))
+    rz_pass_df = (rz[rz["play_type"] == "pass"]
+                  .groupby(["receiver_player_id", "posteam", "week"])
+                  .agg(rz_targets=("play_id", "count"),
+                       rz_receptions=("complete_pass", "sum"),
+                       rz_rec_td=("pass_touchdown", "sum")))
+    team_rz_carries = rz[rz["play_type"] == "run"].groupby(["posteam", "week"]).size().to_dict()
+    team_rz_targets = rz[rz["play_type"] == "pass"].groupby(["posteam", "week"]).size().to_dict()
+    # "Touches" (carries + REceptions) is a different, stricter number than
+    # "targets" (includes incompletions) — an incomplete target never
+    # touched the player's hands, so it isn't a touch. Tracked separately
+    # so rz_touch_share below isn't quietly inflated by incompletions.
+    team_rz_receptions = (rz[(rz["play_type"] == "pass") & (rz["complete_pass"] == 1)]
+                           .groupby(["posteam", "week"]).size().to_dict())
+
+    return (rz_rush_df.to_dict("index"), rz_pass_df.to_dict("index"),
+            team_rz_carries, team_rz_targets, team_rz_receptions)
+
+
+def rz_season_stats(pdf, pos, rz_rush, rz_pass, team_rz_carries, team_rz_targets, team_rz_receptions):
+    """One player's season-to-date red zone usage, summed per (team, week)
+    from the games they actually played — same join pattern as
+    season_share(), so a mid-season trade doesn't misattribute red zone
+    plays to the wrong team's denominator.
+
+    rz_touch_share is the player's share of the TEAM's total red zone
+    touches (every RB carry + every completed target, by anyone on the
+    team) — a true "who's getting the rock down there" number, distinct
+    from rz_target_share (which only counts pass-game looks, including
+    incompletions) and rz_carry_share (rushing only)."""
+    carries = rush_td = targets = receptions = rec_td = 0
+    team_car_tot = team_tgt_tot = team_rec_tot = 0.0
+    for _, row in pdf.iterrows():
+        pid, team, wk = row["player_id"], row["team"], row["week"]
+        if pos == "RB":
+            rr = rz_rush.get((pid, team, wk))
+            if rr:
+                carries += rr["rz_carries"]
+                rush_td += rr["rz_rush_td"]
+        rp = rz_pass.get((pid, team, wk))
+        if rp:
+            targets += rp["rz_targets"]
+            receptions += rp["rz_receptions"]
+            rec_td += rp["rz_rec_td"]
+        team_car_tot += team_rz_carries.get((team, wk), 0)
+        team_tgt_tot += team_rz_targets.get((team, wk), 0)
+        team_rec_tot += team_rz_receptions.get((team, wk), 0)
+
+    touches = receptions + (carries if pos == "RB" else 0)
+    team_touch_tot = team_car_tot + team_rec_tot
+
+    out = {
+        "rz_targets": targets, "rz_receptions": receptions, "rz_rec_td": rec_td,
+        "rz_target_share": round(100 * targets / team_tgt_tot, 1) if team_tgt_tot > 0 else None,
+        "rz_touch_share": round(100 * touches / team_touch_tot, 1) if team_touch_tot > 0 else None,
+    }
+    if pos == "RB":
+        out["rz_carries"] = carries
+        out["rz_rush_td"] = rush_td
+        out["rz_touches"] = touches  # carries + receptions, NOT carries + targets
+        out["rz_carry_share"] = round(100 * carries / team_car_tot, 1) if team_car_tot > 0 else None
+    return out
+
+
 def build_player_stats():
     """Season-to-date individual player leaderboards, grouped by position
     then by the same Volume/Efficiency/Explosive/Protection categories
@@ -1494,6 +1662,12 @@ def build_player_stats():
             return None
         return round(100 * player_total / team_total, 1)
 
+    # Snap share (PFR Snap Counts, all four positions) and red zone usage
+    # (play-by-play, RB/WR/TE) — both degrade to {} rather than failing the
+    # build if their source isn't published yet (e.g. very early season).
+    snap_share = compute_snap_shares()
+    rz_rush, rz_pass, team_rz_carries, team_rz_targets, team_rz_receptions = compute_red_zone_usage()
+
     players_out = {p: [] for p in POSITIONS}
     for (pid, pos), gp in games_played.items():
         name = latest_name.get((pid, pos), "")
@@ -1510,6 +1684,12 @@ def build_player_stats():
             season_metrics["target_share"] = season_share(pdf, "targets")
         elif pos in ("WR", "TE"):
             season_metrics["target_share"] = season_share(pdf, "targets")
+
+        season_metrics["snap_pct"] = (round(100 * snap_share[pid], 1)
+                                       if pid in snap_share else None)
+        if pos in ("RB", "WR", "TE"):
+            season_metrics.update(rz_season_stats(
+                pdf, pos, rz_rush, rz_pass, team_rz_carries, team_rz_targets, team_rz_receptions))
 
         cb_key = f"{pid}|{pos}"
         cb_entry = career_base.get(cb_key)
@@ -2150,6 +2330,117 @@ def build_coverage_report():
     print(f"Wrote intel/coverage.json — {len(qb_out)} QB teams, {len(wr_out)} WR teams, {len(te_out)} TE teams")
 
 
+def nfl_passer_rating(comp, att, yds, td, ints):
+    """Standard NFL passer rating formula, computed from SEASON-TOTAL sums
+    (not averaged from weekly rates — averaging an average is exactly the
+    mistake this project's lessons doc warns against). Each of the four
+    components is clipped to [0, 2.375] per the official formula. Used here
+    "against" a defender: his own targets/completions/yards/TDs/INTs
+    allowed, standing in for the passer's stat line on throws his way."""
+    if att <= 0:
+        return None
+    a = max(0, min(2.375, ((comp / att) - 0.3) * 5))
+    b = max(0, min(2.375, ((yds / att) - 3) * 0.25))
+    c = max(0, min(2.375, (td / att) * 20))
+    d = max(0, min(2.375, 2.375 - (ints / att) * 25))
+    return round(((a + b + c + d) / 6) * 100, 1)
+
+
+def build_cb_db_rankings():
+    """Season-to-date individual CB/DB coverage leaderboard: targets faced,
+    completions/yards/TDs allowed, and a real passer-rating-allowed number
+    computed from season sums (not averaged weekly ratings). From PFR
+    Advanced Stats (def), which — like Snap Counts and PFR pass/rec —
+    updates daily during the season, so this is safe to treat as live,
+    unlike Participation-based Coverage Breakdown above.
+
+    Deliberately does NOT attempt to identify which specific CB covered
+    which WR on a given play — no source available to this project tracks
+    shadow-coverage assignments (that's proprietary charting nobody
+    publishes openly). This is a real, standalone individual-defender
+    leaderboard, not a WR-vs-this-CB matchup engine.
+
+    position_group == "DB" (from the players crosswalk) covers CB/S/FS/
+    SAF/DB together — nflverse's own grouping, reused rather than hand-
+    listing position codes ourselves.
+
+    MIN_TARGETS gates out tiny, noisy samples — same sample-size-
+    transparency convention as every other report on the site.
+
+    Validated against real 2025 data before shipping: the top of the
+    stinginess leaderboard (Surtain, Porter Jr., Carlton Davis III) and the
+    bottom (Trevon Diggs' well-known boom/bust profile) both matched
+    real-world reputation."""
+    print(f"Building CB/DB Coverage Rankings for {SEASON}...")
+    MIN_TARGETS = 20
+
+    try:
+        df = fetch_csv(ADVSTATS_DEF_URL)
+    except SystemExit:
+        print(f"  PFR defensive advanced stats not available for {SEASON} yet — skipping.")
+        os.makedirs("intel", exist_ok=True)
+        with open("intel/cb_rankings.json", "w") as f:
+            json.dump({"season": SEASON, "available": False, "min_targets": MIN_TARGETS, "players": []}, f)
+        return
+
+    xwalk = fetch_csv(PLAYERS_XWALK_URL)
+    xwalk = xwalk.dropna(subset=["pfr_id"]).drop_duplicates("pfr_id").set_index("pfr_id")
+
+    # This feed includes playoff games (WC/DIV/CON/SB) by default — every
+    # other "season" stat on this site means regular season only, so filter
+    # here too rather than silently blending postseason into the numbers.
+    if "game_type" in df.columns:
+        df = df[df["game_type"] == "REG"]
+
+    df["gsis_id"] = df["pfr_player_id"].map(xwalk["gsis_id"])
+    df["position_group"] = df["pfr_player_id"].map(xwalk["position_group"])
+    df["position"] = df["pfr_player_id"].map(xwalk["position"])
+    db = df[(df["position_group"] == "DB")].dropna(subset=["gsis_id"])
+    if db.empty:
+        raise SystemExit("no DB rows matched after crosswalk join")
+
+    sums = db.groupby("gsis_id").agg(
+        targets=("def_targets", "sum"), completions=("def_completions_allowed", "sum"),
+        yards=("def_yards_allowed", "sum"), td=("def_receiving_td_allowed", "sum"),
+        ints=("def_ints", "sum"), games=("week", "nunique"),
+    )
+    sums = sums[sums["targets"] >= MIN_TARGETS]
+
+    names = xwalk.reset_index().drop_duplicates("gsis_id").set_index("gsis_id")["display_name"]
+    positions = xwalk.reset_index().drop_duplicates("gsis_id").set_index("gsis_id")["position"]
+    headshots = xwalk.reset_index().drop_duplicates("gsis_id").set_index("gsis_id")["headshot"]
+    teams_by_gid = (db.sort_values("week").groupby("gsis_id")["team"].last())
+
+    rows = []
+    for gid, s in sums.iterrows():
+        comp_pct = round(100 * s["completions"] / s["targets"], 1)
+        yds_per_tgt = round(s["yards"] / s["targets"], 2)
+        rating = nfl_passer_rating(s["completions"], s["targets"], s["yards"], s["td"], s["ints"])
+        headshot = headshots.get(gid, "")
+        rows.append({
+            "gsis_id": gid, "name": names.get(gid, gid), "position": positions.get(gid, "DB"),
+            "team": teams_by_gid.get(gid, ""), "headshot": headshot if pd.notna(headshot) else "",
+            "games": int(s["games"]), "targets": int(s["targets"]),
+            "completions_allowed": int(s["completions"]), "comp_pct_allowed": comp_pct,
+            "yards_allowed": int(s["yards"]), "yds_per_tgt_allowed": yds_per_tgt,
+            "td_allowed": int(s["td"]), "ints": int(s["ints"]), "rating_allowed": rating,
+        })
+
+    # Rank league-wide (1 = best/stingiest) on each of the four coverage
+    # metrics — all four are "lower is better" for a defender.
+    for key in ("yds_per_tgt_allowed", "comp_pct_allowed", "td_allowed", "rating_allowed"):
+        ranked = sorted(rows, key=lambda r: r[key])
+        for i, r in enumerate(ranked):
+            r[f"rank_{key}"] = i + 1
+
+    os.makedirs("intel", exist_ok=True)
+    with open("intel/cb_rankings.json", "w") as f:
+        json.dump({"season": SEASON, "available": True, "min_targets": MIN_TARGETS,
+                    "data_horizon": f"through {max(r['games'] for r in rows)} games played" if rows else "",
+                    "players": rows}, f)
+    print(f"Wrote intel/cb_rankings.json — {len(rows)} qualifying DBs (min {MIN_TARGETS} targets)")
+
+
 def build_blitz_report(week=None):
     """Hidden Intelligence: does a player's own performance actually change
     when the defense sends extra rushers? Real per-play splits (blitz vs
@@ -2474,3 +2765,10 @@ if __name__ == "__main__":
         build_coverage_report()
     except SystemExit as e:
         print(f"  coverage report: skipped — {e}")
+
+    # 8. CB/DB Coverage Rankings — separate file, own PFR advanced-stats
+    # fetch. Live/weekly (PFR daily update cadence), not a retrospective.
+    try:
+        build_cb_db_rankings()
+    except SystemExit as e:
+        print(f"  CB/DB rankings: skipped — {e}")

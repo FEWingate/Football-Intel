@@ -107,7 +107,7 @@ const main = fiShell({ page:'reports', pageLabel:'Intel Reports', status:'loadin
 let INTEL = null;
 let BLITZ = null;
 let COVERAGE = null;
-let activeReport = 'qb'; // 'qb' | 'rb' | 'blitz' | 'coverage'
+let activeReport = 'qb'; // 'qb' | 'rb' | 'blitz' | 'coverage' | 'cbdb'
 let sortKey = 'watch';
 let searchTerm = '';
 let rbSortKey = 'watch';
@@ -119,6 +119,10 @@ let coveragePos = 'QB';
 let coverageModalTeam = null;
 let coverageModalView = 'log'; // 'log' | 'splits'
 let coverageSearchTerm = '';
+let CBDB = null;
+let cbdbSortKey = 'yds_per_tgt_allowed';
+let cbdbSortDir = 'asc';
+let cbdbSearchTerm = '';
 
 main.innerHTML = `
   <div class="bar">
@@ -130,6 +134,7 @@ main.innerHTML = `
     <button role="tab" data-r="rb" aria-selected="false">RB Rushing vs. Passing Game</button>
     <button role="tab" data-r="blitz" aria-selected="false">Blitz Impact</button>
     <button role="tab" data-r="coverage" aria-selected="false">Coverage Breakdown</button>
+    <button role="tab" data-r="cbdb" aria-selected="false">CB/DB Coverage Rankings</button>
   </div>
   <div id="body"></div>
   <div class="modal-overlay" id="scrim"></div>
@@ -158,6 +163,10 @@ async function load(){
     const res2 = await fetch(`intel/blitz.json`);
     if(res2.ok) BLITZ = await res2.json();
   }catch(e){}
+  try{
+    const res3 = await fetch(`intel/cb_rankings.json`);
+    if(res3.ok) CBDB = await res3.json();
+  }catch(e){}
 
   if(!INTEL || !Object.keys(INTEL.teams||{}).length){
     fiStatus("No data","error"); fiUpdated("");
@@ -183,7 +192,8 @@ function render(){
   if(activeReport === 'qb') renderQBReport();
   else if(activeReport === 'rb') renderRBReport();
   else if(activeReport === 'blitz') renderBlitzReport();
-  else renderCoverageReport();
+  else if(activeReport === 'coverage') renderCoverageReport();
+  else renderCbDbReport();
 }
 
 function esc2(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
@@ -1008,6 +1018,87 @@ function closeModal(){
 $("mClose").addEventListener("click", closeModal);
 $("scrim").addEventListener("click", closeModal);
 document.addEventListener("keydown", e => { if(e.key === "Escape") closeModal(); });
+
+/* ── CB/DB COVERAGE RANKINGS (live, individual defenders) ───────────
+   Standalone leaderboard — NOT a "WR vs this specific CB" matchup engine.
+   No source available to this project tracks shadow-coverage assignments
+   (who covered whom on a given play), so this deliberately stays a
+   league-wide individual-defender leaderboard rather than pretending to
+   know which CB a given WR will actually face. */
+const CBDB_COLS = [
+  { key: 'targets', label: 'Targets' },
+  { key: 'comp_pct_allowed', label: 'Comp% Allowed', pct: true },
+  { key: 'yards_allowed', label: 'Yards Allowed' },
+  { key: 'yds_per_tgt_allowed', label: 'Yds/Tgt Allowed' },
+  { key: 'td_allowed', label: 'TD Allowed' },
+  { key: 'ints', label: 'INTs' },
+  { key: 'rating_allowed', label: 'Rating Allowed' },
+];
+
+function renderCbDbReport(){
+  if(!CBDB || !CBDB.available || !CBDB.players.length){
+    $("body").innerHTML = `<div class="empty">
+      No CB/DB Coverage Rankings data available for ${CBDB?CBDB.season:'this season'} yet.<br>
+      This report uses PFR Advanced Stats (defense), which updates during a live season — run
+      <b>python3 build_matchup_stats.py all</b> again once games have been played.</div>`;
+    return;
+  }
+  $("body").innerHTML = `
+    <div class="sect"><h3>CB/DB Coverage Rankings — ${CBDB.season} Season</h3><span class="rule"></span></div>
+    <div class="report-intro">
+      Individual defensive backs (CB/S/FS/SAF), ranked league-wide on what they've allowed in coverage —
+      not a "this WR vs this specific CB" matchup, since no data source tracks who actually covered whom on
+      a given play. ${CBDB.data_horizon}. Minimum ${CBDB.min_targets} targets faced to qualify — smaller
+      samples are hidden as noise. Rank 1 = stingiest. Data via Pro Football Reference (nflverse).
+    </div>
+    <div class="report-controls">
+      <input class="search-box" id="cbdbSearchBox" placeholder="Search player or team…">
+    </div>
+    <div class="lead-wrap"><table class="lead-table" id="cbdbTable"></table></div>`;
+
+  $("cbdbSearchBox").oninput = e => { cbdbSearchTerm = e.target.value.toLowerCase(); renderCbDbTable(); };
+  renderCbDbTable();
+}
+
+function renderCbDbTable(){
+  let rows = CBDB.players;
+  if(cbdbSearchTerm){
+    rows = rows.filter(r => r.name.toLowerCase().includes(cbdbSearchTerm)
+      || r.team.toLowerCase().includes(cbdbSearchTerm));
+  }
+  rows = rows.slice().sort((a,b) => {
+    const av = a[cbdbSortKey], bv = b[cbdbSortKey];
+    return cbdbSortDir === 'asc' ? av - bv : bv - av;
+  });
+
+  let h = `<thead><tr>
+    <th class="name-col">Player</th>
+    ${CBDB_COLS.map(c => `<th data-key="${c.key}" class="${c.key===cbdbSortKey?'sorted':''}" style="cursor:pointer">
+      ${esc2(c.label)}${c.key===cbdbSortKey ? (cbdbSortDir==='asc'?' ▴':' ▾') : ''}</th>`).join('')}
+  </tr></thead><tbody>`;
+  rows.forEach(r => {
+    h += `<tr>
+      <td class="name-col"><b style="display:inline-flex;align-items:center;gap:6px">
+        ${fiLogoHTML(r.team,16)}${esc2(r.name)}
+        <span class="rank-chip">${esc2(r.position)} · #${r[`rank_${cbdbSortKey}`] ?? '—'}</span></b></td>
+      ${CBDB_COLS.map(c => `<td><span class="cell-val">${fmtCbdbVal(r[c.key], c.pct)}</span></td>`).join('')}
+    </tr>`;
+  });
+  h += `</tbody>`;
+  $("cbdbTable").innerHTML = h;
+
+  $("cbdbTable").querySelectorAll("th[data-key]").forEach(th => th.onclick = () => {
+    const k = th.dataset.key;
+    if(k === cbdbSortKey) cbdbSortDir = cbdbSortDir === 'asc' ? 'desc' : 'asc';
+    else { cbdbSortKey = k; cbdbSortDir = 'asc'; }
+    renderCbDbTable();
+  });
+}
+
+function fmtCbdbVal(v, pct){
+  if(v === null || v === undefined) return '—';
+  return pct ? `${v}%` : v;
+}
 
 load();
 </script>

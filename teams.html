@@ -95,7 +95,7 @@ main.innerHTML = `
 
 const $ = id => document.getElementById(id);
 const pad = n => String(n).padStart(2,"0");
-let RECORDS = null, TEAMSTATS = null, COVERAGE = null, activeTeam = null, activeSec = 'offense', lastFocus = null;
+let RECORDS = null, TEAMSTATS = null, COVERAGE = null, CBDB = null, activeTeam = null, activeSec = 'offense', lastFocus = null;
 
 async function load(){
   fiStatus("Loading","loading");
@@ -145,6 +145,11 @@ async function load(){
     const resC = await fetch(`intel/coverage.json`);
     if(resC.ok) COVERAGE = await resC.json();
   }catch(e){ /* coverage section just won't have data yet */ }
+
+  try{
+    const resD = await fetch(`intel/cb_rankings.json`);
+    if(resD.ok) CBDB = await resD.json();
+  }catch(e){ /* cb/db rankings section just won't have data yet */ }
 
   fiStatus("Ready");
   fiUpdated(`through week ${latestWeek}`);
@@ -252,6 +257,35 @@ function coverageTendencyHTML(team){
     </div>`;
 }
 
+/* Each of this team's own qualifying DBs (min-target threshold met),
+   sorted by targets faced descending (most-tested defender first), with
+   that player's LEAGUE-WIDE rank in yards/target allowed. Deliberately
+   not a "vs this WR" matchup — no data source tracks which CB actually
+   covered which receiver on a given play, so this stays an honest "here's
+   how good this team's individual defenders have been" list. */
+function cbDbRankingsHTML(team){
+  if(!CBDB || !CBDB.available) return '';
+  const rows = CBDB.players.filter(p => p.team === team).sort((a,b) => b.targets - a.targets);
+  if(!rows.length) return '';
+  return `
+    <div class="subsect">CB/DB Coverage Rankings — ${CBDB.season} Season</div>
+    <table class="stat-table"><thead><tr>
+      <th>Player</th><th class="right">Targets</th><th class="right">Yds/Tgt Allowed</th><th class="right">League Rank</th>
+    </tr></thead><tbody>
+      ${rows.map(p => `<tr>
+        <td>${esc(p.name)} <span style="color:var(--text-dim);font-size:10px">${esc(p.position)}</span></td>
+        <td class="num">${p.targets}</td>
+        <td class="num">${p.yds_per_tgt_allowed}</td>
+        <td class="num">#${p.rank_yds_per_tgt_allowed} of ${CBDB.players.length}</td>
+      </tr>`).join('')}
+    </tbody></table>
+    <div class="empty" style="padding:4px 0 12px;text-align:left;font-size:10px">
+      Min. ${CBDB.min_targets} targets faced to qualify · league-wide rank, not a specific WR matchup
+      (no source tracks who actually covered whom on a given play). See <a href="intel_reports.html"
+      style="color:var(--primary)">Intel Reports → CB/DB Coverage Rankings</a> for the full leaderboard.
+    </div>`;
+}
+
 function renderStats(){
   $("mToggle").querySelectorAll("button").forEach(b =>
     b.setAttribute("aria-pressed", String(b.dataset.sec === activeSec)));
@@ -283,6 +317,10 @@ function renderStats(){
       h += `<tr><td>${esc(label)}</td><td class="num">${tot}</td><td class="num">${avg}</td></tr>`;
     }
     h += `</tbody></table>`;
+    // CB/DB Coverage Rankings sits right under Pass Defense — same section
+    // a person would already be looking at when they want individual
+    // secondary detail, rather than floating at the top of the whole tab.
+    if(activeSec === 'defense' && subgroup === 'Pass Defense') h += cbDbRankingsHTML(activeTeam);
   }
   box.innerHTML = h;
 }

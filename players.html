@@ -326,7 +326,7 @@ function tierProfileSectionHTML(p){
 
 function statBlockHTML(m, horizonNote, pos){
   const cats = PLAYERSTATS.labels[pos];
-  const PCT_KEYS = new Set(['rush_share','target_share']);
+  const PCT_KEYS = new Set(['rush_share','target_share','snap_pct','rz_carry_share','rz_target_share','rz_touch_share']);
   let h = `<div class="empty" style="padding:8px 0 4px;text-align:left;font-size:10px">${horizonNote}</div>`;
   for(const [cat, labels] of Object.entries(cats)){
     h += `<div class="subsect">${esc(cat)}</div><table class="stat-table"><tbody>`;
@@ -524,11 +524,15 @@ function renderCommitteeTables(){
     { key:'rush_yds', label:'Rush Yds' },
     { key:'rec', label:'Receptions' },
     { key:'rec_yds', label:'Rec Yds' },
+    { key:'rz_carry_share', label:'RZ Carry Share', pct:true },
+    { key:'rz_touches', label:'RZ Touches' },
   ]);
   $("committeeWR").innerHTML = committeeTable('WR', [
     { key:'target_share', label:'Target Share', pct:true },
     { key:'rec', label:'Receptions' },
     { key:'rec_yds', label:'Rec Yds' },
+    { key:'rz_target_share', label:'RZ Target Share', pct:true },
+    { key:'rz_targets', label:'RZ Targets' },
   ]);
 
   ['committeeRB','committeeWR'].forEach(id => {
@@ -637,7 +641,7 @@ function renderCompareTable(){
     return;
   }
   const cats = PLAYERSTATS.labels[comparePos];
-  const PCT_KEYS = new Set(['rush_share','target_share']);
+  const PCT_KEYS = new Set(['rush_share','target_share','snap_pct','rz_carry_share','rz_target_share','rz_touch_share']);
 
   let h = `<div class="tabs" id="compareHorizonTabs" role="tablist">
     <button role="tab" data-h="season" aria-selected="${compareHorizon==='season'}">Season</button>

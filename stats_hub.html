@@ -79,13 +79,18 @@ let PLAYERSTATS = null;
 let playerPos = 'QB', playerCat = null, playerSortKey = null, playerSortDir = 'desc';
 let currentPlayerRows = [], activePlayer = null, activeSec = 'season', logStatKey = null, lastFocus = null;
 
-let currentView = 'team_off'; // 'team_off' | 'players' | 'dvp'
+let currentView = 'team_off'; // 'team_off' | 'players' | 'dvp' | 'cbdb'
+
+let CBDB = null;
+let cbdbSortKey = null, cbdbSortDir = 'asc';
+let cbdbSearchTerm = '';
 
 main.innerHTML = `
   <div class="tabs view-switch" id="viewSwitch" role="tablist">
     <button role="tab" data-view="team_off" aria-selected="true">Team Offense</button>
     <button role="tab" data-view="players" aria-selected="false">Players</button>
     <button role="tab" data-view="dvp" aria-selected="false">Defense vs Position</button>
+    <button role="tab" data-view="cbdb" aria-selected="false">CB/DB Coverage</button>
   </div>
   <div class="bar">
     <span class="lbl" id="sectionLbl">Team Offense</span>
@@ -143,6 +148,11 @@ async function load(){
     if(res.ok) PLAYERSTATS = await res.json();
   }catch(e){ /* player stats not built yet */ }
 
+  try{
+    const res = await fetch(`intel/cb_rankings.json`);
+    if(res.ok) CBDB = await res.json();
+  }catch(e){ /* cb/db rankings not built yet */ }
+
   if(!weekList.length && !TEAMSTATS && !PLAYERSTATS){
     fiStatus("No data","error"); fiUpdated("");
     $("leadTable").outerHTML = `<div class="empty">
@@ -168,6 +178,12 @@ function switchView(){
     $("weekSel").style.display = 'none';
     $("catTabs").style.display = 'none';
     setupTeamOffenseControls();
+  } else if(currentView === 'cbdb'){
+    $("sectionLbl").textContent = 'CB/DB Coverage';
+    $("sectionLegend").innerHTML = '<span>Individual defensive backs, season totals · click any column to sort</span>';
+    $("weekSel").style.display = 'none';
+    $("catTabs").style.display = 'none';
+    setupCbDbControls();
   } else {
     $("sectionLbl").textContent = 'Players';
     $("sectionLegend").innerHTML = '<span>Season totals so far, individual players · click any column to sort</span>';
@@ -350,6 +366,79 @@ function renderTeamOffenseTable(){
       renderTeamOffenseTable();
     };
   });
+}
+
+/* ── CB/DB COVERAGE (individual defenders, league-wide leaderboard) ── */
+const CBDB_HUB_COLS = [
+  { key: 'targets', label: 'Targets' },
+  { key: 'comp_pct_allowed', label: 'Comp% Allowed', pct: true },
+  { key: 'yards_allowed', label: 'Yards Allowed' },
+  { key: 'yds_per_tgt_allowed', label: 'Yds/Tgt Allowed' },
+  { key: 'td_allowed', label: 'TD Allowed' },
+  { key: 'ints', label: 'INTs' },
+  { key: 'rating_allowed', label: 'Rating Allowed' },
+];
+
+function setupCbDbControls(){
+  if(!CBDB || !CBDB.available || !CBDB.players.length){
+    $("innerTabs").innerHTML = '';
+    $("leadTable").outerHTML = `<div class="empty" id="leadTable">
+      No CB/DB rankings data found.<br>
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+  $("innerTabs").innerHTML = '';
+  if(!cbdbSortKey) cbdbSortKey = 'yds_per_tgt_allowed';
+  fiUpdated(`season · ${CBDB.data_horizon} · min ${CBDB.min_targets} targets`);
+  renderCbDbTable();
+}
+
+function renderCbDbTable(){
+  try{
+    const rows = CBDB.players.slice().sort((a,b) => {
+      const av = a[cbdbSortKey] ?? Infinity, bv = b[cbdbSortKey] ?? Infinity;
+      return cbdbSortDir === 'desc' ? bv - av : av - bv;
+    });
+
+    let head = `<thead><tr>
+      <th class="team-col">Player</th>
+      <th>Pos</th>
+      <th>GP</th>
+      ${CBDB_HUB_COLS.map(c => `<th data-key="${c.key}" class="${c.key===cbdbSortKey?'sorted':''}">
+        ${esc(c.label)}${c.key===cbdbSortKey ? (cbdbSortDir==='desc'?' ▾':' ▴') : ''}
+      </th>`).join('')}
+    </tr></thead>`;
+
+    let body = '<tbody>' + rows.map((row,i) => {
+      const cells = CBDB_HUB_COLS.map(c => {
+        const v = row[c.key];
+        const text = v == null ? '—' : (c.pct ? `${v}%` : v);
+        return `<td><span class="cell-val">${text}</span></td>`;
+      }).join('');
+      return `<tr>
+        <td class="team-col"><span class="rank-num">${i+1}</span>${fiLogoHTML(row.team,20)}${esc(row.name)}</td>
+        <td><span class="cell-val">${esc(row.position)}</span></td>
+        <td><span class="cell-val">${row.games}</span></td>
+        ${cells}
+      </tr>`;
+    }).join('') + '</tbody>';
+
+    $("leadTable").innerHTML = head + body;
+
+    $("leadTable").querySelectorAll("thead th[data-key]").forEach(th => {
+      th.onclick = () => {
+        const k = th.dataset.key;
+        if(k === cbdbSortKey) cbdbSortDir = cbdbSortDir === 'desc' ? 'asc' : 'desc';
+        else { cbdbSortKey = k; cbdbSortDir = 'asc'; }
+        renderCbDbTable();
+      };
+    });
+  }catch(err){
+    console.error("renderCbDbTable failed:", err);
+    $("leadTable").outerHTML = `<div class="empty" id="leadTable">
+      CB/DB data looks out of date or malformed (${esc(err.message)}).<br>
+      Re-run <b>python3 build_matchup_stats.py all</b>, then reload.</div>`;
+  }
 }
 
 /* ── PLAYERS ──────────────────────────────────────────────────────── */
