@@ -253,8 +253,18 @@ function tierOf(rank){
 async function load(){
   fiStatus("Loading","loading");
   try{
-    const res = await fetch(`matchup/wk18.json`);
-    if(res.ok) MATCHUP = await res.json();
+    // Never hardcode a week here — matchup/current.json is written by the
+    // build script from what it ACTUALLY built this run, so it correctly
+    // falls back to last season's final week early on (nothing else exists
+    // yet) and automatically hands off to the new season's real data once
+    // it starts getting built, without needing a manual edit either time.
+    const ptrRes = await fetch(`matchup/current.json`);
+    if(ptrRes.ok){
+      const ptr = await ptrRes.json();
+      const wk = String(ptr.week).padStart(2, '0');
+      const res = await fetch(`matchup/wk${wk}.json`);
+      if(res.ok) MATCHUP = await res.json();
+    }
   }catch(e){ /* opponent grading unavailable without it */ }
   try{
     const res = await fetch(`players/latest.json`);

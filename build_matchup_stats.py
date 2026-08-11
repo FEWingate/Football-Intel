@@ -2772,3 +2772,21 @@ if __name__ == "__main__":
         build_cb_db_rankings()
     except SystemExit as e:
         print(f"  CB/DB rankings: skipped — {e}")
+
+    # 9. "Current week" pointer — matchup/current.json. Any page that needs
+    # "the latest real matchup data" (DFS Center, etc.) should fetch THIS,
+    # never hardcode a week number or scan for the highest-numbered
+    # matchup/wkNN.json file. Filenames aren't season-tagged, so at a
+    # season boundary the highest week NUMBER present (e.g. wk18.json from
+    # last season) is not the same thing as the most RECENTLY built file
+    # (e.g. wk02.json from the new season) — a naive filename scan would
+    # silently serve last season's stale week 18 instead of this season's
+    # real week 2. This pointer is written from what actually got built
+    # this run, so it's correct through every point in a season, including
+    # the transition where old and new seasons' files briefly coexist.
+    built_weeks = [w for w in weeks if w not in skipped]
+    if built_weeks:
+        os.makedirs("matchup", exist_ok=True)
+        with open("matchup/current.json", "w") as f:
+            json.dump({"season": SEASON, "week": max(built_weeks)}, f)
+        print(f"Wrote matchup/current.json — season {SEASON}, week {max(built_weeks)}")

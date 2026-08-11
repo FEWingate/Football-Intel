@@ -47,7 +47,9 @@ function fiShell({ page, pageLabel, status = 'ready' }) {
     <header>
       <div class="header-left">
         <button class="sidebar-toggle" id="fiSidebarToggle" aria-label="Open menu">☰</button>
-        <div class="logo"><span class="logo-main">FOOTBALL <span>INTEL</span></span></div>
+        <a class="logo" href="index.html" aria-label="Football Intel home"
+           style="text-decoration:none;color:inherit">
+          <span class="logo-main">FOOTBALL <span>INTEL</span></span></a>
         <span class="page-label">${pageLabel}</span>
       </div>
       <div class="header-right">
