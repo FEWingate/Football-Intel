@@ -1,0 +1,67 @@
+# DFS Breakdown: Detroit Lions @ Chicago Bears — Week 18, 2025 (Final: DET 19, CHI 16)
+
+**⚠️ EVIDENCE INTEGRITY NOTICE (read before using anything below):** Two required data categories for a standard DFS Breakdown are **not validly available for this specific matchup** and are flagged rather than used:
+
+1. **DraftKings salary/slate data.** The `dfs` object in the evidence package tags every player to `game_info: "NO@DET 09/13/2026"` and `"CHI@CAR 09/13/2026"` — an entirely different, future slate with different opponents (Saints, Panthers), not this DET–CHI Week 18 game. It also contains team-assignment errors (e.g., Kalif Raymond, a Lions receiver in every other part of this evidence package, is tagged `"team":"CHI"`; players such as "Isiah Pacheco" appear tagged to Detroit). This dataset cannot be treated as validated salary or slate-eligibility information for this game.
+2. **Injury/status data.** The `injuries` block is sourced from that same mismatched slate ("Jahmyr Gibbs — Q," "Tyler Conklin — OUT") and contradicts the actual box score, in which Gibbs played a full workload (19 carries, 5 targets). It is not usable for this matchup.
+
+Per Section 1 of the DFS Standard, when salary/slate data cannot be validated, an official DraftKings lineup or salary-based value claim must not be published. **No salaries, ownership percentages, salary-adjusted value grades, or formal leverage claims appear anywhere below.** What follows instead is a football-evidence-driven breakdown of role, opportunity, efficiency, matchup, and *validated* actual DraftKings fantasy-point production (the `dk` field tied to real box-score stats), which is legitimate, game-specific data. This is also worth noting explicitly: **this game has already been played** (final, Jan. 4, 2026), so this exercise is retrospective rather than a pre-kickoff actionable slate — it demonstrates the reasoning process that would have applied had a valid slate existed.
+
+---
+
+## 1. Executive DFS Summary
+
+This was a defensive slog relative to the number: the teams combined for 51.5 in the total and 3.5 as CHI's home-favorite spread, and finished at 35 total points with DET winning outright as a road underdog, 19–16. DET out-gained CHI significantly (453 total yards, 24 first downs, to 277 yards and 14 first downs) but converted that advantage into only a 3-point margin, with both offenses scoring a single takeaway-forced possession (1 turnover apiece) and DET absorbing three sacks to CHI's one.
+
+The offensive story was concentration, not balance. Amon-Ra St. Brown drew 15 of Jared Goff's 42 attempts (41.7% target share, his second-highest of the season) and produced 139 yards on 11 catches — 27.9 actual DK points. On the other side, Colston Loveland set season highs across the board (13 targets, 44.8% target share, 10 catches, 91 yards, 1 TD, 25.1 actual DK points), continuing a pattern that has defined Chicago's passing game since Rome Odunze went down: Odunze's log shows no games played from Week 14 through this Week 18 finale, and Chicago's target distribution has visibly consolidated toward Loveland in his absence. Any slate-construction logic for this matchup — real salary data or not — starts with those two target monopolies.
+
+## 2. Featured DFS Plays
+
+*(Salary: not available — see Evidence Note. Figures below are actual, validated DraftKings scoring for this game.)*
+
+**Amon-Ra St. Brown, WR, DET — 27.9 DK pts (11/15, 139 yds).** St. Brown's 41.7% target share this week is his second-highest mark of the season (season high: 47.4% in Week 15). Chicago's pass defense ranks 23rd against WRs in yards allowed per game (149.6) and dead-last in the league in yards-per-reception allowed to receivers (14.4, rank 32), a big-play funnel St. Brown's 11.97 season yards-per-catch average is built to exploit. Chicago's own coverage log for this specific game shows an unusually man-heavy defensive plan against Detroit (63.6% man coverage, its highest share of the season by a wide margin against Goff), and Goff's season-long splits show he is materially more efficient against man than zone (0.268 EPA/play vs. man, 0.136 vs. zone; 13.18 yards/play vs. man, 11.05 vs. zone). That defensive-shell choice by Chicago is the direct football mechanism behind both Goff's near-season-high yardage output and St. Brown's monopoly game. Confidence: **HIGH** — usage, defensive tendency, and coverage-shell data all point the same direction with no material contradiction.
+
+**Colston Loveland, TE, CHI — 25.1 DK pts (10/13, 91 yds, 1 TD).** A career/season-high target share (44.8%) in the exact game Chicago most needed offense from someone not named Moore. With Odunze out (no snaps logged Weeks 14–18), Loveland's role has scaled from a complementary look (season averages: 5.1 targets/game, 16.5% target share) to a true first read. Detroit's linebacker coverage performance is not covered in this evidence package's CB/DB rankings (safety/corner data only), so the specific individual matchup cannot be graded — but the target-share trend alone is the dominant signal. Confidence: **MEDIUM** — the role change is well-documented, but the exact coverage matchup that allowed it can't be verified against DET's specific personnel.
+
+**Jared Goff, QB, DET — 19.2 DK pts (27/42, 331 yds, 1 TD, 1 INT).** His second-highest passing total of the season, directly tied to the man-coverage shell discussed above and to Detroit's 3rd-ranked scoring offense (28.9 ppg) facing a Chicago defense that ranks 19th against the pass (233.5 ypg allowed). The lone interception and three sacks absorbed are the clear caps on a bigger ceiling. Confidence: **MEDIUM**.
+
+**Jahdae Walker, WR, CHI — 11.6 DK pts (2/3, 36 yds, 1 TD).** Walker has scored in two of his last three games (Weeks 16 and 18) despite a minuscule season snap/target profile (season averages: 1.67 targets/game, 5.0% target share). His touchdown this week is plausibly tied to Detroit's clearest exploitable secondary piece: CB Amik Robertson has allowed a 116.5 opponent passer rating and 7 touchdowns on the season — the most touchdowns surrendered of any Detroit or Chicago corner/safety in this evidence package. This is a boom/bust, touchdown-dependent profile, not a repeatable volume role. Confidence: **LOW** — two-game sample, minimal target share, touchdown-driven rather than opportunity-driven.
+
+## 3. Recommended Stacks
+
+**Goff + St. Brown (Double Stack).** The clearest correlated pairing on the slate: St. Brown's 41.7% target share means a large share of Goff's passing output runs directly through one receiver, and both hit their respective statistical ceilings in the same game (Goff's 2nd-best passing yardage total of the season, St. Brown's 2nd-best target share). The football story is a defense (Chicago, ranked 23rd vs. WR yardage, 32nd in yards-per-catch allowed) that struggled specifically against the type of high-volume, YAC-driven receiver St. Brown is (season YAC/game rank 2nd in the league, 33.5/game). Confidence: **HIGH**.
+
+**Caleb Williams + Colston Loveland (Double Stack).** Loveland's 44.8% target share this week makes him functionally Chicago's passing offense with Odunze sidelined. This is a correlation born of necessity rather than a diversified attack, which is exactly what makes it identifiable in advance: once Odunze's absence is established (5 consecutive missed games), Loveland's target florr and ceiling both rise mechanically. Confidence: **MEDIUM** — correlated, but a single-read passing game caps Williams' own ceiling (212 yards, below his 231.9 season average).
+
+No triple-stack or Onslaught-level construction is supported by the evidence: DET's second- and third-read production (Jameson Williams, 6/8/74; Kalif Raymond, 3/3/52) was real but not concentrated enough in this game to justify expanding the DET stack past two pieces, and Chicago's non-Loveland pass-catchers (Moore 1/3/11; Burden 3/4/35) were similarly thin.
+
+## 4. Bring-Back Candidates
+
+**Colston Loveland as the bring-back to a Goff/St. Brown stack.** The game script argument is straightforward: this was a competitive, one-score contest (DET won by 3) in which both offenses were forced to sustain drives into the fourth quarter rather than one team pulling away — exactly the environment in which pairing the winning team's passing stack with the losing team's lead pass-catcher is supported, since neither offense could lean on an early, game-shortening lead. Loveland's own target share (44.8%) gives this bring-back a real statistical floor rather than a purely game-theoretic one. Confidence: **MEDIUM**.
+
+A DET-side bring-back to a Williams/Loveland stack is weaker: DET's only touchdown-scoring pass-catcher this game (Gibbs, receiving score) is better classified as part of the primary DET stack than as a bring-back, and Detroit's other options (J. Williams, Raymond) did not show the target consistency to support a formal bring-back designation. Confidence: **LOW**.
+
+## 5. Tournament Leverage Plays
+
+Per Section 13 of the DFS Standard, a formal leverage claim requires validated ownership data, which is not available here (see Evidence Note). No formal leverage designations are made. What can be identified, using role and target-share evidence alone, is which players carried outsized ceiling relative to their season-long usage profile — the kind of situation that *would* typically support a leverage claim if ownership data existed:
+
+- **Jahdae Walker (CHI):** 5.0% season target share, 2 touchdowns in his last 3 games, including this one. A name unlikely to have drawn significant roster attention given his volume, but with a real, evidence-supported touchdown path against Detroit's most exploitable coverage defender (Amik Robertson, 7 TDs allowed).
+- **Colston Loveland (CHI):** already covered as a Featured Play, but worth repeating here — a season-high 44.8% target share is the kind of role spike that, absent a public narrative flagging Odunze's continued absence, could plausibly have gone under-recognized pre-kickoff.
+
+Confidence on both: **LOW**, specifically because ownership cannot be verified and the sample underlying Walker's role is minimal.
+
+## 6. Players to Avoid
+
+**D'Andre Swift, RB, CHI — 5.8 DK pts (10 car, 40 yds; 1 rec, 8 yds).** Despite facing a Detroit run defense that is only middle-of-the-pack (16th, 116.7 rush yards/game allowed) rather than an elite matchup, Swift's workload (10 carries, 55.6% rush share) was unremarkable and his passing-game usage (1 target) was nearly nonexistent. The evidence base for this specific matchup (hidden intelligence file) shows Swift's better rushing games have historically correlated with a "cold" Caleb Williams passing day (50% hit rate when Williams is cold vs. 33.3% when hot) — i.e., Swift benefits from clock-control game scripts, and this game's back-and-forth, one-score nature didn't produce that script. Confidence: **MEDIUM**.
+
+**DJ Moore, WR, CHI — 2.1 DK pts (1/3, 11 yds).** Moore's target share cratered to 10.3%, well below his 16.0% season average, consistent with the broader story of this game: Chicago's passing attack ran almost entirely through Loveland. A one-game outlier rather than a role change, but a clear miss for anyone rostering Moore based on name value alone. Confidence: **MEDIUM**.
+
+**Jameson Williams, WR, DET — 13.4 DK pts (6/8, 74 yds) is a reasonable floor, but not a game to chase forward.** Included here as a caution rather than a hard fade: Williams' production came on 8 targets in a game where St. Brown's monopoly (15 targets) left comparatively little target volume for anyone else in Detroit's passing game; his role remains a distant second read behind St. Brown in this offense. Confidence: **LOW**.
+
+## 7. DFS Risk Assessment
+
+The dominant risk factor in this matchup was **target concentration on both sides**, which mechanically depresses the floor of every non-primary pass-catcher: St. Brown's 41.7% target share and Loveland's 44.8% target share left thin, unpredictable volume for Jameson Williams, Raymond, Moore, and Burden alike. A second risk factor is **game-script instability**: this was a genuinely competitive, one-score contest decided in part by three Detroit sacks allowed and a turnover apiece, conditions that suppress ceiling outcomes for skill-position players tied to sustained drives rather than one-play explosiveness. A third, matchup-specific risk is **touchdown dependency at the margins** — both of Chicago's receiving touchdowns (Loveland, Walker) came on modest target counts, meaning red-zone variance rather than pure volume explains a meaningful share of Chicago's fantasy-relevant production this week. Overall game risk: **MEDIUM-HIGH**, driven primarily by target concentration rather than by weather or injury uncertainty (neither of which is reliably documented for this specific game in the evidence package).
+
+## 8. DFS Takeaway
+
+When two teams each let one pass-catcher soak up more than 40% of the targets, the players worth rostering are the two target monopolies (St. Brown, Loveland) and the correlated quarterbacks behind them — everyone else in the passing game, regardless of name recognition, was fighting over what little volume remained, and the box score confirms it directly.

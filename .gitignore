@@ -1,0 +1,20 @@
+# Coeus working/intermediate data — regenerated fresh by build scripts each
+# run. No page on the live site reads these directly (they exist purely to
+# feed Coeus's generation step), so there's no reason to version them.
+data/dfs/
+dfs/
+evidence/
+evidence_bootstrap/
+
+# Coeus's actual prompt engineering (Master Prompt, DFS/Prop Standards) —
+# kept private for now, per decision on 2026-08-12. This is real strategic
+# work; anyone with the raw prompt text could copy it wholesale into their
+# own tool. Revisit if/when there's a reason to make it public.
+prompts/
+
+# Debug/audit siblings of generated DFS reports — full prompt+evidence
+# dumps used for reviewing a report before publishing, not meant for public
+# consumption. The .md reports themselves ARE tracked (not excluded here) —
+# only these two file types are kept out.
+dfs_breakdowns/**/*_prompt.json
+dfs_breakdowns/**/*_prompt_full.txt

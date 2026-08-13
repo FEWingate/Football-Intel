@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="css/fi-styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="https://unpkg.com/javascript-lp-solver/dist/solver.global.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/16.3.0/lib/marked.umd.min.js"></script>
 <style>
 .drop-zone{
   border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:48px 24px;
@@ -23,6 +24,62 @@
   padding:10px 14px;font-size:11.5px;color:var(--text-mid);margin-bottom:16px;line-height:1.5;
 }
 .caveat b{color:var(--accent-gold)}
+
+/* Top-level page switcher: DFS Tools (existing, CSV-driven) vs Coeus DFS
+   Reports (new, pre-built static reports, no CSV required). This sits
+   ABOVE the CSV-upload gate — Coeus reports have nothing to do with an
+   uploaded slate file. */
+.page-switch{display:flex;gap:8px;margin-bottom:16px}
+.page-switch button{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);
+  color:var(--text-mid);font-family:var(--font-mono);font-size:11px;letter-spacing:.04em;
+  padding:9px 16px;cursor:pointer;transition:all .15s;
+}
+.page-switch button[aria-selected="true"]{
+  background:rgba(163,230,53,.08);border-color:var(--primary);color:var(--primary);
+}
+.page-switch button:hover:not([aria-selected="true"]){border-color:var(--border2)}
+
+/* Coeus report selector + rendered markdown container */
+.coeus-game-picker{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.coeus-game-picker button{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  color:var(--text);font-family:var(--font-mono);font-size:12px;padding:10px 16px;cursor:pointer;
+  display:flex;align-items:center;gap:8px;transition:all .15s;
+}
+.coeus-game-picker button[aria-selected="true"]{border-color:var(--primary);background:rgba(163,230,53,.06)}
+.coeus-game-picker button:hover:not([aria-selected="true"]){border-color:var(--border2)}
+.coeus-status-badge{
+  font-family:var(--font-mono);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;
+  padding:2px 6px;border-radius:3px;border:1px solid rgba(250,204,21,.35);
+  color:var(--accent-gold);background:rgba(250,204,21,.08);
+}
+
+.coeus-report{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:28px 32px;max-width:920px;
+}
+.coeus-report h1{
+  font-family:var(--font-display);font-weight:800;font-size:24px;letter-spacing:-.01em;
+  margin:0 0 6px;color:var(--text);
+}
+.coeus-report h2{
+  font-family:var(--font-display);font-weight:700;font-size:16px;letter-spacing:-.01em;
+  color:var(--primary);margin:28px 0 12px;padding-top:16px;border-top:1px solid var(--hairline);
+}
+.coeus-report h2:first-of-type{border-top:none;padding-top:0;margin-top:18px}
+.coeus-report h3{
+  font-family:var(--font-display);font-weight:700;font-size:13.5px;color:var(--text);margin:18px 0 6px;
+}
+.coeus-report p{font-size:13px;line-height:1.65;color:var(--text-mid);margin:0 0 12px}
+.coeus-report strong{color:var(--text);font-weight:600}
+.coeus-report ul,.coeus-report ol{margin:0 0 12px;padding-left:20px}
+.coeus-report li{font-size:13px;line-height:1.6;color:var(--text-mid);margin-bottom:4px}
+.coeus-report hr{border:none;border-top:1px solid var(--hairline);margin:20px 0}
+.coeus-report code{
+  font-family:var(--font-mono);font-size:11.5px;background:var(--surface2);
+  padding:1px 5px;border-radius:3px;color:var(--accent-blue);
+}
 .file-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
 .file-name{font-family:var(--font-mono);font-size:11px;color:var(--text-dim)}
 .replace-btn{
@@ -147,6 +204,18 @@
 <script src="js/fi-shell.js"></script>
 <script>
 const main = fiShell({ page:'dfs', pageLabel:'DFS Center', status:'loading' });
+const $ = id => document.getElementById(id);
+
+let pageView = 'tools'; // 'tools' | 'coeus'
+let coeusGame = null;
+let coeusReportCache = {};
+const COEUS_REPORTS = [
+  // Proof-of-concept: hand-listed while there are only a couple of
+  // reviewed reports. Once there's a full slate's worth, generate this
+  // from a manifest.json alongside the .md files instead of hand-editing.
+  { away: 'BUF', home: 'HOU', label: 'Bills @ Texans' },
+  { away: 'WAS', home: 'PHI', label: 'Commanders @ Eagles' },
+];
 
 let CSV_PLAYERS = null;
 let MATCHUP = null;
@@ -191,9 +260,23 @@ main.innerHTML = `
     <span class="lbl">DFS Center</span>
     <div class="legend"><span>Upload a DraftKings salary CSV to get started</span></div>
   </div>
-  <div id="content"></div>`;
+  <div class="page-switch" id="pageSwitch" role="tablist">
+    <button role="tab" data-page="tools" aria-selected="${pageView==='tools'}">DFS Tools</button>
+    <button role="tab" data-page="coeus" aria-selected="${pageView==='coeus'}">Coeus DFS Report</button>
+  </div>
+  <div id="content" style="display:${pageView==='tools'?'':'none'}"></div>
+  <div id="coeusContent" style="display:${pageView==='coeus'?'':'none'}"></div>`;
 
-const $ = id => document.getElementById(id);
+$("pageSwitch").querySelectorAll("button").forEach(b => {
+  b.onclick = () => {
+    pageView = b.dataset.page;
+    $("pageSwitch").querySelectorAll("button").forEach(x =>
+      x.setAttribute("aria-selected", String(x.dataset.page === pageView)));
+    $("content").style.display = pageView === 'tools' ? '' : 'none';
+    $("coeusContent").style.display = pageView === 'coeus' ? '' : 'none';
+    if(pageView === 'coeus') renderCoeusReports();
+  };
+});
 
 let PLAYERSTATS = null;
 let NAME_INDEX = { exact: {}, lastname: {} };
@@ -248,6 +331,45 @@ function tierOf(rank){
   if(rank <= 10) return 'top';
   if(rank <= 22) return 'mid';
   return 'bot';
+}
+
+async function renderCoeusReports(){
+  $("coeusContent").innerHTML = `
+    <div class="caveat"><b>Proof-of-concept:</b> these are early Coeus DFS Breakdowns, reviewed
+      manually before publishing here — not yet a full slate. More games will be added as they're
+      generated and reviewed.</div>
+    <div class="coeus-game-picker" id="coeusPicker"></div>
+    <div id="coeusReportBody"></div>`;
+
+  if(!coeusGame) coeusGame = COEUS_REPORTS[0];
+
+  $("coeusPicker").innerHTML = COEUS_REPORTS.map(g => `
+    <button data-away="${g.away}" data-home="${g.home}"
+      aria-selected="${coeusGame.away===g.away && coeusGame.home===g.home}">
+      ${fiLogoHTML(g.away,18)}${esc(g.label)}
+    </button>`).join('');
+  $("coeusPicker").querySelectorAll("button").forEach(b => {
+    b.onclick = () => {
+      coeusGame = { away: b.dataset.away, home: b.dataset.home };
+      renderCoeusReports();
+    };
+  });
+
+  const body = $("coeusReportBody");
+  const key = `${coeusGame.away}_${coeusGame.home}`;
+  body.innerHTML = `<div class="empty">Loading report…</div>`;
+  try{
+    let md = coeusReportCache[key];
+    if(!md){
+      const res = await fetch(`dfs_breakdowns/bootstrap/${key}.md`);
+      if(!res.ok) throw new Error('not found');
+      md = await res.text();
+      coeusReportCache[key] = md;
+    }
+    body.innerHTML = `<div class="coeus-report">${marked.parse(md)}</div>`;
+  }catch(e){
+    body.innerHTML = `<div class="empty">Report not found for this game.</div>`;
+  }
 }
 
 async function load(){
