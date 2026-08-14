@@ -18,3 +18,11 @@ prompts/
 # only these two file types are kept out.
 dfs_breakdowns/**/*_prompt.json
 dfs_breakdowns/**/*_prompt_full.txt
+
+# Game Breakdowns — kept fully private for now (2026-08-13), including the
+# .md reports themselves, since Frank hasn't finished reading/reviewing
+# this new report type yet. DFS reports only went public AFTER a full
+# read-through and approval; same principle applies here. Remove this line
+# (or narrow it to just the *_prompt.json/*_prompt_full.txt siblings, same
+# as dfs_breakdowns above) once a report's been reviewed and approved.
+game_breakdowns/

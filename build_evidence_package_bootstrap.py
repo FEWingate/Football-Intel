@@ -102,6 +102,47 @@ def filter_intel_by_teams(intel_json, key, teams):
     return {team: section[team] for team in teams if team in section}
 
 
+def tier_of(rank):
+    """Same convention as build_matchup_stats.py's tier_of() — 1-10 top,
+    11-22 mid, 23-32 bottom. Kept in sync manually since this script has
+    no import dependency on that file."""
+    if rank <= 10:
+        return "top"
+    if rank <= 22:
+        return "mid"
+    return "bot"
+
+
+def fix_bootstrap_opponent_context(entries, real_opponent_of, matchup_teams):
+    """qb_run_vs_pass and rb_rush_vs_pass entries carry opponent-tagged
+    fields (opp_run_def_rank, run_matchup_tier, upcoming_opponent, etc.)
+    computed against each team's REAL final-week-of-source-season opponent
+    — not the hypothetical bootstrap pairing. Left as-is, those fields are
+    actively wrong for this matchup (e.g. tagged "NYJ" in a BUF-vs-HOU
+    bootstrap game). Recompute them against the real bootstrap opponent
+    using the same team_def ranks already validated elsewhere in this
+    bundle, rather than leaving stale numbers for Coeus to have to notice
+    and exclude on its own."""
+    for team, entry in entries.items():
+        opp = real_opponent_of.get(team)
+        if not opp or opp not in matchup_teams:
+            entry["bootstrap_opponent_context_note"] = (
+                f"No {opp or 'opponent'} team_def data available to recompute "
+                f"opponent context — treat opp_*_rank/tier fields as stale "
+                f"(tagged to a different, real prior-season opponent) and do "
+                f"not use them for this matchup.")
+            continue
+        opp_def = matchup_teams[opp].get("team_def", {})
+        if "opp_run_def_rank" in entry and "rush_ypg" in opp_def:
+            entry["opp_run_def_rank"] = opp_def["rush_ypg"]["r"]
+            entry["run_matchup_tier"] = tier_of(opp_def["rush_ypg"]["r"])
+        if "opp_pass_def_rank" in entry and "pass_ypg" in opp_def:
+            entry["opp_pass_def_rank"] = opp_def["pass_ypg"]["r"]
+            entry["pass_matchup_tier"] = tier_of(opp_def["pass_ypg"]["r"])
+        entry["upcoming_opponent"] = opp
+        entry["opponent_context_recomputed_for_bootstrap"] = True
+
+
 def extract_real_schedule(dk_df):
     """Pull the REAL upcoming schedule straight from the DK file's own Game
     Info column — 'AWAY@HOME MM/DD/YYYY HH:MMAM/PM ET'. This is genuine
@@ -220,16 +261,40 @@ def main():
                 elif p.get("team") == home:
                     players_block["home"].append(p)
 
+        real_opponent_of = {away: home, home: away}
+
+        qb_rvp = filter_intel_by_teams(intel_json, "teams", teams)
+        rb_rvp = filter_intel_by_teams(intel_json, "rb_teams", teams)
+        fix_bootstrap_opponent_context(qb_rvp, real_opponent_of, matchup_teams)
+        fix_bootstrap_opponent_context(rb_rvp, real_opponent_of, matchup_teams)
+
+        blitz_qb = filter_intel_by_teams(blitz_json, "qb_teams", teams)
+        blitz_wr = filter_intel_by_teams(blitz_json, "wr_teams", teams)
+        # Blitz opponent-quality fields (opp_blitz_rate, opp_blitz_rank,
+        # blitz_matchup_tier) are also tagged to each team's real prior
+        # opponent, same problem as above — but recomputing them needs
+        # each team's own blitz-rate-allowed data, which isn't loaded in
+        # this script. Flag rather than silently leave wrong; recompute is
+        # a follow-up once that data source is wired in here too.
+        for entry in list(blitz_qb.values()) + list(blitz_wr.values()):
+            entry["bootstrap_opponent_context_note"] = (
+                "opp_blitz_rate/opp_blitz_rank/blitz_matchup_tier/"
+                "upcoming_opponent below are tagged to this team's real "
+                "prior-season opponent, NOT this bootstrap matchup — not yet "
+                "recomputed for bootstrap pairings. Do not use these fields "
+                "for this matchup; the player's own vs_blitz/vs_no_blitz "
+                "splits above are still valid, opponent-independent data.")
+
         # Raw material for Coeus to find genuine Hidden Intelligence in — not
         # named "hidden_intelligence" itself, since that name collision
         # previously taught Coeus to cite this as a source rather than
         # produce an actual Hidden Intelligence finding from it. See
         # build_evidence_package.py for the full explanation.
         matchup_pattern_data = {
-            "qb_run_vs_pass": filter_intel_by_teams(intel_json, "qb_teams", teams),
-            "rb_rush_vs_pass": filter_intel_by_teams(intel_json, "rb_teams", teams),
-            "blitz_qb": filter_intel_by_teams(blitz_json, "qb_teams", teams),
-            "blitz_wr": filter_intel_by_teams(blitz_json, "wr_teams", teams),
+            "qb_run_vs_pass": qb_rvp,
+            "rb_rush_vs_pass": rb_rvp,
+            "blitz_qb": blitz_qb,
+            "blitz_wr": blitz_wr,
             "coverage_qb": filter_intel_by_teams(coverage_json, "qb_teams", teams),
             "coverage_wr": filter_intel_by_teams(coverage_json, "wr_teams", teams),
             "coverage_te": filter_intel_by_teams(coverage_json, "te_teams", teams),

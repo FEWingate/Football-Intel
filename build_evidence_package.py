@@ -199,7 +199,14 @@ def main():
         # produce a Hidden Intelligence finding — this is the raw data the
         # finding gets built FROM, not the finding itself.
         matchup_pattern_data = {
-            "qb_run_vs_pass": filter_intel_by_teams(intel_json, "qb_teams", teams),
+            # NOTE: intel/latest.json stores QB Run-vs-Pass data under the key
+            # "teams" (not "qb_teams") — build_matchup_stats.py's
+            # build_intel_reports() covers QB and RB together in one file and
+            # named the QB half generically. RB Run-vs-Pass correctly uses
+            # "rb_teams". Confirmed against the real source on 2026-08-13
+            # after this exact mismatch silently produced an empty QB
+            # Run-vs-Pass section in every evidence bundle built before this.
+            "qb_run_vs_pass": filter_intel_by_teams(intel_json, "teams", teams),
             "rb_rush_vs_pass": filter_intel_by_teams(intel_json, "rb_teams", teams),
             "blitz_qb": filter_intel_by_teams(blitz_json, "qb_teams", teams),
             "blitz_wr": filter_intel_by_teams(blitz_json, "wr_teams", teams),
