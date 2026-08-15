@@ -54,7 +54,6 @@
   text-transform:uppercase;color:var(--text-dim);border:1px solid var(--border);
   border-radius:var(--radius-sm);padding:4px 9px}
 .gcard:hover .links span{color:var(--primary);border-color:rgba(163,230,53,.4)}
-button.gcard{font:inherit;text-align:left;cursor:pointer}
 .modal-header{text-align:center}
 .modal-header .modal-title{justify-content:center}
 .modal-header .modal-subtitle{text-align:center}
@@ -85,12 +84,75 @@ button.gcard{font:inherit;text-align:left;cursor:pointer}
   .gcard{padding:16px 16px 17px}
   .card-grid{grid-template-columns:1fr}
 }
+
+/* The card itself is now a div, not a button (buttons can't legally nest
+   inside buttons — needed real per-action buttons inside it). Restyled to
+   look and behave the same as before, plus keyboard-focusable. */
+.gcard{cursor:pointer}
+.gcard:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+
+/* Real per-action buttons in the link row, replacing the old decorative
+   spans. stopPropagation keeps them independent of the card's own
+   default click (Box Score). */
+.links button{
+  font-family:var(--font-mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-dim);background:none;border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:4px 9px;cursor:pointer;transition:all .15s;
+}
+.links button:hover{color:var(--primary);border-color:rgba(163,230,53,.4)}
+.links button:disabled{opacity:.4;cursor:not-allowed}
+.links button:disabled:hover{color:var(--text-dim);border-color:var(--border)}
+
+/* Matchup modal: team_off vs team_def side-by-side comparison rows */
+.mu-side{margin-bottom:18px}
+.mu-side:last-child{margin-bottom:0}
+.mu-head{display:flex;align-items:center;gap:8px;font-family:var(--font-display);
+  font-weight:800;font-size:14px;margin-bottom:10px}
+.mu-head .vs{color:var(--text-dim);font-weight:500;font-size:12px}
+.mu-row{display:grid;grid-template-columns:1fr 100px 1fr;align-items:center;gap:10px;
+  padding:7px 0;border-bottom:1px solid var(--hairline)}
+.mu-row:last-child{border-bottom:0}
+.mu-val{font-family:var(--font-mono);font-size:13px;color:var(--text-mid)}
+.mu-val.off{text-align:right}
+.mu-val b{color:var(--text);font-weight:600}
+.mu-rank{font-family:var(--font-mono);font-size:9px;color:var(--text-dim);margin-left:5px}
+.mu-lbl{text-align:center;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--text-dim)}
+
+/* Threats modal */
+.thr-side{margin-bottom:16px}
+.thr-side:last-child{margin-bottom:0}
+.thr-player{padding:10px 0;border-bottom:1px solid var(--hairline)}
+.thr-player:last-child{border-bottom:0}
+.thr-pname{font-size:13px;font-weight:600;color:var(--text)}
+.thr-ppos{font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-left:6px}
+.thr-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
+.thr-badge{font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 8px;border-radius:3px;border:1px solid rgba(163,230,53,.35);
+  color:var(--primary);background:rgba(163,230,53,.07)}
+.thr-badge.nuclear{border-color:rgba(248,113,113,.4);color:#f87171;background:rgba(248,113,113,.08)}
+.thr-badge.elite{border-color:rgba(250,204,21,.4);color:var(--accent-gold);background:rgba(250,204,21,.08)}
+
+/* Game Breakdown modal — markdown container, matches DFS Center's
+   Coeus report styling */
+.gb-report h1{font-family:var(--font-display);font-weight:800;font-size:20px;margin:0 0 6px;color:var(--text)}
+.gb-report h2{font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--primary);
+  margin:22px 0 10px;padding-top:14px;border-top:1px solid var(--hairline)}
+.gb-report h2:first-of-type{border-top:none;padding-top:0;margin-top:14px}
+.gb-report h3{font-family:var(--font-display);font-weight:700;font-size:13px;color:var(--text);margin:14px 0 6px}
+.gb-report p{font-size:12.5px;line-height:1.65;color:var(--text-mid);margin:0 0 11px}
+.gb-report strong{color:var(--text);font-weight:600}
+.gb-report ul,.gb-report ol{margin:0 0 11px;padding-left:19px}
+.gb-report li{font-size:12.5px;line-height:1.6;color:var(--text-mid);margin-bottom:4px}
+.gb-report hr{border:none;border-top:1px solid var(--hairline);margin:18px 0}
+
 </style>
 </head>
 <body>
 <script src="js/fi-shell.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/16.3.0/lib/marked.umd.min.js"></script>
 <script>
-let GAMES = null, THREATS = null;
+let GAMES = null, THREATS = null, MATCHUP = null, GB_MANIFEST = null;
 const main = fiShell({ page: 'games', pageLabel: 'Games', status: 'loading' });
 const $ = id => document.getElementById(id);
 const pad = n => String(n).padStart(2, '0');
@@ -139,6 +201,16 @@ async function load(week){
     const r2 = await fetch(`threats/wk${pad(week)}.json`);
     if (r2.ok) THREATS = await r2.json();
   } catch (e){ /* threat board not built for this week — cards still render */ }
+  MATCHUP = null;
+  try {
+    const r3 = await fetch(`matchup/wk${pad(week)}.json`);
+    if (r3.ok) MATCHUP = await r3.json();
+  } catch (e){ /* matchup stats not built for this week — Matchup button just disables */ }
+  GB_MANIFEST = null;
+  try {
+    const r4 = await fetch(`game_breakdowns/wk${pad(week)}/manifest.json`);
+    if (r4.ok) GB_MANIFEST = await r4.json();
+  } catch (e){ /* no Game Breakdowns generated for this week yet — button disables per-game */ }
   fiStatus('Ready');
   fiUpdated(`${GAMES.season} · week ${GAMES.week}`);
   render();
@@ -193,7 +265,13 @@ function render(){
       const thrTxt = totalThreats
         ? `<span class="odd thr"><b>${totalThreats}</b> threat${totalThreats === 1 ? '' : 's'}</span>` : '';
 
-      html += `<button type="button" class="gcard${totalThreats >= 4 ? ' hot' : ''}" data-gid="${g.game_id}">
+      const hasGB = GB_MANIFEST && GB_MANIFEST.games &&
+        (GB_MANIFEST.games[`${g.away}_${g.home}`] || GB_MANIFEST.games[`${g.home}_${g.away}`]);
+      const hasMatchup = MATCHUP && MATCHUP.teams && MATCHUP.teams[g.away] && MATCHUP.teams[g.home];
+      const hasThreats = THREATS && THREATS.teams && (THREATS.teams[g.away] || THREATS.teams[g.home]);
+
+      html += `<div class="gcard${totalThreats >= 4 ? ' hot' : ''}" data-gid="${g.game_id}"
+        tabindex="0" role="button" aria-label="View box score, ${g.away} at ${g.home}">
         <div class="gcard-top">
           <div class="teams-col">
             <div class="trow${aw ? ' win' : ''}">
@@ -222,16 +300,38 @@ function render(){
           ${g.away_rest !== null ? `<span>rest ${g.away_rest}/${g.home_rest}</span>` : ''}
         </div>
         <div class="links">
-          <span>Matchup</span><span>Threats</span><span>Box score</span>
+          <button type="button" data-action="matchup" ${hasMatchup ? '' : 'disabled'}
+            title="${hasMatchup ? '' : 'Matchup stats not built for this week'}">Matchup</button>
+          <button type="button" data-action="threats" ${hasThreats ? '' : 'disabled'}
+            title="${hasThreats ? '' : 'No threat board for this week'}">Threats</button>
+          <button type="button" data-action="box">Box score</button>
+          <button type="button" data-action="breakdown" ${hasGB ? '' : 'disabled'}
+            title="${hasGB ? '' : 'Game Breakdown not available for this game yet'}">Game Breakdown</button>
         </div>
-      </button>`;
+      </div>`;
     });
     html += `</div></div>`;
   });
 
   $('slate').innerHTML = html;
-  $('slate').querySelectorAll('.gcard').forEach(b =>
-    b.addEventListener('click', () => openGame(b.dataset.gid, b)));
+  $('slate').querySelectorAll('.gcard').forEach(card => {
+    card.addEventListener('click', () => openGame(card.dataset.gid, card));
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openGame(card.dataset.gid, card); }
+    });
+    card.querySelectorAll('.links button').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        if (btn.disabled) return;
+        const gid = card.dataset.gid;
+        const action = btn.dataset.action;
+        if (action === 'matchup') openMatchup(gid, btn);
+        else if (action === 'threats') openThreats(gid, btn);
+        else if (action === 'box') openGame(gid, btn);
+        else if (action === 'breakdown') openGameBreakdown(gid, btn);
+      });
+    });
+  });
   $('wksum').innerHTML =
     `<span>${GAMES.games.length} games</span>` +
     (played ? `<span>${played} final</span>` : '') +
@@ -318,6 +418,98 @@ function closeModal(){
   $('scrim').classList.remove('open'); $('modal').classList.remove('open');
   if (lastFocus) lastFocus.focus();
 }
+
+/* ── matchup modal: team_off vs opponent's team_def, both directions ── */
+const MU_ROWS = [
+  ['ppg', 'PPG'], ['total_ypg', 'Total Yds'], ['pass_ypg', 'Pass Yds'],
+  ['rush_ypg', 'Rush Yds'], ['fd_pg', '1st Downs'],
+];
+function muRow(offVal, defVal, label){
+  const o = offVal ? `<b>${offVal.v}</b><span class="mu-rank">#${offVal.r}</span>` : '—';
+  const d = defVal ? `<b>${defVal.v}</b><span class="mu-rank">#${defVal.r}</span>` : '—';
+  return `<div class="mu-row"><span class="mu-val off">${o}</span>
+    <span class="mu-lbl">${label}</span><span class="mu-val">${d}</span></div>`;
+}
+function muSide(offTeam, defTeam){
+  const off = MATCHUP.teams[offTeam]?.team_off, def = MATCHUP.teams[defTeam]?.team_def;
+  return `<div class="mu-side">
+    <div class="mu-head">${fiLogoHTML(offTeam, 22)}<span>${esc(offTeam)} offense</span>
+      <span class="vs">vs</span>${fiLogoHTML(defTeam, 22)}<span>${esc(defTeam)} defense</span></div>
+    ${MU_ROWS.map(([k, lbl]) => muRow(off?.[k], def?.[k], lbl)).join('')}</div>`;
+}
+function openMatchup(gid, source){
+  const g = GAMES.games.find(x => x.game_id === gid);
+  if (!g || !MATCHUP) return;
+  lastFocus = source;
+  $('mTitle').innerHTML = `${fiLogoHTML(g.away, 34)} ${g.away} <em>at</em> ${g.home} ${fiLogoHTML(g.home, 34)}`;
+  $('mSub').textContent = 'Matchup stats — season-to-date';
+  $('mBody').innerHTML = muSide(g.away, g.home) + muSide(g.home, g.away);
+  $('scrim').classList.add('open'); $('modal').classList.add('open');
+  $('mClose').focus();
+}
+
+/* ── threats modal: every starter's fiClassify() output, both teams ── */
+function threatBadges(cats){
+  return fiClassify(cats).map(t =>
+    `<span class="thr-badge ${t.tier}">${t.type} ${t.tierLabel}</span>`).join('');
+}
+function threatSide(team){
+  const t = THREATS?.teams?.[team];
+  if (!t) return `<div class="thr-side"><div class="mu-head">${fiLogoHTML(team, 22)}
+    <span>${esc(team)}</span></div><div class="na">No threat data</div></div>`;
+  const qualifying = (t.starters || []).filter(s => fiClassify(s.cats).length);
+  const body = qualifying.length
+    ? qualifying.map(s => `<div class="thr-player">
+        <span class="thr-pname">${esc(s.name)}</span><span class="thr-ppos">${esc(s.pos)}</span>
+        <div class="thr-badges">${threatBadges(s.cats)}</div></div>`).join('')
+    : `<div class="na">No qualifying Threats this week</div>`;
+  return `<div class="thr-side"><div class="mu-head">${fiLogoHTML(team, 22)}
+    <span>${esc(team)}</span></div>${body}</div>`;
+}
+function openThreats(gid, source){
+  const g = GAMES.games.find(x => x.game_id === gid);
+  if (!g || !THREATS) return;
+  lastFocus = source;
+  $('mTitle').innerHTML = `${fiLogoHTML(g.away, 34)} ${g.away} <em>at</em> ${g.home} ${fiLogoHTML(g.home, 34)}`;
+  $('mSub').textContent = 'Threats for this game';
+  $('mBody').innerHTML = threatSide(g.away) + threatSide(g.home);
+  $('scrim').classList.add('open'); $('modal').classList.add('open');
+  $('mClose').focus();
+}
+
+/* ── game breakdown modal: fetches & renders the actual Coeus report ── */
+let gbCache = {};
+async function openGameBreakdown(gid, source){
+  const g = GAMES.games.find(x => x.game_id === gid);
+  if (!g || !GB_MANIFEST) return;
+  lastFocus = source;
+  $('mTitle').innerHTML = `${fiLogoHTML(g.away, 34)} ${g.away} <em>at</em> ${g.home} ${fiLogoHTML(g.home, 34)}`;
+  $('mSub').textContent = 'Game Breakdown';
+  $('mBody').innerHTML = `<div class="empty">Loading report…</div>`;
+  $('scrim').classList.add('open'); $('modal').classList.add('open');
+  $('mClose').focus();
+
+  const fwdKey = `${g.away}_${g.home}`, revKey = `${g.home}_${g.away}`;
+  const entry = GB_MANIFEST.games[fwdKey] || GB_MANIFEST.games[revKey];
+  const key = GB_MANIFEST.games[fwdKey] ? fwdKey : revKey;
+  if (!entry){
+    $('mBody').innerHTML = `<div class="empty">Game Breakdown not available for this game yet.</div>`;
+    return;
+  }
+  try {
+    let md = gbCache[key];
+    if (!md){
+      const r = await fetch(`game_breakdowns/wk${pad(GAMES.week)}/${key}.md`);
+      if (!r.ok) throw new Error('not found');
+      md = await r.text();
+      gbCache[key] = md;
+    }
+    $('mBody').innerHTML = `<div class="gb-report">${marked.parse(md)}</div>`;
+  } catch (e){
+    $('mBody').innerHTML = `<div class="empty">Game Breakdown not available for this game yet.</div>`;
+  }
+}
+
 $('mClose').addEventListener('click', closeModal);
 $('scrim').addEventListener('click', closeModal);
 document.addEventListener('keydown', e => {

@@ -43,7 +43,7 @@ from datetime import datetime, timezone
 
 PROMPTS_DIR = "prompts"
 MASTER_PROMPT_PATH = f"{PROMPTS_DIR}/Coeus_Master_Prompt_v1.1.md"
-DFS_STANDARD_PATH = f"{PROMPTS_DIR}/Coeus_DFS_Intelligence_Report_Standard_v1.2.md"
+DFS_STANDARD_PATH = f"{PROMPTS_DIR}/Coeus_DFS_Intelligence_Report_Standard_v1.4.md"
 
 DEFAULT_MODEL = "claude-sonnet-5"
 

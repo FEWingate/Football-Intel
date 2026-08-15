@@ -30,7 +30,7 @@ from datetime import datetime, timezone
 
 PROMPTS_DIR = "prompts"
 MASTER_PROMPT_PATH = f"{PROMPTS_DIR}/Coeus_Master_Prompt_v1.1.md"
-GAME_BREAKDOWN_STANDARD_PATH = f"{PROMPTS_DIR}/Coeus_Game_Breakdown_Report_Standard_v1.2.md"
+GAME_BREAKDOWN_STANDARD_PATH = f"{PROMPTS_DIR}/Coeus_Game_Breakdown_Report_Standard_v1.4.md"
 
 DEFAULT_MODEL = "claude-sonnet-5"
 
@@ -232,7 +232,21 @@ def main():
     with open(f"{out_stem}_prompt.json", "w") as f:
         json.dump(prompt_record, f, indent=2)
 
+    # Update the shared manifest for this directory so games.html (or any
+    # other page) can check "does a real report exist for this game" via a
+    # single small fetch, rather than guessing or trying every filename.
+    # Read-modify-write since multiple separate script runs share one file.
+    manifest_path = f"{out_dir}/manifest.json"
+    manifest = load_json(manifest_path) or {"games": {}}
+    manifest["games"][f"{args.away}_{args.home}"] = {
+        "away": args.away, "home": args.home, "season": season, "week": week,
+        "generated_at": prompt_record["generated_at"],
+    }
+    with open(manifest_path, "w") as f:
+        json.dump(manifest, f, indent=2)
+
     print(f"\nWrote {out_stem}.md")
+    print(f"Updated {manifest_path}")
     print(f"Actual usage: {usage.input_tokens:,} input tokens, {usage.output_tokens:,} output tokens")
     if getattr(usage, "cache_read_input_tokens", None):
         print(f"  ({usage.cache_read_input_tokens:,} of those input tokens served from cache)")
