@@ -97,10 +97,54 @@
 .prop-verdict.over{color:var(--accent-red);background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.3)}
 .prop-verdict.flat{color:var(--text-dim);background:var(--surface);border:1px solid var(--border)}
 .prop-stale{font-size:9.5px;color:var(--accent-gold);margin-top:4px}
-</style>
-</head>
+/* Game Breakdowns — card grid + in-page full report view */
+.gb-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:16px;cursor:pointer;transition:border-color .15s;text-align:left;font:inherit;
+  display:flex;flex-direction:column;gap:10px;width:100%;
+}
+.gb-card:hover{border-color:var(--border2)}
+.gb-card:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.gb-card-teams{display:flex;align-items:center;gap:8px;font-family:var(--font-display);
+  font-weight:700;font-size:14px}
+.gb-card-teams .vs{color:var(--text-dim);font-weight:500;font-size:12px}
+.gb-card-meta{font-family:var(--font-mono);font-size:10px;color:var(--text-dim)}
+.gb-card-cta{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--primary);margin-top:2px}
+
+.gb-back{
+  display:inline-flex;align-items:center;gap:6px;background:none;border:1px solid var(--border);
+  border-radius:var(--radius-sm);color:var(--text-mid);font-family:var(--font-mono);font-size:11px;
+  padding:7px 14px;cursor:pointer;margin-bottom:18px;transition:all .15s;
+}
+.gb-back:hover{border-color:var(--border2);color:var(--text)}
+
+.coeus-attribution{
+  display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:9.5px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--primary);
+  padding:4px 10px;border-radius:20px;border:1px solid rgba(163,230,53,.35);
+  background:rgba(163,230,53,.07);margin-bottom:14px;
+}
+.coeus-attribution::before{content:"";width:6px;height:6px;border-radius:50%;
+  background:var(--primary);box-shadow:0 0 6px rgba(163,230,53,.7);flex:none;}
+
+.gb-report{max-width:940px}
+.gb-report h1{font-family:var(--font-display);font-weight:800;font-size:28px;margin:0 0 8px;color:var(--text)}
+.gb-report h2{font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--primary);
+  margin:30px 0 14px;padding-top:18px;border-top:1px solid var(--hairline)}
+.gb-report h2:first-of-type{border-top:none;padding-top:0;margin-top:18px}
+.gb-report h3{font-family:var(--font-display);font-weight:700;font-size:16px;color:var(--text);margin:18px 0 8px}
+.gb-report p{font-size:15.5px;line-height:1.75;color:var(--text-mid);margin:0 0 14px}
+.gb-report strong{color:var(--text);font-weight:600}
+.gb-report ul,.gb-report ol{margin:0 0 14px;padding-left:22px}
+.gb-report li{font-size:15.5px;line-height:1.7;color:var(--text-mid);margin-bottom:6px}
+.gb-report hr{border:none;border-top:1px solid var(--hairline);margin:22px 0}
+.gb-report blockquote{border-left:3px solid var(--border2);padding:2px 0 2px 14px;margin:0 0 16px;
+  color:var(--text-dim);font-size:14.5px}
+</style></head>
 <body>
 <script src="js/fi-shell.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/16.3.0/lib/marked.umd.min.js"></script>
 <script>
 const main = fiShell({ page:'reports', pageLabel:'Intel Reports', status:'loading' });
 
@@ -124,6 +168,10 @@ let cbdbSortKey = 'yds_per_tgt_allowed';
 let cbdbSortDir = 'asc';
 let cbdbSearchTerm = '';
 
+let GB_GAMES = [];        // merged list of {away, home, wk} across every manifest found
+let gbSelected = null;    // {away, home, wk} of the report currently open, or null for the grid
+let gbReportCache = {};
+
 main.innerHTML = `
   <div class="bar">
     <span class="lbl">Intel Reports</span>
@@ -135,6 +183,7 @@ main.innerHTML = `
     <button role="tab" data-r="blitz" aria-selected="false">Blitz Impact</button>
     <button role="tab" data-r="coverage" aria-selected="false">Coverage Breakdown</button>
     <button role="tab" data-r="cbdb" aria-selected="false">CB/DB Coverage Rankings</button>
+    <button role="tab" data-r="gb" aria-selected="false">Coeus Game Breakdowns</button>
   </div>
   <div id="body"></div>
   <div class="modal-overlay" id="scrim"></div>
@@ -168,6 +217,32 @@ async function load(){
     if(res3.ok) CBDB = await res3.json();
   }catch(e){}
 
+  // Game Breakdowns: check both the bootstrap folder (upcoming, unplayed
+  // games — currently the only reports that exist) and the current real
+  // week's folder (matchup/current.json), if one exists. A manifest.json
+  // only appears in a folder once generate_game_breakdown.py has actually
+  // written at least one report there — missing is expected, not an error.
+  GB_GAMES = [];
+  try{
+    const rBoot = await fetch(`game_breakdowns/bootstrap/manifest.json`);
+    if(rBoot.ok){
+      const mf = await rBoot.json();
+      Object.values(mf.games || {}).forEach(g => GB_GAMES.push({ ...g, wk: 'bootstrap' }));
+    }
+  }catch(e){}
+  try{
+    const rCur = await fetch(`matchup/current.json`);
+    if(rCur.ok){
+      const cur = await rCur.json();
+      const wk = `wk${String(cur.week).padStart(2,'0')}`;
+      const rWk = await fetch(`game_breakdowns/${wk}/manifest.json`);
+      if(rWk.ok){
+        const mf = await rWk.json();
+        Object.values(mf.games || {}).forEach(g => GB_GAMES.push({ ...g, wk }));
+      }
+    }
+  }catch(e){}
+
   if(!INTEL || !Object.keys(INTEL.teams||{}).length){
     fiStatus("No data","error"); fiUpdated("");
     $("body").innerHTML = `<div class="empty">
@@ -181,6 +256,7 @@ async function load(){
 
   $("reportTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
     activeReport = b.dataset.r;
+    gbSelected = null;
     $("reportTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
     render();
   });
@@ -193,6 +269,7 @@ function render(){
   else if(activeReport === 'rb') renderRBReport();
   else if(activeReport === 'blitz') renderBlitzReport();
   else if(activeReport === 'coverage') renderCoverageReport();
+  else if(activeReport === 'gb') renderGbReport();
   else renderCbDbReport();
 }
 
@@ -1098,6 +1175,80 @@ function renderCbDbTable(){
 function fmtCbdbVal(v, pct){
   if(v === null || v === undefined) return '—';
   return pct ? `${v}%` : v;
+}
+
+/* ── Game Breakdowns: card grid (browse) + in-page full report (read) ──
+   Deliberately NOT a modal — a 9-section, multi-thousand-word report reads
+   like a nested scrollbar squeezed into a small box if forced into one;
+   swapping the main content area, same pattern as DFS Center's Coeus tab,
+   reads like an actual page instead. */
+function renderGbReport(){
+  if(gbSelected) renderGbSingleReport();
+  else renderGbGrid();
+}
+
+function renderGbGrid(){
+  if(!GB_GAMES.length){
+    $("body").innerHTML = `
+      <div class="sect"><h3>Coeus Game Breakdowns</h3><span class="rule"></span></div>
+      <div class="report-intro">
+        Full, market-neutral, both-teams analysis — one per game, engineered by Coeus.
+      </div>
+      <div class="empty">No Game Breakdowns available yet. Run <b>generate_game_breakdown.py</b>
+        for a game, then reload.</div>`;
+    return;
+  }
+  $("body").innerHTML = `
+    <div class="sect"><h3>Coeus Game Breakdowns</h3><span class="rule"></span></div>
+    <div class="report-intro">
+      Full, market-neutral, both-teams analysis — one per game, engineered by Coeus. Click a
+      game to read its complete breakdown.
+    </div>
+    <div class="intel-grid" id="gbGrid"></div>`;
+
+  const grid = $("gbGrid");
+  grid.innerHTML = GB_GAMES.map((g, i) => `
+    <button class="gb-card" data-i="${i}">
+      <div class="gb-card-teams">
+        ${fiLogoHTML(g.away,26)}<span>${esc2(g.away)}</span>
+        <span class="vs">@</span>
+        ${fiLogoHTML(g.home,26)}<span>${esc2(g.home)}</span>
+      </div>
+      <div class="gb-card-meta">${g.wk === 'bootstrap' ? 'Upcoming — bootstrap preview' : g.wk.toUpperCase()}</div>
+      <div class="gb-card-cta">Read full breakdown →</div>
+    </button>`).join('');
+
+  grid.querySelectorAll(".gb-card").forEach(card => {
+    card.onclick = () => {
+      gbSelected = GB_GAMES[Number(card.dataset.i)];
+      renderGbReport();
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    };
+  });
+}
+
+async function renderGbSingleReport(){
+  const g = gbSelected;
+  $("body").innerHTML = `
+    <button class="gb-back" id="gbBack">← All Game Breakdowns</button>
+    <div class="coeus-attribution">Engineered by Coeus</div>
+    <div id="gbReportBody"><div class="empty">Loading report…</div></div>`;
+  $("gbBack").onclick = () => { gbSelected = null; renderGbReport(); window.scrollTo({top:0}); };
+
+  const key = `${g.away}_${g.home}`;
+  const body = $("gbReportBody");
+  try{
+    let md = gbReportCache[`${g.wk}:${key}`];
+    if(!md){
+      const res = await fetch(`game_breakdowns/${g.wk}/${key}.md`);
+      if(!res.ok) throw new Error('not found');
+      md = await res.text();
+      gbReportCache[`${g.wk}:${key}`] = md;
+    }
+    body.innerHTML = `<div class="gb-report">${marked.parse(md)}</div>`;
+  }catch(e){
+    body.innerHTML = `<div class="empty">This report could not be loaded.</div>`;
+  }
 }
 
 load();

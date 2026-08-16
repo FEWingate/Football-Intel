@@ -54,28 +54,36 @@
   padding:2px 6px;border-radius:3px;border:1px solid rgba(250,204,21,.35);
   color:var(--accent-gold);background:rgba(250,204,21,.08);
 }
+.coeus-attribution{
+  display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:9.5px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--primary);
+  padding:4px 10px;border-radius:20px;border:1px solid rgba(163,230,53,.35);
+  background:rgba(163,230,53,.07);margin-bottom:14px;
+}
+.coeus-attribution::before{content:"";width:6px;height:6px;border-radius:50%;
+  background:var(--primary);box-shadow:0 0 6px rgba(163,230,53,.7);flex:none;}
 
 .coeus-report{
   background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
   padding:28px 32px;max-width:920px;
 }
 .coeus-report h1{
-  font-family:var(--font-display);font-weight:800;font-size:24px;letter-spacing:-.01em;
-  margin:0 0 6px;color:var(--text);
+  font-family:var(--font-display);font-weight:800;font-size:28px;letter-spacing:-.01em;
+  margin:0 0 8px;color:var(--text);
 }
 .coeus-report h2{
-  font-family:var(--font-display);font-weight:700;font-size:16px;letter-spacing:-.01em;
-  color:var(--primary);margin:28px 0 12px;padding-top:16px;border-top:1px solid var(--hairline);
+  font-family:var(--font-display);font-weight:700;font-size:20px;letter-spacing:-.01em;
+  color:var(--primary);margin:30px 0 14px;padding-top:18px;border-top:1px solid var(--hairline);
 }
 .coeus-report h2:first-of-type{border-top:none;padding-top:0;margin-top:18px}
 .coeus-report h3{
-  font-family:var(--font-display);font-weight:700;font-size:13.5px;color:var(--text);margin:18px 0 6px;
+  font-family:var(--font-display);font-weight:700;font-size:16px;color:var(--text);margin:18px 0 8px;
 }
-.coeus-report p{font-size:13px;line-height:1.65;color:var(--text-mid);margin:0 0 12px}
+.coeus-report p{font-size:15.5px;line-height:1.75;color:var(--text-mid);margin:0 0 14px}
 .coeus-report strong{color:var(--text);font-weight:600}
-.coeus-report ul,.coeus-report ol{margin:0 0 12px;padding-left:20px}
-.coeus-report li{font-size:13px;line-height:1.6;color:var(--text-mid);margin-bottom:4px}
-.coeus-report hr{border:none;border-top:1px solid var(--hairline);margin:20px 0}
+.coeus-report ul,.coeus-report ol{margin:0 0 14px;padding-left:22px}
+.coeus-report li{font-size:15.5px;line-height:1.7;color:var(--text-mid);margin-bottom:6px}
+.coeus-report hr{border:none;border-top:1px solid var(--hairline);margin:22px 0}
 .coeus-report code{
   font-family:var(--font-mono);font-size:11.5px;background:var(--surface2);
   padding:1px 5px;border-radius:3px;color:var(--accent-blue);
@@ -366,7 +374,8 @@ async function renderCoeusReports(){
       md = await res.text();
       coeusReportCache[key] = md;
     }
-    body.innerHTML = `<div class="coeus-report">${marked.parse(md)}</div>`;
+    body.innerHTML = `<div class="coeus-attribution">Engineered by Coeus</div>
+      <div class="coeus-report">${marked.parse(md)}</div>`;
   }catch(e){
     body.innerHTML = `<div class="empty">Report not found for this game.</div>`;
   }

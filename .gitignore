@@ -19,10 +19,10 @@ prompts/
 dfs_breakdowns/**/*_prompt.json
 dfs_breakdowns/**/*_prompt_full.txt
 
-# Game Breakdowns — kept fully private for now (2026-08-13), including the
-# .md reports themselves, since Frank hasn't finished reading/reviewing
-# this new report type yet. DFS reports only went public AFTER a full
-# read-through and approval; same principle applies here. Remove this line
-# (or narrow it to just the *_prompt.json/*_prompt_full.txt siblings, same
-# as dfs_breakdowns above) once a report's been reviewed and approved.
-game_breakdowns/
+# Game Breakdowns — made public on 2026-08-15 after review and approval
+# (one report explicitly designated the quality reference / "gold
+# standard"). Same treatment as dfs_breakdowns above: the .md reports
+# themselves ARE tracked; only the debug/audit siblings (full prompt+
+# evidence dumps, not meant for public consumption) are kept out.
+game_breakdowns/**/*_prompt.json
+game_breakdowns/**/*_prompt_full.txt

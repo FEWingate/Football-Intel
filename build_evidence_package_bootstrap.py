@@ -95,6 +95,49 @@ def load_json(path):
         return json.load(f)
 
 
+DOWN_DIST_KEY = "Down/Distance"  # matches DOWN_DIST_SUBGROUP_NAME in build_matchup_stats.py
+
+def rank_teams_by(teamstats_json, side, field, ascending=False):
+    """See build_evidence_package.py for full explanation — computes league
+    ranks locally since teamstats/latest.json stores raw values with no
+    rank included."""
+    if not teamstats_json:
+        return {}
+    vals = {}
+    for team, t in teamstats_json.get("teams", {}).items():
+        v = t.get(side, {}).get(DOWN_DIST_KEY, {}).get(field, {}).get("avg")
+        if v is not None:
+            vals[team] = v
+    ordered = sorted(vals, key=lambda t: vals[t], reverse=not ascending)
+    return {team: {"v": vals[team], "r": i + 1} for i, team in enumerate(ordered)}
+
+def down_distance_for_team(teamstats_json, team, off_ranks, def_ranks):
+    """See build_evidence_package.py for full explanation."""
+    if not teamstats_json or team not in teamstats_json.get("teams", {}):
+        return None
+    t = teamstats_json["teams"][team]
+    off_dd = t.get("offense", {}).get(DOWN_DIST_KEY, {})
+    def_dd = t.get("defense", {}).get(DOWN_DIST_KEY, {})
+    def v(d, k): return d.get(k, {}).get("avg")
+    return {
+        "offense": {
+            "third_down_attempts_per_game": v(off_dd, "d3_att"),
+            "third_down_conversion_pct": off_ranks.get(team, {}),
+            "fourth_down_situations_per_game": v(off_dd, "d4_situations"),
+            "fourth_down_go_for_it_pct": v(off_dd, "d4_go_pct"),
+            "fourth_down_conversion_pct": v(off_dd, "d4_conv_pct"),
+        },
+        "defense": {
+            "third_down_attempts_faced_per_game": v(def_dd, "d3_att_faced"),
+            "third_down_pct_allowed": def_ranks.get(team, {}),
+            "third_down_stop_pct": v(def_dd, "d3_stop_pct"),
+            "fourth_down_situations_faced_per_game": v(def_dd, "d4_situations_faced"),
+            "fourth_down_go_for_it_pct_faced": v(def_dd, "d4_go_pct_faced"),
+            "fourth_down_stop_pct": v(def_dd, "d4_stop_pct"),
+        },
+    }
+
+
 def filter_intel_by_teams(intel_json, key, teams):
     if not intel_json or key not in intel_json:
         return {}
@@ -190,6 +233,7 @@ def main():
     matchup_json = load_json(f"matchup/{bwk}.json")
     threats_json = load_json(f"threats/{bwk}.json")
     context_json = load_json(f"context/{bwk}.json")
+    teamstats_json = load_json("teamstats/latest.json")
     players_json = load_json("players/latest.json")
     intel_json = load_json("intel/latest.json")
     blitz_json = load_json("intel/blitz.json")
@@ -206,6 +250,15 @@ def main():
     if dfs_json is None:
         global_notes.append("No dfs/wkNN.json found — run build_dfs.py first. "
                             "DFS evidence will be unavailable.")
+    # teamstats/latest.json is "always-current" (not week-scoped) and its
+    # Down/Distance data is each team's own self-stat, not opponent-tagged
+    # — unlike rb_rush_vs_pass/blitz above, safe to reuse directly for a
+    # bootstrap pairing with no recompute needed.
+    dd_off_ranks = rank_teams_by(teamstats_json, "offense", "d3_pct", ascending=False)
+    dd_def_ranks = rank_teams_by(teamstats_json, "defense", "d3_pct_allowed", ascending=True)
+    if teamstats_json is None:
+        global_notes.append("teamstats/latest.json not found — Down/Distance evidence "
+                            "(3rd/4th down conversion rates) will be unavailable.")
 
     matchup_teams = matchup_json.get("teams", {})
     unavailable_teams = set()
@@ -336,6 +389,10 @@ def main():
                                            f"exact pairing.")},
             "matchup": matchup_block,
             "team_context": context_block,
+            "down_distance": {
+                "away": down_distance_for_team(teamstats_json, away, dd_off_ranks, dd_def_ranks),
+                "home": down_distance_for_team(teamstats_json, home, dd_off_ranks, dd_def_ranks),
+            },
             "threats": threats_block,
             "players": players_block,
             "matchup_pattern_data": matchup_pattern_data,

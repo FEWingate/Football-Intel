@@ -30,7 +30,8 @@ from datetime import datetime, timezone
 
 PROMPTS_DIR = "prompts"
 MASTER_PROMPT_PATH = f"{PROMPTS_DIR}/Coeus_Master_Prompt_v1.1.md"
-GAME_BREAKDOWN_STANDARD_PATH = f"{PROMPTS_DIR}/Coeus_Game_Breakdown_Report_Standard_v1.4.md"
+GAME_BREAKDOWN_STANDARD_PATH = f"{PROMPTS_DIR}/Coeus_Game_Breakdown_Report_Standard_v1.7.md"
+GOLD_STANDARD_EXAMPLE_PATH = f"{PROMPTS_DIR}/Coeus_Game_Breakdown_Gold_Standard_Example.md"
 
 DEFAULT_MODEL = "claude-sonnet-5"
 
@@ -47,6 +48,7 @@ Breakdown Report Standard exactly. Produce, in this order:
 7. Injury & Availability Report
 8. Keys to the Game
 9. Bottom Line
+10. Key Statistics
 
 This report is market-neutral — no DraftKings salaries, no DFS role or \
 risk labels, no betting lines framing. Pure football analysis for BOTH \
@@ -54,9 +56,12 @@ teams, both sides of the ball.
 
 Every raw statistic cited must carry its league rank; every rank cited \
 must carry its raw statistic — in both directions, every time, per the \
-Stat-Rank Pairing Rule. Section 3 (Hidden Intelligence) is REQUIRED and \
+Stat-Rank Pairing Rule. Section 5 (Hidden Intelligence) is REQUIRED and \
 must be its own clearly labeled section — never a phrase dropped inside \
-another section or a forward-reference resolved elsewhere.
+another section or a forward-reference resolved elsewhere. Section 10 \
+(Key Statistics) is REQUIRED and must be a plain list, not paragraphs — \
+the reader should be able to scan the game's key numbers in a few \
+seconds without reading the rest of the report.
 
 This report is also the sole source material for later, cheaper DFS and \
 Props extraction steps that will NOT re-read the raw evidence package — \
@@ -136,10 +141,24 @@ def main():
 
     master_prompt = load_text(MASTER_PROMPT_PATH)
     gb_standard = load_text(GAME_BREAKDOWN_STANDARD_PATH)
+    gold_example = load_text(GOLD_STANDARD_EXAMPLE_PATH)
+    gold_example_framed = (
+        "GOLD STANDARD EXAMPLE — APPROVED REFERENCE REPORT\n\n"
+        "The following is a real, human-approved Game Breakdown that meets every "
+        "requirement in the Standard above. Study it for structure, depth, rigor, "
+        "and voice — this is the quality bar every report should meet.\n\n"
+        "This is a DIFFERENT, UNRELATED game (Green Bay @ Minnesota). Do not reuse "
+        "any team name, player name, stat, or specific claim from this example in "
+        "the report you are about to write — it is a quality reference only, not "
+        "source material. Every fact in your actual report must come from the real "
+        "evidence package for the actual game below, not from this example.\n\n"
+        f"{gold_example}"
+    )
 
     system = [
         {"type": "text", "text": master_prompt, "cache_control": {"type": "ephemeral"}},
         {"type": "text", "text": gb_standard, "cache_control": {"type": "ephemeral"}},
+        {"type": "text", "text": gold_example_framed, "cache_control": {"type": "ephemeral"}},
     ]
     task = TASK_INSTRUCTION
     if args.bootstrap:
@@ -161,16 +180,17 @@ def main():
         "bootstrap": args.bootstrap,
         "evidence_source": evidence_path,
         "evidence_generated_at": evidence.get("generated_at"),
-        "system_char_count": len(master_prompt) + len(gb_standard),
+        "system_char_count": len(master_prompt) + len(gb_standard) + len(gold_example_framed),
         "user_char_count": len(user_content),
     }
     with open(f"{out_stem}_prompt.json", "w") as f:
         json.dump(prompt_record, f, indent=2)
 
-    approx_input_tokens = (len(master_prompt) + len(gb_standard) + len(user_content)) // 4
+    approx_input_tokens = (len(master_prompt) + len(gb_standard) + len(gold_example_framed) + len(user_content)) // 4
     print(f"Evidence: {evidence_path} (frozen at {evidence.get('generated_at')})")
     print(f"System prompt: {prompt_record['system_char_count']:,} chars "
-          f"(Master Prompt + Game Breakdown Standard, cached after first call this session)")
+          f"(Master Prompt + Game Breakdown Standard + Gold Standard Example, "
+          f"cached after first call this session)")
     print(f"Evidence payload: {len(user_content):,} chars")
     print(f"Rough input size: ~{approx_input_tokens:,} tokens (estimate only, not exact)")
 
@@ -178,6 +198,7 @@ def main():
         with open(f"{out_stem}_prompt_full.txt", "w") as f:
             f.write("=== SYSTEM (Master Prompt) ===\n\n" + master_prompt +
                      "\n\n=== SYSTEM (Game Breakdown Standard) ===\n\n" + gb_standard +
+                     "\n\n=== SYSTEM (Gold Standard Example) ===\n\n" + gold_example_framed +
                      "\n\n=== USER MESSAGE ===\n\n" + user_content)
         print(f"\nDRY RUN — no API call made. Full prompt written to "
               f"{out_stem}_prompt_full.txt for review. Remove --dry-run to actually generate.")

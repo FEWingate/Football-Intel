@@ -135,16 +135,25 @@
 
 /* Game Breakdown modal — markdown container, matches DFS Center's
    Coeus report styling */
-.gb-report h1{font-family:var(--font-display);font-weight:800;font-size:20px;margin:0 0 6px;color:var(--text)}
-.gb-report h2{font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--primary);
-  margin:22px 0 10px;padding-top:14px;border-top:1px solid var(--hairline)}
-.gb-report h2:first-of-type{border-top:none;padding-top:0;margin-top:14px}
-.gb-report h3{font-family:var(--font-display);font-weight:700;font-size:13px;color:var(--text);margin:14px 0 6px}
-.gb-report p{font-size:12.5px;line-height:1.65;color:var(--text-mid);margin:0 0 11px}
+.gb-report h1{font-family:var(--font-display);font-weight:800;font-size:24px;margin:0 0 8px;color:var(--text)}
+.gb-report h2{font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--primary);
+  margin:24px 0 12px;padding-top:16px;border-top:1px solid var(--hairline)}
+.gb-report h2:first-of-type{border-top:none;padding-top:0;margin-top:16px}
+.gb-report h3{font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--text);margin:16px 0 7px}
+.gb-report p{font-size:14.5px;line-height:1.7;color:var(--text-mid);margin:0 0 13px}
 .gb-report strong{color:var(--text);font-weight:600}
-.gb-report ul,.gb-report ol{margin:0 0 11px;padding-left:19px}
-.gb-report li{font-size:12.5px;line-height:1.6;color:var(--text-mid);margin-bottom:4px}
-.gb-report hr{border:none;border-top:1px solid var(--hairline);margin:18px 0}
+.gb-report ul,.gb-report ol{margin:0 0 13px;padding-left:21px}
+.gb-report li{font-size:14.5px;line-height:1.65;color:var(--text-mid);margin-bottom:5px}
+.gb-report hr{border:none;border-top:1px solid var(--hairline);margin:20px 0}
+
+.coeus-attribution{
+  display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:9.5px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--primary);
+  padding:4px 10px;border-radius:20px;border:1px solid rgba(163,230,53,.35);
+  background:rgba(163,230,53,.07);margin-bottom:14px;
+}
+.coeus-attribution::before{content:"";width:6px;height:6px;border-radius:50%;
+  background:var(--primary);box-shadow:0 0 6px rgba(163,230,53,.7);flex:none;}
 
 </style>
 </head>
@@ -504,7 +513,8 @@ async function openGameBreakdown(gid, source){
       md = await r.text();
       gbCache[key] = md;
     }
-    $('mBody').innerHTML = `<div class="gb-report">${marked.parse(md)}</div>`;
+    $('mBody').innerHTML = `<div class="coeus-attribution">Engineered by Coeus</div>
+      <div class="gb-report">${marked.parse(md)}</div>`;
   } catch (e){
     $('mBody').innerHTML = `<div class="empty">Game Breakdown not available for this game yet.</div>`;
   }

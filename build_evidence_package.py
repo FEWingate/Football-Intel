@@ -53,6 +53,55 @@ def load_json(path):
         return json.load(f)
 
 
+DOWN_DIST_KEY = "Down/Distance"  # matches DOWN_DIST_SUBGROUP_NAME in build_matchup_stats.py
+
+def rank_teams_by(teamstats_json, side, field, ascending=False):
+    """teamstats/latest.json stores raw {"tot":.., "avg":..} pairs with NO
+    rank included — every other stat category on this site pairs a value
+    with a league rank (matching the Stat-Rank Pairing Rule), so this
+    computes ranks locally rather than handing Coeus an unranked number.
+    ascending=True for defensive "allowed" stats where LOWER is better."""
+    if not teamstats_json:
+        return {}
+    vals = {}
+    for team, t in teamstats_json.get("teams", {}).items():
+        v = t.get(side, {}).get(DOWN_DIST_KEY, {}).get(field, {}).get("avg")
+        if v is not None:
+            vals[team] = v
+    ordered = sorted(vals, key=lambda t: vals[t], reverse=not ascending)
+    return {team: {"v": vals[team], "r": i + 1} for i, team in enumerate(ordered)}
+
+def down_distance_for_team(teamstats_json, team, off_ranks, def_ranks):
+    """Extract Down/Distance evidence for one team, translating the source
+    file's internal abbreviations (d3_pct, d4_go_pct, etc.) into clear
+    field names — the same kind of abbreviation-leak that caused the
+    r7/dr31 rank-shorthand bug elsewhere in this project, avoided here by
+    not exposing the raw internal keys at all."""
+    if not teamstats_json or team not in teamstats_json.get("teams", {}):
+        return None
+    t = teamstats_json["teams"][team]
+    off_dd = t.get("offense", {}).get(DOWN_DIST_KEY, {})
+    def_dd = t.get("defense", {}).get(DOWN_DIST_KEY, {})
+    def v(d, k): return d.get(k, {}).get("avg")
+    return {
+        "offense": {
+            "third_down_attempts_per_game": v(off_dd, "d3_att"),
+            "third_down_conversion_pct": off_ranks.get(team, {}),
+            "fourth_down_situations_per_game": v(off_dd, "d4_situations"),
+            "fourth_down_go_for_it_pct": v(off_dd, "d4_go_pct"),
+            "fourth_down_conversion_pct": v(off_dd, "d4_conv_pct"),
+        },
+        "defense": {
+            "third_down_attempts_faced_per_game": v(def_dd, "d3_att_faced"),
+            "third_down_pct_allowed": def_ranks.get(team, {}),
+            "third_down_stop_pct": v(def_dd, "d3_stop_pct"),
+            "fourth_down_situations_faced_per_game": v(def_dd, "d4_situations_faced"),
+            "fourth_down_go_for_it_pct_faced": v(def_dd, "d4_go_pct_faced"),
+            "fourth_down_stop_pct": v(def_dd, "d4_stop_pct"),
+        },
+    }
+
+
 # ── Threat System classification, ported EXACTLY from fi-shell.js's
 # FI_TIERS / fiClassify() so Coeus receives the same tier labels the site
 # itself shows — never raw numbers for Coeus to classify on its own. ──────
@@ -140,6 +189,14 @@ def main():
 
     os.makedirs(f"evidence/{wk}", exist_ok=True)
     manifest_games = []
+
+    # Computed once for the whole league, reused for every game below —
+    # ranking is a full-league operation, not something to redo per game.
+    dd_off_ranks = rank_teams_by(teamstats_json, "offense", "d3_pct", ascending=False)
+    dd_def_ranks = rank_teams_by(teamstats_json, "defense", "d3_pct_allowed", ascending=True)
+    if teamstats_json is None:
+        global_notes.append("teamstats/latest.json not found — Down/Distance evidence "
+                            "(3rd/4th down conversion rates) will be unavailable.")
 
     for g in games_json.get("games", []):
         away, home = g["away"], g["home"]
@@ -257,6 +314,10 @@ def main():
             "game": game_info,
             "matchup": matchup_block,
             "team_context": context_block,
+            "down_distance": {
+                "away": down_distance_for_team(teamstats_json, away, dd_off_ranks, dd_def_ranks),
+                "home": down_distance_for_team(teamstats_json, home, dd_off_ranks, dd_def_ranks),
+            },
             "threats": threats_block,
             "players": players_block,
             "matchup_pattern_data": matchup_pattern_data,
