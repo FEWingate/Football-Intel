@@ -54,8 +54,9 @@ def load_json(path):
 
 
 DOWN_DIST_KEY = "Down/Distance"  # matches DOWN_DIST_SUBGROUP_NAME in build_matchup_stats.py
+RED_ZONE_KEY = "Red Zone Play Calling"  # matches RED_ZONE_SUBGROUP_NAME in build_matchup_stats.py
 
-def rank_teams_by(teamstats_json, side, field, ascending=False):
+def rank_teams_by(teamstats_json, side, field, subgroup=DOWN_DIST_KEY, ascending=False):
     """teamstats/latest.json stores raw {"tot":.., "avg":..} pairs with NO
     rank included — every other stat category on this site pairs a value
     with a league rank (matching the Stat-Rank Pairing Rule), so this
@@ -65,7 +66,7 @@ def rank_teams_by(teamstats_json, side, field, ascending=False):
         return {}
     vals = {}
     for team, t in teamstats_json.get("teams", {}).items():
-        v = t.get(side, {}).get(DOWN_DIST_KEY, {}).get(field, {}).get("avg")
+        v = t.get(side, {}).get(subgroup, {}).get(field, {}).get("avg")
         if v is not None:
             vals[team] = v
     ordered = sorted(vals, key=lambda t: vals[t], reverse=not ascending)
@@ -98,6 +99,31 @@ def down_distance_for_team(teamstats_json, team, off_ranks, def_ranks):
             "fourth_down_situations_faced_per_game": v(def_dd, "d4_situations_faced"),
             "fourth_down_go_for_it_pct_faced": v(def_dd, "d4_go_pct_faced"),
             "fourth_down_stop_pct": v(def_dd, "d4_stop_pct"),
+        },
+    }
+
+def red_zone_for_team(teamstats_json, team, off_run_ranks, off_pass_ranks, def_run_ranks, def_pass_ranks):
+    """Extract Red Zone Play Calling evidence for one team — same pattern
+    as down_distance_for_team above. Run% and pass% are exact complements
+    (only two play types in the filter), but both get their own explicit
+    rank rather than relying on Coeus to infer one from the other — the
+    Stat-Rank Pairing Rule requires a rank on whichever one gets cited."""
+    if not teamstats_json or team not in teamstats_json.get("teams", {}):
+        return None
+    t = teamstats_json["teams"][team]
+    off_rz = t.get("offense", {}).get(RED_ZONE_KEY, {})
+    def_rz = t.get("defense", {}).get(RED_ZONE_KEY, {})
+    def v(d, k): return d.get(k, {}).get("avg")
+    return {
+        "offense": {
+            "red_zone_plays_per_game": v(off_rz, "rz_plays"),
+            "red_zone_run_pct": off_run_ranks.get(team, {}),
+            "red_zone_pass_pct": off_pass_ranks.get(team, {}),
+        },
+        "defense": {
+            "red_zone_plays_faced_per_game": v(def_rz, "rz_plays_faced"),
+            "red_zone_run_pct_allowed": def_run_ranks.get(team, {}),
+            "red_zone_pass_pct_allowed": def_pass_ranks.get(team, {}),
         },
     }
 
@@ -194,6 +220,19 @@ def main():
     # ranking is a full-league operation, not something to redo per game.
     dd_off_ranks = rank_teams_by(teamstats_json, "offense", "d3_pct", ascending=False)
     dd_def_ranks = rank_teams_by(teamstats_json, "defense", "d3_pct_allowed", ascending=True)
+    # Red zone run/pass % is a TENDENCY stat, not a quality stat — rank 1
+    # means "most run-heavy in the red zone," not "best." Descending order
+    # is just an ordinal convention (highest % first), same as ranking by
+    # attempt volume elsewhere on the site, and should be read that way,
+    # not as a value judgment.
+    rz_off_run_ranks = rank_teams_by(teamstats_json, "offense", "rz_run_pct",
+                                      subgroup=RED_ZONE_KEY, ascending=False)
+    rz_off_pass_ranks = rank_teams_by(teamstats_json, "offense", "rz_pass_pct",
+                                       subgroup=RED_ZONE_KEY, ascending=False)
+    rz_def_run_ranks = rank_teams_by(teamstats_json, "defense", "rz_run_pct_faced",
+                                      subgroup=RED_ZONE_KEY, ascending=False)
+    rz_def_pass_ranks = rank_teams_by(teamstats_json, "defense", "rz_pass_pct_faced",
+                                       subgroup=RED_ZONE_KEY, ascending=False)
     if teamstats_json is None:
         global_notes.append("teamstats/latest.json not found — Down/Distance evidence "
                             "(3rd/4th down conversion rates) will be unavailable.")
@@ -317,6 +356,12 @@ def main():
             "down_distance": {
                 "away": down_distance_for_team(teamstats_json, away, dd_off_ranks, dd_def_ranks),
                 "home": down_distance_for_team(teamstats_json, home, dd_off_ranks, dd_def_ranks),
+            },
+            "red_zone_play_calling": {
+                "away": red_zone_for_team(teamstats_json, away, rz_off_run_ranks, rz_off_pass_ranks,
+                                           rz_def_run_ranks, rz_def_pass_ranks),
+                "home": red_zone_for_team(teamstats_json, home, rz_off_run_ranks, rz_off_pass_ranks,
+                                           rz_def_run_ranks, rz_def_pass_ranks),
             },
             "threats": threats_block,
             "players": players_block,

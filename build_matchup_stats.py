@@ -249,6 +249,21 @@ DOWN_DIST_DEF_COLS = {
     "d4_conv_pct_allowed": ("4th Down Conversion % Allowed", 1, True),
     "d4_stop_pct": ("4th Down Stop Rate", 1, True),
 }
+RED_ZONE_SUBGROUP_NAME = "Red Zone Play Calling"
+RED_ZONE_OFF_COLS = {
+    "rz_plays": ("Red Zone Plays", 0, False),
+    "rz_run": ("Red Zone Run Plays", 0, False),
+    "rz_pass": ("Red Zone Pass Plays", 0, False),
+    "rz_run_pct": ("Red Zone Run %", 1, True),
+    "rz_pass_pct": ("Red Zone Pass %", 1, True),
+}
+RED_ZONE_DEF_COLS = {
+    "rz_plays_faced": ("Red Zone Plays Faced", 0, False),
+    "rz_run_faced": ("Red Zone Run Plays Faced", 0, False),
+    "rz_pass_faced": ("Red Zone Pass Plays Faced", 0, False),
+    "rz_run_pct_faced": ("Opponent Red Zone Run %", 1, True),
+    "rz_pass_pct_faced": ("Opponent Red Zone Pass %", 1, True),
+}
 PASS_DEF_COLS = {
     "comp_allowed": ("Completions Allowed", 0, False),
     "att_faced": ("Attempts Faced", 0, False),
@@ -286,7 +301,8 @@ DOWN_DIST_SUBGROUP_NAME = "Down/Distance"
 # Defense mix opponent-groupby yardage with play-by-play explosive-play
 # counts, Down/Distance is pure play-by-play. All handled specially in
 # build_team_stats().
-CUSTOM_SUBGROUPS = {"Pass Defense", "Run Defense", "Points Allowed", DOWN_DIST_SUBGROUP_NAME}
+CUSTOM_SUBGROUPS = {"Pass Defense", "Run Defense", "Points Allowed",
+                     DOWN_DIST_SUBGROUP_NAME, RED_ZONE_SUBGROUP_NAME}
 
 TEAM_STATS_GROUPS = {
     "offense": {
@@ -343,6 +359,7 @@ TEAM_STATS_GROUPS = {
             "receiving_40": ("40+ Yd Catches", 0, False),
         },
         "Down/Distance": DOWN_DIST_OFF_COLS,
+        "Red Zone Play Calling": RED_ZONE_OFF_COLS,
         "Ball Security": {
             "fumbles_total": ("Total Fumbles", 0, False),
             "fumbles_lost_total": ("Fumbles Lost", 0, False),
@@ -380,6 +397,7 @@ TEAM_STATS_GROUPS = {
             "def_safeties": ("Safeties", 0, False),
         },
         "Down/Distance": DOWN_DIST_DEF_COLS,
+        "Red Zone Play Calling": RED_ZONE_DEF_COLS,
     },
     "special_teams": {
         "Kicking": {
@@ -1089,6 +1107,17 @@ def compute_pbp_stats(games_played):
     off1 = d1.groupby(["posteam", "play_type"]).size().unstack(fill_value=0)
     def1 = d1.groupby(["defteam", "play_type"]).size().unstack(fill_value=0)
 
+    # Red zone play-calling tendency: same shape as the 1st-down run/pass
+    # split above, just filtered by field position (yardline_100 <= 20,
+    # i.e. inside the opponent's 20) instead of down. Not a stat nflverse
+    # provides pre-built — same derivation already used for rz_touches/
+    # rz_carries elsewhere on the site, just aggregated at the team level
+    # instead of the player level, and as a run-vs-pass rate rather than
+    # a raw count.
+    rz = reg[(reg["yardline_100"] <= 20) & (reg["play_type"].isin(["run", "pass"]))]
+    offrz = rz.groupby(["posteam", "play_type"]).size().unstack(fill_value=0)
+    defrz = rz.groupby(["defteam", "play_type"]).size().unstack(fill_value=0)
+
     d3 = reg[reg["down"] == 3]
     off3 = d3.groupby("posteam").agg(conv=("third_down_converted", "sum"),
                                       fail=("third_down_failed", "sum"))
@@ -1122,6 +1151,8 @@ def compute_pbp_stats(games_played):
     for t, gp in games_played.items():
         run1 = get(off1, t, "run"); pass1 = get(off1, t, "pass")
         run1d = get(def1, t, "run"); pass1d = get(def1, t, "pass")
+        rzrun = get(offrz, t, "run"); rzpass = get(offrz, t, "pass")
+        rzrund = get(defrz, t, "run"); rzpassd = get(defrz, t, "pass")
         c3 = int(off3.loc[t, "conv"]) if t in off3.index else 0
         f3 = int(off3.loc[t, "fail"]) if t in off3.index else 0
         c3d = int(def3.loc[t, "conv"]) if t in def3.index else 0
@@ -1137,6 +1168,18 @@ def compute_pbp_stats(games_played):
             return {"tot": tot, "avg": round(tot / gp, max(dec, 1)) if gp else 0}
         def ravg(val):
             return {"tot": None, "avg": val}
+
+        rz_off = {
+            "rz_plays": tavg(rzrun + rzpass), "rz_run": tavg(rzrun), "rz_pass": tavg(rzpass),
+            "rz_run_pct": ravg(pct(rzrun, rzrun + rzpass)),
+            "rz_pass_pct": ravg(pct(rzpass, rzrun + rzpass)),
+        }
+        rz_def = {
+            "rz_plays_faced": tavg(rzrund + rzpassd), "rz_run_faced": tavg(rzrund),
+            "rz_pass_faced": tavg(rzpassd),
+            "rz_run_pct_faced": ravg(pct(rzrund, rzrund + rzpassd)),
+            "rz_pass_pct_faced": ravg(pct(rzpassd, rzrund + rzpassd)),
+        }
 
         off_dd = {
             "fd1_run": tavg(run1), "fd1_pass": tavg(pass1),
@@ -1159,8 +1202,8 @@ def compute_pbp_stats(games_played):
             "d4_stop_pct": ravg(pct(goAd - goCd, goAd)),
         }
         out[t] = {
-            "offense": {DOWN_DIST_SUBGROUP_NAME: off_dd},
-            "defense": {DOWN_DIST_SUBGROUP_NAME: def_dd},
+            "offense": {DOWN_DIST_SUBGROUP_NAME: off_dd, RED_ZONE_SUBGROUP_NAME: rz_off},
+            "defense": {DOWN_DIST_SUBGROUP_NAME: def_dd, RED_ZONE_SUBGROUP_NAME: rz_def},
             "explosive_pass_allowed": {th: int(pass_bucket[th].get(t, 0)) for th in (10, 16, 20, 40)},
             "explosive_rush_allowed": {th: int(rush_bucket[th].get(t, 0)) for th in (10, 12, 20, 40)},
         }
@@ -1811,7 +1854,7 @@ def build_team_stats():
                 if sub == "Points Allowed":
                     entry[section][sub] = points_allowed.get(t, {})
                     continue
-                if sub == DOWN_DIST_SUBGROUP_NAME:
+                if sub in (DOWN_DIST_SUBGROUP_NAME, RED_ZONE_SUBGROUP_NAME):
                     entry[section][sub] = pbp_stats.get(t, {}).get(section, {}).get(sub, {})
                     continue
                 entry[section][sub] = {}

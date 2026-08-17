@@ -30,7 +30,7 @@ from datetime import datetime, timezone
 
 PROMPTS_DIR = "prompts"
 MASTER_PROMPT_PATH = f"{PROMPTS_DIR}/Coeus_Master_Prompt_v1.1.md"
-GAME_BREAKDOWN_STANDARD_PATH = f"{PROMPTS_DIR}/Coeus_Game_Breakdown_Report_Standard_v1.7.md"
+GAME_BREAKDOWN_STANDARD_PATH = f"{PROMPTS_DIR}/Coeus_Game_Breakdown_Report_Standard_v1.8.md"
 GOLD_STANDARD_EXAMPLE_PATH = f"{PROMPTS_DIR}/Coeus_Game_Breakdown_Gold_Standard_Example.md"
 
 DEFAULT_MODEL = "claude-sonnet-5"

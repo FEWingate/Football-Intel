@@ -13,6 +13,13 @@
       "season": 2025,
       "week": 18,
       "generated_at": "2026-08-16T00:01:18.352336+00:00"
+    },
+    "ATL_PIT": {
+      "away": "ATL",
+      "home": "PIT",
+      "season": 2025,
+      "week": 18,
+      "generated_at": "2026-08-16T23:21:43.226167+00:00"
     }
   }
 }
