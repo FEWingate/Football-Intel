@@ -52,6 +52,7 @@ PLAYERS_XWALK_URL = "https://github.com/nflverse/nflverse-data/releases/download
 # season update cadence as Snap Counts and PFR Advanced (pass/rec) — see
 # the SNAP_COUNTS_URL note above. Confirmed via real 2025 data before use.
 ADVSTATS_DEF_URL = f"https://github.com/nflverse/nflverse-data/releases/download/pfr_advstats/advstats_week_def_{SEASON}.csv"
+ADVSTATS_RUSH_URL = f"https://github.com/nflverse/nflverse-data/releases/download/pfr_advstats/advstats_week_rush_{SEASON}.csv"
 
 POS_MAP = {"QB": "QB", "RB": "RB", "FB": "RB", "WR": "WR", "TE": "TE"}
 POSITIONS = ["QB", "RB", "WR", "TE"]
@@ -113,6 +114,9 @@ POS_METRICS = {
         "rush_td":    ("Rushing TDs", 0, True, "Volume"),
         "rec_td":     ("Receiving TDs", 0, True, "Volume"),
         "fd_pg":      ("Rushing first downs / game", 1, True, "Efficiency"),
+        "rush_yac_avg": ("Yards after contact / carry", 2, True, "Usage"),
+        "rush_ybc_avg": ("Yards before contact / carry", 2, True, "Usage"),
+        "rush_broken_tackles_pg": ("Broken tackles / game (rushing)", 2, True, "Usage"),
         "r10_pg":     ("10+ yd runs / game", 1, True, "Explosive"),
         "r12_pg":     ("12+ yd runs / game", 1, True, "Explosive"),
         "r20_pg":     ("20+ yd runs / game", 1, True, "Explosive"),
@@ -1546,6 +1550,57 @@ def compute_snap_shares():
     return snaps.groupby("gsis_id")["offense_pct"].mean().to_dict()
 
 
+def compute_rush_contact_stats():
+    """Season-to-date rushing contact efficiency (gsis_id -> dict), from
+    PFR Advanced Stats (rush) via the same nflverse-data pfr_advstats
+    release family already used for Snap Counts and CB/DB Rankings above
+    — confirmed by direct inspection of the real file (not just
+    documentation) to have exactly the fields needed: yards after/before
+    contact and broken tackles, all at the game level, aggregated here
+    the same way passer rating is (season SUMS divided out, not an
+    average of each game's own per-carry average — a backup who got 2
+    carries in one game shouldn't count equally against a starter's
+    17-carry game in the season number).
+
+    Not available from nflverse's Next Gen Stats bulk data (checked and
+    confirmed absent from that dataset's real field list) — this PFR
+    charting source is the actual right place for this stat, genuinely
+    different data despite both being called "advanced stats.\""""
+    try:
+        df = fetch_csv(ADVSTATS_RUSH_URL)
+    except SystemExit:
+        print(f"  PFR rushing advanced stats not available for {SEASON} yet — "
+              f"skipping yards after/before contact.")
+        return {}
+    xwalk = load_pfr_to_gsis()
+    if not xwalk:
+        return {}
+    if "game_type" in df.columns:
+        df = df[df["game_type"] == "REG"]
+    df["gsis_id"] = df["pfr_player_id"].map(xwalk)
+    df = df.dropna(subset=["gsis_id"])
+    for col in ("carries", "rushing_yards_after_contact", "rushing_yards_before_contact",
+                "rushing_broken_tackles"):
+        df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0)
+    sums = df.groupby("gsis_id").agg(
+        carries=("carries", "sum"),
+        yac=("rushing_yards_after_contact", "sum"),
+        ybc=("rushing_yards_before_contact", "sum"),
+        broken=("rushing_broken_tackles", "sum"),
+        games=("carries", "count"),
+    )
+    out = {}
+    for pid, r in sums.iterrows():
+        if r["carries"] <= 0:
+            continue
+        out[pid] = {
+            "rush_yac_avg": round(r["yac"] / r["carries"], 2),
+            "rush_ybc_avg": round(r["ybc"] / r["carries"], 2),
+            "rush_broken_tackles_pg": round(r["broken"] / r["games"], 2) if r["games"] else 0,
+        }
+    return out
+
+
 def compute_red_zone_usage():
     """Season-to-date red zone (yardline_100 <= 20) touch/target usage,
     from play-by-play. Returns two per-play dicts keyed by
@@ -1709,6 +1764,7 @@ def build_player_stats():
     # (play-by-play, RB/WR/TE) — both degrade to {} rather than failing the
     # build if their source isn't published yet (e.g. very early season).
     snap_share = compute_snap_shares()
+    rush_contact = compute_rush_contact_stats()
     rz_rush, rz_pass, team_rz_carries, team_rz_targets, team_rz_receptions = compute_red_zone_usage()
 
     players_out = {p: [] for p in POSITIONS}
@@ -1730,6 +1786,8 @@ def build_player_stats():
 
         season_metrics["snap_pct"] = (round(100 * snap_share[pid], 1)
                                        if pid in snap_share else None)
+        if pos == "RB" and pid in rush_contact:
+            season_metrics.update(rush_contact[pid])
         if pos in ("RB", "WR", "TE"):
             season_metrics.update(rz_season_stats(
                 pdf, pos, rz_rush, rz_pass, team_rz_carries, team_rz_targets, team_rz_receptions))
