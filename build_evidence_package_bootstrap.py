@@ -44,6 +44,7 @@ OUTPUT:
 """
 
 import argparse
+import copy
 import json
 import os
 import re
@@ -159,6 +160,75 @@ def red_zone_for_team(teamstats_json, team, off_run_ranks, off_pass_ranks, def_r
         },
     }
 
+# Every category actually used across real threats.json starters (QB/RB/WR/TE),
+# mapped to matchup.json's real field name for that stat, confirmed by direct
+# inspection rather than assumed — the two files don't always use matching
+# names (threats' "pass_tds" vs matchup's "pass_td", a raw season total that
+# needs dividing by games-played to become the per-game rate threats.json
+# actually stores). per_game=True marks fields needing that derivation.
+THREAT_CATEGORY_FIELD = {
+    "pass_yds": ("pass_ypg", False),
+    "pass_tds": ("pass_td", True),
+    "rush_yds": ("rush_ypg", False),
+    "rec_yds": ("rec_ypg", False),
+    "rec": ("rec_pg", False),
+}
+
+def def_stat_for_opponent(matchup_json, team, position, field, per_game=False):
+    """matchup.json's def-by-position fields are already {"v":.., "r":..}
+    pairs, same convention as team_off/team_def — confirmed by direct
+    inspection, correcting an initial wrong assumption that these were
+    raw numbers needing a rank computed from scratch. per_game=True
+    divides v by games-played (needed for pass_tds specifically, which is
+    a season total in matchup.json but a per-game rate in threats.json);
+    the pre-existing rank is reused as-is in that case, since ranking a
+    full season by total vs. by per-game rate produces the same order
+    for teams that have all played the same number of games — true for
+    every real NFL season, allowing for the rare mid-season game
+    postponement, which this doesn't attempt to special-case."""
+    t = (matchup_json or {}).get("teams", {}).get(team, {})
+    cell = t.get("def", {}).get(position, {}).get(field)
+    if not cell or "v" not in cell or "r" not in cell:
+        return None
+    v, r = cell["v"], cell["r"]
+    if per_game:
+        gp = t.get("gp") or 0
+        if not gp:
+            return None
+        v = round(v / gp, 2)
+    return {"v": v, "r": r}
+
+def fix_threat_opponent_context(starters, real_opponent, matchup_json):
+    """Threat Intelligence's per-category 'dv'/'dr' fields (the OPPONENT
+    DEFENSE's value/rank in that category) are tagged to each team's real
+    final-week-of-source-season opponent, not the bootstrap pairing —
+    same root problem already fixed for rb_rush_vs_pass/qb_run_vs_pass,
+    found here after Frank caught a real generated report citing a Threat
+    tier that turned out to be computed against the wrong opponent
+    entirely (Chicago instead of the real bootstrap opponent). Recomputes
+    dv/dr against the real opponent's real, current matchup.json defensive
+    data — the same source already used and trusted elsewhere in this
+    evidence package — rather than leaving Coeus to manually catch and
+    work around a wrong tier label every time."""
+    for starter in starters:
+        pos = starter.get("pos")
+        cats = starter.get("cats", {})
+        for cat_key, cat_val in cats.items():
+            mapping = THREAT_CATEGORY_FIELD.get(cat_key)
+            if not mapping:
+                continue
+            field, per_game = mapping
+            result = def_stat_for_opponent(matchup_json, real_opponent, pos, field, per_game)
+            if result:
+                cat_val["dv"] = result["v"]
+                cat_val["dr"] = result["r"]
+                cat_val["opponent_context_recomputed_for_bootstrap"] = True
+            else:
+                cat_val["opponent_context_stale_note"] = (
+                    f"Could not recompute dv/dr against {real_opponent} — "
+                    f"treat this category's opponent comparison as unavailable "
+                    f"for this bootstrap matchup, not as real evidence.")
+
 
 def filter_intel_by_teams(intel_json, key, teams):
     if not intel_json or key not in intel_json:
@@ -229,6 +299,16 @@ def main():
     ap.add_argument("--bootstrap-week", type=int, default=None,
                      help="Which season-final week's team data to use as the analytical "
                           "foundation. Defaults to matchup/current.json's week.")
+    ap.add_argument("--extra-away", default=None,
+                     help="Add one real game NOT in the DK Classic file — e.g. Sunday/Monday "
+                          "night or a special-slot game that isn't part of the DK main slate. "
+                          "Game Breakdown doesn't use DK salary data at all, so this works "
+                          "fine; only the DFS/Injuries evidence for this specific game will "
+                          "come back empty, which is honest (no DK data exists for it), not a "
+                          "bug. Requires --extra-home too.")
+    ap.add_argument("--extra-home", default=None)
+    ap.add_argument("--extra-date", default="TBD", help="e.g. 09/13/2026")
+    ap.add_argument("--extra-time", default="TBD", help="e.g. 08:20PM")
     args = ap.parse_args()
 
     if not os.path.exists(DK_SALARY_PATH):
@@ -237,6 +317,15 @@ def main():
     real_games = extract_real_schedule(dk_df)
     if not real_games:
         sys.exit("FATAL: couldn't parse any real games from the DK file's Game Info column.")
+
+    if args.extra_away and args.extra_home:
+        real_games[(args.extra_away, args.extra_home)] = {
+            "away": args.extra_away, "home": args.extra_home,
+            "date": args.extra_date, "time": args.extra_time, "timezone": "ET",
+        }
+        print(f"Added extra game not in the DK file: {args.extra_away} @ {args.extra_home}")
+    elif args.extra_away or args.extra_home:
+        sys.exit("FATAL: --extra-away and --extra-home must both be given together.")
 
     if args.bootstrap_week is None:
         current = load_json("matchup/current.json")
@@ -326,6 +415,7 @@ def main():
             else:
                 notes.append(f"no {bootstrap_season} context data for {team}")
 
+        real_opponent_of = {away: home, home: away}
         threats_teams = (threats_json or {}).get("teams", {})
         threats_block = {}
         for side, team in (("away", away), ("home", home)):
@@ -333,10 +423,18 @@ def main():
             if not t:
                 notes.append(f"no {bootstrap_season} threats data for {team}")
                 continue
+            # Deep-copy before mutating — threats_json is one shared object
+            # loaded once and reused for every game in this script run.
+            starters_copy = copy.deepcopy(t.get("starters", []))
+            fix_threat_opponent_context(starters_copy, real_opponent_of[team], matchup_json)
+            # Classification MUST run AFTER the fix above, not before — it
+            # reads dr directly from cats, so classifying first would still
+            # produce a tier computed against the wrong (stale) opponent
+            # even after the displayed numbers were corrected.
             starters_out = [{**s, "threat_classification": fi_classify(s.get("cats", {}))}
-                             for s in t.get("starters", [])]
+                             for s in starters_copy]
             threats_block[side] = {"team": team, "record": t.get("record"),
-                                    "opp": t.get("opp"), "starters": starters_out}
+                                    "opp": real_opponent_of[team], "starters": starters_out}
 
         players_block = {"away": [], "home": []}
         for pos, plist in (players_json.get("players", {}) or {}).items():
@@ -383,6 +481,13 @@ def main():
             "coverage_qb": filter_intel_by_teams(coverage_json, "qb_teams", teams),
             "coverage_wr": filter_intel_by_teams(coverage_json, "wr_teams", teams),
             "coverage_te": filter_intel_by_teams(coverage_json, "te_teams", teams),
+            # Each defense's OWN season-long man/zone play-calling rate —
+            # different from coverage_qb/wr/te above (how a PLAYER performs
+            # facing man vs. zone). This is team-level self-stat, not
+            # opponent-tagged, so it's safe to reuse directly for a
+            # bootstrap pairing — same reasoning as Down/Distance elsewhere
+            # in this file.
+            "team_coverage_rate": filter_intel_by_teams(coverage_json, "team_coverage_rate", teams),
         }
 
         cbdb_block = []
@@ -399,6 +504,13 @@ def main():
                 if p.get("status"):
                     injuries_block["players"].append({"name": p["name"], "team": p["team"],
                                                         "status": p["status"]})
+            if not game_players:
+                note = (f"{away}/{home} are not part of the DraftKings Classic slate this "
+                        f"file covers — no DFS salary or Status-column injury data exists "
+                        f"for this game. This is a scope gap (this game simply isn't in that "
+                        f"slate), not a data error.")
+                dfs_block["note"] = note
+                injuries_block["note"] = note
 
         bundle = {
             "generated_at": datetime.now(timezone.utc).isoformat(),

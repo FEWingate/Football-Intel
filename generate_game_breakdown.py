@@ -30,7 +30,7 @@ from datetime import datetime, timezone
 
 PROMPTS_DIR = "prompts"
 MASTER_PROMPT_PATH = f"{PROMPTS_DIR}/Coeus_Master_Prompt_v1.1.md"
-GAME_BREAKDOWN_STANDARD_PATH = f"{PROMPTS_DIR}/Coeus_Game_Breakdown_Report_Standard_v1.8.md"
+GAME_BREAKDOWN_STANDARD_PATH = f"{PROMPTS_DIR}/Coeus_Game_Breakdown_Report_Standard_v2.4.md"
 GOLD_STANDARD_EXAMPLE_PATH = f"{PROMPTS_DIR}/Coeus_Game_Breakdown_Gold_Standard_Example.md"
 
 DEFAULT_MODEL = "claude-sonnet-5"
@@ -39,16 +39,13 @@ TASK_INSTRUCTION = """\
 Generate the full Game Breakdown for this game, following the Game \
 Breakdown Report Standard exactly. Produce, in this order:
 
-1. Game Overview
-2. Team Unit Breakdown
-3. Positional Matchups
-4. Coverage & Scheme Notes
-5. Hidden Intelligence
-6. Threats to Watch
-7. Injury & Availability Report
-8. Keys to the Game
-9. Bottom Line
-10. Key Statistics
+1. Pregame Briefing
+2. Injury & Availability Report
+3. Matchup Statistics
+4. Matchup Intelligence
+5. Threat Intelligence
+6. Hidden Intelligence & Contextual Analysis
+7. Coeus Final Read (closes with Coeus Cheat Sheet)
 
 This report is market-neutral — no DraftKings salaries, no DFS role or \
 risk labels, no betting lines framing. Pure football analysis for BOTH \
@@ -56,12 +53,17 @@ teams, both sides of the ball.
 
 Every raw statistic cited must carry its league rank; every rank cited \
 must carry its raw statistic — in both directions, every time, per the \
-Stat-Rank Pairing Rule. Section 5 (Hidden Intelligence) is REQUIRED and \
-must be its own clearly labeled section — never a phrase dropped inside \
-another section or a forward-reference resolved elsewhere. Section 10 \
-(Key Statistics) is REQUIRED and must be a plain list, not paragraphs — \
-the reader should be able to scan the game's key numbers in a few \
-seconds without reading the rest of the report.
+Stat-Rank Pairing Rule. Section 6 (Hidden Intelligence & Contextual \
+Analysis) is REQUIRED and must be its own clearly labeled section — \
+never a phrase dropped inside another section or a forward-reference \
+resolved elsewhere; each finding requires the Context Expansion element \
+per Section 7 of the Standard. Coeus Cheat Sheet, closing Section 7, is \
+REQUIRED and must be a plain list, not paragraphs — the reader should be \
+able to scan the game's key numbers in a few seconds without reading the \
+rest of the report. Pregame Briefing (Section 1) must state a broad \
+thesis only, not the actual verdict — see the Standard's Section 1a on \
+how this differs from Coeus Final Read, and Section 7's reservation rule \
+on not spoiling Hidden Intelligence material there.
 
 This report is also the sole source material for later, cheaper DFS and \
 Props extraction steps that will NOT re-read the raw evidence package — \
@@ -121,7 +123,42 @@ def main():
                       f"build_evidence_package_bootstrap.py first, and confirm "
                       f"{args.away}/{args.home} is a real game in the DK file.")
         week = evidence["bootstrap_source"]["week"]
-        out_dir = "game_breakdowns/bootstrap"
+
+        # Bootstrap mode means the EVIDENCE came from a prior season's data
+        # (no current-season stats exist yet) — but the SCHEDULE itself
+        # (who plays whom, when) is usually real and public well before a
+        # season starts, and build_matchup_stats.py's games-only build step
+        # has no dependency on stats existing. If a real games/wkNN.json
+        # for the ACTUAL target season already lists this exact matchup,
+        # file the output under that real week instead of "bootstrap" —
+        # games.html only ever looks in game_breakdowns/wkNN/, so this is
+        # what makes a Game Breakdown button actually work on a real,
+        # upcoming game's card, without needing any change to that
+        # already-tested page. Falls back to "bootstrap" if no real
+        # schedule match is found.
+        #
+        # MUST check the season field, not just the team pairing — the
+        # bootstrap evidence's own season (e.g. 2025) is the FOUNDATION
+        # data, one season behind the actual target game (e.g. 2026).
+        # Confirmed by testing: without this check, a real, ALREADY-PLAYED
+        # prior-season game between the same two teams (e.g. the actual
+        # 2025 GB@MIN game this evidence was bootstrapped from) can match
+        # by team pairing alone, incorrectly filing a real upcoming
+        # preview under a week folder that actually belongs to a
+        # completed, unrelated game.
+        target_season = evidence["bootstrap_source"]["season"] + 1
+        real_week = None
+        for wk_num in range(1, 23):
+            g = load_json(f"games/wk{wk_num:02d}.json")
+            if not g or g.get("season") != target_season:
+                continue
+            for game in g.get("games", []):
+                if game.get("away") == args.away and game.get("home") == args.home:
+                    real_week = wk_num
+                    break
+            if real_week:
+                break
+        out_dir = f"game_breakdowns/wk{real_week:02d}" if real_week else "game_breakdowns/bootstrap"
     else:
         if args.week is None:
             current = load_json("matchup/current.json")
@@ -144,14 +181,26 @@ def main():
     gold_example = load_text(GOLD_STANDARD_EXAMPLE_PATH)
     gold_example_framed = (
         "GOLD STANDARD EXAMPLE — APPROVED REFERENCE REPORT\n\n"
-        "The following is a real, human-approved Game Breakdown that meets every "
-        "requirement in the Standard above. Study it for structure, depth, rigor, "
-        "and voice — this is the quality bar every report should meet.\n\n"
-        "This is a DIFFERENT, UNRELATED game (Green Bay @ Minnesota). Do not reuse "
-        "any team name, player name, stat, or specific claim from this example in "
-        "the report you are about to write — it is a quality reference only, not "
-        "source material. Every fact in your actual report must come from the real "
-        "evidence package for the actual game below, not from this example.\n\n"
+        "The following is a real, human-approved Game Breakdown, approved for its "
+        "writing quality, analytical depth, and rigor — study it for VOICE, DEPTH, "
+        "and RIGOR, this is the quality bar every report should meet.\n\n"
+        "IMPORTANT — its SECTION STRUCTURE IS OUTDATED. This example predates a "
+        "structural redesign and still uses the OLD section order (Game Overview, "
+        "Team Unit Breakdown, Positional Matchups, Coverage & Scheme Notes, Hidden "
+        "Intelligence, Threats to Watch, Injury & Availability Report, Keys to the "
+        "Game, Bottom Line, Key Statistics). DO NOT follow this structure. Follow "
+        "ONLY the Frozen Section Order given in the Standard above (Pregame "
+        "Briefing, Injury & Availability Report, Matchup Statistics, Matchup "
+        "Intelligence, Threat Intelligence, Hidden Intelligence & Contextual "
+        "Analysis, Coeus Final Read) for the actual report you write below — the "
+        "Standard's structure always wins over this example's structure if the two "
+        "ever conflict.\n\n"
+        "This is also a DIFFERENT, UNRELATED game (Green Bay @ Minnesota). Do not "
+        "reuse any team name, player name, stat, or specific claim from this "
+        "example in the report you are about to write — it is a quality reference "
+        "only, not source material. Every fact in your actual report must come "
+        "from the real evidence package for the actual game below, not from this "
+        "example.\n\n"
         f"{gold_example}"
     )
 

@@ -309,6 +309,13 @@ def main():
             "coverage_qb": filter_intel_by_teams(coverage_json, "qb_teams", teams),
             "coverage_wr": filter_intel_by_teams(coverage_json, "wr_teams", teams),
             "coverage_te": filter_intel_by_teams(coverage_json, "te_teams", teams),
+            # Each defense's OWN season-long man/zone play-calling rate —
+            # different from coverage_qb/wr/te above, which are about how a
+            # specific PLAYER performs when facing man vs. zone. This is
+            # the defense's own scheme tendency, already computed in
+            # build_matchup_stats.py and already shown on the Teams page's
+            # Defense tab, but never wired into evidence before this.
+            "team_coverage_rate": filter_intel_by_teams(coverage_json, "team_coverage_rate", teams),
         }
 
         # ── CB/DB Coverage Rankings for defenders on both teams
