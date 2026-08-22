@@ -26,3 +26,15 @@ dfs_breakdowns/**/*_prompt_full.txt
 # evidence dumps, not meant for public consumption) are kept out.
 game_breakdowns/**/*_prompt.json
 game_breakdowns/**/*_prompt_full.txt
+
+# dfs_weekly/ — brand new report type (Aug 21 2026), kept fully private
+# for now, including the .md reports themselves — same principle as
+# Game Breakdowns and DFS reports before it: private until reviewed and
+# approved, not just until it runs without crashing. Three real bugs
+# were found and fixed in the same session this was built (the lineup
+# validator's TE-count logic, the Stacks section's definition of a real
+# stack, and a role-security rule for the Lineup of the Week) — review
+# is explicitly not finished yet. Once it is, narrow this to just the
+# *_prompt.json/*_prompt_full.txt debug siblings, matching the pattern
+# already used for game_breakdowns/dfs_breakdowns above.
+dfs_weekly/
