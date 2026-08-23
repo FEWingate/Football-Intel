@@ -17,7 +17,7 @@ const NAV = [
   { key: 'injuries', label: 'Injuries',     ico: '🩹' },
   { key: 'stats',    label: 'Stats Hub',    ico: '📈', href: 'stats_hub.html' },
   { key: 'reports',  label: 'Intel Reports',ico: '📄', href: 'intel_reports.html' },
-  { key: 'coeus',    label: 'Coeus',        ico: '◉' },
+  { key: 'coeus',    label: 'Coeus',        ico: '◉', href: 'coeus.html' },
 ];
 
 const MOBILE_NAV = ['games', 'threats', 'matchup', 'context', 'teams', 'dfs', 'stats'];
@@ -143,9 +143,13 @@ function fiClassify(cats){
 }
 
 /* ── TEAM LOGOS ──────────────────────────────────────────────────────
-   ESPN's CDN, keyed by their abbreviations. Only two differ from
-   nflverse's: the Rams and Washington. */
-const FI_ESPN_ABBR = { LA: 'lar', WAS: 'wsh' };
+   ESPN's CDN, keyed by their abbreviations. Only Washington differs from
+   nflverse's convention now that "LAR" is used site-wide for the Rams —
+   "LAR".toLowerCase() already matches ESPN's own "lar" path directly, so
+   no override entry is needed for it. Deliberately NOT adding one back:
+   if some file anywhere still emits a stray "LA", it should show up as a
+   visibly broken logo, not get silently patched here and hide the bug. */
+const FI_ESPN_ABBR = { WAS: 'wsh' };
 /* Preload the two logos most pages show first so they don't pop in late. */
 function fiPreloadLogos(teams){
   (teams || []).slice(0, 8).forEach(t => { const i = new Image(); i.src = fiLogo(t); });
@@ -178,7 +182,7 @@ const FI_CONFERENCES = {
     East:  ['DAL', 'NYG', 'PHI', 'WAS'],
     North: ['CHI', 'DET', 'GB', 'MIN'],
     South: ['ATL', 'CAR', 'NO', 'TB'],
-    West:  ['ARI', 'LA', 'SEA', 'SF'],
+    West:  ['ARI', 'LAR', 'SEA', 'SF'],
   },
 };
 const FI_TEAM_NAME = {
@@ -187,7 +191,7 @@ const FI_TEAM_NAME = {
   CIN: 'Cincinnati Bengals',  CLE: 'Cleveland Browns',   DAL: 'Dallas Cowboys',
   DEN: 'Denver Broncos',      DET: 'Detroit Lions',      GB: 'Green Bay Packers',
   HOU: 'Houston Texans',      IND: 'Indianapolis Colts', JAX: 'Jacksonville Jaguars',
-  KC: 'Kansas City Chiefs',   LA: 'Los Angeles Rams',    LAC: 'Los Angeles Chargers',
+  KC: 'Kansas City Chiefs',   LAR: 'Los Angeles Rams',   LAC: 'Los Angeles Chargers',
   LV: 'Las Vegas Raiders',    MIA: 'Miami Dolphins',     MIN: 'Minnesota Vikings',
   NE: 'New England Patriots', NO: 'New Orleans Saints',  NYG: 'New York Giants',
   NYJ: 'New York Jets',       PHI: 'Philadelphia Eagles',PIT: 'Pittsburgh Steelers',
@@ -214,7 +218,7 @@ const FI_TEAM_INFO = {
   IND: { city: 'Indianapolis',    state: 'IN', stadium: 'Lucas Oil Stadium',            capacity: 67000 },
   JAX: { city: 'Jacksonville',    state: 'FL', stadium: 'EverBank Stadium',             capacity: 67838 },
   KC:  { city: 'Kansas City',     state: 'MO', stadium: 'GEHA Field at Arrowhead Stadium', capacity: 76416 },
-  LA:  { city: 'Inglewood',       state: 'CA', stadium: 'SoFi Stadium',                 capacity: 70240 },
+  LAR: { city: 'Inglewood',       state: 'CA', stadium: 'SoFi Stadium',                 capacity: 70240 },
   LAC: { city: 'Inglewood',       state: 'CA', stadium: 'SoFi Stadium',                 capacity: 70240 },
   LV:  { city: 'Las Vegas',       state: 'NV', stadium: 'Allegiant Stadium',            capacity: 65000 },
   MIA: { city: 'Miami Gardens',   state: 'FL', stadium: 'Hard Rock Stadium',            capacity: 65326 },

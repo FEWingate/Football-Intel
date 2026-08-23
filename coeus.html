@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ask Coeus — Football Intel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/fi-styles.css">
+<style>
+/* Page-specific styles only — everything else (sidebar, header, colors,
+   fonts) comes from the shared css/fi-styles.css every other page uses. */
+
+.key-banner{
+  background:rgba(250,204,21,.07);border:1px solid rgba(250,204,21,.3);border-radius:var(--radius);
+  padding:14px 16px;margin-bottom:20px;font-size:12.5px;color:var(--text-mid);line-height:1.6;
+}
+.key-banner b{color:var(--text)}
+.key-row{display:flex;gap:8px;margin-top:10px}
+.key-row input{
+  flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);
+  color:var(--text);font-family:var(--font-mono);font-size:12px;padding:8px 10px;
+}
+.key-row button{
+  background:var(--primary);color:#0a0d0f;border:none;border-radius:var(--radius-sm);
+  font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;padding:8px 16px;cursor:pointer;
+}
+.key-row button:hover{opacity:.9}
+.key-status{font-family:var(--font-mono);font-size:10.5px;color:var(--primary);margin-top:6px}
+
+.examples{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.examples button{
+  background:var(--surface);border:1px solid var(--border);border-radius:20px;
+  color:var(--text-mid);font-family:var(--font-mono);font-size:11px;padding:6px 14px;
+  cursor:pointer;transition:all .15s;
+}
+.examples button:hover{border-color:var(--primary);color:var(--primary)}
+
+.ask-row{display:flex;gap:10px;margin-bottom:24px}
+.ask-row input{
+  flex:1;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);
+  color:var(--text);font-size:14px;padding:12px 16px;
+}
+.ask-row input:focus{outline:none;border-color:var(--primary)}
+.ask-row button{
+  background:var(--primary);color:#0a0d0f;border:none;border-radius:var(--radius);
+  font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:.05em;
+  text-transform:uppercase;padding:12px 22px;cursor:pointer;white-space:nowrap;
+}
+.ask-row button:disabled{opacity:.5;cursor:not-allowed}
+
+.answer-block{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:20px 22px;margin-bottom:16px;
+}
+.answer-q{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);margin-bottom:10px;
+  text-transform:uppercase;letter-spacing:.04em}
+.answer-mode{
+  display:inline-block;font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;
+  text-transform:uppercase;padding:3px 9px;border-radius:3px;margin-bottom:12px;
+}
+.answer-mode.filter{border:1px solid rgba(163,230,53,.35);color:var(--primary);background:rgba(163,230,53,.07)}
+.answer-mode.freeform{border:1px solid rgba(250,204,21,.35);color:var(--accent-gold);background:rgba(250,204,21,.07)}
+
+.result-table{width:100%;border-collapse:collapse;margin-top:10px}
+.result-table th{
+  text-align:left;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--text-dim);padding:6px 10px;border-bottom:1px solid var(--border2);
+}
+.result-table td{padding:8px 10px;border-bottom:1px solid var(--hairline);font-size:13px}
+.result-table tr:last-child td{border-bottom:none}
+.result-empty{color:var(--text-dim);font-size:13px;padding:12px 0}
+
+.answer-narration{font-size:14px;line-height:1.7;color:var(--text-mid)}
+.answer-narration h1,.answer-narration h2,.answer-narration h3{
+  font-family:var(--font-display);color:var(--text);margin:16px 0 8px;
+}
+.answer-narration h1{font-size:18px}.answer-narration h2{font-size:16px}.answer-narration h3{font-size:14.5px}
+.answer-narration p{margin:0 0 12px}
+.answer-narration strong{color:var(--text);font-weight:600}
+.answer-narration ul,.answer-narration ol{margin:0 0 12px;padding-left:20px}
+.answer-narration li{margin-bottom:5px}
+.answer-narration hr{border:none;border-top:1px solid var(--hairline);margin:14px 0}
+.answer-narration strong{color:var(--text)}
+
+.freeform-caveat{
+  font-family:var(--font-mono);font-size:10.5px;color:var(--text-dim);margin-top:12px;
+  padding-top:12px;border-top:1px solid var(--hairline);line-height:1.5;
+}
+.loading{color:var(--text-dim);font-size:13px;font-style:italic}
+.error{color:#f87171;font-size:13px}
+</style>
+</head>
+<body>
+<script src="js/fi-shell.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/16.3.0/lib/marked.umd.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const API_KEY_STORAGE = 'fi_coeus_api_key_v1';
+const MODEL = 'claude-sonnet-5';
+
+// ── DETERMINISTIC DATA ENGINE ────────────────────────────────────────
+// Every number a user asks about gets computed HERE, in plain JS, from
+// the same real files every other page on the site trusts — never asked
+// of the model. Coeus's only jobs are (1) turning a free-text question
+// into a structured filter this engine can run, and (2) narrating
+// results this engine already computed correctly. This mirrors the same
+// "Coeus proposes, deterministic code verifies/executes" pattern already
+// proven with the DK lineup validator — an LLM should never be trusted
+// to do precise filtering or ranking math itself.
+
+let PLAYERS = null, MATCHUP = null, GAMES = null, CURRENT_WEEK = null;
+let TEAM_OPPONENT = {};      // {team: opponentTeam} for the current week
+let POSITION_RANKS = {};     // {team: {pos: [{...player, posRank}, ...]}}
+
+async function loadData(){
+  const curRes = await fetch('matchup/current.json');
+  if(!curRes.ok) throw new Error('matchup/current.json not found');
+  const cur = await curRes.json();
+  CURRENT_WEEK = cur.week;
+  const wk = String(CURRENT_WEEK).padStart(2, '0');
+
+  const [pRes, mRes, gRes] = await Promise.all([
+    fetch('players/latest.json'),
+    fetch(`matchup/wk${wk}.json`),
+    fetch(`games/wk${wk}.json`),
+  ]);
+  if(!pRes.ok || !mRes.ok || !gRes.ok) throw new Error('required data file missing for the current week');
+  PLAYERS = await pRes.json();
+  MATCHUP = await mRes.json();
+  GAMES = await gRes.json();
+
+  TEAM_OPPONENT = {};
+  for(const g of GAMES.games || []){
+    TEAM_OPPONENT[g.away] = g.home;
+    TEAM_OPPONENT[g.home] = g.away;
+  }
+
+  // Rank every player within their own team+position by the metric that
+  // actually defines "WR1" etc. — target_share for pass-catchers, rush
+  // share for backs. This is the ONLY correct way to answer "who is
+  // team X's WR1" — it must be computed from real usage, never guessed.
+  POSITION_RANKS = {};
+  const usageMetric = { WR: 'target_share', TE: 'target_share', RB: 'rush_share', QB: null };
+  for(const pos of Object.keys(PLAYERS.players || {})){
+    const metric = usageMetric[pos];
+    if(!metric) continue;
+    const byTeam = {};
+    for(const p of PLAYERS.players[pos]){
+      const val = p?.season?.m?.[metric];
+      if(val === null || val === undefined) continue;
+      (byTeam[p.team] ||= []).push({ ...p, _usageVal: val });
+    }
+    for(const team of Object.keys(byTeam)){
+      byTeam[team].sort((a, b) => b._usageVal - a._usageVal);
+      byTeam[team].forEach((p, i) => { p._posRank = i + 1; }); // 1 = WR1/RB1 etc.
+    }
+    POSITION_RANKS[pos] = byTeam;
+  }
+}
+
+function opponentDefRank(team, pos, statKey){
+  const opp = TEAM_OPPONENT[team];
+  if(!opp) return null;
+  const cell = MATCHUP?.teams?.[opp]?.def?.[pos]?.[statKey];
+  return cell ? { opponent: opp, ...cell } : null; // {opponent, v, r}
+}
+
+// Apply a structured filter spec (produced by Coeus, never trusted blind
+// — every field is validated against known values before use) against
+// the real, already-ranked player data. Returns real rows, or an empty
+// array — never invents a result.
+const OWN_STAT_FIELD = { QB: 'pass_ypg', RB: 'rush_ypg', WR: 'rec_ypg', TE: 'rec_ypg' };
+// A player having SOME number in players.json doesn't mean he has a real
+// role — third-string/practice-squad-level names show up with near-zero
+// production and clutter results. Filter those out by default, using the
+// position's OWN default stat (not whatever the query happens to be
+// sorting/thresholding by) as the relevance check — a RB filtered by
+// receiving yards should still be excluded if his OWN rushing role is
+// nonexistent, since that's a separate question from what stat this
+// particular query cares about.
+const MIN_RELEVANCE = { QB: 50, RB: 10, WR: 10, TE: 10 };
+
+// Default cap on role rank within a team — RB1/RB2, WR1-3, TE1/TE2 — using
+// the same usage-based ranking already computed for "show me the WR1s"
+// style questions. Applied automatically to every query by default, not
+// just when a question explicitly asks for it, so results stay to
+// real, rosterable options rather than every name on the depth chart.
+// QB is intentionally uncapped — there's normally one real starter per
+// team, and the relevance floor above already screens out inactive backups.
+const DEFAULT_POS_RANK_MAX = { RB: 2, WR: 3, TE: 2 };
+
+function runFilter(spec){
+  const pos = spec.position;
+  const posPlayers = PLAYERS?.players?.[pos];
+  if(!posPlayers) return [];
+  const statKey = spec.opponent_def_stat || OWN_STAT_FIELD[pos] || 'rec_ypg';
+  const ownField = spec.metric_field || OWN_STAT_FIELD[pos];
+  const rankMax = spec.pos_rank_max || DEFAULT_POS_RANK_MAX[pos];
+  const rows = [];
+  for(const p of posPlayers){
+    const relevanceField = OWN_STAT_FIELD[pos];
+    const relevanceVal = relevanceField ? p?.season?.m?.[relevanceField] : null;
+    if(MIN_RELEVANCE[pos] && (relevanceVal === null || relevanceVal === undefined || relevanceVal < MIN_RELEVANCE[pos])) continue;
+    if(rankMax){
+      const ranked = POSITION_RANKS[pos]?.[p.team]?.find(x => x.name === p.name);
+      if(!ranked || ranked._posRank > rankMax) continue;
+    }
+    if(spec.min_metric_value && spec.metric_field){
+      const val = p?.season?.m?.[spec.metric_field];
+      if(val === null || val === undefined || val < spec.min_metric_value) continue;
+    }
+    const oppRank = opponentDefRank(p.team, pos, statKey);
+    if(!oppRank) continue;
+    // opponent_rank_min = "bottom N" (weak defenses, rank near 32);
+    // opponent_rank_max = "top N" (strong defenses, rank near 1).
+    if(spec.opponent_rank_min && oppRank.r < spec.opponent_rank_min) continue;
+    if(spec.opponent_rank_max && oppRank.r > spec.opponent_rank_max) continue;
+    rows.push({
+      name: p.name, team: p.team, opponent: oppRank.opponent,
+      opponent_rank: oppRank.r, opponent_stat_value: oppRank.v, opponent_stat_field: statKey,
+      own_stat_field: ownField, own_stat_value: ownField ? p?.season?.m?.[ownField] : null,
+    });
+  }
+  // sort_by lets a "top N" ranking question (e.g. "which RB has the most
+  // receiving yards") sort by a real stat instead of the default
+  // opponent-rank ordering. Falls back to own_stat_value if sort_by names
+  // a field not already computed per-row.
+  if(spec.sort_by){
+    rows.sort((a, b) => {
+      const av = a.own_stat_field === spec.sort_by ? a.own_stat_value : a[spec.sort_by];
+      const bv = b.own_stat_field === spec.sort_by ? b.own_stat_value : b[spec.sort_by];
+      return (bv ?? -Infinity) - (av ?? -Infinity);
+    });
+  } else {
+    rows.sort((a, b) => (spec.opponent_rank_max ? a.opponent_rank - b.opponent_rank
+                                                 : b.opponent_rank - a.opponent_rank));
+  }
+  return spec.limit ? rows.slice(0, spec.limit) : rows;
+}
+
+// ── API KEY HANDLING (browser-side, visitor's own key, same pattern as
+// Football Intel's other Anthropic-powered pages — never sent anywhere
+// but api.anthropic.com, never paid for by Frank) ──────────────────────
+function getApiKey(){ try{ return localStorage.getItem(API_KEY_STORAGE); }catch(e){ return null; } }
+function setApiKey(k){ try{ localStorage.setItem(API_KEY_STORAGE, k); }catch(e){} }
+
+async function callClaude(system, userText, maxTokens){
+  const key = getApiKey();
+  if(!key) throw new Error('No API key set.');
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify({
+      model: MODEL, max_tokens: maxTokens,
+      system, messages: [{ role: 'user', content: userText }],
+    }),
+  });
+  if(!res.ok){
+    const errBody = await res.text();
+    throw new Error(`API error ${res.status}: ${errBody.slice(0, 200)}`);
+  }
+  const data = await res.json();
+  const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+  // Same failure mode this project has hit repeatedly on the Python side:
+  // a response can hit max_tokens with its whole budget spent on internal
+  // reasoning, leaving zero visible text — that must never fail silently
+  // as a blank answer again.
+  if(data.stop_reason === 'max_tokens'){
+    throw new Error(`Response hit the ${maxTokens}-token ceiling before finishing` +
+      (text ? ' (partial answer, likely cut off).' : ' — nothing usable was produced. Try a narrower question.'));
+  }
+  if(!text.trim()){
+    throw new Error(`Empty response from the API (stop_reason: ${data.stop_reason}).`);
+  }
+  return text;
+}
+
+// Step 1: classify the question. Coeus's ONLY job here is picking a
+// structured filter or flagging free-form — it never does the filtering
+// itself, and the exact field names below are the only ones runFilter()
+// understands, so an invalid spec just fails safely rather than
+// producing a wrong-but-confident answer.
+const CLASSIFY_SYSTEM = `You are Coeus, Football Intel's analyst. A user will ask a question. \
+Decide whether it's a STRUCTURED FILTER (comparing players against real numeric thresholds, \
+like usage rank or opponent defense rank) or FREE-FORM (needs real football judgment, not just \
+filtering). Respond with ONLY a JSON object, nothing else, no markdown fences.
+
+For a structured filter, respond exactly in this shape (omit fields that don't apply):
+{"mode":"filter","position":"WR","pos_rank_max":1,"opponent_rank_min":23,"opponent_def_stat":"rec_ypg","metric_field":"rush_ypg","min_metric_value":60}
+
+Field meaning: position is QB/RB/WR/TE. pos_rank_max=1 means "the team's WR1/RB1" (their own \
+target_share or rush_share rank within their team, 1=highest). opponent_def_stat is the real \
+defense-vs-position stat to check — "pass_ypg" for QB, "rush_ypg" for RB, "rec_ypg" for WR/TE. \
+opponent_rank_min is the MINIMUM league-wide rank (1=best defense, 32=worst) for "bottom N" \
+questions (weak defenses) — "bottom 10" means opponent_rank_min=23, "bottom 5" means \
+opponent_rank_min=28. opponent_rank_max is the MAXIMUM rank for "top N" questions (strong \
+defenses) — "top 10" means opponent_rank_max=10, "top 5" means opponent_rank_max=5. Use \
+opponent_rank_min OR opponent_rank_max, never both. metric_field is the player's OWN stat to \
+use — it OVERRIDES the position default when the question asks about a specific stat (e.g. a \
+RB's RECEIVING yards, not the default rushing yards, needs metric_field="rec_ypg"); combine with \
+min_metric_value for a threshold (e.g. rush_ypg >= 60), or omit min_metric_value and just set \
+sort_by to the same field for a ranking question instead.
+
+For a "which player has the MOST/HIGHEST/LEADS in X" ranking question (not a threshold), use \
+sort_by (the stat field to rank by) and limit (how many results, 1 for "which single player"):
+{"mode":"filter","position":"RB","metric_field":"rec_ypg","sort_by":"rec_ypg","limit":1,"opponent_rank_min":28}
+That example answers "which RB has the most receiving yards against a bottom-5 defense."
+
+For free-form questions (predictions, opinions, anything not a clean numeric filter), respond:
+{"mode":"freeform"}`;
+
+async function classifyQuestion(question){
+  const raw = await callClaude(CLASSIFY_SYSTEM, question, 1200);
+  try{ return JSON.parse(raw.trim()); }
+  catch(e){ return { mode: 'freeform' }; } // fail safe toward the more careful path
+}
+
+// Step 2a: narrate real, already-computed filter results.
+const NARRATE_SYSTEM = `You are Coeus. The user asked a filtering question, and a real, \
+deterministic query already ran against Football Intel's actual data — you did not compute \
+these numbers, they are given to you as fact. Write a short, natural summary of the real \
+results provided (a sentence or two, plus calling out anything genuinely notable). Do not add \
+any player, number, or claim not present in the results given to you.
+
+RANK DIRECTION (get this right, it is easy to state backwards): opponent_rank 1 is the BEST, \
+TOUGHEST defense in the league; opponent_rank 32 is the WORST, WEAKEST defense. A player with a \
+HIGH opponent_rank (closer to 32) has a FAVORABLE, EASY matchup — never describe that as "the \
+toughest matchup" or "a tough defense." A LOW opponent_rank (closer to 1) is the genuinely tough \
+matchup. If the results are all high-numbered ranks (as they will be for a "facing bad \
+defenses" style question), frame them as favorable/plus matchups, not difficult ones.`;
+
+// Step 2b: free-form reasoning, grounded in real current-week data.
+async function answerFreeform(question){
+  const skillPositions = ['QB', 'RB', 'WR', 'TE'];
+  const grounding = [];
+  for(const pos of skillPositions){
+    for(const p of (PLAYERS.players[pos] || [])){
+      const opp = TEAM_OPPONENT[p.team];
+      if(!opp) continue;
+      const oppDef = opponentDefRank(p.team, pos, OWN_STAT_FIELD[pos]);
+      grounding.push({
+        name: p.name, pos, team: p.team, opponent: opp,
+        season_avg: p?.season?.m || {},
+        opponent_defense: oppDef ? { stat: OWN_STAT_FIELD[pos], value_allowed: oppDef.v, rank: oppDef.r } : null,
+      });
+    }
+  }
+  const system = `You are Coeus, Football Intel's analyst. Answer the user's question using \
+ONLY the real player data provided below — season averages, this week's real opponent, AND \
+that opponent's real defensive rank/value at the relevant stat for each player. This is a \
+genuine judgment/prediction question, not a simple filter, so real football reasoning is \
+expected — but every specific claim must trace to the data given, and say so explicitly when \
+you're extrapolating beyond what the numbers directly show. This is inherently an opinion, not \
+a fact — frame it that way.
+
+RANK DIRECTION (state this correctly): opponent_defense.rank 1 is the BEST, TOUGHEST defense; \
+rank 32 is the WORST, WEAKEST. A high rank number is a FAVORABLE matchup for the player, not a \
+tough one — never state that backwards.
+
+You now have real matchup context, not just season-long profile — use it. A player with a \
+concerning season-long pattern (TD-rate regression risk, a shrinking committee role) facing a \
+weak defense (high opponent_defense.rank) may still be a fine play despite that risk; the same \
+concerning pattern against a tough defense (low rank) compounds the risk. Weigh both together \
+explicitly rather than reasoning from season averages alone.
+
+DATA (current week, real players, real opponents, real opponent defensive strength):
+${JSON.stringify(grounding)}`;
+  return await callClaude(system, question, 8000);
+}
+
+function renderResultTable(rows, spec){
+  if(!rows.length) return `<div class="result-empty">No real players in the current data matched this filter.</div>`;
+  return `<table class="result-table"><thead><tr>
+    <th>Player</th><th>${esc(rows[0].own_stat_field || 'Value')}</th><th>Team</th><th>Opponent</th>
+    <th>Opp. Rank vs. ${esc(spec.position)}</th><th>Opp. ${esc(rows[0].opponent_stat_field)} Allowed</th>
+    </tr></thead><tbody>
+    ${rows.map(r => `<tr><td>${esc(r.name)}</td><td>${r.own_stat_value ?? '—'}</td><td>${esc(r.team)}</td>
+      <td>${esc(r.opponent)}</td><td>#${r.opponent_rank}</td><td>${r.opponent_stat_value ?? '—'}</td></tr>`).join('')}
+    </tbody></table>`;
+}
+
+async function ask(question, prebuiltSpec){
+  const box = document.createElement('div');
+  box.className = 'answer-block';
+  box.innerHTML = `<div class="answer-q">${esc(question)}</div><div class="loading">Thinking…</div>`;
+  $('answers').prepend(box);
+
+  try{
+    // A pre-built spec (from an example button with a known, unambiguous
+    // filter type) skips the classification call entirely — faster and
+    // cheaper, since there's nothing genuinely ambiguous to interpret.
+    const spec = prebuiltSpec || await classifyQuestion(question);
+    if(spec.mode !== 'freeform' && spec.position){
+      const rows = runFilter(spec);
+      const narration = rows.length
+        ? await callClaude(NARRATE_SYSTEM, `Question: ${question}\nReal results: ${JSON.stringify(rows)}`, 800)
+        : '';
+      box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+        <span class="answer-mode filter">Structured filter — computed, not guessed</span>
+        ${renderResultTable(rows, spec)}
+        ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
+    } else {
+      const answer = await answerFreeform(question);
+      box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+        <span class="answer-mode freeform">Free-form — Coeus's judgment, not a computed fact</span>
+        <div class="answer-narration">${marked.parse(answer)}</div>
+        <div class="freeform-caveat">Grounded in real current-week player data, but this is
+          analysis and opinion, not a deterministic result — treat it accordingly.</div>`;
+    }
+  }catch(e){
+    box.innerHTML = `<div class="answer-q">${esc(question)}</div><div class="error">${esc(e.message)}</div>`;
+  }
+}
+
+function esc(s){ const d = document.createElement('div'); d.textContent = s ?? ''; return d.innerHTML; }
+
+const POSITIONS = ['QB', 'RB', 'WR', 'TE'];
+const EXAMPLES = [
+  { label: "Show me all the WR1's facing bottom 10 defenses this week",
+    spec: { position: 'WR', pos_rank_max: 1, opponent_rank_min: 23 } },
+  { label: "Show me RB's averaging 60 ypg facing bottom 5 defenses",
+    spec: { position: 'RB', metric_field: 'rush_ypg', min_metric_value: 60, opponent_rank_min: 28 } },
+  { label: "Which players do you think will go under their season average this week", spec: null },
+  ...POSITIONS.flatMap(pos => [
+    { label: `${pos}'s vs. bottom 5 defenses`, spec: { position: pos, opponent_rank_min: 28 } },
+    { label: `${pos}'s vs. bottom 10 defenses`, spec: { position: pos, opponent_rank_min: 23 } },
+    { label: `${pos}'s vs. top 10 defenses`, spec: { position: pos, opponent_rank_max: 10 } },
+  ]),
+];
+
+async function init(){
+  const main = fiShell({ page: 'coeus', pageLabel: 'ASK COEUS', status: 'ready' });
+  const key = getApiKey();
+  main.innerHTML = `
+    <div class="key-banner">
+      <b>Your own Anthropic API key is required.</b> It's stored only in your browser
+      (localStorage) and sent only to api.anthropic.com — never to Football Intel's servers,
+      never seen by anyone else. <a href="https://console.anthropic.com/settings/keys"
+      target="_blank" style="color:var(--primary)">Get a key here</a> if you don't have one.
+      <div class="key-row">
+        <input type="password" id="keyInput" placeholder="sk-ant-..." value="${key ? '••••••••••••••••' : ''}">
+        <button id="keySave">Save Key</button>
+      </div>
+      <div class="key-status" id="keyStatus">${key ? '● Key saved in this browser' : ''}</div>
+    </div>
+    <div class="examples" id="examples"></div>
+    <div class="ask-row">
+      <input type="text" id="questionInput" placeholder="Ask Coeus about this week's slate…">
+      <button id="askBtn">Ask</button>
+    </div>
+    <div id="answers"></div>`;
+
+  $('examples').innerHTML = EXAMPLES.map((ex, i) =>
+    `<button data-i="${i}">${esc(ex.label)}</button>`).join('');
+  $('examples').querySelectorAll('button').forEach((b, i) => {
+    b.onclick = () => { $('questionInput').value = EXAMPLES[i].label; ask(EXAMPLES[i].label, EXAMPLES[i].spec); };
+  });
+
+  $('keySave').onclick = () => {
+    const v = $('keyInput').value.trim();
+    if(v && !v.startsWith('••')){ setApiKey(v); $('keyStatus').textContent = '● Key saved in this browser'; }
+  };
+  $('askBtn').onclick = () => {
+    const q = $('questionInput').value.trim();
+    if(q) ask(q);
+  };
+  $('questionInput').addEventListener('keydown', e => {
+    if(e.key === 'Enter' && $('questionInput').value.trim()) ask($('questionInput').value.trim());
+  });
+
+  try{
+    await loadData();
+  }catch(e){
+    main.insertAdjacentHTML('beforeend', `<div class="error">Data failed to load: ${esc(e.message)}</div>`);
+  }
+}
+
+init();
+</script>
+</body>
+</html>

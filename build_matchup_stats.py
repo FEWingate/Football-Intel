@@ -504,11 +504,36 @@ def fetch_csv(urls):
     sys.exit("FATAL: could not download player stats. Check nflverse release paths.")
 
 
+# Both LA teams have real, well-established distinct nflverse codes — "LA"
+# for the Rams, "LAC" for the Chargers — and no genuine collision was found
+# anywhere in real, current data during a real investigation (Aug 2026,
+# prompted by Frank reporting a mixed-up matchup on the live site). But
+# "LA" as a bare code is inherently fragile: it's one character away from
+# "LAC", and any OTHER data source this pipeline ever pulls from (DK's
+# salary CSV, ESPN's scoreboard API for the planned live ticker, a future
+# odds API) is not guaranteed to use nflverse's exact convention. Renaming
+# every Rams "LA" to "LAR" removes the ambiguity permanently rather than
+# trusting every future data source to agree with nflverse specifically.
+TEAM_CODE_FIX = {"LA": "LAR"}
+
+
+def normalize_team_code(code):
+    return TEAM_CODE_FIX.get(code, code)
+
+
+def normalize_team_cols(df, *cols):
+    for c in cols:
+        if c in df.columns:
+            df[c] = df[c].map(normalize_team_code)
+    return df
+
+
 def norm_players(df):
     team_col = "team" if "team" in df.columns else "recent_team"
     name_col = ("player_display_name" if "player_display_name" in df.columns
                 else "player_name")
     df = df.rename(columns={team_col: "team", name_col: "name"})
+    df = normalize_team_cols(df, "team", "opponent_team")
     if "season_type" in df.columns:
         df = df[df["season_type"] == "REG"]
     if "season" in df.columns:
@@ -594,6 +619,7 @@ def build(week):
     stats = norm_players(fetch_csv(PLAYER_STATS_URLS))
     print("Downloading schedule/results...")
     games = fetch_csv(GAMES_URL)
+    games = normalize_team_cols(games, "home_team", "away_team")
     games = games[(games["season"] == SEASON) & (games["game_type"] == "REG")]
 
     prior_stats = stats[stats["week"] < week]
@@ -876,6 +902,7 @@ def build_threats(week, all_teams, records, prior_stats, week_games, gp):
     import pandas as pd
 
     snaps = fetch_csv(SNAPS_URL.format(season=SEASON))
+    snaps = normalize_team_cols(snaps, "team")
     snaps = snaps[(snaps["season"] == SEASON) & (snaps["game_type"] == "REG")
                   & (snaps["week"] < week)]
     lo = max(1, week - SNAP_LOOKBACK)
@@ -1093,6 +1120,7 @@ def fetch_pbp():
     if r.status_code != 200:
         sys.exit(f"FATAL: could not download play-by-play (HTTP {r.status_code}).")
     df = pd.read_csv(BytesIO(r.content), compression="gzip", low_memory=False)
+    df = normalize_team_cols(df, "posteam", "defteam", "home_team", "away_team")
     _CSV_CACHE[PBP_URL] = df
     return df.copy()
 
@@ -1536,6 +1564,7 @@ def compute_snap_shares():
     the whole build."""
     try:
         snaps = fetch_csv(SNAP_COUNTS_URL)
+        snaps = normalize_team_cols(snaps, "team")
     except SystemExit:
         print("  snap counts not available yet this season — skipping snap share.")
         return {}
@@ -1568,6 +1597,7 @@ def compute_rush_contact_stats():
     different data despite both being called "advanced stats.\""""
     try:
         df = fetch_csv(ADVSTATS_RUSH_URL)
+        df = normalize_team_cols(df, "team", "opponent")
     except SystemExit:
         print(f"  PFR rushing advanced stats not available for {SEASON} yet — "
               f"skipping yards after/before contact.")
@@ -1846,6 +1876,7 @@ def build_team_stats():
     this is just 'what's true right now', so it always uses every played
     week. Writes a single file, overwritten on every build run."""
     df = fetch_csv(TEAM_STATS_URL)
+    df = normalize_team_cols(df, "team")
     df = df[(df["season"] == SEASON) & (df["season_type"] == "REG")]
     if df.empty:
         raise SystemExit(f"no {SEASON} team stats available yet")
@@ -1858,6 +1889,7 @@ def build_team_stats():
     # for W/L records elsewhere on the site. Split by result too, so you
     # can see whether this defense's scoring actually tracks with winning.
     games = fetch_csv(GAMES_URL)
+    games = normalize_team_cols(games, "home_team", "away_team")
     reg = games[(games["season"] == SEASON) & (games["game_type"] == "REG") & (games["home_score"].notna())]
     pts_allowed_sum, pts_allowed_gp = {}, {}
     by_result_sum, by_result_gp = {}, {}  # team -> {"W":.., "L":.., "T":..}
@@ -1952,6 +1984,7 @@ def build_games_only(week):
     """Schedule, lines and venue — needs nothing but games.csv, so this works
     for a future season before any player stats exist."""
     games = fetch_csv(GAMES_URL)
+    games = normalize_team_cols(games, "home_team", "away_team")
     games = games[(games["season"] == SEASON) & (games["game_type"] == "REG")]
     if games.empty:
         raise SystemExit(f"no {SEASON} schedule available")
@@ -1997,6 +2030,7 @@ def build_intel_reports(week=None):
     """
     print(f"Building Intel Reports for {SEASON}...")
     games = fetch_csv(GAMES_URL)
+    games = normalize_team_cols(games, "home_team", "away_team")
     as_of_week = week or current_week(games)
     if as_of_week is None:
         sys.exit(f"FATAL: no {SEASON} schedule found in nflverse yet.")
@@ -2028,6 +2062,7 @@ def build_intel_reports(week=None):
 
     # --- team rushing yards per week + season average ---
     team_stats = fetch_csv(TEAM_STATS_URL)
+    team_stats = normalize_team_cols(team_stats, "team")
     team_stats = team_stats[team_stats["season_type"] == "REG"] if "season_type" in team_stats.columns else team_stats
     team_stats = team_stats[team_stats["week"] < as_of_week]
     team_rush = team_stats[["team", "week", "rushing_yards"]].copy()
@@ -2217,6 +2252,7 @@ def build_coverage_report():
 
     try:
         part = fetch_csv(PARTICIPATION_URL)
+        part = normalize_team_cols(part, "posteam", "defteam")
     except SystemExit:
         print(f"  Participation data not available for {SEASON} yet — released only after the "
               f"full season concludes. Skipping.")
@@ -2253,6 +2289,7 @@ def build_coverage_report():
 
     # per-game opponent + result (W/L), for the drill-down log
     games = fetch_csv(GAMES_URL)
+    games = normalize_team_cols(games, "home_team", "away_team")
     reg = games[(games["season"] == SEASON) & (games["game_type"] == "REG")]
     played = reg[reg["home_score"].notna()]
     opponent_of, result_of = {}, {}
@@ -2477,6 +2514,7 @@ def build_cb_db_rankings():
 
     try:
         df = fetch_csv(ADVSTATS_DEF_URL)
+        df = normalize_team_cols(df, "team", "opponent")
     except SystemExit:
         print(f"  PFR defensive advanced stats not available for {SEASON} yet — skipping.")
         os.makedirs("intel", exist_ok=True)
@@ -2564,6 +2602,7 @@ def build_blitz_report(week=None):
     """
     print(f"Building Blitz Impact Report for {SEASON}...")
     games = fetch_csv(GAMES_URL)
+    games = normalize_team_cols(games, "home_team", "away_team")
     as_of_week = week or current_week(games)
     if as_of_week is None:
         sys.exit(f"FATAL: no {SEASON} schedule found in nflverse yet.")
@@ -2784,6 +2823,7 @@ def resolve_weeks(arg):
     if arg not in ("auto", "all"):
         return [int(arg)]
     games = fetch_csv(GAMES_URL)
+    games = normalize_team_cols(games, "home_team", "away_team")
     wk = current_week(games)
     if wk is None:
         sys.exit(f"FATAL: no {SEASON} schedule found in nflverse yet.")

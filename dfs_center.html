@@ -271,9 +271,11 @@ main.innerHTML = `
   <div class="page-switch" id="pageSwitch" role="tablist">
     <button role="tab" data-page="tools" aria-selected="${pageView==='tools'}">DFS Tools</button>
     <button role="tab" data-page="coeus" aria-selected="${pageView==='coeus'}">Coeus DFS Report</button>
+    <button role="tab" data-page="weekly" aria-selected="${pageView==='weekly'}">Weekly DFS Report</button>
   </div>
   <div id="content" style="display:${pageView==='tools'?'':'none'}"></div>
-  <div id="coeusContent" style="display:${pageView==='coeus'?'':'none'}"></div>`;
+  <div id="coeusContent" style="display:${pageView==='coeus'?'':'none'}"></div>
+  <div id="weeklyContent" style="display:${pageView==='weekly'?'':'none'}"></div>`;
 
 $("pageSwitch").querySelectorAll("button").forEach(b => {
   b.onclick = () => {
@@ -282,7 +284,9 @@ $("pageSwitch").querySelectorAll("button").forEach(b => {
       x.setAttribute("aria-selected", String(x.dataset.page === pageView)));
     $("content").style.display = pageView === 'tools' ? '' : 'none';
     $("coeusContent").style.display = pageView === 'coeus' ? '' : 'none';
+    $("weeklyContent").style.display = pageView === 'weekly' ? '' : 'none';
     if(pageView === 'coeus') renderCoeusReports();
+    if(pageView === 'weekly') renderWeeklyReport();
   };
 });
 
@@ -378,6 +382,42 @@ async function renderCoeusReports(){
       <div class="coeus-report">${marked.parse(md)}</div>`;
   }catch(e){
     body.innerHTML = `<div class="empty">Report not found for this game.</div>`;
+  }
+}
+
+let weeklyReportCache = null;
+async function renderWeeklyReport(){
+  $("weeklyContent").innerHTML = `
+    <div class="caveat"><b>Under review:</b> this report is still being checked before it's
+      considered final — read it critically, not as a settled recommendation yet.</div>
+    <div id="weeklyReportBody"><div class="empty">Loading report…</div></div>`;
+  const body = $("weeklyReportBody");
+  try{
+    let md = weeklyReportCache;
+    if(!md){
+      const ptrRes = await fetch(`matchup/current.json`);
+      const ptr = ptrRes.ok ? await ptrRes.json() : null;
+      const wk = ptr ? String(ptr.week).padStart(2, '0') : null;
+      // generate_weekly_dfs_report.py writes to bootstrap/, a real wkNN/
+      // folder, or mixed/ depending on where the source Game Breakdowns
+      // came from — try each rather than assume one.
+      const candidates = wk
+        ? [`dfs_weekly/bootstrap/wk${wk}.md`, `dfs_weekly/mixed/wk${wk}.md`,
+           `dfs_weekly/wk${wk}/wk${wk}.md`]
+        : [];
+      let found = null;
+      for(const path of candidates){
+        const res = await fetch(path);
+        if(res.ok){ found = await res.text(); break; }
+      }
+      if(!found) throw new Error('not found');
+      md = weeklyReportCache = found;
+    }
+    body.innerHTML = `<div class="coeus-attribution">Engineered by Coeus</div>
+      <div class="coeus-report">${marked.parse(md)}</div>`;
+  }catch(e){
+    body.innerHTML = `<div class="empty">No Weekly DFS Report found for the current week yet.
+      Run generate_weekly_dfs_report.py first.</div>`;
   }
 }
 

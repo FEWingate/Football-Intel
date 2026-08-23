@@ -37,7 +37,7 @@ from dfs_lineup_validator import validate_dk_lineup
 
 PROMPTS_DIR = "prompts"
 MASTER_PROMPT_PATH = f"{PROMPTS_DIR}/Coeus_Master_Prompt_v1.1.md"
-WEEKLY_STANDARD_PATH = f"{PROMPTS_DIR}/Coeus_Weekly_DFS_Report_Standard_v1.2.md"
+WEEKLY_STANDARD_PATH = f"{PROMPTS_DIR}/Coeus_Weekly_DFS_Report_Standard_v1.5.md"
 
 DEFAULT_MODEL = "claude-sonnet-5"
 

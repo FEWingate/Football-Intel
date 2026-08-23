@@ -120,13 +120,36 @@ def opponent_of(team, game_info):
     return None
 
 
+# Same fix, same reasoning, as build_matchup_stats.py's normalize_team_code():
+# DraftKings' own CSV export has its own team-code convention, independent
+# of nflverse's — this is a real, separate potential source of exactly the
+# kind of Rams/Chargers mismatch that prompted this fix (Aug 2026), since
+# dfs/wkNN.json's team codes get cross-referenced against nflverse-derived
+# matchup.json data elsewhere in the site.
+TEAM_CODE_FIX = {"LA": "LAR"}
+
+
+def normalize_game_info(text):
+    """game_info is free text in a predictable 'AWAY@HOME DATE TIME' shape
+    straight from DK's own export — fix the two team codes embedded in it
+    the same way, since a raw string substring won't be caught by a
+    column-level fix."""
+    if not text or "@" not in text:
+        return text
+    matchup, _, rest = text.partition(" ")
+    away, _, home = matchup.partition("@")
+    away, home = TEAM_CODE_FIX.get(away, away), TEAM_CODE_FIX.get(home, home)
+    return f"{away}@{home} {rest}" if rest else f"{away}@{home}"
+
+
 def normalize_row(row):
     return {
-        "name": row.get("Name"), "pos": row.get("Position"), "team": row.get("TeamAbbrev"),
+        "name": row.get("Name"), "pos": row.get("Position"),
+        "team": TEAM_CODE_FIX.get(row.get("TeamAbbrev"), row.get("TeamAbbrev")),
         "salary": int(row["Salary"]) if pd.notna(row.get("Salary")) else 0,
         "avg_pts": float(row["AvgPointsPerGame"]) if pd.notna(row.get("AvgPointsPerGame")) else 0.0,
         "status": str(row["Status"]).strip() if pd.notna(row.get("Status")) else "",
-        "game_info": row.get("Game Info") or "",
+        "game_info": normalize_game_info(row.get("Game Info") or ""),
     }
 
 
