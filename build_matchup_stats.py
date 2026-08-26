@@ -53,6 +53,47 @@ PLAYERS_XWALK_URL = "https://github.com/nflverse/nflverse-data/releases/download
 # the SNAP_COUNTS_URL note above. Confirmed via real 2025 data before use.
 ADVSTATS_DEF_URL = f"https://github.com/nflverse/nflverse-data/releases/download/pfr_advstats/advstats_week_def_{SEASON}.csv"
 ADVSTATS_RUSH_URL = f"https://github.com/nflverse/nflverse-data/releases/download/pfr_advstats/advstats_week_rush_{SEASON}.csv"
+# Real weekly injury reports — official game-status designation (report_
+# status: Questionable/Doubtful/Out) AND practice participation tracked
+# separately (practice_status: Full/Limited/DNP) with the actual injury
+# named for both. Confirmed real, live, 16-column schema (Aug 2026) — this
+# replaces relying on DK's bare Status column alone, which has none of the
+# practice-trend detail that actually helps project whether someone plays.
+INJURIES_URL = f"https://github.com/nflverse/nflverse-data/releases/download/injuries/injuries_{SEASON}.csv"
+# Real season roster data — one row per player who's been on a team's
+# roster this season, with a "status" field (ACT/RES/INA/DEV/CUT/etc.)
+# needed to filter down to who's actually active right now. Confirmed
+# live (Aug 2026): the real 2026 file already shows 90 ACT players per
+# team, matching the current real pre-cutdown state — this same file,
+# re-fetched after the Aug 30 cutdown deadline, should reflect the real,
+# final 53-man rosters with no code changes needed.
+ROSTERS_URL = f"https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_{SEASON}.csv"
+# Real depth charts — confirmed the documented 2025+ format change is
+# real and live: no week column anymore, just an ISO8601 "dt" timestamp
+# per snapshot, updated daily. Must filter to the single most recent
+# timestamp to get the current depth chart, not the whole accumulated
+# history. Confirmed live (Aug 2026): latest timestamp in the real file
+# matches today's date.
+DEPTH_CHARTS_URL = f"https://github.com/nflverse/nflverse-data/releases/download/depth_charts/depth_charts_{SEASON}.csv"
+# Next Gen Stats passing/rushing — real player-tracking-derived metrics
+# (CPOE, time to throw, aggressiveness for passing; efficiency, rush
+# yards over expected for rushing). Confirmed via the real Python source
+# (nfl_data_py) that these are ONLY published as parquet, one combined
+# file spanning every season — not per-season CSVs like most other
+# sources here. Filtered to SEASON after fetching, not in the URL itself.
+NGS_PASSING_URL = "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_passing.parquet"
+NGS_RUSHING_URL = "https://github.com/nflverse/nflverse-data/releases/download/nextgen_stats/ngs_rushing.parquet"
+# Expected Fantasy Points — a real xgboost model (ffverse/ffopportunity,
+# a different repo from nflverse-data itself) comparing actual fantasy
+# output to what a player's real usage/opportunity should have produced.
+# Confirmed real, direct fields for this exact comparison already exist
+# (total_fantasy_points, total_fantasy_points_exp, total_fantasy_points_
+# diff) — no computation needed on top, just extraction. Confirmed a CSV
+# variant exists despite the R package defaulting to .rds.
+FF_OPPORTUNITY_URL = f"https://github.com/ffverse/ffopportunity/releases/download/latest-data/ep_weekly_{SEASON}.csv"
+# ESPN QBR — real, week-level, spans every season in one file like NGS
+# above. Uses "team_abb" for team code (confirmed by direct fetch).
+ESPN_QBR_URL = "https://github.com/nflverse/nflverse-data/releases/download/espn_data/qbr_week_level.csv"
 
 POS_MAP = {"QB": "QB", "RB": "RB", "FB": "RB", "WR": "WR", "TE": "TE"}
 POSITIONS = ["QB", "RB", "WR", "TE"]
@@ -746,7 +787,299 @@ def build(week):
                   out_team_def, out_pos_def)
     build_threats(week, all_teams, records, prior_stats, week_games, gp)
     build_games(week, all_teams, records, week_games, prior_games, stats)
+    build_injuries(week)
+    build_ngs_passing(week)
+    build_ngs_rushing(week)
+    build_ff_opportunity(week)
+    build_espn_qbr(week)
     print("Serve the folder and open matchup_stats.html / contextual_stats.html")
+
+
+# ==========================================================================
+# ROSTERS — real, current active rosters per team. The real file spans a
+# whole season (every player who's touched a team's roster, including
+# practice-squad/IR churn), so filtering to status == "ACT" is what
+# actually gives "who's really on the team right now" — confirmed
+# against real live 2026 data showing exactly 90 ACT players per team
+# pre-cutdown, matching the real current roster-size rule.
+# ==========================================================================
+def build_rosters():
+    try:
+        df = fetch_csv(ROSTERS_URL)
+    except SystemExit:
+        print(f"  Roster data not available for {SEASON} yet — skipping.")
+        return
+    df = normalize_team_cols(df, "team")
+    df = df[df["status"] == "ACT"]
+
+    def clean(v):
+        return None if pd.isna(v) else v
+
+    teams = {}
+    for _, r in df.iterrows():
+        team = clean(r.get("team"))
+        if not team:
+            continue
+        teams.setdefault(team, []).append({
+            "gsis_id": clean(r.get("gsis_id")), "name": clean(r.get("full_name")),
+            "position": clean(r.get("position")), "jersey_number": clean(r.get("jersey_number")),
+            "years_exp": clean(r.get("years_exp")), "college": clean(r.get("college")),
+            "status": clean(r.get("status")),
+        })
+
+    payload = {"season": SEASON, "teams": teams}
+    os.makedirs("rosters", exist_ok=True)
+    path = "rosters/latest.json"
+    with open(path, "w") as f:
+        json.dump(payload, f)
+    total = sum(len(v) for v in teams.values())
+    print(f"Wrote {path} — {len(teams)} teams, {total} active players, "
+          f"{os.path.getsize(path)/1024:.0f} KB")
+
+
+# ==========================================================================
+# DEPTH CHARTS — real, current per-position depth ranking. Confirmed the
+# documented 2025+ format change is real and live: no week column, just
+# an ISO8601 "dt" timestamp per daily snapshot, with the whole season's
+# history accumulated in one file — must filter to the single latest
+# timestamp to get the current depth chart, not the full history.
+# ==========================================================================
+def build_depth_charts():
+    try:
+        df = fetch_csv(DEPTH_CHARTS_URL)
+    except SystemExit:
+        print(f"  Depth chart data not available for {SEASON} yet — skipping.")
+        return
+    df = normalize_team_cols(df, "team")
+    latest_dt = df["dt"].max()
+    df = df[df["dt"] == latest_dt]
+
+    def clean(v):
+        return None if pd.isna(v) else v
+
+    teams = {}
+    for _, r in df.iterrows():
+        team = clean(r.get("team"))
+        if not team:
+            continue
+        teams.setdefault(team, []).append({
+            "gsis_id": clean(r.get("gsis_id")), "name": clean(r.get("player_name")),
+            "pos_group": clean(r.get("pos_grp")), "pos_name": clean(r.get("pos_name")),
+            "pos_abb": clean(r.get("pos_abb")), "pos_rank": clean(r.get("pos_rank")),
+        })
+
+    payload = {"season": SEASON, "as_of": latest_dt, "teams": teams}
+    os.makedirs("depth_charts", exist_ok=True)
+    path = "depth_charts/latest.json"
+    with open(path, "w") as f:
+        json.dump(payload, f)
+    total = sum(len(v) for v in teams.values())
+    print(f"Wrote {path} — {len(teams)} teams, {total} depth-chart entries, "
+          f"as of {latest_dt}, {os.path.getsize(path)/1024:.0f} KB")
+
+
+# ==========================================================================
+# NEXT GEN STATS (passing/rushing) — real player-tracking metrics: CPOE,
+# time to throw, aggressiveness (passing); efficiency, rush yards over
+# expected (rushing). Confirmed the real file spans every season in one
+# parquet — filtered to SEASON/week after fetching, not in the URL.
+# ==========================================================================
+def build_ngs_passing(week):
+    try:
+        df = fetch_parquet(NGS_PASSING_URL)
+    except SystemExit:
+        print(f"  Next Gen Stats (passing) not available — skipping.")
+        return
+    df = normalize_team_cols(df, "team_abbr")
+    df = df[(df["season"] == SEASON) & (df["week"] == week)]
+
+    def clean(v):
+        return None if pd.isna(v) else v
+
+    players = []
+    for _, r in df.iterrows():
+        players.append({
+            "gsis_id": clean(r.get("player_gsis_id")), "name": clean(r.get("player_display_name")),
+            "team": clean(r.get("team_abbr")), "attempts": clean(r.get("attempts")),
+            "avg_time_to_throw": clean(r.get("avg_time_to_throw")),
+            "avg_completed_air_yards": clean(r.get("avg_completed_air_yards")),
+            "avg_intended_air_yards": clean(r.get("avg_intended_air_yards")),
+            "aggressiveness": clean(r.get("aggressiveness")),
+            "completion_percentage": clean(r.get("completion_percentage")),
+            "expected_completion_percentage": clean(r.get("expected_completion_percentage")),
+            "completion_percentage_above_expectation": clean(r.get("completion_percentage_above_expectation")),
+        })
+
+    payload = {"season": SEASON, "week": week, "players": players}
+    os.makedirs("ngs_passing", exist_ok=True)
+    path = f"ngs_passing/wk{week:02d}.json"
+    with open(path, "w") as f:
+        json.dump(payload, f)
+    print(f"Wrote {path} — {len(players)} qualifying passers, {os.path.getsize(path)/1024:.0f} KB")
+
+
+def build_ngs_rushing(week):
+    try:
+        df = fetch_parquet(NGS_RUSHING_URL)
+    except SystemExit:
+        print(f"  Next Gen Stats (rushing) not available — skipping.")
+        return
+    df = normalize_team_cols(df, "team_abbr")
+    df = df[(df["season"] == SEASON) & (df["week"] == week)]
+
+    def clean(v):
+        return None if pd.isna(v) else v
+
+    players = []
+    for _, r in df.iterrows():
+        players.append({
+            "gsis_id": clean(r.get("player_gsis_id")), "name": clean(r.get("player_display_name")),
+            "team": clean(r.get("team_abbr")), "rush_attempts": clean(r.get("rush_attempts")),
+            "efficiency": clean(r.get("efficiency")),
+            "avg_time_to_los": clean(r.get("avg_time_to_los")),
+            "percent_attempts_gte_eight_defenders": clean(r.get("percent_attempts_gte_eight_defenders")),
+            "expected_rush_yards": clean(r.get("expected_rush_yards")),
+            "rush_yards_over_expected": clean(r.get("rush_yards_over_expected")),
+            "rush_yards_over_expected_per_att": clean(r.get("rush_yards_over_expected_per_att")),
+            "rush_pct_over_expected": clean(r.get("rush_pct_over_expected")),
+        })
+
+    payload = {"season": SEASON, "week": week, "players": players}
+    os.makedirs("ngs_rushing", exist_ok=True)
+    path = f"ngs_rushing/wk{week:02d}.json"
+    with open(path, "w") as f:
+        json.dump(payload, f)
+    print(f"Wrote {path} — {len(players)} qualifying rushers, {os.path.getsize(path)/1024:.0f} KB")
+
+
+# ==========================================================================
+# EXPECTED FANTASY POINTS — real actual-vs-expected comparison, already
+# computed (total_fantasy_points, total_fantasy_points_exp, _diff) — no
+# math needed on top, confirmed with a real spot-check (Christian
+# McCaffrey, Week 1 2025: 23.2 actual vs 27.69 expected, -4.49 diff).
+# ==========================================================================
+def build_ff_opportunity(week):
+    try:
+        df = fetch_csv(FF_OPPORTUNITY_URL)
+    except SystemExit:
+        print(f"  Expected Fantasy Points not available for {SEASON} yet — skipping.")
+        return
+    df = normalize_team_cols(df, "posteam")
+    df = df[df["week"] == week]
+
+    def clean(v):
+        return None if pd.isna(v) else v
+
+    players = []
+    for _, r in df.iterrows():
+        players.append({
+            "player_id": clean(r.get("player_id")), "name": clean(r.get("full_name")),
+            "position": clean(r.get("position")), "team": clean(r.get("posteam")),
+            "total_fantasy_points": clean(r.get("total_fantasy_points")),
+            "total_fantasy_points_exp": clean(r.get("total_fantasy_points_exp")),
+            "total_fantasy_points_diff": clean(r.get("total_fantasy_points_diff")),
+            "pass_fantasy_points_diff": clean(r.get("pass_fantasy_points_diff")),
+            "rec_fantasy_points_diff": clean(r.get("rec_fantasy_points_diff")),
+            "rush_fantasy_points_diff": clean(r.get("rush_fantasy_points_diff")),
+        })
+
+    payload = {"season": SEASON, "week": week, "players": players}
+    os.makedirs("ff_opportunity", exist_ok=True)
+    path = f"ff_opportunity/wk{week:02d}.json"
+    with open(path, "w") as f:
+        json.dump(payload, f)
+    print(f"Wrote {path} — {len(players)} players, {os.path.getsize(path)/1024:.0f} KB")
+
+
+# ==========================================================================
+# ESPN QBR — real, week-level. Uses "team_abb" as the real team column
+# (confirmed by direct fetch — distinct from the "team" column also
+# present in this file, which is a different, non-code value).
+# ==========================================================================
+def build_espn_qbr(week):
+    try:
+        df = fetch_csv(ESPN_QBR_URL)
+    except SystemExit:
+        print(f"  ESPN QBR not available — skipping.")
+        return
+    df = normalize_team_cols(df, "team_abb")
+    df = df[(df["season"] == SEASON) & (df["week_num"] == week)]
+
+    def clean(v):
+        return None if pd.isna(v) else v
+
+    players = []
+    for _, r in df.iterrows():
+        players.append({
+            "player_id": clean(r.get("player_id")), "name": clean(r.get("name_display")),
+            "team": clean(r.get("team_abb")), "qbr_total": clean(r.get("qbr_total")),
+            "pts_added": clean(r.get("pts_added")), "epa_total": clean(r.get("epa_total")),
+            "pass_epa": clean(r.get("pass")), "run_epa": clean(r.get("run")),
+            "rank": clean(r.get("rank")), "qualified": clean(r.get("qualified")),
+        })
+
+    payload = {"season": SEASON, "week": week, "players": players}
+    os.makedirs("espn_qbr", exist_ok=True)
+    path = f"espn_qbr/wk{week:02d}.json"
+    with open(path, "w") as f:
+        json.dump(payload, f)
+    print(f"Wrote {path} — {len(players)} QBs, {os.path.getsize(path)/1024:.0f} KB")
+
+
+# ==========================================================================
+# INJURIES — real weekly report status + practice participation, replacing
+# reliance on DraftKings' bare Status column. Confirmed via direct fetch
+# (Aug 2026) that the real live file is one row per player per week — no
+# per-practice-day duplicates to collapse, despite the field existing for
+# multiple practice-day snapshots elsewhere in nflverse's other data.
+# ==========================================================================
+def build_injuries(week):
+    try:
+        df = fetch_csv(INJURIES_URL)
+    except SystemExit:
+        print(f"  Injury reports not available for {SEASON} yet — skipping.")
+        return
+    df = normalize_team_cols(df, "team")
+    df = df[(df["season"] == SEASON) & (df["week"] == week)]
+    # A blank report_status means the player was never on the official
+    # game-day report at all (a practice-only rest note, e.g. "resting
+    # player") — real, but not the kind of injury relevance this page is
+    # for. Keep only players who actually carry a real designation.
+    df = df[df["report_status"].fillna("").str.strip() != ""]
+
+    # pandas represents a missing cell as its own NaN float, not Python's
+    # None — and NaN is truthy in Python, so a naive "x or None" check
+    # never catches it (confirmed the hard way: shipped once, broke real
+    # output, since NaN isn't valid JSON at all). The DataFrame-level fix
+    # ALSO failed silently on first attempt — df.where(pd.notna(df), None)
+    # cannot actually store None into a float64-dtype column, since that
+    # dtype has no representation for it; pandas keeps the NaN regardless.
+    # Confirmed by isolated test before trusting it. Checking pd.isna() on
+    # each real value, at the point of building the plain Python dict, is
+    # what actually works — a Python dict has no dtype to fight.
+    def clean(v):
+        return None if pd.isna(v) else v
+
+    players = []
+    for _, r in df.iterrows():
+        players.append({
+            "gsis_id": clean(r.get("gsis_id")), "name": clean(r.get("full_name")),
+            "position": clean(r.get("position")), "team": clean(r.get("team")),
+            "report_status": clean(r.get("report_status")),
+            "report_primary_injury": clean(r.get("report_primary_injury")),
+            "report_secondary_injury": clean(r.get("report_secondary_injury")),
+            "practice_status": clean(r.get("practice_status")),
+            "practice_primary_injury": clean(r.get("practice_primary_injury")),
+            "practice_secondary_injury": clean(r.get("practice_secondary_injury")),
+        })
+
+    payload = {"season": SEASON, "week": week, "players": players}
+    os.makedirs("injuries", exist_ok=True)
+    path = f"injuries/wk{week:02d}.json"
+    with open(path, "w") as f:
+        json.dump(payload, f)
+    print(f"Wrote {path} — {len(players)} players with a real report status, "
+          f"{os.path.getsize(path)/1024:.0f} KB")
 
 
 # ==========================================================================
@@ -1122,6 +1455,27 @@ def fetch_pbp():
     df = pd.read_csv(BytesIO(r.content), compression="gzip", low_memory=False)
     df = normalize_team_cols(df, "posteam", "defteam", "home_team", "away_team")
     _CSV_CACHE[PBP_URL] = df
+    return df.copy()
+
+
+def fetch_parquet(url):
+    """Next Gen Stats is only published as parquet (confirmed directly —
+    no CSV variant exists at the same release path, unlike most other
+    nflverse sources), so it needs its own fetch path. Requires pyarrow
+    (pip install pyarrow --break-system-packages) — not needed by any
+    other part of this script, so this is a real, new one-time setup
+    step, not something already covered by the existing requirements."""
+    if url in _CSV_CACHE:
+        return _CSV_CACHE[url].copy()
+    print(f"  fetching {url}")
+    try:
+        df = pd.read_parquet(url)
+    except ImportError:
+        sys.exit("FATAL: reading Next Gen Stats requires pyarrow — run "
+                 "'pip install pyarrow --break-system-packages' once, then retry.")
+    except Exception as e:
+        sys.exit(f"FATAL: could not download Next Gen Stats ({e}).")
+    _CSV_CACHE[url] = df
     return df.copy()
 
 
@@ -2884,6 +3238,20 @@ if __name__ == "__main__":
         build_player_stats()
     except SystemExit as e:
         print(f"  player stats: skipped — {e}")
+
+    # 4b. Rosters and depth charts: always-current snapshots, same pattern
+    # as team/player stats above. Built specifically to be re-run after
+    # the Aug 30 2026 cutdown deadline with no code changes — see the
+    # ROSTERS_URL/DEPTH_CHARTS_URL comments for why this should just work.
+    try:
+        build_rosters()
+    except SystemExit as e:
+        print(f"  rosters: skipped — {e}")
+
+    try:
+        build_depth_charts()
+    except SystemExit as e:
+        print(f"  depth charts: skipped — {e}")
 
     # 5. Intel Reports: Hidden Intelligence findings. Depends on teamstats/
     # latest.json (run-defense ranks) already being written, hence last.

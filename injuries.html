@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Injuries — Football Intel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/fi-styles.css">
+<style>
+.qa-controls{
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:10px 12px;margin-bottom:18px;
+}
+.qa-controls select{
+  background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);
+  color:var(--text);font-family:var(--font-mono);font-size:12px;padding:7px 10px;cursor:pointer;
+}
+.qa-controls label{font-family:var(--font-mono);font-size:10.5px;color:var(--text-dim);white-space:nowrap}
+.qa-controls .qa-count{margin-left:auto;font-family:var(--font-mono);font-size:11px;color:var(--text-dim)}
+
+.result-table{width:100%;border-collapse:collapse}
+.result-table th{
+  text-align:left;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--text-dim);padding:8px 10px;border-bottom:1px solid var(--border2);
+}
+.result-table td{padding:9px 10px;border-bottom:1px solid var(--hairline);font-size:13px}
+.result-table tr:last-child td{border-bottom:none}
+.result-empty{color:var(--text-dim);font-size:13px;padding:20px 0;text-align:center}
+
+.status-pill{
+  display:inline-block;font-family:var(--font-mono);font-size:10px;letter-spacing:.04em;
+  text-transform:uppercase;padding:3px 9px;border-radius:3px;font-weight:700;
+}
+.status-pill.out{border:1px solid rgba(248,113,113,.4);color:#f87171;background:rgba(248,113,113,.08)}
+.status-pill.doubtful{border:1px solid rgba(251,146,60,.4);color:#fb923c;background:rgba(251,146,60,.08)}
+.status-pill.questionable{border:1px solid rgba(250,204,21,.4);color:var(--accent-gold);background:rgba(250,204,21,.07)}
+.status-pill.other{border:1px solid var(--border2);color:var(--text-mid);background:var(--surface2)}
+
+.practice-note{color:var(--text-dim);font-size:11.5px}
+</style>
+</head>
+<body>
+<script src="js/fi-shell.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+function esc(s){ const d = document.createElement('div'); d.textContent = s ?? ''; return d.innerHTML; }
+
+let INJURIES = null, CURRENT_WEEK = null;
+
+function statusClass(status){
+  const s = (status || '').toLowerCase();
+  if(s === 'out') return 'out';
+  if(s === 'doubtful') return 'doubtful';
+  if(s === 'questionable') return 'questionable';
+  return 'other';
+}
+
+function renderTable(){
+  const team = $('fTeam').value, pos = $('fPos').value, status = $('fStatus').value;
+  let rows = INJURIES?.players || [];
+  if(team) rows = rows.filter(p => p.team === team);
+  if(pos) rows = rows.filter(p => p.position === pos);
+  if(status) rows = rows.filter(p => p.report_status === status);
+
+  $('count').textContent = `${rows.length} player${rows.length === 1 ? '' : 's'}`;
+
+  if(!rows.length){
+    $('tableWrap').innerHTML = `<div class="result-empty">No players match these filters.</div>`;
+    return;
+  }
+  $('tableWrap').innerHTML = `<table class="result-table"><thead><tr>
+    <th>Player</th><th>Pos</th><th>Team</th><th>Status</th><th>Injury</th><th>Practice</th>
+    </tr></thead><tbody>
+    ${rows.map(p => `<tr>
+      <td>${esc(p.name)}</td><td>${esc(p.position)}</td><td>${esc(p.team)}</td>
+      <td><span class="status-pill ${statusClass(p.report_status)}">${esc(p.report_status)}</span></td>
+      <td>${esc(p.report_primary_injury || '—')}${p.report_secondary_injury ? ', ' + esc(p.report_secondary_injury) : ''}</td>
+      <td class="practice-note">${esc(p.practice_status || '—')}</td>
+      </tr>`).join('')}
+    </tbody></table>`;
+}
+
+async function init(){
+  const main = fiShell({ page: 'injuries', pageLabel: 'INJURIES', status: 'ready' });
+
+  const curRes = await fetch('matchup/current.json').catch(() => null);
+  if(curRes && curRes.ok){
+    const cur = await curRes.json();
+    CURRENT_WEEK = cur.week;
+  }
+
+  const teamOptions = Object.keys(FI_TEAM_NAME).sort()
+    .map(t => `<option value="${t}">${esc(FI_TEAM_NAME[t])}</option>`).join('');
+  const posOptions = ['QB', 'RB', 'WR', 'TE', 'OL', 'G', 'T', 'C', 'DL', 'DE', 'DT', 'LB', 'CB', 'S', 'K', 'P']
+    .map(p => `<option value="${p}">${p}</option>`).join('');
+
+  main.innerHTML = `
+    <div class="qa-controls">
+      <label>Team</label>
+      <select id="fTeam"><option value="">All Teams</option>${teamOptions}</select>
+      <label>Position</label>
+      <select id="fPos"><option value="">All Positions</option>${posOptions}</select>
+      <label>Status</label>
+      <select id="fStatus">
+        <option value="">All Statuses</option>
+        <option value="Out">Out</option>
+        <option value="Doubtful">Doubtful</option>
+        <option value="Questionable">Questionable</option>
+      </select>
+      <span class="qa-count" id="count"></span>
+    </div>
+    <div id="tableWrap"><div class="result-empty">Loading…</div></div>`;
+
+  $('fTeam').onchange = renderTable;
+  $('fPos').onchange = renderTable;
+  $('fStatus').onchange = renderTable;
+
+  if(!CURRENT_WEEK){
+    $('tableWrap').innerHTML = `<div class="result-empty">matchup/current.json not found —
+      can't determine the current week.</div>`;
+    return;
+  }
+  const wk = String(CURRENT_WEEK).padStart(2, '0');
+  try{
+    const res = await fetch(`injuries/wk${wk}.json`);
+    if(!res.ok){
+      $('tableWrap').innerHTML = `<div class="result-empty">injuries/wk${wk}.json isn't available
+        yet (HTTP ${res.status}). Run build_matchup_stats.py to generate it.</div>`;
+      return;
+    }
+    INJURIES = await res.json();
+  }catch(e){
+    $('tableWrap').innerHTML = `<div class="result-empty">Fetched injuries/wk${wk}.json but
+      couldn't parse it as JSON — real error: ${esc(e.message)}</div>`;
+    return;
+  }
+  try{
+    renderTable();
+  }catch(e){
+    $('tableWrap').innerHTML = `<div class="result-empty">Data loaded fine, but rendering it
+      failed — real error: ${esc(e.message)}</div>`;
+  }
+}
+
+init();
+</script>
+</body>
+</html>

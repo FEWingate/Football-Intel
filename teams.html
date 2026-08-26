@@ -88,6 +88,7 @@ main.innerHTML = `
         <button data-sec="defense">Defense</button>
         <button data-sec="special_teams">Special Teams</button>
         <button data-sec="penalties">Penalties</button>
+        <button data-sec="roster">Roster</button>
       </div>
     </div>
     <div class="modal-body" id="mBody"></div>
@@ -95,7 +96,7 @@ main.innerHTML = `
 
 const $ = id => document.getElementById(id);
 const pad = n => String(n).padStart(2,"0");
-let RECORDS = null, TEAMSTATS = null, COVERAGE = null, CBDB = null, activeTeam = null, activeSec = 'offense', lastFocus = null;
+let RECORDS = null, TEAMSTATS = null, COVERAGE = null, CBDB = null, ROSTERS = null, activeTeam = null, activeSec = 'offense', lastFocus = null;
 
 async function load(){
   fiStatus("Loading","loading");
@@ -150,6 +151,11 @@ async function load(){
     const resD = await fetch(`intel/cb_rankings.json`);
     if(resD.ok) CBDB = await resD.json();
   }catch(e){ /* cb/db rankings section just won't have data yet */ }
+
+  try{
+    const resR = await fetch(`rosters/latest.json`);
+    if(resR.ok) ROSTERS = await resR.json();
+  }catch(e){ /* roster section just won't have data yet */ }
 
   fiStatus("Ready");
   fiUpdated(`through week ${latestWeek}`);
@@ -286,11 +292,83 @@ function cbDbRankingsHTML(team){
     </div>`;
 }
 
+/* Real position groups, not just the fantasy-relevant QB/RB/WR/TE split
+   used elsewhere on the site — a full roster has offensive line, D-line,
+   linebackers, secondary, and specialists too, and browsing a team's
+   whole roster is exactly the case where those matter. */
+const ROSTER_GROUPS = [
+  { label: 'Quarterback', positions: ['QB'] },
+  { label: 'Running Back', positions: ['RB', 'FB'] },
+  { label: 'Receiver', positions: ['WR', 'TE'] },
+  { label: 'Offensive Line', positions: ['T', 'G', 'C', 'OL'] },
+  { label: 'Defensive Line', positions: ['DE', 'DT', 'NT', 'DL'] },
+  { label: 'Linebacker', positions: ['LB', 'ILB', 'OLB', 'MLB'] },
+  { label: 'Secondary', positions: ['CB', 'S', 'FS', 'SS', 'DB'] },
+  { label: 'Specialist', positions: ['K', 'P', 'LS'] },
+];
+
+function rosterHTML(team){
+  if(!ROSTERS){
+    return `<div class="empty">
+      No roster data yet.<br>
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+  }
+  const players = ROSTERS.teams[team] || [];
+  if(!players.length) return `<div class="empty">No active roster found for this team.</div>`;
+
+  let h = `<div class="empty" style="padding:8px 0 4px;text-align:left;font-size:10px">
+    ${players.length} active players · ${ROSTERS.season} season</div>`;
+
+  const grouped = new Set();
+  for(const g of ROSTER_GROUPS){
+    const rows = players.filter(p => g.positions.includes(p.position));
+    rows.forEach(p => grouped.add(p));
+    if(!rows.length) continue;
+    rows.sort((a, b) => (a.jersey_number ?? 999) - (b.jersey_number ?? 999));
+    h += `<div class="subsect">${esc(g.label)}</div>
+      <table class="stat-table"><thead><tr>
+        <th>#</th><th>Player</th><th>Pos</th><th class="right">Exp</th><th class="right">College</th>
+      </tr></thead><tbody>
+        ${rows.map(p => `<tr>
+          <td class="num">${p.jersey_number ?? '—'}</td>
+          <td>${esc(p.name)}</td>
+          <td>${esc(p.position)}</td>
+          <td class="num">${p.years_exp === 0 ? 'R' : (p.years_exp ?? '—')}</td>
+          <td class="num">${esc(p.college || '—')}</td>
+        </tr>`).join('')}
+      </tbody></table>`;
+  }
+  // Any position not covered by the groups above (rare, but real rosters
+  // do have edge cases) still shows up here rather than silently vanishing.
+  const leftover = players.filter(p => !grouped.has(p));
+  if(leftover.length){
+    h += `<div class="subsect">Other</div>
+      <table class="stat-table"><thead><tr>
+        <th>#</th><th>Player</th><th>Pos</th><th class="right">Exp</th><th class="right">College</th>
+      </tr></thead><tbody>
+        ${leftover.map(p => `<tr>
+          <td class="num">${p.jersey_number ?? '—'}</td>
+          <td>${esc(p.name)}</td>
+          <td>${esc(p.position)}</td>
+          <td class="num">${p.years_exp === 0 ? 'R' : (p.years_exp ?? '—')}</td>
+          <td class="num">${esc(p.college || '—')}</td>
+        </tr>`).join('')}
+      </tbody></table>`;
+  }
+  return h;
+}
+
 function renderStats(){
   $("mToggle").querySelectorAll("button").forEach(b =>
     b.setAttribute("aria-pressed", String(b.dataset.sec === activeSec)));
 
   const box = $("statBody");
+
+  if(activeSec === 'roster'){
+    box.innerHTML = rosterHTML(activeTeam);
+    return;
+  }
+
   if(!TEAMSTATS){
     box.innerHTML = `<div class="empty">
       No team-stats data yet.<br>

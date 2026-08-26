@@ -14,7 +14,7 @@ const NAV = [
   { key: 'players',  label: 'Players',      ico: '👤', href: 'players.html' },
   { key: 'dfs',      label: 'DFS Center',   ico: '💰', href: 'dfs_center.html' },
   { key: 'props',    label: 'Prop Center',  ico: '🎯' },
-  { key: 'injuries', label: 'Injuries',     ico: '🩹' },
+  { key: 'injuries', label: 'Injuries',     ico: '🩹', href: 'injuries.html' },
   { key: 'stats',    label: 'Stats Hub',    ico: '📈', href: 'stats_hub.html' },
   { key: 'reports',  label: 'Intel Reports',ico: '📄', href: 'intel_reports.html' },
   { key: 'coeus',    label: 'Coeus',        ico: '◉', href: 'coeus.html' },
@@ -44,14 +44,16 @@ function fiShell({ page, pageLabel, status = 'ready' }) {
   };
 
   document.body.insertAdjacentHTML('afterbegin', `
-    <header>
+    <header style="position:relative">
       <div class="header-left">
         <button class="sidebar-toggle" id="fiSidebarToggle" aria-label="Open menu">☰</button>
         <a class="logo" href="index.html" aria-label="Football Intel home"
            style="text-decoration:none;color:inherit">
           <span class="logo-main">FOOTBALL <span>INTEL</span></span></a>
-        <span class="page-label">${pageLabel}</span>
       </div>
+      <span class="page-label" style="position:absolute;left:50%;top:50%;
+        transform:translate(-50%,-50%);font-size:20px;font-weight:700;
+        letter-spacing:.04em;white-space:nowrap;">${pageLabel}</span>
       <div class="header-right">
         <span class="last-updated" id="fiUpdated"></span>
         <span class="live-dot ${status === 'ready' ? '' : status}" id="fiStatus">${status === 'ready' ? 'Ready' : status}</span>

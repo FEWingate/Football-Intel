@@ -11,11 +11,6 @@
 <style>
 body{min-height:100vh;overflow-x:hidden}
 .land-top{display:flex;align-items:center;padding:22px 28px;gap:14px}
-.land-logo{display:flex;align-items:center;gap:9px}
-.land-logo::before{content:'';width:9px;height:9px;border-radius:50%;
-  background:var(--primary);box-shadow:0 0 12px var(--primary)}
-.land-logo span{font-family:var(--font-display);font-weight:800;font-size:19px;letter-spacing:-.02em}
-.land-logo span b{color:var(--primary);font-weight:800}
 .land-note{margin-left:auto;font-family:var(--font-mono);font-size:10px;
   letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase}
 
@@ -65,7 +60,6 @@ body{min-height:100vh;overflow-x:hidden}
 <body>
 
 <div class="land-top">
-  <div class="land-logo"><span>FOOTBALL <b>INTEL</b></span></div>
   <div class="land-note">Free · No login required</div>
 </div>
 
@@ -83,7 +77,7 @@ body{min-height:100vh;overflow-x:hidden}
     <span class="chip-f on"><span class="ic">📊</span> Contextual Statistics</span>
     <span class="chip-f on"><span class="ic">🎯</span> Positional Defense Ranks</span>
     <span class="chip-f on"><span class="ic">💥</span> Explosive Play Splits</span>
-    <span class="chip-f on"><span class="ic">⚡</span> Threat System</span>
+    <span class="chip-f"><span class="ic">⚡</span> Threat System</span>
     <span class="chip-f"><span class="ic">💰</span> DFS Center</span>
     <span class="chip-f"><span class="ic">🎲</span> Prop Center</span>
     <span class="chip-f"><span class="ic">🩹</span> Injuries</span>
@@ -95,13 +89,13 @@ body{min-height:100vh;overflow-x:hidden}
     <div class="msg" id="msg">Initializing…</div>
   </div>
 
-  <a class="skip" id="skip" href="games.html">Skip intro →</a>
+  <a class="skip" id="skip" href="matchup_stats.html">Skip intro →</a>
 </main>
 
 <div class="land-foot" id="foot"></div>
 
 <script>
-const DEST     = 'games.html';   // where the intro hands off
+const DEST     = 'matchup_stats.html';   // where the intro hands off
 const DURATION = 7000;                   // total intro length in ms
 const WEEKS    = Array.from({length: 16}, (_, i) => i + 3);   // weeks 3-18
 

@@ -38,6 +38,28 @@
 }
 .examples button:hover{border-color:var(--primary);color:var(--primary)}
 
+.qa-section{margin-bottom:16px}
+.qa-section-title{
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text-dim);margin-bottom:8px;
+}
+.qa-controls{
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:10px 12px;
+}
+.qa-controls select{
+  background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);
+  color:var(--text);font-family:var(--font-mono);font-size:12px;padding:7px 10px;cursor:pointer;
+}
+.qa-controls label{font-family:var(--font-mono);font-size:10.5px;color:var(--text-dim);white-space:nowrap}
+.qa-controls .qa-go{
+  background:var(--primary);color:#0a0d0f;border:none;border-radius:var(--radius-sm);
+  font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;padding:7px 16px;cursor:pointer;margin-left:auto;
+}
+.qa-controls .qa-go:hover{opacity:.9}
+
 .ask-row{display:flex;gap:10px;margin-bottom:24px}
 .ask-row input{
   flex:1;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);
@@ -111,7 +133,7 @@ const MODEL = 'claude-sonnet-5';
 // proven with the DK lineup validator — an LLM should never be trusted
 // to do precise filtering or ranking math itself.
 
-let PLAYERS = null, MATCHUP = null, GAMES = null, CURRENT_WEEK = null;
+let PLAYERS = null, MATCHUP = null, GAMES = null, CURRENT_WEEK = null, CONTEXT = null, DFS_DATA = null;
 let TEAM_OPPONENT = {};      // {team: opponentTeam} for the current week
 let POSITION_RANKS = {};     // {team: {pos: [{...player, posRank}, ...]}}
 
@@ -132,6 +154,22 @@ async function loadData(){
   MATCHUP = await mRes.json();
   GAMES = await gRes.json();
 
+  // Optional — context/wkNN.json may not exist yet for every week. Load it
+  // if present; questions needing real game-log history just get an
+  // honest "not available" instead of the page failing to load at all.
+  try{
+    const cRes = await fetch(`context/wk${wk}.json`);
+    if(cRes.ok) CONTEXT = await cRes.json();
+  }catch(e){ /* CONTEXT stays null — handled explicitly wherever it's used */ }
+
+  // Also optional — dfs/wkNN.json is the only file with real injury
+  // status (players/latest.json has none). Only relevant once a DK slate
+  // is actually loaded for the week, so missing it is expected, not an error.
+  try{
+    const dRes = await fetch(`dfs/wk${wk}.json`);
+    if(dRes.ok) DFS_DATA = await dRes.json();
+  }catch(e){ /* DFS_DATA stays null — handled explicitly wherever it's used */ }
+
   TEAM_OPPONENT = {};
   for(const g of GAMES.games || []){
     TEAM_OPPONENT[g.away] = g.home;
@@ -143,7 +181,7 @@ async function loadData(){
   // share for backs. This is the ONLY correct way to answer "who is
   // team X's WR1" — it must be computed from real usage, never guessed.
   POSITION_RANKS = {};
-  const usageMetric = { WR: 'target_share', TE: 'target_share', RB: 'rush_share', QB: null };
+  const usageMetric = { WR: 'target_share', TE: 'target_share', RB: 'rush_share', QB: 'pass_ypg' };
   for(const pos of Object.keys(PLAYERS.players || {})){
     const metric = usageMetric[pos];
     if(!metric) continue;
@@ -168,6 +206,134 @@ function opponentDefRank(team, pos, statKey){
   return cell ? { opponent: opp, ...cell } : null; // {opponent, v, r}
 }
 
+// Answers "what has TEAM's defense actually allowed to POSITION in recent
+// games" — genuinely different from opponentDefRank() above, which only
+// gives a season-long aggregate for the CURRENT week's single opponent.
+// context/wkNN.json's own log for a team is that team's OWN offense each
+// week (tagged with the rank of whoever THEY played) — it does not
+// directly store what a team's DEFENSE allowed. That has to be derived:
+// team T's own log tells you who they played and when; the OPPONENT's
+// own log for that SAME week holds the opponent's real offensive
+// production that week — which is exactly what T's defense allowed,
+// since that's who they were playing. Returns null (not empty) when
+// context/wkNN.json isn't loaded at all, so the caller can tell "no
+// data available" apart from "checked, found nothing."
+function getDefenseGameLog(team, pos, limit, topNOnly){
+  if(!CONTEXT) return null;
+  const teamLog = CONTEXT?.teams?.[team]?.log;
+  if(!teamLog) return null;
+  const headlineStat = OWN_STAT_FIELD[pos];
+  const results = [];
+  for(const game of [...teamLog].reverse()){ // most recent first
+    const opp = game.opp;
+    if(topNOnly){
+      const seasonRank = MATCHUP?.teams?.[opp]?.off?.[pos]?.[headlineStat]?.r;
+      if(!seasonRank || seasonRank > topNOnly) continue;
+    }
+    const oppEntry = CONTEXT?.teams?.[opp]?.log?.find(g => g.week === game.week);
+    const posStats = oppEntry?.off?.[pos];
+    if(!posStats) continue;
+    results.push({ week: game.week, opponent: opp, result: game.result, score: game.score, stats: posStats });
+    if(results.length >= limit) break;
+  }
+  return results;
+}
+
+// Q1: "which defenses are worst against POSITION" — ranks TEAMS, not
+// players, so it's a genuinely different shape from runFilter(). Every
+// number here is matchup.json's own real, already-computed season rank —
+// no new math, just sorted and sliced.
+function rankTeamDefenses(pos, statKey, limit, worstFirst){
+  const stat = statKey || OWN_STAT_FIELD[pos];
+  const rows = [];
+  for(const team of Object.keys(MATCHUP?.teams || {})){
+    const cell = MATCHUP?.teams?.[team]?.def?.[pos]?.[stat];
+    if(cell) rows.push({ team, value_allowed: cell.v, rank: cell.r });
+  }
+  rows.sort((a, b) => worstFirst === false ? a.rank - b.rank : b.rank - a.rank);
+  return rows.slice(0, limit || 10);
+}
+
+// Q3: same-team QB + WR pairs who BOTH have a favorable matchup this week.
+// They share an opponent by definition (same team, same week), so this is
+// really "does this team's real opponent grade as weak against both the
+// pass in general AND this specific team's WR corps" — genuine
+// correlation logic, not two independent lookups pretending to relate.
+function findQBWRCorrelations(favorableRankMin){
+  const threshold = favorableRankMin || 23; // bottom-10 by default
+  const results = [];
+  for(const team of Object.keys(TEAM_OPPONENT)){
+    const opp = TEAM_OPPONENT[team];
+    const qbRank = MATCHUP?.teams?.[opp]?.def?.QB?.[OWN_STAT_FIELD.QB]?.r;
+    const wrRank = MATCHUP?.teams?.[opp]?.def?.WR?.[OWN_STAT_FIELD.WR]?.r;
+    if(!qbRank || !wrRank || qbRank < threshold || wrRank < threshold) continue;
+    const qb = POSITION_RANKS?.QB?.[team]?.[0];
+    const topWR = POSITION_RANKS?.WR?.[team]?.[0];
+    if(!qb || !topWR) continue;
+    if((qb?.season?.m?.[OWN_STAT_FIELD.QB] || 0) < (MIN_RELEVANCE.QB || 0)) continue;
+    results.push({
+      team, opponent: opp, qb: qb.name, qb_pass_ypg: qb?.season?.m?.[OWN_STAT_FIELD.QB],
+      wr: topWR.name, wr_rec_ypg: topWR?.season?.m?.[OWN_STAT_FIELD.WR],
+      opponent_qb_rank: qbRank, opponent_wr_rank: wrRank,
+    });
+  }
+  return results;
+}
+
+// Q4: fantasy points allowed to POSITION, aggregated over each team's
+// last N games — same real DK scoring rules already used for the DFS
+// lineup work (0.1/yard, 1/reception, 6/TD), applied to the SAME
+// game-by-game cross-referenced data getDefenseGameLog() already proves
+// correct, just summed across teams and ranked instead of listed per-game.
+const DK_SCORING = {
+  RB: s => (s.rush_yds?.v || 0) * 0.1 + (s.rec_yds?.v || 0) * 0.1
+         + (s.rec?.v || 0) * 1 + ((s.rush_td?.v || 0) + (s.rec_td?.v || 0)) * 6,
+  WR: s => (s.rec_yds?.v || 0) * 0.1 + (s.rec?.v || 0) * 1 + (s.td?.v || 0) * 6,
+  TE: s => (s.rec_yds?.v || 0) * 0.1 + (s.rec?.v || 0) * 1 + (s.td?.v || 0) * 6,
+  QB: s => (s.pass_yds?.v || 0) * 0.04 + (s.pass_td?.v || 0) * 4,
+};
+function rankDefensesByFantasyPointsAllowed(pos, lastN, limit){
+  if(!CONTEXT) return null;
+  const scorer = DK_SCORING[pos];
+  const rows = [];
+  for(const team of Object.keys(CONTEXT?.teams || {})){
+    const games = getDefenseGameLog(team, pos, lastN || 5, null);
+    if(!games || !games.length) continue;
+    const total = games.reduce((sum, g) => sum + scorer(g.stats), 0);
+    rows.push({ team, games_counted: games.length, total_fantasy_pts: Math.round(total * 10) / 10,
+                avg_fantasy_pts: Math.round((total / games.length) * 10) / 10 });
+  }
+  rows.sort((a, b) => b.avg_fantasy_pts - a.avg_fantasy_pts);
+  return rows.slice(0, limit || 10);
+}
+
+// Q2: Q/D-tagged players with a real, rostered backup ready to step in —
+// "real" meaning the next player down the depth chart clears the same
+// MIN_RELEVANCE floor already used everywhere else, not just whoever's
+// listed. Requires DFS_DATA for status (players/latest.json has none)
+// and POSITION_RANKS for the actual depth-chart ordering.
+const INJURY_TAGS = ["Q", "D"];
+function findInjuredWithBackup(){
+  if(!DFS_DATA) return null;
+  const results = [];
+  for(const p of (DFS_DATA.players || [])){
+    if(!INJURY_TAGS.includes(p.status)) continue;
+    const teamRanked = POSITION_RANKS?.[p.pos]?.[p.team];
+    if(!teamRanked) continue;
+    const myRank = teamRanked.find(x => x.name === p.name)?._posRank;
+    if(!myRank) continue;
+    const backup = teamRanked.find(x => x._posRank === myRank + 1);
+    if(!backup) continue;
+    const backupVal = backup?.season?.m?.[OWN_STAT_FIELD[p.pos]];
+    if(backupVal === undefined || backupVal === null || backupVal < (MIN_RELEVANCE[p.pos] || 0)) continue;
+    results.push({
+      player: p.name, pos: p.pos, team: p.team, status: p.status,
+      backup: backup.name, backup_stat_field: OWN_STAT_FIELD[p.pos], backup_stat_value: backupVal,
+    });
+  }
+  return results;
+}
+
 // Apply a structured filter spec (produced by Coeus, never trusted blind
 // — every field is validated against known values before use) against
 // the real, already-ranked player data. Returns real rows, or an empty
@@ -183,14 +349,18 @@ const OWN_STAT_FIELD = { QB: 'pass_ypg', RB: 'rush_ypg', WR: 'rec_ypg', TE: 'rec
 // particular query cares about.
 const MIN_RELEVANCE = { QB: 50, RB: 10, WR: 10, TE: 10 };
 
-// Default cap on role rank within a team — RB1/RB2, WR1-3, TE1/TE2 — using
-// the same usage-based ranking already computed for "show me the WR1s"
-// style questions. Applied automatically to every query by default, not
-// just when a question explicitly asks for it, so results stay to
-// real, rosterable options rather than every name on the depth chart.
-// QB is intentionally uncapped — there's normally one real starter per
-// team, and the relevance floor above already screens out inactive backups.
-const DEFAULT_POS_RANK_MAX = { RB: 2, WR: 3, TE: 2 };
+// Default cap on role rank within a team — QB1 only, RB1/RB2, WR1-3,
+// TE1/TE2 — using the same usage-based ranking already computed for
+// "show me the WR1s" style questions. Applied automatically to every
+// query by default, not just when a question explicitly asks for it, so
+// results stay to real, relevant options rather than every name on the
+// depth chart. QB was originally left uncapped here on the reasoning
+// that the relevance floor alone would screen out backups — that turned
+// out wrong: a backup who started a few real games (injury, competition)
+// can still clear a modest pass_ypg floor while still being irrelevant
+// to "which QB should I care about this week." Capped at 1 instead, same
+// as every other position gets a real cap.
+const DEFAULT_POS_RANK_MAX = { QB: 1, RB: 2, WR: 3, TE: 2 };
 
 function runFilter(spec){
   const pos = spec.position;
@@ -293,6 +463,27 @@ Decide whether it's a STRUCTURED FILTER (comparing players against real numeric 
 like usage rank or opponent defense rank) or FREE-FORM (needs real football judgment, not just \
 filtering). Respond with ONLY a JSON object, nothing else, no markdown fences.
 
+GAME-LOG QUESTIONS ARE A DISTINCT MODE — CHECK FOR THIS FIRST, before considering filter or \
+free-form. Any question asking what a specific team's defense has actually done/allowed/faced \
+in past games — not a season-long average, a real per-game history — is "gamelog", never \
+freeform. This applies equally to all four positions (QB, RB, WR, TE) — a question about a \
+team's pass defense history against quarterbacks or tight ends is exactly as much "gamelog" as \
+one about running backs; position is just whichever one the question names. Trigger phrases \
+include (not exhaustive): "last N games", "recent games", "has faced", "results against", \
+"history vs", "the last 5 top-10 RBs [team] has faced". If the question names a specific team \
+and asks about real past games against that team's defense or offense, it is gamelog even if it \
+also mentions a quality filter like "top 10" — that becomes top_n_only, not a reason to call it \
+freeform. Two examples, deliberately different positions so this isn't read as RB-only:
+{"mode":"gamelog","team":"SEA","position":"RB","limit":5,"top_n_only":10}
+answers "show me the results of the last 5 top-10 RBs the Seattle defense has faced".
+{"mode":"gamelog","team":"BUF","position":"QB","limit":5}
+answers "what have the last 5 quarterbacks Buffalo's defense faced actually done against them" \
+— same mode, same shape, just a different position value and no quality filter this time.
+team is the defense being asked about (3-letter code). top_n_only is optional — \
+include it only when the question specifically asks about facing strong/top-tier units at that \
+position; omit it for a plain "last 5 games" question with no quality filter. limit is how many \
+games, default 5 if the question doesn't say.
+
 For a structured filter, respond exactly in this shape (omit fields that don't apply):
 {"mode":"filter","position":"WR","pos_rank_max":1,"opponent_rank_min":23,"opponent_def_stat":"rec_ypg","metric_field":"rush_ypg","min_metric_value":60}
 
@@ -314,7 +505,30 @@ sort_by (the stat field to rank by) and limit (how many results, 1 for "which si
 {"mode":"filter","position":"RB","metric_field":"rec_ypg","sort_by":"rec_ypg","limit":1,"opponent_rank_min":28}
 That example answers "which RB has the most receiving yards against a bottom-5 defense."
 
-For free-form questions (predictions, opinions, anything not a clean numeric filter), respond:
+FOUR MORE REAL MODES — check for these too before defaulting to freeform:
+
+"teamrank" — ranks DEFENSES (teams), not players, by season-long rank at a position. Use for \
+"which defenses are worst/best against POSITION" questions:
+{"mode":"teamrank","position":"RB","limit":10,"worst_first":true}
+worst_first=true for "worst defenses" (highest rank numbers first), false for "best defenses".
+
+"correlation" — same-team QB+WR pairs who both have a favorable matchup this week (they share \
+an opponent by definition). Use for "which QB-WR pairs both have good matchups" questions:
+{"mode":"correlation","favorable_rank_min":23}
+favorable_rank_min follows the same bottom-N convention as elsewhere (23=bottom-10, 28=bottom-5).
+
+"injury_backup" — Questionable/Doubtful players who have a real, rostered backup with a \
+meaningful role (not just whoever's listed next). Use for "who's hurt with a real backup ready" \
+questions — needs no other fields:
+{"mode":"injury_backup"}
+
+"fantasy_allowed" — ranks defenses by real DK fantasy points allowed to a position, averaged \
+over each team's last N games (not a season-long stat — real per-game history, aggregated). Use \
+for "which defense has allowed the most fantasy points to POSITION" questions:
+{"mode":"fantasy_allowed","position":"RB","last_n":5,"limit":10}
+
+For free-form questions (predictions, opinions, anything not a clean numeric filter or game-log \
+lookup), respond:
 {"mode":"freeform"}`;
 
 async function classifyQuestion(question){
@@ -324,11 +538,11 @@ async function classifyQuestion(question){
 }
 
 // Step 2a: narrate real, already-computed filter results.
-const NARRATE_SYSTEM = `You are Coeus. The user asked a filtering question, and a real, \
-deterministic query already ran against Football Intel's actual data — you did not compute \
-these numbers, they are given to you as fact. Write a short, natural summary of the real \
-results provided (a sentence or two, plus calling out anything genuinely notable). Do not add \
-any player, number, or claim not present in the results given to you.
+const NARRATE_SYSTEM = `You are Coeus. The user asked a question, and a real, deterministic \
+query already ran against Football Intel's actual data — you did not compute these numbers or \
+find these games yourself, they are given to you as fact. Write a short, natural summary of the \
+real results provided (a sentence or two, plus calling out anything genuinely notable). Do not \
+add any player, number, game, or claim not present in the results given to you.
 
 RANK DIRECTION (get this right, it is easy to state backwards): opponent_rank 1 is the BEST, \
 TOUGHEST defense in the league; opponent_rank 32 is the WORST, WEAKEST defense. A player with a \
@@ -353,13 +567,35 @@ async function answerFreeform(question){
       });
     }
   }
+  // A DIRECT, unambiguous team -> defense summary — every team's own
+  // season-long rank/value allowed at each position's headline stat, in
+  // one clean place. Without this, a question specifically about one
+  // team's defense forces Coeus to piece it together from scattered
+  // player entries (whoever happens to be playing that team this week),
+  // which is exactly what produced a real, confirmed error: conflating
+  // one team's pass defense with another team's data in the same sentence.
+  const teamDefense = {};
+  for(const team of Object.keys(MATCHUP?.teams || {})){
+    teamDefense[team] = {};
+    for(const pos of skillPositions){
+      const stat = OWN_STAT_FIELD[pos];
+      const cell = MATCHUP?.teams?.[team]?.def?.[pos]?.[stat];
+      if(cell) teamDefense[team][pos] = { stat, value_allowed: cell.v, rank: cell.r };
+    }
+  }
   const system = `You are Coeus, Football Intel's analyst. Answer the user's question using \
-ONLY the real player data provided below — season averages, this week's real opponent, AND \
-that opponent's real defensive rank/value at the relevant stat for each player. This is a \
-genuine judgment/prediction question, not a simple filter, so real football reasoning is \
-expected — but every specific claim must trace to the data given, and say so explicitly when \
-you're extrapolating beyond what the numbers directly show. This is inherently an opinion, not \
-a fact — frame it that way.
+ONLY the real data provided below — season averages, this week's real opponent, that opponent's \
+real defensive rank/value at the relevant stat for each player, AND a direct team-by-team \
+defensive summary. This is a genuine judgment/prediction question, not a simple filter, so real \
+football reasoning is expected — but every specific claim must trace to the data given, and \
+say so explicitly when you're extrapolating beyond what the numbers directly show. This is \
+inherently an opinion, not a fact — frame it that way.
+
+WHEN THE QUESTION IS ABOUT A SPECIFIC TEAM'S DEFENSE, use the team_defense summary directly by \
+that team's key — do not try to infer or reconstruct a team's defensive profile from scattered \
+player entries elsewhere in this data, since those only show whichever players happen to be \
+facing that team this specific week, not the team's own overall profile. Never mix one team's \
+stat into a sentence about a different team.
 
 RANK DIRECTION (state this correctly): opponent_defense.rank 1 is the BEST, TOUGHEST defense; \
 rank 32 is the WORST, WEAKEST. A high rank number is a FAVORABLE matchup for the player, not a \
@@ -372,7 +608,11 @@ concerning pattern against a tough defense (low rank) compounds the risk. Weigh 
 explicitly rather than reasoning from season averages alone.
 
 DATA (current week, real players, real opponents, real opponent defensive strength):
-${JSON.stringify(grounding)}`;
+${JSON.stringify(grounding)}
+
+TEAM_DEFENSE (each team's own season-long rank/value allowed per position — use this directly \
+for any question about a specific team's defense, keyed by team code):
+${JSON.stringify(teamDefense)}`;
   return await callClaude(system, question, 8000);
 }
 
@@ -387,6 +627,64 @@ function renderResultTable(rows, spec){
     </tbody></table>`;
 }
 
+function renderGameLogTable(games, spec){
+  if(!games || !games.length){
+    return `<div class="result-empty">No real games matched — ${esc(spec.team)} may not have played
+      a ${spec.top_n_only ? `top-${spec.top_n_only} ` : ''}${esc(spec.position)} unit recently, or
+      not enough of the season has been played yet.</div>`;
+  }
+  const statKeys = Object.keys(games[0].stats);
+  return `<table class="result-table"><thead><tr>
+    <th>Week</th><th>Opponent</th><th>Result</th>
+    ${statKeys.map(k => `<th>${esc(k)}</th>`).join('')}
+    </tr></thead><tbody>
+    ${games.map(g => `<tr><td>${g.week}</td><td>${esc(g.opponent)}</td><td>${esc(g.result)} ${esc(g.score)}</td>
+      ${statKeys.map(k => `<td>${g.stats[k]?.v ?? '—'}</td>`).join('')}</tr>`).join('')}
+    </tbody></table>`;
+}
+
+function renderTeamRankTable(rows, spec){
+  if(!rows || !rows.length) return `<div class="result-empty">No real team defense data matched.</div>`;
+  return `<table class="result-table"><thead><tr>
+    <th>Team</th><th>Rank vs. ${esc(spec.position)}</th><th>Value Allowed</th>
+    </tr></thead><tbody>
+    ${rows.map(r => `<tr><td>${esc(r.team)}</td><td>#${r.rank}</td><td>${r.value_allowed}</td></tr>`).join('')}
+    </tbody></table>`;
+}
+
+function renderCorrelationTable(rows){
+  if(!rows || !rows.length) return `<div class="result-empty">No real same-team QB-WR pairs matched this week.</div>`;
+  return `<table class="result-table"><thead><tr>
+    <th>Team</th><th>QB</th><th>Top WR</th><th>Opponent</th><th>Opp. QB Rank</th><th>Opp. WR Rank</th>
+    </tr></thead><tbody>
+    ${rows.map(r => `<tr><td>${esc(r.team)}</td><td>${esc(r.qb)}</td><td>${esc(r.wr)}</td>
+      <td>${esc(r.opponent)}</td><td>#${r.opponent_qb_rank}</td><td>#${r.opponent_wr_rank}</td></tr>`).join('')}
+    </tbody></table>`;
+}
+
+function renderInjuryBackupTable(rows){
+  if(!rows) return `<div class="result-empty">dfs/wk${String(CURRENT_WEEK).padStart(2,'0')}.json isn't
+    loaded — injury status only exists once a DK slate is loaded for the week.</div>`;
+  if(!rows.length) return `<div class="result-empty">No Questionable/Doubtful players currently have a
+    real, rostered backup clearing the usual relevance floor.</div>`;
+  return `<table class="result-table"><thead><tr>
+    <th>Player</th><th>Pos</th><th>Team</th><th>Status</th><th>Backup</th><th>Backup's ${esc(rows[0].backup_stat_field)}</th>
+    </tr></thead><tbody>
+    ${rows.map(r => `<tr><td>${esc(r.player)}</td><td>${esc(r.pos)}</td><td>${esc(r.team)}</td>
+      <td>${esc(r.status)}</td><td>${esc(r.backup)}</td><td>${r.backup_stat_value}</td></tr>`).join('')}
+    </tbody></table>`;
+}
+
+function renderFantasyAllowedTable(rows, spec){
+  if(!rows || !rows.length) return `<div class="result-empty">No real game-log data matched.</div>`;
+  return `<table class="result-table"><thead><tr>
+    <th>Team</th><th>Games</th><th>Avg Fantasy Pts Allowed to ${esc(spec.position)}</th><th>Total</th>
+    </tr></thead><tbody>
+    ${rows.map(r => `<tr><td>${esc(r.team)}</td><td>${r.games_counted}</td>
+      <td>${r.avg_fantasy_pts}</td><td>${r.total_fantasy_pts}</td></tr>`).join('')}
+    </tbody></table>`;
+}
+
 async function ask(question, prebuiltSpec){
   const box = document.createElement('div');
   box.className = 'answer-block';
@@ -398,7 +696,65 @@ async function ask(question, prebuiltSpec){
     // filter type) skips the classification call entirely — faster and
     // cheaper, since there's nothing genuinely ambiguous to interpret.
     const spec = prebuiltSpec || await classifyQuestion(question);
-    if(spec.mode !== 'freeform' && spec.position){
+    if(spec.mode === 'gamelog'){
+      if(!CONTEXT){
+        box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+          <div class="error">context/wk${String(CURRENT_WEEK).padStart(2,'0')}.json isn't available
+          yet, so I don't have real game-by-game history to answer this from — not something I can
+          guess at instead.</div>`;
+        return;
+      }
+      const games = getDefenseGameLog(spec.team, spec.position, spec.limit || 5, spec.top_n_only);
+      const narration = games && games.length
+        ? await callClaude(NARRATE_SYSTEM, `Question: ${question}\nReal game-by-game results: ${JSON.stringify(games)}`, 800)
+        : '';
+      box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+        <span class="answer-mode filter">Real game log — computed, not guessed</span>
+        ${renderGameLogTable(games, spec)}
+        ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
+    } else if(spec.mode === 'teamrank'){
+      const rows = rankTeamDefenses(spec.position, spec.opponent_def_stat, spec.limit, spec.worst_first !== false);
+      const narration = rows.length
+        ? await callClaude(NARRATE_SYSTEM, `Question: ${question}\nReal results: ${JSON.stringify(rows)}`, 800)
+        : '';
+      box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+        <span class="answer-mode filter">Team defense ranking — computed, not guessed</span>
+        ${renderTeamRankTable(rows, spec)}
+        ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
+    } else if(spec.mode === 'correlation'){
+      const rows = findQBWRCorrelations(spec.favorable_rank_min);
+      const narration = rows.length
+        ? await callClaude(NARRATE_SYSTEM, `Question: ${question}\nReal results: ${JSON.stringify(rows)}`, 800)
+        : '';
+      box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+        <span class="answer-mode filter">QB-WR correlation — computed, not guessed</span>
+        ${renderCorrelationTable(rows)}
+        ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
+    } else if(spec.mode === 'injury_backup'){
+      const rows = findInjuredWithBackup();
+      const narration = rows && rows.length
+        ? await callClaude(NARRATE_SYSTEM, `Question: ${question}\nReal results: ${JSON.stringify(rows)}`, 800)
+        : '';
+      box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+        <span class="answer-mode filter">Injury/backup check — computed, not guessed</span>
+        ${renderInjuryBackupTable(rows)}
+        ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
+    } else if(spec.mode === 'fantasy_allowed'){
+      if(!CONTEXT){
+        box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+          <div class="error">context/wk${String(CURRENT_WEEK).padStart(2,'0')}.json isn't available
+          yet, so I don't have real game-by-game history to compute this from.</div>`;
+        return;
+      }
+      const rows = rankDefensesByFantasyPointsAllowed(spec.position, spec.last_n, spec.limit);
+      const narration = rows && rows.length
+        ? await callClaude(NARRATE_SYSTEM, `Question: ${question}\nReal results: ${JSON.stringify(rows)}`, 800)
+        : '';
+      box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+        <span class="answer-mode filter">Fantasy points allowed — computed, not guessed</span>
+        ${renderFantasyAllowedTable(rows, spec)}
+        ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
+    } else if(spec.mode !== 'freeform' && spec.position){
       const rows = runFilter(spec);
       const narration = rows.length
         ? await callClaude(NARRATE_SYSTEM, `Question: ${question}\nReal results: ${JSON.stringify(rows)}`, 800)
@@ -423,22 +779,27 @@ async function ask(question, prebuiltSpec){
 function esc(s){ const d = document.createElement('div'); d.textContent = s ?? ''; return d.innerHTML; }
 
 const POSITIONS = ['QB', 'RB', 'WR', 'TE'];
-const EXAMPLES = [
+const FEATURED_EXAMPLES = [
   { label: "Show me all the WR1's facing bottom 10 defenses this week",
     spec: { position: 'WR', pos_rank_max: 1, opponent_rank_min: 23 } },
   { label: "Show me RB's averaging 60 ypg facing bottom 5 defenses",
     spec: { position: 'RB', metric_field: 'rush_ypg', min_metric_value: 60, opponent_rank_min: 28 } },
   { label: "Which players do you think will go under their season average this week", spec: null },
-  ...POSITIONS.flatMap(pos => [
-    { label: `${pos}'s vs. bottom 5 defenses`, spec: { position: pos, opponent_rank_min: 28 } },
-    { label: `${pos}'s vs. bottom 10 defenses`, spec: { position: pos, opponent_rank_min: 23 } },
-    { label: `${pos}'s vs. top 10 defenses`, spec: { position: pos, opponent_rank_max: 10 } },
-  ]),
+  { label: "Worst run defenses this season",
+    spec: { mode: 'teamrank', position: 'RB', limit: 10, worst_first: true } },
+  { label: "Which QB-WR pairs both have a favorable matchup this week",
+    spec: { mode: 'correlation', favorable_rank_min: 23 } },
+  { label: "Injured players with a real backup ready to step in",
+    spec: { mode: 'injury_backup' } },
+  { label: "Defenses allowing the most fantasy points to RBs (last 5 games)",
+    spec: { mode: 'fantasy_allowed', position: 'RB', last_n: 5, limit: 10 } },
 ];
 
 async function init(){
   const main = fiShell({ page: 'coeus', pageLabel: 'ASK COEUS', status: 'ready' });
   const key = getApiKey();
+  const teamOptions = Object.keys(FI_TEAM_NAME).sort()
+    .map(t => `<option value="${t}">${esc(FI_TEAM_NAME[t])}</option>`).join('');
   main.innerHTML = `
     <div class="key-banner">
       <b>Your own Anthropic API key is required.</b> It's stored only in your browser
@@ -451,18 +812,84 @@ async function init(){
       </div>
       <div class="key-status" id="keyStatus">${key ? '● Key saved in this browser' : ''}</div>
     </div>
-    <div class="examples" id="examples"></div>
+
+    <div class="qa-section">
+      <div class="qa-section-title">Featured Questions</div>
+      <div class="examples" id="examples"></div>
+    </div>
+
+    <div class="qa-section">
+      <div class="qa-section-title">Matchup Filters</div>
+      <div class="qa-controls">
+        <label>Position</label>
+        <select id="mfPos">${POSITIONS.map(p => `<option value="${p}">${p}</option>`).join('')}</select>
+        <label>vs.</label>
+        <select id="mfTier">
+          <option value="bottom5">Bottom 5 defenses</option>
+          <option value="bottom10" selected>Bottom 10 defenses</option>
+          <option value="top10">Top 10 defenses</option>
+          <option value="top5">Top 5 defenses</option>
+        </select>
+        <button class="qa-go" id="mfGo">Ask</button>
+      </div>
+    </div>
+
+    <div class="qa-section">
+      <div class="qa-section-title">Defense Game Log</div>
+      <div class="qa-controls">
+        <label>Team</label>
+        <select id="glTeam">${teamOptions}</select>
+        <label>vs.</label>
+        <select id="glPos">${POSITIONS.map(p => `<option value="${p}">${p}</option>`).join('')}</select>
+        <label>Last</label>
+        <select id="glLimit">
+          <option value="3">3 games</option>
+          <option value="5" selected>5 games</option>
+          <option value="10">10 games</option>
+        </select>
+        <label>Quality</label>
+        <select id="glTopN">
+          <option value="">Any</option>
+          <option value="5">Top 5 units only</option>
+          <option value="10">Top 10 units only</option>
+        </select>
+        <button class="qa-go" id="glGo">Ask</button>
+      </div>
+    </div>
+
     <div class="ask-row">
       <input type="text" id="questionInput" placeholder="Ask Coeus about this week's slate…">
       <button id="askBtn">Ask</button>
     </div>
     <div id="answers"></div>`;
 
-  $('examples').innerHTML = EXAMPLES.map((ex, i) =>
+  $('examples').innerHTML = FEATURED_EXAMPLES.map((ex, i) =>
     `<button data-i="${i}">${esc(ex.label)}</button>`).join('');
   $('examples').querySelectorAll('button').forEach((b, i) => {
-    b.onclick = () => { $('questionInput').value = EXAMPLES[i].label; ask(EXAMPLES[i].label, EXAMPLES[i].spec); };
+    b.onclick = () => { $('questionInput').value = FEATURED_EXAMPLES[i].label;
+      ask(FEATURED_EXAMPLES[i].label, FEATURED_EXAMPLES[i].spec); };
   });
+
+  $('mfGo').onclick = () => {
+    const pos = $('mfPos').value, tier = $('mfTier').value;
+    const TIERS = {
+      bottom5:  { spec: { opponent_rank_min: 28 }, label: 'bottom 5' },
+      bottom10: { spec: { opponent_rank_min: 23 }, label: 'bottom 10' },
+      top10:    { spec: { opponent_rank_max: 10 }, label: 'top 10' },
+      top5:     { spec: { opponent_rank_max: 5 },  label: 'top 5' },
+    };
+    const { spec: tierSpec, label: tierLabel } = TIERS[tier];
+    const label = `${pos}'s vs. ${tierLabel} defenses`;
+    ask(label, { position: pos, ...tierSpec });
+  };
+
+  $('glGo').onclick = () => {
+    const team = $('glTeam').value, pos = $('glPos').value;
+    const limit = Number($('glLimit').value), topN = $('glTopN').value ? Number($('glTopN').value) : undefined;
+    const label = `Last ${limit} games: ${FI_TEAM_NAME[team]} defense vs. ${pos}s`
+      + (topN ? ` (top ${topN} units only)` : '');
+    ask(label, { mode: 'gamelog', team, position: pos, limit, top_n_only: topN });
+  };
 
   $('keySave').onclick = () => {
     const v = $('keyInput').value.trim();
