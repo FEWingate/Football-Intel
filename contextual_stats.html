@@ -16,7 +16,7 @@
 .chip.top{color:var(--accent-green);border-color:rgba(74,222,128,.42);background:rgba(74,222,128,.06)}
 .chip.mid{color:var(--text-mid)}
 .chip.bot{color:var(--accent-red);border-color:rgba(244,63,94,.42);background:rgba(244,63,94,.06)}
-.sp-row{display:grid;grid-template-columns:1.3fr 1fr repeat(3,1fr) 92px 64px;gap:12px;
+.sp-row{display:grid;grid-template-columns:1.3fr 1fr repeat(5,1fr) 92px 64px;gap:12px;
   align-items:center;padding:12px 16px;border-bottom:1px solid var(--hairline)}
 .sp-row:last-child{border-bottom:0}
 .sp-row.head{background:var(--surface2);border-bottom:1px solid var(--border)}
@@ -37,6 +37,7 @@
 .team-pick{display:inline-flex;align-items:center;gap:7px}
 .stat-table td b{display:inline-flex;align-items:center;gap:5px;font-weight:500}
 .panel-title{display:flex;align-items:center;gap:8px}
+.tier-note{font-size:10.5px;color:var(--text-dim);line-height:1.5;margin-top:4px;max-width:640px}
 .res{font-family:var(--font-mono);font-size:10.5px;margin-left:7px;color:var(--text-mid)}
 .res.w{color:var(--accent-green)} .res.l{color:var(--accent-red)}
 @media(max-width:860px){
@@ -54,7 +55,7 @@
 const POSITIONS=["QB","RB","WR","TE"];
 const UNITS=[["team","Team"],["QB","Quarterback"],["RB","Running backs"],
              ["WR","Wide receivers"],["TE","Tight ends"]];
-const TIERS=[["top","vs Top 10"],["mid","vs Middle 12"],["bot","vs Bottom 10"]];
+const TIERS=[["top5","vs Top 5"],["top","vs Top 10"],["mid","vs Middle 12"],["bot","vs Bottom 10"],["bottom5","vs Bottom 5"]];
 let DATA=null, team=null, unit="team";
 
 const main = fiShell({ page:'context', pageLabel:'Contextual Statistics', status:'loading' });
@@ -124,12 +125,13 @@ function slopeSVG(sp){
   if(pts.length<2) return `<svg class="slope" viewBox="0 0 92 26"></svg>`;
   const lo=Math.min(...pts), hi=Math.max(...pts), span=hi-lo||1;
   const y=v=>21-((v-lo)/span)*16;
+  const xStep = 80/(TIERS.length-1); // scales to however many tiers exist, not hardcoded for 3
   let d="",dots="",i=0;
   TIERS.forEach(([k],idx)=>{
     const v=sp[k].avg; if(v===null) return;
-    const x=6+idx*40;
-    d += (i++?" L":"M")+`${x} ${y(v).toFixed(1)}`;
-    dots += `<circle cx="${x}" cy="${y(v).toFixed(1)}" r="2.6" fill="currentColor"/>`;
+    const x=6+idx*xStep;
+    d += (i++?" L":"M")+`${x.toFixed(1)} ${y(v).toFixed(1)}`;
+    dots += `<circle cx="${x.toFixed(1)}" cy="${y(v).toFixed(1)}" r="2.6" fill="currentColor"/>`;
   });
   const first=pts[0], last=pts[pts.length-1];
   const color = last>first?"var(--accent-red)":last<first?"var(--accent-green)":"var(--text-dim)";
@@ -168,6 +170,7 @@ function render(){
       <div>
         <div class="panel-title">${fiLogoHTML(team,20)}Production by defense faced</div>
         <div class="panel-subtitle">${esc(team)} · per-game average · n = games</div>
+        ${DATA.tier_note ? `<div class="tier-note">${esc(DATA.tier_note)}</div>` : ''}
       </div>
       <span class="panel-count">${metrics.length} metrics</span>
     </div>

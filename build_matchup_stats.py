@@ -825,6 +825,12 @@ def build_rosters():
             "position": clean(r.get("position")), "jersey_number": clean(r.get("jersey_number")),
             "years_exp": clean(r.get("years_exp")), "college": clean(r.get("college")),
             "status": clean(r.get("status")),
+            # Real crosswalk to ESPN's own player ID system — needed
+            # because espn_qbr's player_id is ESPN's internal numbering,
+            # not gsis_id, confirmed by direct comparison (e.g. a real
+            # gsis_id like "00-0033280" vs. ESPN's "4480" for the same
+            # concept but a different player — no shared format at all).
+            "espn_id": clean(r.get("espn_id")),
         })
 
     payload = {"season": SEASON, "teams": teams}
@@ -1407,13 +1413,22 @@ def build_context(week, all_teams, records, prior_stats, prior_games,
             log.append(entry)
 
         # ---- splits: average production against each defensive tier ----
+        # top5/bottom5 are a genuinely finer slice than the existing top10/
+        # bottom10 — computed from the same real per-game rank already
+        # stored on each log entry, added alongside the existing three
+        # buckets rather than replacing them, so nothing already reading
+        # "top"/"mid"/"bot" needs to change.
         def split_for(getter, metrics):
             out = {}
             for m, (_lbl, dec) in metrics.items():
-                buckets = {"top": [], "mid": [], "bot": []}
+                buckets = {"top": [], "mid": [], "bot": [], "top5": [], "bottom5": []}
                 for e in log:
                     cell = getter(e)[m]
                     buckets[cell["t"]].append(cell["v"])
+                    if cell["r"] <= 5:
+                        buckets["top5"].append(cell["v"])
+                    elif cell["r"] >= 28:
+                        buckets["bottom5"].append(cell["v"])
                 out[m] = {k: {"avg": round(sum(v) / len(v), max(dec, 1)) if v else None,
                               "n": len(v)} for k, v in buckets.items()}
             return out
@@ -1427,7 +1442,11 @@ def build_context(week, all_teams, records, prior_stats, prior_games,
     payload = {
         "season": SEASON, "week": week, "data_horizon": f"weeks 1-{week - 1}",
         "tier_note": "Defensive tier reflects the opponent's season rank in that "
-                     "category through the data horizon, not their rank on game day.",
+                     "category through the data horizon, not their rank on game day. "
+                     "Each stat's tier is computed independently — a defense ranked "
+                     "Top 5 against the pass may not be Top 5 against the run, so the "
+                     "games counted (n) in the same tier column can genuinely differ "
+                     "row to row. This is not an error.",
         "labels": {
             "team": {m: LOG_TEAM[m][0] for m in LOG_TEAM},
             "pos": {p: {m: LOG_POS[p][m][0] for m in LOG_POS[p]} for p in POSITIONS},
@@ -1767,9 +1786,12 @@ def dk_points_for_game(s):
     return pts
 
 
-def build_player_log(player_df, pos, latest_matchup, team_week_totals=None):
+def build_player_log(player_df, pos, latest_matchup, team_week_totals=None,
+                      rz_rush=None, rz_pass=None, team_rz_carries=None,
+                      team_rz_targets=None, team_rz_receptions=None):
     """One player's game-by-game log, each game tagged with the tier
-    (top/mid/bot) of the defense-vs-position rank their opponent held that
+    (top5/top10/mid12/bottom10/bottom5) of the defense-vs-position rank
+    their opponent held that
     week, plus average production split by tier. The Volume-group stats
     only, to keep a game row readable at a glance.
 
@@ -1794,24 +1816,51 @@ def build_player_log(player_df, pos, latest_matchup, team_week_totals=None):
     and WR/TE only ever have one relevant matchup category, so this is a
     no-op for them — `entry["tier"]`/`entry["rank"]` keep meaning exactly
     what they always did for those positions."""
+    rz_rush = rz_rush or {}
+    rz_pass = rz_pass or {}
+    team_rz_carries = team_rz_carries or {}
+    team_rz_targets = team_rz_targets or {}
+    team_rz_receptions = team_rz_receptions or {}
+
     volume_keys = [k for k, (_l, _d, _hb, grp) in POS_METRICS[pos].items() if grp == "Volume"]
     rate_keys = {k for k in volume_keys if k.endswith("_pg") or k.endswith("_ypg")}
     primary_key = volume_keys[0]
+
+    # Splits (the tier-comparison panels) show more than the compact game
+    # log does — Efficiency/Explosive/Red Zone are real, computable per
+    # game (pos_metrics_from_sums already produces them), just excluded
+    # from the log's own Volume-only column set for readability. Usage is
+    # deliberately NOT included here: rush_share/target_share are handled
+    # separately below, snap_pct/rz_touch_share need team-week context
+    # this function doesn't have, and rush_yac_avg/rush_ybc_avg/rush_
+    # broken_tackles_pg come from a different weekly source entirely,
+    # merged only at the season level elsewhere — genuinely not available
+    # per game anywhere in this pipeline, not just filtered out here.
+    split_groups = {"Volume", "Efficiency", "Explosive", "Red Zone"}
+    split_keys = [k for k, (_l, _d, _hb, grp) in POS_METRICS[pos].items() if grp in split_groups]
+    # Rate-like stats (per-game averages, season percentages, share-of-
+    # team splits) get averaged across a tier's games; real counting
+    # stats get summed — a count across 8 games isn't the same number as
+    # that count's own per-game average, and treating them the same was
+    # a real bug (confirmed: "Rushing yards" and "Rushing yards / game"
+    # rendered identically, since both were being averaged the same way).
+    split_rate_keys = {k for k in split_keys if k.endswith(("_pg", "_ypg", "_pct", "_share"))}
 
     # Which matchup category (i.e. which stat's own defensive rank) governs
     # each Volume stat's tier. RB is the only position with two categories.
     if pos == "RB":
         matchup_keys = ["rush_yds", "rec_yds"]
         stat_category = {}
-        for k in volume_keys:
+        for k in split_keys:
             stat_category[k] = "rec_yds" if k in ("rec_yds", "rec_ypg", "rec", "rec_pg",
-                                                    "targets", "tgt_pg", "rec_td") else "rush_yds"
+                                                    "targets", "tgt_pg", "rec_td",
+                                                    "rz_targets", "rz_target_share", "rz_rec_td") else "rush_yds"
     else:
         matchup_keys = [primary_key]
-        stat_category = {k: primary_key for k in volume_keys}
+        stat_category = {k: primary_key for k in split_keys}
 
     log = []
-    tier_rows = {mk: {"top": [], "mid": [], "bot": []} for mk in matchup_keys}
+    tier_rows = {mk: {"top": [], "mid": [], "bot": [], "top5": [], "bottom5": []} for mk in matchup_keys}
     cum_raw = {c: 0.0 for c in RAW_COLS}
     cum_games = 0
     dk_scores = []
@@ -1821,6 +1870,37 @@ def build_player_log(player_df, pos, latest_matchup, team_week_totals=None):
         game_metrics = pos_metrics_from_sums(pos, s, 1)  # this game's own totals
         dk_pts = dk_points_for_game(s)
         dk_scores.append(dk_pts)
+
+        # Red zone stats live in play-by-play, not the weekly stat columns
+        # RAW_COLS pulls from — pos_metrics_from_sums() genuinely can't
+        # compute them, confirmed directly before writing this. Same real
+        # per-(player, team, week) lookup rz_season_stats() already uses
+        # for the season aggregate, just kept to this one game instead of
+        # summed across all of them.
+        pid, team, wk = row["player_id"], row["team"], row["week"]
+        game_rz = {}
+        rr = rz_rush.get((pid, team, wk)) if pos == "RB" else None
+        rp = rz_pass.get((pid, team, wk))
+        carries = rr["rz_carries"] if rr else 0
+        rush_td = rr["rz_rush_td"] if rr else 0
+        targets = rp["rz_targets"] if rp else 0
+        receptions = rp["rz_receptions"] if rp else 0
+        rec_td = rp["rz_rec_td"] if rp else 0
+        team_car_tot = team_rz_carries.get((team, wk), 0)
+        team_tgt_tot = team_rz_targets.get((team, wk), 0)
+        team_rec_tot = team_rz_receptions.get((team, wk), 0)
+        touches = receptions + (carries if pos == "RB" else 0)
+        team_touch_tot = team_car_tot + team_rec_tot
+        game_rz["rz_targets"] = targets
+        game_rz["rz_receptions"] = receptions
+        game_rz["rz_rec_td"] = rec_td
+        game_rz["rz_target_share"] = round(100 * targets / team_tgt_tot, 1) if team_tgt_tot > 0 else 0
+        game_rz["rz_touch_share"] = round(100 * touches / team_touch_tot, 1) if team_touch_tot > 0 else 0
+        if pos == "RB":
+            game_rz["rz_carries"] = carries
+            game_rz["rz_rush_td"] = rush_td
+            game_rz["rz_touches"] = touches
+            game_rz["rz_carry_share"] = round(100 * carries / team_car_tot, 1) if team_car_tot > 0 else 0
 
         game_rush_share = game_target_share = None
         if team_week_totals is not None:
@@ -1852,6 +1932,12 @@ def build_player_log(player_df, pos, latest_matchup, team_week_totals=None):
             "tier": tiers.get(primary_key), "rank": ranks.get(primary_key),  # backward-compatible alias
             "tiers": tiers, "ranks": ranks,  # full per-category breakdown (RB: rush_yds AND rec_yds)
             "m": {k: round(game_metrics.get(k, 0), 1) for k in volume_keys},
+            # Separate, broader snapshot for the tier-splits panels only —
+            # the game log table above keeps showing just "m" (Volume),
+            # unchanged, so this doesn't affect how a single game's row
+            # looks; it's purely additional data for the splits aggregation.
+            "_split_m": {k: round(game_rz[k] if k in game_rz else game_metrics.get(k, 0), 3)
+                         for k in split_keys},
             "cum": {k: round(cum_metrics.get(k, 0), 1) for k in rate_keys},
             "dk": round(dk_pts, 1),
             "rush_share": game_rush_share, "target_share": game_target_share,
@@ -1860,6 +1946,11 @@ def build_player_log(player_df, pos, latest_matchup, team_week_totals=None):
         for mk in matchup_keys:
             if mk in tiers:
                 tier_rows[mk][tiers[mk]].append(entry)
+                r = ranks[mk]
+                if r <= 5:
+                    tier_rows[mk]["top5"].append(entry)
+                elif r >= 28:
+                    tier_rows[mk]["bottom5"].append(entry)
 
     dk_scores_sorted = sorted(dk_scores, reverse=True)
     ceiling = {
@@ -1872,13 +1963,18 @@ def build_player_log(player_df, pos, latest_matchup, team_week_totals=None):
         vals = [v for v in (getter(r) for r in rows) if v is not None]
         return round(sum(vals) / len(vals), 1) if vals else None
 
+    def tier_sum(rows, getter):
+        vals = [v for v in (getter(r) for r in rows) if v is not None]
+        return round(sum(vals), 1) if vals else None
+
     splits = {}
-    for tier in ("top", "mid", "bot"):
+    for tier in ("top5", "top", "mid", "bot", "bottom5"):
         m = {}
         games = {mk: len(tier_rows[mk][tier]) for mk in matchup_keys}
-        for k in volume_keys:
+        for k in split_keys:
             cat = stat_category[k]
-            m[k] = tier_avg(tier_rows[cat][tier], lambda r, k=k: r["m"].get(k))
+            agg = tier_avg if k in split_rate_keys else tier_sum
+            m[k] = agg(tier_rows[cat][tier], lambda r, k=k: r["_split_m"].get(k))
         # dk/share stats aren't tied to one matchup category the way a raw
         # Volume stat is — use the primary category's games as the most
         # representative "how'd the whole game go" sample.
@@ -2188,10 +2284,11 @@ def build_player_stats():
         # target share across team changes and different offenses over many
         # years isn't a meaningful number the way a season snapshot is.
 
-        log, splits_acc, ceiling = build_player_log(player_weeks[(pid, pos)], pos, latest_matchup, team_week_totals)
+        log, splits_acc, ceiling = build_player_log(player_weeks[(pid, pos)], pos, latest_matchup, team_week_totals,
+                                                     rz_rush, rz_pass, team_rz_carries, team_rz_targets, team_rz_receptions)
 
         players_out[pos].append({
-            "name": name, "team": team, "games": gp, "headshot": headshot,
+            "gsis_id": pid, "name": name, "team": team, "games": gp, "headshot": headshot,
             "season": {"games": gp, "m": {k: (round(v, 2) if v is not None else None)
                                            for k, v in season_metrics.items()}},
             "career": {"games": career_gp, "through": career_through,

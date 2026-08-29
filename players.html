@@ -64,6 +64,7 @@
 .split-card .sc-games{font-family:var(--font-mono);font-size:9px;color:var(--text-dim);margin-top:1px}
 .split-card .sc-value{font-family:var(--font-display);font-weight:800;font-size:20px;margin-top:6px;letter-spacing:-.02em}
 .split-card.top{border-color:rgba(244,63,94,.3)} .split-card.bot{border-color:rgba(74,222,128,.3)}
+.split-card.top5{border-color:rgba(244,63,94,.55)} .split-card.bottom5{border-color:rgba(74,222,128,.55)}
 
 .lead-wrap{overflow:auto;max-height:420px;border:1px solid var(--border);border-radius:var(--radius-lg);margin-top:10px}
 .lead-table{width:100%;border-collapse:separate;border-spacing:0}
@@ -111,6 +112,7 @@
 const main = fiShell({ page:'players', pageLabel:'Players', status:'loading' });
 
 let PLAYERSTATS = null;
+let ADV_CACHE = { ngs_passing: {}, ngs_rushing: {}, ff_opportunity: {}, espn_qbr: {}, rosters: null };
 let browsePos = 'RB';
 let browseCollapsed = false;
 let browseSearch = '';
@@ -118,6 +120,7 @@ let activePlayer = null;
 let activeSec = 'season'; // 'season' | 'career' | 'window' | 'log'
 let windowSize = 5; // 5 | 10
 let chartStat = 'dk'; // which stat drives the L5/L10 bar chart
+let profileTierSelected = 'top'; // which defense tier the Defense Tier tab is filtered to
 let committeeTeam = null;
 
 main.innerHTML = `
@@ -281,8 +284,10 @@ function renderProfilePanel(){
     <div class="tabs" id="profileSecTabs" role="tablist">
       <button role="tab" data-sec="season" aria-selected="true">Season</button>
       <button role="tab" data-sec="career" aria-selected="false">Career</button>
+      <button role="tab" data-sec="tiers" aria-selected="false">Defense Tier</button>
       <button role="tab" data-sec="window" aria-selected="false">L5 / L10</button>
       <button role="tab" data-sec="log" aria-selected="false">Game Log</button>
+      <button role="tab" data-sec="advanced" aria-selected="false">Advanced</button>
     </div>
     <div id="profileBody"></div>`;
 
@@ -299,11 +304,15 @@ function fiTeamLogoInline(team){ return fiLogoHTML(team, 16); }
 function renderProfileBody(){
   const box = $("profileBody");
   const p = activePlayer;
-  if(activeSec === 'season') box.innerHTML = statBlockHTML(p.season.m, `${p.season.games} games`, p.pos)
-    + tierProfileSectionHTML(p);
+  if(activeSec === 'season') box.innerHTML = statBlockHTML(p.season.m, `${p.season.games} games`, p.pos);
   else if(activeSec === 'career') box.innerHTML = statBlockHTML(p.career.m,
     `${p.career.games} games · through ${p.career.through}`, p.pos);
+  else if(activeSec === 'tiers') renderTierTab(box, p);
   else if(activeSec === 'window') renderWindow(box, p);
+  else if(activeSec === 'advanced'){
+    box.innerHTML = `<div class="empty">Loading…</div>`;
+    renderAdvanced(box, p); // async — updates box once real data arrives
+  }
   else renderGameLogFull(box, p);
 }
 
@@ -363,8 +372,34 @@ function chartValue(g, key){
   return g.m[key];
 }
 
+const TIER_DEFS = [['top5','Top 5'], ['top','Top 10'], ['mid','Middle 12'], ['bot','Bottom 10'], ['bottom5','Bottom 5']];
+
+function renderTierTab(box, p){
+  const primaryKey = primaryStatKey(p.pos);
+  const mk = matchupKeyFor(p.pos, primaryKey);
+  const split = p.splits[profileTierSelected];
+  const games = split && split.games ? (split.games[mk] || 0) : 0;
+
+  let h = `<div class="tabs" id="tierSelectTabs" role="tablist">
+    ${TIER_DEFS.map(([key,label]) =>
+      `<button role="tab" data-tier="${key}" aria-selected="${key===profileTierSelected}">${label}</button>`
+    ).join('')}
+  </div>`;
+
+  h += (split && split.m)
+    ? statBlockHTML(split.m, `${games} games vs this tier`, p.pos)
+    : `<div class="empty">No games recorded against this tier yet this season.</div>`;
+
+  box.innerHTML = h;
+
+  $("tierSelectTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    profileTierSelected = b.dataset.tier;
+    renderTierTab(box, p);
+  });
+}
+
 function splitCardsHTML(p, active){
-  const tiers = [['top','vs Top 10'], ['mid','vs Middle 12'], ['bot','vs Bottom 10']];
+  const tiers = [['top5','vs Top 5'], ['top','vs Top 10'], ['mid','vs Middle 12'], ['bot','vs Bottom 10'], ['bottom5','vs Bottom 5']];
   const mk = matchupKeyFor(p.pos, active.key);
   return `<div class="split-cards">${tiers.map(([key,label]) => {
     const split = p.splits[key];
@@ -457,6 +492,111 @@ function renderGameLogFull(box, p){
       <td>${g.tier ? `<span class="tier-badge ${g.tier}">${TIER_LABEL[g.tier]}</span> <span class="cell-val">#${g.rank}</span>` : '—'}</td>
       ${volKeys.map(k=>`<td><span class="cell-val">${fmtVal(g.m[k])}</span></td>`).join('')}
       <td><span class="cell-val">${fmtVal(g.dk)}</span></td>
+    </tr>`;
+  });
+  h += `</tbody></table></div>`;
+  box.innerHTML = h;
+}
+
+/* ── ADVANCED TAB (NGS, Expected Fantasy Points, ESPN QBR) ─────────
+   Real per-week files, kept separate from players/latest.json rather
+   than merged into it — same low-risk pattern as the Teams page Roster
+   tab: new data, new read path, existing working code untouched. */
+const ADV_SOURCES = {
+  QB: ['ngs_passing', 'espn_qbr', 'ff_opportunity'],
+  RB: ['ngs_rushing', 'ff_opportunity'],
+  WR: ['ff_opportunity'], TE: ['ff_opportunity'],
+};
+
+async function fetchWeekly(sourceDir, cacheObj, week){
+  const wk = String(week).padStart(2, '0');
+  if(wk in cacheObj) return cacheObj[wk];
+  try{
+    const res = await fetch(`${sourceDir}/wk${wk}.json`);
+    cacheObj[wk] = res.ok ? await res.json() : null;
+  }catch(e){ cacheObj[wk] = null; }
+  return cacheObj[wk];
+}
+
+// espn_qbr's player_id is ESPN's own numbering, not gsis_id — confirmed
+// by direct comparison (a real gsis_id looks like "00-0033280"; ESPN's
+// own ID for a different real player was plain "4480", no shared format
+// at all). rosters/latest.json carries the real crosswalk between them.
+async function getEspnId(p){
+  if(ADV_CACHE.rosters === null){
+    try{
+      const res = await fetch('rosters/latest.json');
+      if(res.ok) ADV_CACHE.rosters = await res.json();
+    }catch(e){ /* stays null, QBR just won't match this session */ }
+  }
+  const teamRoster = ADV_CACHE.rosters?.teams?.[p.team] || [];
+  const match = teamRoster.find(r => r.gsis_id === p.gsis_id);
+  if(!match || match.espn_id == null) return null;
+  return String(match.espn_id).replace(/\.0$/, ''); // real values come through as "3139477.0"
+}
+
+async function renderAdvanced(box, p){
+  const sources = ADV_SOURCES[p.pos] || ['ff_opportunity'];
+  const weeks = p.log.map(g => g.week).sort((a, b) => a - b);
+
+  const espnId = sources.includes('espn_qbr') ? await getEspnId(p) : null;
+
+  const rows = await Promise.all(weeks.map(async week => {
+    const row = { week };
+    const fetches = [];
+
+    if(sources.includes('ngs_passing')) fetches.push(
+      fetchWeekly('ngs_passing', ADV_CACHE.ngs_passing, week).then(data => {
+        const m = data?.players?.find(x => x.gsis_id === p.gsis_id);
+        row.cpoe = m?.completion_percentage_above_expectation ?? null;
+        row.ttt = m?.avg_time_to_throw ?? null;
+        row.aggressiveness = m?.aggressiveness ?? null;
+      }));
+    if(sources.includes('ngs_rushing')) fetches.push(
+      fetchWeekly('ngs_rushing', ADV_CACHE.ngs_rushing, week).then(data => {
+        const m = data?.players?.find(x => x.gsis_id === p.gsis_id);
+        row.efficiency = m?.efficiency ?? null;
+        row.ryoe = m?.rush_yards_over_expected ?? null;
+      }));
+    if(sources.includes('espn_qbr') && espnId) fetches.push(
+      fetchWeekly('espn_qbr', ADV_CACHE.espn_qbr, week).then(data => {
+        const m = data?.players?.find(x => String(x.player_id) === espnId);
+        row.qbr = m?.qbr_total ?? null;
+      }));
+    if(sources.includes('ff_opportunity')) fetches.push(
+      fetchWeekly('ff_opportunity', ADV_CACHE.ff_opportunity, week).then(data => {
+        const m = data?.players?.find(x => x.player_id === p.gsis_id);
+        row.fp_actual = m?.total_fantasy_points ?? null;
+        row.fp_exp = m?.total_fantasy_points_exp ?? null;
+        row.fp_diff = m?.total_fantasy_points_diff ?? null;
+      }));
+
+    await Promise.all(fetches);
+    return row;
+  }));
+
+  const cols = [];
+  if(sources.includes('ngs_passing')) cols.push(
+    {key:'cpoe', label:'CPOE'}, {key:'ttt', label:'Time to Throw'}, {key:'aggressiveness', label:'Aggressive %'});
+  if(sources.includes('ngs_rushing')) cols.push(
+    {key:'efficiency', label:'Efficiency'}, {key:'ryoe', label:'Rush Yds Over Exp'});
+  if(sources.includes('espn_qbr')) cols.push({key:'qbr', label:'QBR'});
+  if(sources.includes('ff_opportunity')) cols.push(
+    {key:'fp_actual', label:'Actual FP'}, {key:'fp_exp', label:'Expected FP'}, {key:'fp_diff', label:'FP Diff'});
+
+  const hasAnyData = rows.some(r => cols.some(c => r[c.key] != null));
+  if(!hasAnyData){
+    box.innerHTML = `<div class="empty">No advanced data available yet for this player's games
+      this season — these sources may not have real 2026 data published yet.</div>`;
+    return;
+  }
+
+  let h = `<div class="lead-wrap"><table class="lead-table"><thead><tr>
+    <th class="name-col">Week</th>${cols.map(c => `<th>${esc(c.label)}</th>`).join('')}
+  </tr></thead><tbody>`;
+  rows.slice().reverse().forEach(r => {
+    h += `<tr><td class="name-col">${r.week}</td>
+      ${cols.map(c => `<td><span class="cell-val">${fmtVal(r[c.key])}</span></td>`).join('')}
     </tr>`;
   });
   h += `</tbody></table></div>`;
