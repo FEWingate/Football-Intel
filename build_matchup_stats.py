@@ -29,6 +29,15 @@ def default_season():
 SEASON = int(os.environ.get("NFL_SEASON", default_season()))
 DEFAULT_WEEK = 10
 FIRST_BUILDABLE_WEEK = 3   # weeks 1-2 have too little prior data to rank
+# Weeks 1-3 of a new season have too little (or no) data of their own to
+# rank meaningfully — for those weeks, Threats/Matchup Stats rank off the
+# PRIOR season's complete stats instead (real 2026 games/opponents, ranked
+# by 2025's numbers), with real current-season values shown alongside as
+# secondary, non-ranking context starting week 2. Week 4 needs no special
+# handling — by then FIRST_BUILDABLE_WEEK's normal same-season logic
+# already has enough real games of its own.
+CARRYOVER_WEEKS = 3
+CARRYOVER_SEASON = SEASON - 1
 
 PLAYER_STATS_URLS = [
     f"https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_{SEASON}.csv",
@@ -525,6 +534,30 @@ def tier_of(rank):
 _CSV_CACHE = {}
 
 
+def write_with_archive(payload, canonical_path):
+    """Writes to the canonical path exactly as before — every existing
+    page on the site keeps reading this path unchanged, zero ripple
+    effect — AND a second, permanent, season-scoped archival copy, so
+    building a later season never destroys an earlier one's data. Only
+    the new season-toggle pages (Matchup Stats, Contextual, Stats Hub,
+    Intel Reports) read the archive; nothing else needs to know it
+    exists. Returns the canonical file's size in KB, matching what the
+    existing print-logging at each call site already expects."""
+    canonical_dir = os.path.dirname(canonical_path)
+    if canonical_dir:
+        os.makedirs(canonical_dir, exist_ok=True)
+    with open(canonical_path, "w") as f:
+        json.dump(payload, f)
+
+    archive_path = f"archive/{SEASON}/{canonical_path}"
+    os.makedirs(os.path.dirname(archive_path), exist_ok=True)
+    with open(archive_path, "w") as f:
+        json.dump(payload, f)
+
+    return os.path.getsize(canonical_path) / 1024
+
+
+
 def fetch_csv(urls):
     if isinstance(urls, str):
         urls = [urls]
@@ -655,23 +688,97 @@ def pos_metrics_from_sums(pos, s, gp):
     }
 
 
+def fetch_carryover_stats(carryover_season):
+    """A full, completed prior season's player stats — fetched directly
+    (not via the module-level PLAYER_STATS_URLS, which is always tied to
+    the CURRENT SEASON) since this deliberately fetches a DIFFERENT one.
+    Used as the ranking basis for the first few weeks of a new season.
+
+    Deliberately does NOT reuse norm_players() here — that function
+    filters rows to the module-level SEASON constant internally, which
+    would silently produce an empty result for any other season. This
+    mirrors its column-normalization logic, but filters correctly on
+    carryover_season instead."""
+    urls = [
+        f"https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_{carryover_season}.csv",
+        f"https://github.com/nflverse/nflverse-data/releases/download/player_stats/player_stats_{carryover_season}.csv",
+    ]
+    df = fetch_csv(urls)
+    team_col = "team" if "team" in df.columns else "recent_team"
+    name_col = ("player_display_name" if "player_display_name" in df.columns
+                else "player_name")
+    df = df.rename(columns={team_col: "team", name_col: "name"})
+    df = normalize_team_cols(df, "team", "opponent_team")
+    if "season_type" in df.columns:
+        df = df[df["season_type"] == "REG"]
+    if "season" in df.columns:
+        df = df[df["season"] == carryover_season]
+    cols = ["player_id", "name", "position", "team", "opponent_team", "week", "headshot_url"] + RAW_COLS
+    for c in cols:
+        if c not in df.columns:
+            df[c] = 0
+    df = df[cols].copy()
+    num = [c for c in cols if c not in ("player_id", "name", "position", "team", "opponent_team", "headshot_url")]
+    df[num] = df[num].fillna(0)
+    df["pos"] = df["position"].map(POS_MAP)
+    return df[df["pos"].notna()]
+
+
 def build(week):
     print(f"Building Matchup Statistics for {SEASON} week {week}...")
-    stats = norm_players(fetch_csv(PLAYER_STATS_URLS))
+    try:
+        stats = norm_players(fetch_csv(PLAYER_STATS_URLS))
+    except SystemExit:
+        # The season's stats file doesn't exist AT ALL yet (not just thin —
+        # genuinely absent, as in week 1 before any 2026 games are played).
+        # Treated the same as "no prior data" below, so the carryover
+        # logic still gets a chance to run instead of crashing outright.
+        print(f"  No {SEASON} player stats file published yet.")
+        empty_cols = ["player_id", "name", "position", "team", "opponent_team",
+                      "week", "headshot_url", "pos"] + RAW_COLS
+        stats = pd.DataFrame(columns=empty_cols)
     print("Downloading schedule/results...")
     games = fetch_csv(GAMES_URL)
     games = normalize_team_cols(games, "home_team", "away_team")
     games = games[(games["season"] == SEASON) & (games["game_type"] == "REG")]
 
-    prior_stats = stats[stats["week"] < week]
+    real_prior_stats = stats[stats["week"] < week]
     prior_games = games[(games["week"] < week) & games["home_score"].notna()]
     week_games = games[games["week"] == week]
-    if prior_stats.empty:
+
+    carryover = None
+    prior_stats = real_prior_stats
+    if real_prior_stats.empty and week <= CARRYOVER_WEEKS:
+        print(f"  No {SEASON} data yet for week {week} — ranking off "
+              f"{CARRYOVER_SEASON}'s complete season instead.")
+        carry_stats = fetch_carryover_stats(CARRYOVER_SEASON)
+        carry_games = fetch_csv(GAMES_URL)
+        carry_games = normalize_team_cols(carry_games, "home_team", "away_team")
+        carry_games = carry_games[(carry_games["season"] == CARRYOVER_SEASON)
+                                   & (carry_games["game_type"] == "REG")
+                                   & carry_games["home_score"].notna()]
+        carry_gp = {}
+        for _, g in carry_games.iterrows():
+            carry_gp[g["home_team"]] = carry_gp.get(g["home_team"], 0) + 1
+            carry_gp[g["away_team"]] = carry_gp.get(g["away_team"], 0) + 1
+        prior_stats = carry_stats
+        carryover = {
+            "season": CARRYOVER_SEASON,
+            "gp": carry_gp,
+            # real_stats/real_gp are the NEW season's own games so far —
+            # empty in week 1, real (if thin) by week 2+. Filled in below,
+            # once all_teams/wl exist to compute real_gp from.
+            "real_stats": None if real_prior_stats.empty else real_prior_stats,
+            "real_gp": None,
+        }
+    elif real_prior_stats.empty:
         raise SystemExit(f"no prior data for week {week} (data-horizon rule)")
 
     all_teams = sorted(set(games["home_team"]) | set(games["away_team"]))
 
-    # ---- team scoring / record from completed games ----
+    # ---- team scoring / record from completed games — always the REAL
+    # current season, even in carryover weeks, since this is the team's
+    # actual current record (correctly 0-0 in week 1), not last season's ----
     pts, pa, wl = {}, {}, {}
     for _, g in prior_games.iterrows():
         h, a = g["home_team"], g["away_team"]
@@ -682,6 +789,11 @@ def build(week):
             wl.setdefault(t, []).append("W" if pf > pag else ("L" if pf < pag else "T"))
 
     gp = {t: max(len(wl.get(t, [])), 1) for t in all_teams}
+    if carryover:
+        # real_gp for the defense-allowed-so-far math specifically needs
+        # the REAL count (no floor of 1 — a team with 0 real games so far
+        # should show no v26/dv26 at all, not divide by a fake 1).
+        carryover["real_gp"] = {t: len(wl.get(t, [])) for t in all_teams}
     records = {}
     for t in all_teams:
         r = wl.get(t, [])
@@ -757,6 +869,55 @@ def build(week):
             "def": {p: {m: out_pos_def[p][m][t] for m in POS_METRICS_WEEKLY[p]} for p in POSITIONS},
         }
 
+    # ---- real current-season values so far, DISPLAY ONLY, never used for
+    # ranking — same real reason as build_threats' v26/dv26: only computed
+    # when carryover provided real_stats (week 2+, once real games exist).
+    # Duplicates the shape of the ranking computation above deliberately,
+    # rather than refactoring it, to avoid risking the existing, working
+    # ranking logic while adding this. ----
+    if carryover and carryover.get("real_stats") is not None and not carryover["real_stats"].empty:
+        rs = carryover["real_stats"]
+        r_gp = carryover["real_gp"]
+        r_off_tot = rs.groupby("team")[raw_cols].sum()
+        r_def_tot = rs.groupby("opponent_team")[raw_cols].sum()
+        r_off_pos = rs.groupby(["team", "pos"])[raw_cols].sum()
+        r_def_pos = rs.groupby(["opponent_team", "pos"])[raw_cols].sum()
+        for t in all_teams:
+            if not r_gp.get(t):
+                continue   # no real games yet for this team — nothing to show
+            ro = r_off_tot.loc[t] if t in r_off_tot.index else None
+            rd = r_def_tot.loc[t] if t in r_def_tot.index else None
+            team_off26 = {
+                "pass_ypg":  round(safe_div(ro["passing_yards"], r_gp[t]), 1) if ro is not None else None,
+                "rush_ypg":  round(safe_div(ro["rushing_yards"], r_gp[t]), 1) if ro is not None else None,
+                "total_ypg": round(safe_div((ro["passing_yards"] + ro["rushing_yards"]), r_gp[t]), 1) if ro is not None else None,
+            }
+            team_def26 = {
+                "pass_ypg":  round(safe_div(rd["passing_yards"], r_gp[t]), 1) if rd is not None else None,
+                "rush_ypg":  round(safe_div(rd["rushing_yards"], r_gp[t]), 1) if rd is not None else None,
+                "total_ypg": round(safe_div((rd["passing_yards"] + rd["rushing_yards"]), r_gp[t]), 1) if rd is not None else None,
+            }
+            for m, v in team_off26.items():
+                if v is not None and m in teams[t]["team_off"]:
+                    teams[t]["team_off"][m]["v26"] = v
+            for m, v in team_def26.items():
+                if v is not None and m in teams[t]["team_def"]:
+                    teams[t]["team_def"][m]["v26"] = v
+
+            for p in POSITIONS:
+                so = r_off_pos.loc[(t, p)].to_dict() if (t, p) in r_off_pos.index else None
+                sd = r_def_pos.loc[(t, p)].to_dict() if (t, p) in r_def_pos.index else None
+                if so is not None:
+                    pos26 = pos_metrics_from_sums(p, so, r_gp[t])
+                    for m in POS_METRICS_WEEKLY[p]:
+                        if m in pos26 and m in teams[t]["off"][p]:
+                            teams[t]["off"][p][m]["v26"] = round(pos26[m], 1)
+                if sd is not None:
+                    posd26 = pos_metrics_from_sums(p, sd, r_gp[t])
+                    for m in POS_METRICS_WEEKLY[p]:
+                        if m in posd26 and m in teams[t]["def"][p]:
+                            teams[t]["def"][p][m]["v26"] = round(posd26[m], 1)
+
     payload = {
         "season": SEASON,
         "week": week,
@@ -776,16 +937,14 @@ def build(week):
         "teams": teams,
     }
 
-    os.makedirs("matchup", exist_ok=True)
     path = f"matchup/wk{week:02d}.json"
-    with open(path, "w") as f:
-        json.dump(payload, f)
-    size = os.path.getsize(path) / 1024
+    size = write_with_archive(payload, path)
     print(f"Wrote {path} — {len(payload['games'])} games, {len(all_teams)} teams, {size:.0f} KB")
 
-    build_context(week, all_teams, records, prior_stats, prior_games,
+    build_context(week, all_teams, records, real_prior_stats, prior_games,
                   out_team_def, out_pos_def)
-    build_threats(week, all_teams, records, prior_stats, week_games, gp)
+    build_threats(week, all_teams, records, prior_stats, week_games,
+                  carryover["gp"] if carryover else gp, carryover=carryover)
     build_games(week, all_teams, records, week_games, prior_games, stats)
     build_injuries(week)
     build_ngs_passing(week)
@@ -1316,16 +1475,38 @@ THREAT_CATS["TE"] = dict(THREAT_CATS["WR"])
 THREAT_POS = ["QB", "RB", "WR", "TE"]
 
 
-def build_threats(week, all_teams, records, prior_stats, week_games, gp):
-    """prior_stats already respects the data horizon (weeks 1..week-1)."""
+def build_threats(week, all_teams, records, prior_stats, week_games, gp, carryover=None):
+    """prior_stats already respects the data horizon (weeks 1..week-1) —
+    UNLESS carryover is set, in which case the caller has deliberately
+    passed in a prior SEASON's full-year stats instead (used for the
+    first few weeks of a new season, before it has enough games of its
+    own to rank meaningfully off of).
+
+    carryover, when set, is a dict: {"season": <int>, "real_stats": <df
+    or None>, "real_gp": <dict or None>}. "real_stats"/"real_gp" are the
+    NEW season's own real games so far (may be empty in week 1, thin in
+    weeks 2-3) — shown as a secondary, non-ranking display value
+    alongside the carryover-season number, never used for ranking/tiers.
+    """
     import pandas as pd
 
-    snaps = fetch_csv(SNAPS_URL.format(season=SEASON))
-    snaps = normalize_team_cols(snaps, "team")
-    snaps = snaps[(snaps["season"] == SEASON) & (snaps["game_type"] == "REG")
-                  & (snaps["week"] < week)]
-    lo = max(1, week - SNAP_LOOKBACK)
-    snaps = snaps[snaps["week"] >= lo]
+    if carryover:
+        # Starters: snap share from the CARRYOVER season's most recent
+        # weeks (there's no current-season snap data yet to use instead).
+        snaps = fetch_csv(SNAPS_URL.format(season=carryover["season"]))
+        snaps = normalize_team_cols(snaps, "team")
+        snaps = snaps[(snaps["season"] == carryover["season"]) & (snaps["game_type"] == "REG")]
+        if not snaps.empty:
+            hi = int(snaps["week"].max())
+            lo = max(1, hi - SNAP_LOOKBACK + 1)
+            snaps = snaps[(snaps["week"] >= lo) & (snaps["week"] <= hi)]
+    else:
+        snaps = fetch_csv(SNAPS_URL.format(season=SEASON))
+        snaps = normalize_team_cols(snaps, "team")
+        snaps = snaps[(snaps["season"] == SEASON) & (snaps["game_type"] == "REG")
+                      & (snaps["week"] < week)]
+        lo = max(1, week - SNAP_LOOKBACK)
+        snaps = snaps[snaps["week"] >= lo]
     snaps = snaps[snaps["position"].isin(THREAT_POS)]
 
     # ---- who starts: highest mean offensive snap share in the lookback ----
@@ -1352,9 +1533,11 @@ def build_threats(week, all_teams, records, prior_stats, week_games, gp):
                      ["passing_yards", "passing_tds", "rushing_yards", "rushing_tds",
                       "receiving_yards", "receiving_tds", "receptions"]})
              .reset_index())
-    # Early in the season there aren't MIN_GAMES to be had — fall back to what
-    # exists so week 3 isn't a blank page, and flag the thin sample.
-    min_games = min(MIN_GAMES, max(1, week - 1))
+    # Early in a NEW season there aren't MIN_GAMES to be had yet from that
+    # season alone — fall back to what exists so week 3 isn't a blank page,
+    # and flag the thin sample. Doesn't apply when carryover is set, since
+    # that's a complete prior season with plenty of games either way.
+    min_games = MIN_GAMES if carryover else min(MIN_GAMES, max(1, week - 1))
     agg = agg[agg["gp"] >= min_games]
 
     player_rank = {}     # (name, pos) -> {cat: {"v":pg, "r":rank}}
@@ -1385,7 +1568,39 @@ def build_threats(week, all_teams, records, prior_stats, week_games, gp):
             ranks = {t: i + 1 for i, t in enumerate(order)}
             dfn[pos][cat] = {t: {"v": vals[cat][t], "r": ranks[t]} for t in all_teams}
 
-    # ---- assemble: each starter with their ranks and the defense they face ----
+    # ---- real current-season values so far, DISPLAY ONLY, never used for
+    # ranking/tiers — only computed when carryover provided real_stats
+    # (i.e., week 2+, once real games of the new season actually exist) ----
+    player_real = {}   # (name, pos) -> {cat: v}
+    dfn_real = {}       # pos -> cat -> team -> v
+    if carryover and carryover.get("real_stats") is not None and not carryover["real_stats"].empty:
+        rpl = carryover["real_stats"].copy()
+        rpl["posg"] = rpl["position"].map(POS_MAP)
+        rpl = rpl[rpl["posg"].notna()]
+        ragg = (rpl.groupby(["name", "posg", "team"])
+                  .agg(gp=("week", "nunique"),
+                       **{c: (c, "sum") for c in
+                          ["passing_yards", "passing_tds", "rushing_yards", "rushing_tds",
+                           "receiving_yards", "receiving_tds", "receptions"]})
+                  .reset_index())
+        for pos in THREAT_POS:
+            sub = ragg[ragg["posg"] == pos].copy()
+            for cat, (_lbl, col, dec) in THREAT_CATS[pos].items():
+                sub[cat] = (sub[col] / sub["gp"]).round(dec)
+            for _, r in sub.iterrows():
+                player_real[(r["name"], pos)] = {c: float(r[c]) for c in THREAT_CATS[pos]}
+
+            rsub = rpl[rpl["posg"] == pos]
+            rtot = rsub.groupby("opponent_team")[
+                ["passing_yards", "passing_tds", "rushing_yards", "rushing_tds",
+                 "receiving_yards", "receiving_tds", "receptions"]].sum()
+            real_gp = carryover.get("real_gp") or {}
+            dfn_real[pos] = {}
+            for cat, (_lbl, col, dec) in THREAT_CATS[pos].items():
+                dfn_real[pos][cat] = {
+                    t: round(float(rtot.loc[t, col]) / real_gp[t], dec)
+                    for t in all_teams if t in rtot.index and real_gp.get(t)}
+
     opp_of = {}
     for _, g in week_games.iterrows():
         opp_of[g["away_team"]] = g["home_team"]
@@ -1403,14 +1618,24 @@ def build_threats(week, all_teams, records, prior_stats, week_games, gp):
             cats = {}
             for cat in THREAT_CATS[s["pos"]]:
                 d = dfn[s["pos"]][cat][opp]
-                cats[cat] = {"v": pr[cat]["v"], "r": pr[cat]["r"],
-                             "dv": d["v"], "dr": d["r"]}
+                entry = {"v": pr[cat]["v"], "r": pr[cat]["r"],
+                         "dv": d["v"], "dr": d["r"]}
+                rp = player_real.get((s["name"], s["pos"]))
+                if rp is not None:
+                    entry["v26"] = rp[cat]
+                rd = dfn_real.get(s["pos"], {}).get(cat, {}).get(opp)
+                if rd is not None:
+                    entry["dv26"] = rd
+                cats[cat] = entry
             roster.append({**s, "cats": cats})
         teams_out[t] = {"record": records[t], "opp": opp, "starters": roster}
 
     payload = {
-        "season": SEASON, "week": week, "data_horizon": f"weeks 1-{week - 1}",
-        "min_games": min_games, "thin_sample": min_games < MIN_GAMES,
+        "season": SEASON, "week": week,
+        "data_horizon": (f"{carryover['season']} full season" if carryover
+                          else f"weeks 1-{week - 1}"),
+        "carryover_season": carryover["season"] if carryover else None,
+        "min_games": min_games, "thin_sample": (min_games < MIN_GAMES) and not carryover,
         "snap_lookback": SNAP_LOOKBACK,
         "labels": {p: {c: THREAT_CATS[p][c][0] for c in THREAT_CATS[p]} for p in THREAT_POS},
         "pos_cats": {p: list(THREAT_CATS[p].keys()) for p in THREAT_POS},
@@ -1533,12 +1758,9 @@ def build_context(week, all_teams, records, prior_stats, prior_games,
         },
         "teams": teams_out,
     }
-    os.makedirs("context", exist_ok=True)
     path = f"context/wk{week:02d}.json"
-    with open(path, "w") as f:
-        json.dump(payload, f)
-    print(f"Wrote {path} — {len(all_teams)} team logs, "
-          f"{os.path.getsize(path) / 1024:.0f} KB")
+    size = write_with_archive(payload, path)
+    print(f"Wrote {path} — {len(all_teams)} team logs, {size:.0f} KB")
 
 
 def fetch_pbp():
@@ -2391,13 +2613,10 @@ def build_player_stats():
         "labels": labels,
         "players": players_out,
     }
-    os.makedirs("players", exist_ok=True)
     path = "players/latest.json"
-    with open(path, "w") as f:
-        json.dump(payload, f)
+    size = write_with_archive(payload, path)
     total = sum(len(v) for v in players_out.values())
-    print(f"Wrote {path} — {total} players across {len(POSITIONS)} positions, "
-          f"{os.path.getsize(path) / 1024:.0f} KB")
+    print(f"Wrote {path} — {total} players across {len(POSITIONS)} positions, {size:.0f} KB")
 
 
 def build_team_stats():
@@ -2503,12 +2722,9 @@ def build_team_stats():
         "labels": labels,
         "teams": teams_out,
     }
-    os.makedirs("teamstats", exist_ok=True)
     path = "teamstats/latest.json"
-    with open(path, "w") as f:
-        json.dump(payload, f)
-    print(f"Wrote {path} — {len(teams_out)} teams, "
-          f"{os.path.getsize(path) / 1024:.0f} KB")
+    size = write_with_archive(payload, path)
+    print(f"Wrote {path} — {len(teams_out)} teams, {size:.0f} KB")
 
 
 def build_games_only(week):
@@ -2577,9 +2793,7 @@ def build_intel_reports(week=None):
                  & (players["week"] < as_of_week)].copy()
     if qb.empty:
         print("  No qualifying QB games yet this season — skipping.")
-        os.makedirs("intel", exist_ok=True)
-        with open("intel/latest.json", "w") as f:
-            json.dump({"season": SEASON, "as_of_week": as_of_week, "teams": {}, "rb_teams": {}}, f)
+        write_with_archive({"season": SEASON, "as_of_week": as_of_week, "teams": {}, "rb_teams": {}}, "intel/latest.json")
         return
     starters = qb.loc[qb.groupby(["team", "week"])["attempts"].idxmax()].copy()
     qb_season_avg = starters.groupby("player_id")["passing_yards"].mean().rename("qb_season_avg")
@@ -2762,9 +2976,7 @@ def build_intel_reports(week=None):
                 "log": rb_log,
             }
 
-    os.makedirs("intel", exist_ok=True)
-    with open("intel/latest.json", "w") as f:
-        json.dump({"season": SEASON, "as_of_week": as_of_week, "teams": out, "rb_teams": rb_out}, f)
+    write_with_archive({"season": SEASON, "as_of_week": as_of_week, "teams": out, "rb_teams": rb_out}, "intel/latest.json")
     print(f"Wrote intel/latest.json — {len(out)} QB teams, {len(rb_out)} RB teams, as of week {as_of_week}")
 
 
@@ -2787,10 +2999,8 @@ def build_coverage_report():
     except SystemExit:
         print(f"  Participation data not available for {SEASON} yet — released only after the "
               f"full season concludes. Skipping.")
-        os.makedirs("intel", exist_ok=True)
-        with open("intel/coverage.json", "w") as f:
-            json.dump({"season": SEASON, "available": False, "qb_teams": {}, "wr_teams": {}, "te_teams": {},
-                       "team_coverage_rate": {}}, f)
+        write_with_archive({"season": SEASON, "available": False, "qb_teams": {}, "wr_teams": {}, "te_teams": {},
+                             "team_coverage_rate": {}}, "intel/coverage.json")
         return
     part = part[["nflverse_game_id", "play_id", "defense_man_zone_type", "defense_coverage_type"]]
 
@@ -2992,10 +3202,8 @@ def build_coverage_report():
     wr_out = build_pass_catcher_group("WR")
     te_out = build_pass_catcher_group("TE")
 
-    os.makedirs("intel", exist_ok=True)
-    with open("intel/coverage.json", "w") as f:
-        json.dump({"season": SEASON, "available": True, "qb_teams": qb_out, "wr_teams": wr_out, "te_teams": te_out,
-                   "team_coverage_rate": team_coverage_rate}, f)
+    write_with_archive({"season": SEASON, "available": True, "qb_teams": qb_out, "wr_teams": wr_out, "te_teams": te_out,
+                         "team_coverage_rate": team_coverage_rate}, "intel/coverage.json")
     print(f"Wrote intel/coverage.json — {len(qb_out)} QB teams, {len(wr_out)} WR teams, {len(te_out)} TE teams")
 
 
@@ -3048,9 +3256,7 @@ def build_cb_db_rankings():
         df = normalize_team_cols(df, "team", "opponent")
     except SystemExit:
         print(f"  PFR defensive advanced stats not available for {SEASON} yet — skipping.")
-        os.makedirs("intel", exist_ok=True)
-        with open("intel/cb_rankings.json", "w") as f:
-            json.dump({"season": SEASON, "available": False, "min_targets": MIN_TARGETS, "players": []}, f)
+        write_with_archive({"season": SEASON, "available": False, "min_targets": MIN_TARGETS, "players": []}, "intel/cb_rankings.json")
         return
 
     xwalk = fetch_csv(PLAYERS_XWALK_URL)
@@ -3103,11 +3309,9 @@ def build_cb_db_rankings():
         for i, r in enumerate(ranked):
             r[f"rank_{key}"] = i + 1
 
-    os.makedirs("intel", exist_ok=True)
-    with open("intel/cb_rankings.json", "w") as f:
-        json.dump({"season": SEASON, "available": True, "min_targets": MIN_TARGETS,
-                    "data_horizon": f"through {max(r['games'] for r in rows)} games played" if rows else "",
-                    "players": rows}, f)
+    write_with_archive({"season": SEASON, "available": True, "min_targets": MIN_TARGETS,
+                         "data_horizon": f"through {max(r['games'] for r in rows)} games played" if rows else "",
+                         "players": rows}, "intel/cb_rankings.json")
     print(f"Wrote intel/cb_rankings.json — {len(rows)} qualifying DBs (min {MIN_TARGETS} targets)")
 
 
@@ -3149,9 +3353,7 @@ def build_blitz_report(week=None):
         ftn = fetch_csv(FTN_CHARTING_URL)
     except SystemExit:
         print("  FTN Charting data not available yet this season — skipping blitz report.")
-        os.makedirs("intel", exist_ok=True)
-        with open("intel/blitz.json", "w") as f:
-            json.dump({"season": SEASON, "as_of_week": as_of_week, "qb_teams": {}, "wr_teams": {}}, f)
+        write_with_archive({"season": SEASON, "as_of_week": as_of_week, "qb_teams": {}, "wr_teams": {}}, "intel/blitz.json")
         return
     ftn = ftn[["nflverse_game_id", "nflverse_play_id", "n_pass_rushers"]].dropna(subset=["n_pass_rushers"])
 
@@ -3332,9 +3534,7 @@ def build_blitz_report(week=None):
             **(game_level_hit_rate("receiver_player_id", "receiving_yards", pid, prow, team) or {}),
         }
 
-    os.makedirs("intel", exist_ok=True)
-    with open("intel/blitz.json", "w") as f:
-        json.dump({"season": SEASON, "as_of_week": as_of_week, "qb_teams": qb_out, "wr_teams": wr_out}, f)
+    write_with_archive({"season": SEASON, "as_of_week": as_of_week, "qb_teams": qb_out, "wr_teams": wr_out}, "intel/blitz.json")
     print(f"Wrote intel/blitz.json — {len(qb_out)} QB teams, {len(wr_out)} WR teams, as of week {as_of_week}")
 
 
@@ -3363,15 +3563,50 @@ def resolve_weeks(arg):
     return list(range(1, wk + 1))
 
 
+def archive_current_snapshot():
+    """Copies whatever's CURRENTLY sitting in the canonical matchup/,
+    context/, players/, teamstats/ paths into archive/{SEASON}/ right
+    now — a one-time snapshot for preserving today's state before a
+    future rebuild overwrites it, without needing to wait for that
+    rebuild to happen naturally. Needed specifically because matchup-
+    stats/context/players/teamstats all require real played games —
+    so a 2026 rebuild won't touch (or archive) the current 2025 data
+    for weeks yet, and the season toggle needs a real 2025 copy to
+    switch to well before that."""
+    import shutil
+    copied = 0
+    for folder in ("matchup", "context", "intel"):
+        if not os.path.isdir(folder):
+            continue
+        for fname in os.listdir(folder):
+            src = os.path.join(folder, fname)
+            if not os.path.isfile(src):
+                continue
+            dst_dir = f"archive/{SEASON}/{folder}"
+            os.makedirs(dst_dir, exist_ok=True)
+            shutil.copy2(src, os.path.join(dst_dir, fname))
+            copied += 1
+    for rel_path in ("players/latest.json", "teamstats/latest.json"):
+        if os.path.isfile(rel_path):
+            dst = f"archive/{SEASON}/{rel_path}"
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            shutil.copy2(rel_path, dst)
+            copied += 1
+    print(f"Archived {copied} file(s) from the current canonical state into archive/{SEASON}/")
+
+
 if __name__ == "__main__":
     arg = sys.argv[1] if len(sys.argv) > 1 else str(DEFAULT_WEEK)
     if arg == "--career-base":
         build_career_base()
         sys.exit(0)
+    if arg == "--archive-current":
+        archive_current_snapshot()
+        sys.exit(0)
     weeks = resolve_weeks(arg)
     if not weeks:
         print(f"Season {SEASON}: nothing buildable yet "
-              f"(need week {FIRST_BUILDABLE_WEEK}+ for meaningful ranks). Exiting cleanly.")
+              f"(no schedule found). Exiting cleanly.")
         sys.exit(0)
     print(f"Season {SEASON} — building week(s): {', '.join(map(str, weeks))}")
     built, skipped, games_built = 0, [], 0
@@ -3390,10 +3625,12 @@ if __name__ == "__main__":
         except SystemExit as e:
             print(f"  week {w} games: skipped — {e}")
 
-    # 2. Stats-dependent pages: need player data and enough prior weeks.
+    # 2. Stats-dependent pages: need player data and enough prior weeks —
+    # or, for weeks 1-3 of a new season, the carryover system inside
+    # build() itself (ranks off the prior season instead). No pre-filter
+    # here anymore — build() decides what's buildable and raises
+    # SystemExit (caught below) if genuinely nothing works.
     for w in weeks:
-        if w < FIRST_BUILDABLE_WEEK:
-            skipped.append(w); continue
         try:
             build(w)
             built += 1

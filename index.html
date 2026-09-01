@@ -95,9 +95,14 @@ body{min-height:100vh;overflow-x:hidden}
 <div class="land-foot" id="foot"></div>
 
 <script>
-const DEST     = 'matchup_stats.html';   // where the intro hands off
+const DEST     = 'games.html';   // where the intro hands off — games.html has
+  // real content (the schedule) the moment 2026 is built; matchup_stats.html
+  // won't until real games are actually played and stats start accumulating.
 const DURATION = 7000;                   // total intro length in ms
-const WEEKS    = Array.from({length: 16}, (_, i) => i + 3);   // weeks 3-18
+const WEEKS    = Array.from({length: 18}, (_, i) => i + 1);   // weeks 1-18 —
+  // games/wkNN.json is schedule-only, so unlike matchup/ (which needs real
+  // played games with real stats) it exists for every week the moment a
+  // season is built, even before that season's first game has happened.
 
 const fill  = document.getElementById('fill');
 const msg   = document.getElementById('msg');
@@ -141,7 +146,7 @@ function stop(text){
   await Promise.all(WEEKS.map(async w => {
     const f = String(w).padStart(2, '0');
     try {
-      const r = await fetch('matchup/wk' + f + '.json', { method: 'HEAD' });
+      const r = await fetch('games/wk' + f + '.json', { method: 'HEAD' });
       if (r.ok) found.push(w);
     } catch (e) { /* week not published */ }
   }));
@@ -149,14 +154,14 @@ function stop(text){
   if (!found.length){
     stop('No data published yet');
     document.getElementById('foot').textContent =
-      'Run build_matchup_stats.py, then commit the matchup/ and context/ folders.';
+      'Run build_matchup_stats.py, then commit the games/ folder.';
     return;
   }
 
   found.sort((a, b) => a - b);
   const latest = found[found.length - 1];
   try {
-    const res = await fetch('matchup/wk' + String(latest).padStart(2, '0') + '.json');
+    const res = await fetch('games/wk' + String(latest).padStart(2, '0') + '.json');
     const d = await res.json();
     document.getElementById('kicker').textContent = 'NFL ' + d.season + ' Season';
     document.getElementById('foot').textContent =

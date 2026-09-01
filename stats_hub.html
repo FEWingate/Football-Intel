@@ -85,6 +85,10 @@ let CBDB = null;
 let cbdbSortKey = null, cbdbSortDir = 'asc';
 let cbdbSearchTerm = '';
 
+let season = 2025;
+  // Same real reason as Matchup Stats/Contextual: 2026's matchup, team,
+  // and player stats need real played games, which don't exist yet.
+
 main.innerHTML = `
   <div class="tabs view-switch" id="viewSwitch" role="tablist">
     <button role="tab" data-view="team_off" aria-selected="true">Team Offense</button>
@@ -94,6 +98,8 @@ main.innerHTML = `
   </div>
   <div class="bar">
     <span class="lbl" id="sectionLbl">Team Offense</span>
+    <label class="lbl" for="szn">Season</label>
+    <select id="szn"><option value="2025">2025</option><option value="2026">2026</option></select>
     <div class="legend" id="sectionLegend"><span>Season totals so far, per team · click any column to sort</span></div>
   </div>
   <div class="hub-controls">
@@ -120,17 +126,30 @@ main.innerHTML = `
 const $ = id => document.getElementById(id);
 const pad = n => String(n).padStart(2,"0");
 
+// Same real split as every other toggle page: 2026 is the canonical,
+// unprefixed path; 2025 is preserved under archive/, since these builders
+// need real played games and won't touch (or archive) 2025 for weeks yet.
+const seasonPath = (season, relPath) => season === 2026
+  ? relPath
+  : `archive/${season}/${relPath}`;
+
 $("viewSwitch").querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
   $("viewSwitch").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
   currentView = b.dataset.view;
   switchView();
 }));
+$("szn").value = String(season);
+$("szn").addEventListener("change", () => { season = Number($("szn").value); load(); });
 
 async function load(){
   fiStatus("Loading","loading");
+  WEEKS = {}; weekList = []; TEAMSTATS = null; PLAYERSTATS = null; CBDB = null;
+    // Real reset needed since load() is now re-callable on season toggle —
+    // without this, switching seasons would silently accumulate the
+    // previous season's weeks alongside the new one instead of replacing them.
   for(let w=1; w<=22; w++){
     try{
-      const res = await fetch(`matchup/wk${pad(w)}.json`);
+      const res = await fetch(seasonPath(season, `matchup/wk${pad(w)}.json`));
       if(!res.ok) continue;
       WEEKS[w] = await res.json();
       weekList.push(w);
@@ -139,25 +158,28 @@ async function load(){
   weekList.sort((a,b)=>a-b);
 
   try{
-    const res = await fetch(`teamstats/latest.json`);
+    const res = await fetch(seasonPath(season, `teamstats/latest.json`));
     if(res.ok) TEAMSTATS = await res.json();
   }catch(e){ /* team stats not built yet */ }
 
   try{
-    const res = await fetch(`players/latest.json`);
+    const res = await fetch(seasonPath(season, `players/latest.json`));
     if(res.ok) PLAYERSTATS = await res.json();
   }catch(e){ /* player stats not built yet */ }
 
   try{
-    const res = await fetch(`intel/cb_rankings.json`);
+    const res = await fetch(seasonPath(season, `intel/cb_rankings.json`));
     if(res.ok) CBDB = await res.json();
   }catch(e){ /* cb/db rankings not built yet */ }
 
   if(!weekList.length && !TEAMSTATS && !PLAYERSTATS){
     fiStatus("No data","error"); fiUpdated("");
-    $("leadTable").outerHTML = `<div class="empty">
-      No stats data found.<br>
-      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+    $("leadTable").outerHTML = season === 2026
+      ? `<div class="empty">2026 isn't built yet — this needs real played games with
+         real stats, which won't exist until the season is underway.</div>`
+      : `<div class="empty">2025 isn't archived yet.<br>
+         Run <b>python3 build_matchup_stats.py --archive-current</b> in your lab folder
+         (with NFL_SEASON=2025), then reload.</div>`;
     return;
   }
 

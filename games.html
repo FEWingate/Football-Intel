@@ -187,7 +187,7 @@ for (let w = 1; w <= 18; w++){
   const o = document.createElement('option'); o.value = w; o.textContent = 'Week ' + w;
   wkSel.appendChild(o);
 }
-wkSel.value = 10;
+wkSel.value = 1;
 wkSel.addEventListener('change', () => load(Number(wkSel.value)));
 
 async function load(week){
@@ -526,7 +526,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && $('modal').classList.contains('open')) closeModal();
 });
 
-load(10);
+load(1);
 </script>
 </body>
 </html>

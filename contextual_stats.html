@@ -56,13 +56,18 @@ const POSITIONS=["QB","RB","WR","TE"];
 const UNITS=[["team","Team"],["QB","Quarterback"],["RB","Running backs"],
              ["WR","Wide receivers"],["TE","Tight ends"]];
 const TIERS=[["top5","vs Top 5"],["top","vs Top 10"],["mid","vs Middle 12"],["bot","vs Bottom 10"],["bottom5","vs Bottom 5"]];
-let DATA=null, team=null, unit="team";
+let DATA=null, team=null, unit="team", season=2025;
+  // Same real reason as Matchup Stats: 2026's context logs need real played
+  // games, which don't exist yet — 2025 is the only season with real data
+  // right now.
 
 const main = fiShell({ page:'context', pageLabel:'Contextual Statistics', status:'loading' });
 
 main.innerHTML = `
   <div class="bar">
     <label class="lbl" for="wk">Week</label><select id="wk"></select>
+    <label class="lbl" for="szn">Season</label>
+    <select id="szn"><option value="2025">2025</option><option value="2026">2026</option></select>
     <label class="lbl" for="tm">Team</label>
     <span class="team-pick"><span id="tmLogo"></span><select id="tm"></select></span>
     <div class="legend">
@@ -78,10 +83,19 @@ main.innerHTML = `
 const $ = id => document.getElementById(id);
 const pad = n => String(n).padStart(2,"0");
 
+// Same real split as Matchup Stats: 2026 is the canonical, unprefixed path;
+// 2025 is preserved separately under archive/, since matchup-stats/context
+// need real played games and won't be rebuilt for 2026 for weeks yet.
+const contextPath = (season, week) => season === 2026
+  ? `context/wk${pad(week)}.json`
+  : `archive/${season}/context/wk${pad(week)}.json`;
+
 const wkSel=$("wk");
 for(let w=3;w<=18;w++){const o=document.createElement("option");o.value=w;o.textContent="Week "+w;wkSel.appendChild(o);}
 wkSel.value=10;
 wkSel.addEventListener("change",()=>load(Number(wkSel.value)));
+$("szn").value = String(season);
+$("szn").addEventListener("change", () => { season = Number($("szn").value); load(Number(wkSel.value)); });
 $("tm").addEventListener("change",()=>{team=$("tm").value;syncTeamLogo();render();});
 function syncTeamLogo(){ $("tmLogo").innerHTML = team ? fiLogoHTML(team,22) : ''; }
 
@@ -94,14 +108,17 @@ async function load(week){
   $("body").innerHTML=`<div class="empty">Loading week ${week}…</div>`;
   fiStatus("Loading","loading");
   try{
-    const res = await fetch(`context/wk${pad(week)}.json`);
+    const res = await fetch(contextPath(season, week));
     if(!res.ok) throw new Error("missing");
     DATA = await res.json();
   }catch(e){
     DATA=null; fiStatus("No data","error"); fiUpdated("");
-    $("body").innerHTML=`<div class="empty">
-      Week ${week} isn't built yet.<br>
-      Run <b>python3 build_matchup_stats.py ${week}</b> in your lab folder, then reload.</div>`;
+    $("body").innerHTML = season === 2026
+      ? `<div class="empty">Week ${week}, 2026 isn't built yet — this needs real played
+         games with real stats, which won't exist until the season is underway.</div>`
+      : `<div class="empty">Week ${week}, 2025 isn't archived yet.<br>
+         Run <b>python3 build_matchup_stats.py --archive-current</b> in your lab folder
+         (with NFL_SEASON=2025), then reload.</div>`;
     return;
   }
   fiStatus("Ready");

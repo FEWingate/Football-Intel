@@ -72,6 +72,10 @@
   font-family:var(--font-mono);font-size:11px;color:var(--text-mid);white-space:nowrap}
 .side-val{display:inline-flex;align-items:baseline;gap:5px}
 .side-val b{color:var(--text);font-weight:500;font-variant-numeric:tabular-nums}
+.side-val b.carryover-val{color:var(--accent-gold)}
+.side-val b.current-val{color:var(--accent-blue)}
+.val26{font-family:var(--font-mono);font-size:10.5px;color:var(--accent-blue);
+  font-variant-numeric:tabular-nums;margin-left:3px}
 .side-val em{font-style:normal;font-size:9px;color:var(--text-dim);letter-spacing:.05em}
 .conv-row .rk{font-size:9.5px}
 .conv-row .arrow{color:var(--text-dim);font-size:9.5px}
@@ -114,11 +118,11 @@ main.innerHTML = `
   <div class="rules" id="rules"></div>`;
 
 const wkSel = $('wk');
-for (let w = 3; w <= 18; w++){
+for (let w = 1; w <= 18; w++){
   const o = document.createElement('option'); o.value = w; o.textContent = 'Week ' + w;
   wkSel.appendChild(o);
 }
-wkSel.value = 10;
+wkSel.value = 1;
 wkSel.addEventListener('change', () => load(Number(wkSel.value)));
 
 const classify = fiClassify;
@@ -140,7 +144,9 @@ async function load(week){
     return;
   }
   fiStatus('Ready');
-  fiUpdated(`${DATA.season} · through ${DATA.data_horizon}`);
+  fiUpdated(DATA.carryover_season
+    ? `${DATA.season} Week ${DATA.week} · ranked off ${DATA.carryover_season}'s full season`
+    : `${DATA.season} · through ${DATA.data_horizon}`);
   render();
 }
 
@@ -152,17 +158,23 @@ function threatHTML(s){
   const badges = results.map(r =>
     `<span class="tier-${r.tier}"><span class="tbadge">${r.tierLabel} ${r.type}</span></span>`).join('');
   const convCats = results.flatMap(r => r.conv);
+  const isCarryover = !!DATA.carryover_season;
   const row = (c, converged) => {
     const x = s.cats[c];
+    const vClass = isCarryover ? 'carryover-val' : '';
+    const v26 = (x.v26 !== undefined)
+      ? `<span class="val26">(${x.v26})</span>` : '';
+    const dv26 = (x.dv26 !== undefined)
+      ? `<span class="val26">(${x.dv26})</span>` : '';
     return `<div class="conv-row${converged ? '' : ' support'}">
       <div class="conv-cat">
         ${converged ? '<span class="mark">\u25CF</span>' : '<span class="mark"></span>'}
         ${esc(label(s.pos, c))}
       </div>
       <div class="conv-nums">
-        <span class="side-val"><b>${x.v}</b><span class="rk ${rkClass(x.r)}">#${x.r}</span></span>
+        <span class="side-val"><b class="${vClass}">${x.v}</b>${v26}<span class="rk ${rkClass(x.r)}">#${x.r}</span></span>
         <span class="arrow">vs</span>
-        <span class="side-val"><b>${x.dv}</b><span class="rk ${rkClass(x.dr)}">#${x.dr}</span>
+        <span class="side-val"><b class="${vClass}">${x.dv}</b>${dv26}<span class="rk ${rkClass(x.dr)}">#${x.dr}</span>
           <em>allowed</em></span>
       </div>
     </div>`;
@@ -239,12 +251,20 @@ function render(){
   }).join('');
 
   $('grid').innerHTML = cards;
-  $('warn').innerHTML = DATA.thin_sample
-    ? `<div class="warn"><b>Thin sample</b><span>Ranks here come from only
-       ${DATA.week - 1} week${DATA.week - 1 === 1 ? '' : 's'} of play, with a
-       ${DATA.min_games}-game minimum. Early-season ranks swing hard, so expect more
-       flags than a settled week would produce — treat these as provisional.</span></div>`
-    : '';
+  $('warn').innerHTML = DATA.carryover_season
+    ? `<div class="warn"><b>${DATA.carryover_season} carryover</b><span>${DATA.season}
+       hasn't played enough games yet to rank off its own numbers, so ranks and tiers
+       here come from ${DATA.carryover_season}'s complete season instead. Where a player
+       or defense already has real ${DATA.season} games, that number is shown in
+       <b style="color:var(--accent-blue);font-weight:600">blue parentheses</b> alongside
+       the <b style="color:var(--accent-gold);font-weight:600">${DATA.carryover_season} number</b> —
+       for context only, not used for ranking.</span></div>`
+    : (DATA.thin_sample
+      ? `<div class="warn"><b>Thin sample</b><span>Ranks here come from only
+         ${DATA.week - 1} week${DATA.week - 1 === 1 ? '' : 's'} of play, with a
+         ${DATA.min_games}-game minimum. Early-season ranks swing hard, so expect more
+         flags than a settled week would produce — treat these as provisional.</span></div>`
+      : '');
   $('summary').innerHTML =
     `<span class="sum-pill"><b>${total}</b> threats</span>
      <span class="sum-pill"><b>${gamesWith}</b> of ${DATA.games.length} games</span>` +
@@ -259,7 +279,7 @@ function render(){
      A player can hold more than one designation.`;
 }
 
-load(10);
+load(1);
 </script>
 </body>
 </html>

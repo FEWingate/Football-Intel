@@ -26,6 +26,9 @@
 .side.right{justify-content:flex-end;text-align:right}
 .val{font-family:var(--font-mono);font-size:15px;font-weight:500;
   font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.val.carryover-val{color:var(--accent-gold)}
+.val26{font-family:var(--font-mono);font-size:10.5px;color:var(--accent-blue);
+  font-variant-numeric:tabular-nums;margin-left:2px}
 .metric{font-size:12.5px;color:var(--text-mid);flex:1;min-width:0;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .side.right .metric{text-align:right}
@@ -55,7 +58,10 @@
 <script>
 const POSITIONS = ["QB","RB","WR","TE"];
 const POS_LABEL = {QB:"Quarterback",RB:"Running backs",WR:"Wide receivers",TE:"Tight ends"};
-let DATA=null, activeGame=null, dir=0, lastFocus=null;
+let DATA=null, activeGame=null, dir=0, lastFocus=null, season=2026;
+  // 2026 default: weeks 1-3 now rank off 2025's carryover data (real 2026
+  // games, real 2025-based ranks), so there's real, meaningful content to
+  // show from week 1 on — not an empty "not built yet" state anymore.
 
 const main = fiShell({ page:'matchup', pageLabel:'Matchup Statistics', status:'loading' });
 
@@ -63,6 +69,8 @@ main.innerHTML = `
   <div class="bar">
     <label class="lbl" for="wk">Week</label>
     <select id="wk"></select>
+    <label class="lbl" for="szn">Season</label>
+    <select id="szn"><option value="2025">2025</option><option value="2026">2026</option></select>
     <div class="legend">
       <span><span class="badge gold">EDGE</span> top-10 offense vs bottom-10 defense</span>
       <span><span class="rk t1">#1</span> elite</span>
@@ -84,29 +92,48 @@ main.innerHTML = `
 const $ = id => document.getElementById(id);
 const pad = n => String(n).padStart(2,"0");
 
+// 2026 is always the canonical, unprefixed path (whatever a normal rebuild
+// last produced); 2025 is preserved separately under archive/, since a
+// future 2026 rebuild would otherwise silently overwrite it. Real reason
+// this split exists at all: matchup-stats/context need real played games,
+// so 2026's canonical files won't reflect real data for weeks yet even
+// once the season starts — the archive is what keeps 2025 available
+// throughout that whole gap.
+const matchupPath = (season, week) => season === 2026
+  ? `matchup/wk${pad(week)}.json`
+  : `archive/${season}/matchup/wk${pad(week)}.json`;
+
 const wkSel = $("wk");
-for (let w=3; w<=18; w++){
+for (let w=1; w<=18; w++){
   const o=document.createElement("option"); o.value=w; o.textContent="Week "+w; wkSel.appendChild(o);
 }
-wkSel.value = 10;
+wkSel.value = 1;
 wkSel.addEventListener("change", () => load(Number(wkSel.value)));
+$("szn").value = String(season);
+$("szn").addEventListener("change", () => { season = Number($("szn").value); load(Number(wkSel.value)); });
 
 async function load(week){
   $("grid").innerHTML = `<div class="empty">Loading week ${week}…</div>`;
   fiStatus("Loading","loading");
   try{
-    const res = await fetch(`matchup/wk${pad(week)}.json`);
+    const res = await fetch(matchupPath(season, week));
     if(!res.ok) throw new Error("missing");
     DATA = await res.json();
   }catch(e){
     DATA=null; fiStatus("No data","error"); fiUpdated("");
-    $("grid").innerHTML = `<div class="empty">
-      Week ${week} isn't built yet.<br>
-      Run <b>python3 build_matchup_stats.py ${week}</b> in your lab folder, then reload.</div>`;
+    $("grid").innerHTML = season === 2026
+      ? `<div class="empty">Week ${week}, 2026 isn't built yet.<br>
+         Run <b>NFL_SEASON=2026 python3 build_matchup_stats.py ${week}</b> in your lab
+         folder, then reload.</div>`
+      : `<div class="empty">Week ${week}, 2025 isn't archived yet.<br>
+         Run <b>python3 build_matchup_stats.py --archive-current</b> in your lab folder
+         (with NFL_SEASON=2025), then reload.</div>`;
     return;
   }
   fiStatus("Ready");
-  fiUpdated(`${DATA.season} · through ${DATA.data_horizon}`);
+  fiUpdated(DATA.carryover_season
+    ? `${DATA.season} Week ${DATA.week} · ranked off ${DATA.carryover_season}'s full season`
+    : `${DATA.season} · through ${DATA.data_horizon}`);
   renderGrid();
 }
 
@@ -167,9 +194,13 @@ function rowHTML(label, off, def, inv){
   const fill = edge>=0
     ? `<span class="fill" style="left:50%;width:${pct}%"></span>`
     : `<span class="fill def" style="right:50%;width:${pct}%"></span>`;
+  const isCarryover = !!DATA.carryover_season;
+  const valClass = isCarryover ? 'val carryover-val' : 'val';
+  const off26 = (off.v26 !== undefined) ? `<span class="val26">(${off.v26})</span>` : '';
+  const def26 = (def.v26 !== undefined) ? `<span class="val26">(${def.v26})</span>` : '';
   return `<div class="mrow">
     <div class="side">
-      <span class="val">${off.v}</span><span class="rk ${rkClass(off.r)}">#${off.r}</span>
+      <span class="${valClass}">${off.v}</span>${off26}<span class="rk ${rkClass(off.r)}">#${off.r}</span>
       <span class="metric">${esc(label)}</span>
     </div>
     <div class="gutter" title="${edge>=0?'Offense':'Defense'} edge: ${Math.abs(edge)} rank steps${inv?' (lower is better for the offense)':''}">
@@ -178,7 +209,7 @@ function rowHTML(label, off, def, inv){
     </div>
     <div class="side right">
       <span class="metric">${esc(label)} allowed</span>
-      <span class="rk ${rkClass(def.r)}">#${def.r}</span><span class="val">${def.v}</span>
+      <span class="rk ${rkClass(def.r)}">#${def.r}</span><span class="${valClass}">${def.v}</span>${def26}
     </div></div>`;
 }
 
@@ -208,7 +239,7 @@ function renderMatchup(){
   $("modal").scrollTop = 0;
 }
 
-load(10);
+load(1);
 </script>
 </body>
 </html>
