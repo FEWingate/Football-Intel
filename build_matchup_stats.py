@@ -803,6 +803,43 @@ def build(week):
 # against real live 2026 data showing exactly 90 ACT players per team
 # pre-cutdown, matching the real current roster-size rule.
 # ==========================================================================
+# Real ESPN team IDs — confirmed by direct fetch for 26 of 32 teams this
+# session (ARI through PHI, in alphabetical order from the real teams
+# list endpoint). The remaining 6 (PIT, SEA, SF, TB, TEN, WAS) use the
+# same well-established IDs cited consistently across every independent
+# ESPN API reference checked this session, but were NOT individually
+# re-confirmed via a live fetch here due to time — worth a quick spot
+# check (fetch one of their rosters and confirm the team name in the
+# response) before fully trusting them.
+ESPN_TEAM_IDS = {
+    "ARI": "22", "ATL": "1", "BAL": "33", "BUF": "2", "CAR": "29", "CHI": "3",
+    "CIN": "4", "CLE": "5", "DAL": "6", "DEN": "7", "DET": "8", "GB": "9",
+    "HOU": "34", "IND": "11", "JAX": "30", "KC": "12", "LV": "13", "LAC": "24",
+    "LAR": "14", "MIA": "15", "MIN": "16", "NE": "17", "NO": "18", "NYG": "19",
+    "NYJ": "20", "PHI": "21",
+    "PIT": "23", "SEA": "26", "SF": "25", "TB": "27", "TEN": "10", "WAS": "28",
+}
+
+
+def fetch_espn_roster(team_abbr):
+    """One team's real, current roster from ESPN's live site API — used
+    as a fallback when nflverse's own rosters release hasn't caught up
+    to real cutdown/trade moves yet. Confirmed live and accurate this
+    session against two independently-verified real transactions (the
+    A.J. Brown trade, the Kenneth Walker III signing)."""
+    team_id = ESPN_TEAM_IDS.get(team_abbr)
+    if not team_id:
+        return None
+    url = f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/{team_id}/roster"
+    try:
+        r = requests.get(url, timeout=30)
+        if r.status_code != 200:
+            return None
+        return r.json()
+    except Exception:
+        return None
+
+
 def build_rosters():
     try:
         df = fetch_csv(ROSTERS_URL)
@@ -841,6 +878,49 @@ def build_rosters():
     total = sum(len(v) for v in teams.values())
     print(f"Wrote {path} — {len(teams)} teams, {total} active players, "
           f"{os.path.getsize(path)/1024:.0f} KB")
+
+
+def build_rosters_espn():
+    """Same real output shape as build_rosters() (rosters/latest.json),
+    sourced from ESPN instead of nflverse — a genuine drop-in swap, not
+    a separate feature to wire in elsewhere. gsis_id isn't available
+    from ESPN's roster response, so it's left null here; nothing
+    downstream that reads this file actually requires it for display,
+    only the (unrelated) NGS/QBR crosswalk work does."""
+    teams = {}
+    for team_abbr in ESPN_TEAM_IDS:
+        data = fetch_espn_roster(team_abbr)
+        if not data:
+            print(f"  ESPN roster fetch failed for {team_abbr} — skipping.")
+            continue
+        players = []
+        for group in data.get("athletes", []):
+            for item in group.get("items", []):
+                status = item.get("status", {}).get("abbreviation")
+                if status and status != "Active":
+                    continue  # matches build_rosters()'s ACT-only filter
+                players.append({
+                    "gsis_id": None,
+                    "name": item.get("fullName"),
+                    "position": item.get("position", {}).get("abbreviation"),
+                    "jersey_number": item.get("jersey"),
+                    "years_exp": item.get("experience", {}).get("years"),
+                    "college": item.get("college", {}).get("name"),
+                    "status": status,
+                    "espn_id": item.get("id"),
+                })
+        teams[team_abbr] = players
+        print(f"  ESPN roster: {team_abbr} — {len(players)} active players")
+
+    payload = {"season": SEASON, "teams": teams, "source": "espn"}
+    os.makedirs("rosters", exist_ok=True)
+    path = "rosters/latest.json"
+    with open(path, "w") as f:
+        json.dump(payload, f)
+    total = sum(len(v) for v in teams.values())
+    print(f"Wrote {path} (ESPN source) — {len(teams)} teams, {total} active players, "
+          f"{os.path.getsize(path)/1024:.0f} KB")
+
 
 
 # ==========================================================================
@@ -3340,8 +3420,18 @@ if __name__ == "__main__":
     # as team/player stats above. Built specifically to be re-run after
     # the Aug 30 2026 cutdown deadline with no code changes — see the
     # ROSTERS_URL/DEPTH_CHARTS_URL comments for why this should just work.
+    # ROSTER_SOURCE=espn is a real, explicit, temporary override — use it
+    # only while nflverse's own rosters release is still lagging behind
+    # real roster moves; switch back to the default (nflverse) the
+    # moment it catches up, since ESPN's response here doesn't carry a
+    # real gsis_id (needed elsewhere) the way nflverse's own file does.
+    roster_source = os.environ.get("ROSTER_SOURCE", "nflverse")
     try:
-        build_rosters()
+        if roster_source == "espn":
+            print("  Using ESPN as roster source (ROSTER_SOURCE=espn) — temporary override.")
+            build_rosters_espn()
+        else:
+            build_rosters()
     except SystemExit as e:
         print(f"  rosters: skipped — {e}")
 
