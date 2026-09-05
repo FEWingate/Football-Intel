@@ -2476,6 +2476,117 @@ def rz_season_stats(pdf, pos, rz_rush, rz_pass, team_rz_carries, team_rz_targets
     return out
 
 
+# ── QB Dome / Retractable-Roof Home-Road Splits (Players page "Splits"
+# tab) ────────────────────────────────────────────────────────────────
+# "Dome team" here is a VENUE classification (fixed roof or retractable
+# roof), locked in with Frank on 2026-09-05 — not each game's actual
+# roof state. nflverse's own games.csv does carry a real per-game roof
+# value (outdoors/dome/closed/open), since a retractable-roof team like
+# DAL, ARI, or HOU sometimes plays a home game with the roof open — but
+# the split below is Home vs Road by team, every home game counted the
+# same regardless of that day's roof state. LAR and LAC share SoFi
+# Stadium (fixed roof, open sides) and both count as retractable here.
+DOME_TEAMS = {
+    "DET": "fixed", "LV": "fixed", "MIN": "fixed", "NO": "fixed",
+    "ARI": "retractable", "ATL": "retractable", "DAL": "retractable",
+    "HOU": "retractable", "IND": "retractable",
+    "LAR": "retractable", "LAC": "retractable",
+}
+
+
+def build_qb_dome_splits(stats):
+    """Home vs Road splits, full QB stat set, for the current-season QB1
+    of every team in DOME_TEAMS. QB1 = whoever started the most games
+    this season (each week's starter = most attempts that team-week,
+    then whichever player has the most such starts) — the same
+    real-starter method already used for the Blitz/Coverage reports
+    elsewhere in this script, not the Threat System's snap-share method
+    (that one's tuned for weekly all-position starter detection, not
+    season-long QB1 identification).
+
+    Rate stats (comp_pct, ypa, rating) are computed from the SIDE'S
+    summed totals, not averaged game-to-game — same reasoning as
+    nfl_passer_rating()'s own docstring: averaging an average is a real
+    bug this project has hit before.
+
+    Also splits out "road_outdoor" — the subset of road games played at
+    a stadium that ISN'T itself a dome/retractable-roof venue. A road
+    game at another DOME_TEAMS team's stadium is still played indoors,
+    so lumping every road game together (as the original "road" split
+    does) understates how much a genuinely outdoor start differs from
+    a dome start. "road" is kept as-is alongside this, not replaced —
+    both are real, useful comparisons.
+    """
+    qb = stats[(stats["pos"] == "QB") & (stats["team"].isin(DOME_TEAMS))]
+    if qb.empty:
+        print("  WARNING: no QB stats yet for any dome/retractable team — "
+              "skipping qb_dome_splits.")
+        return {}
+
+    games = fetch_csv(GAMES_URL)
+    games = normalize_team_cols(games, "home_team", "away_team")
+    games = games[(games["season"] == SEASON) & (games["game_type"] == "REG")
+                  & games["home_score"].notna()]
+    home_of, opp_of = {}, {}
+    for _, g in games.iterrows():
+        wk = int(g["week"])
+        home_of[(g["home_team"], wk)] = True
+        home_of[(g["away_team"], wk)] = False
+        opp_of[(g["home_team"], wk)] = g["away_team"]
+        opp_of[(g["away_team"], wk)] = g["home_team"]
+
+    def side_stats(sub):
+        n = len(sub)
+        if n == 0:
+            return None
+        att, comp = sub["attempts"].sum(), sub["completions"].sum()
+        yds, td = sub["passing_yards"].sum(), sub["passing_tds"].sum()
+        ints, sacks = sub["passing_interceptions"].sum(), sub["sacks_suffered"].sum()
+        dk = sum(dk_points_for_game(row) for _, row in sub.iterrows())
+        return {
+            "games": n,
+            "att": int(att), "att_pg": round(att / n, 1),
+            "comp": int(comp), "comp_pg": round(comp / n, 1),
+            "comp_pct": round(100 * comp / att, 1) if att else None,
+            "pass_yds": int(yds), "pass_ypg": round(yds / n, 1),
+            "ypa": round(yds / att, 1) if att else None,
+            "pass_td": int(td), "td_pg": round(td / n, 1),
+            "int": int(ints), "int_pg": round(ints / n, 1),
+            "rating": nfl_passer_rating(comp, att, yds, td, ints),
+            "sacks": int(sacks), "sacks_pg": round(sacks / n, 1),
+            "dk_pts_pg": round(dk / n, 1),
+        }
+
+    out = {}
+    for team, g in qb.groupby("team"):
+        weekly_starters = g.loc[g.groupby("week")["attempts"].idxmax()]
+        primary_pid = weekly_starters.groupby("player_id").size().idxmax()
+        pdf = weekly_starters[weekly_starters["player_id"] == primary_pid].sort_values("week")
+        if pdf.empty:
+            continue
+        name = pdf["name"].iloc[-1]
+        headshot = pdf["headshot_url"].iloc[-1] if "headshot_url" in pdf.columns else ""
+        if pd.isna(headshot):
+            headshot = ""
+
+        is_home = pdf.apply(lambda r: home_of.get((r["team"], int(r["week"])), None), axis=1)
+        opp = pdf.apply(lambda r: opp_of.get((r["team"], int(r["week"])), None), axis=1)
+        is_road = is_home == False
+        is_road_outdoor = is_road & (~opp.isin(DOME_TEAMS))
+        home_split = side_stats(pdf[is_home == True])
+        road_split = side_stats(pdf[is_road])
+        road_outdoor_split = side_stats(pdf[is_road_outdoor])
+        if home_split is None and road_split is None:
+            continue
+
+        out[team] = {
+            "gsis_id": primary_pid, "name": name, "team": team, "headshot": headshot,
+            "venue": DOME_TEAMS[team], "home": home_split, "road": road_split,
+            "road_outdoor": road_outdoor_split,
+        }
+    return out
+
+
 def build_player_stats():
     """Season-to-date individual player leaderboards, grouped by position
     then by the same Volume/Efficiency/Explosive/Protection categories
@@ -2494,6 +2605,8 @@ def build_player_stats():
     stats = norm_players(fetch_csv(PLAYER_STATS_URLS))
     if stats.empty:
         raise SystemExit(f"no {SEASON} player stats available yet")
+
+    qb_dome_splits = build_qb_dome_splits(stats)
 
     career_base = {}
     if os.path.exists("players/career_base.json"):
@@ -2612,11 +2725,96 @@ def build_player_stats():
         "data_horizon": f"through {max(games_played.values())} games played",
         "labels": labels,
         "players": players_out,
+        "qb_dome_splits": qb_dome_splits,
     }
     path = "players/latest.json"
     size = write_with_archive(payload, path)
     total = sum(len(v) for v in players_out.values())
-    print(f"Wrote {path} — {total} players across {len(POSITIONS)} positions, {size:.0f} KB")
+    print(f"Wrote {path} — {total} players across {len(POSITIONS)} positions, "
+          f"{len(qb_dome_splits)} dome/retractable QB1 splits, {size:.0f} KB")
+
+
+def build_team_dome_splits(df, reg):
+    """Home vs Road splits for full TEAM offense/defense — PPG, total/
+    passing/rushing yards, points/pass/rush yards ALLOWED, and record —
+    for every team in DOME_TEAMS. Takes the SAME team-week stats (df)
+    and real schedule/results (reg) build_team_stats() already fetched
+    for Points Allowed/records — one fetch, one source of truth, not a
+    second independent pull of the same data.
+
+    Defense-allowed numbers are the same real cross-reference already
+    used elsewhere in this project (Contextual Stats' gamelog mode): a
+    team's defense-allowed number for a given week is just the REAL
+    opponent's own offensive output that same week, not a separately
+    tracked 'defense' stat.
+
+    Also splits out "road_outdoor" — the subset of road games at a
+    stadium that ISN'T itself a dome/retractable-roof venue (a road
+    game at another DOME_TEAMS team is still played indoors). "road"
+    is kept as-is alongside this, not replaced — both are useful."""
+    wk_off = df.groupby(["team", "week"])[["passing_yards", "rushing_yards"]].sum()
+
+    def team_off(team, wk):
+        key = (team, wk)
+        if key in wk_off.index:
+            row = wk_off.loc[key]
+            return float(row["passing_yards"]), float(row["rushing_yards"])
+        return 0.0, 0.0
+
+    game_rows = []
+    for _, g in reg.iterrows():
+        wk = int(g["week"])
+        home, away = g["home_team"], g["away_team"]
+        hs, as_ = int(g["home_score"]), int(g["away_score"])
+        game_rows.append({"team": home, "opp": away, "week": wk, "home": True,
+                           "pts_for": hs, "pts_against": as_})
+        game_rows.append({"team": away, "opp": home, "week": wk, "home": False,
+                           "pts_for": as_, "pts_against": hs})
+
+    def side_stats(rows):
+        n = len(rows)
+        if n == 0:
+            return None
+        pts_for = sum(r["pts_for"] for r in rows)
+        pts_against = sum(r["pts_against"] for r in rows)
+        pass_yds = rush_yds = pass_yds_allowed = rush_yds_allowed = 0.0
+        wins = losses = ties = 0
+        for r in rows:
+            py, ry = team_off(r["team"], r["week"])
+            opy, ory = team_off(r["opp"], r["week"])
+            pass_yds += py; rush_yds += ry
+            pass_yds_allowed += opy; rush_yds_allowed += ory
+            if r["pts_for"] > r["pts_against"]:
+                wins += 1
+            elif r["pts_for"] < r["pts_against"]:
+                losses += 1
+            else:
+                ties += 1
+        total_yds = pass_yds + rush_yds
+        record = f"{wins}-{losses}" + (f"-{ties}" if ties else "")
+        return {
+            "games": n, "record": record,
+            "ppg": round(pts_for / n, 1),
+            "total_yds_pg": round(total_yds / n, 1),
+            "pass_yds_pg": round(pass_yds / n, 1),
+            "rush_yds_pg": round(rush_yds / n, 1),
+            "pts_allowed_pg": round(pts_against / n, 1),
+            "pass_yds_allowed_pg": round(pass_yds_allowed / n, 1),
+            "rush_yds_allowed_pg": round(rush_yds_allowed / n, 1),
+        }
+
+    out = {}
+    for team in DOME_TEAMS:
+        rows = [r for r in game_rows if r["team"] == team]
+        home_split = side_stats([r for r in rows if r["home"]])
+        road_split = side_stats([r for r in rows if not r["home"]])
+        road_outdoor_split = side_stats(
+            [r for r in rows if not r["home"] and r["opp"] not in DOME_TEAMS])
+        if home_split is None and road_split is None:
+            continue
+        out[team] = {"team": team, "venue": DOME_TEAMS[team], "home": home_split,
+                     "road": road_split, "road_outdoor": road_outdoor_split}
+    return out
 
 
 def build_team_stats():
@@ -2670,6 +2868,8 @@ def build_team_stats():
         for t in pts_allowed_sum
     }
 
+    team_dome_splits = build_team_dome_splits(df, reg)
+
     all_cols = [c for section, grp in TEAM_STATS_GROUPS.items()
                 for sub, cols in grp.items() if sub not in CUSTOM_SUBGROUPS
                 for c in cols]
@@ -2721,10 +2921,12 @@ def build_team_stats():
         "data_horizon": f"through {max(games_played.values())} games played",
         "labels": labels,
         "teams": teams_out,
+        "team_dome_splits": team_dome_splits,
     }
     path = "teamstats/latest.json"
     size = write_with_archive(payload, path)
-    print(f"Wrote {path} — {len(teams_out)} teams, {size:.0f} KB")
+    print(f"Wrote {path} — {len(teams_out)} teams, "
+          f"{len(team_dome_splits)} dome/retractable team splits, {size:.0f} KB")
 
 
 def build_games_only(week):

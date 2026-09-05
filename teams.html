@@ -61,6 +61,26 @@
 @media(max-width:520px){
   .division-grid{grid-template-columns:1fr}
 }
+
+.splits-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(480px,1fr));gap:14px}
+.splits-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.splits-head{display:flex;align-items:center;gap:11px;padding:12px 14px;border-bottom:1px solid var(--border);
+  background:var(--surface2)}
+.splits-name{font-family:var(--font-display);font-weight:700;font-size:14.5px;display:flex;align-items:center;gap:6px}
+.splits-venue{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text-dim);margin-top:2px}
+.splits-diff{margin-left:auto;font-family:var(--font-mono);font-size:10.5px;font-weight:700;
+  padding:3px 8px;border-radius:var(--radius-sm);white-space:nowrap}
+.splits-diff.up{color:var(--accent-green);background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.3)}
+.splits-diff.down{color:var(--accent-red);background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.3)}
+.splits-table{width:100%;border-collapse:collapse}
+.splits-table th{font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--text-dim);text-align:right;padding:7px 10px;border-bottom:1px solid var(--border2)}
+.splits-table th:first-child,.splits-table td.name-col{text-align:left}
+.splits-table td{padding:7px 10px;font-family:var(--font-mono);font-size:12px;text-align:right;
+  font-variant-numeric:tabular-nums;border-bottom:1px solid var(--hairline)}
+.splits-table tr:last-child td{border-bottom:0}
+.splits-table td.name-col{font-family:var(--font-body,inherit);font-weight:600;color:var(--text-mid)}
 </style>
 </head>
 <body>
@@ -76,7 +96,12 @@ main.innerHTML = `
       <span><span class="leads-badge">LEADS</span> best record in division</span>
     </div>
   </div>
+  <div class="tabs" id="teamsViewTabs" role="tablist">
+    <button role="tab" data-view="all" aria-selected="true">All Teams</button>
+    <button role="tab" data-view="splits" aria-selected="false">Home/Road Splits</button>
+  </div>
   <div id="confs" class="conf-split"></div>
+  <div id="splitsView" style="display:none"></div>
   <div class="modal-overlay" id="scrim"></div>
   <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
     <div class="modal-header">
@@ -160,6 +185,75 @@ async function load(){
   fiStatus("Ready");
   fiUpdated(`through week ${latestWeek}`);
   renderConferences(records);
+
+  $("teamsViewTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    $("teamsViewTabs").querySelectorAll("button").forEach(x => x.setAttribute("aria-selected", String(x===b)));
+    const view = b.dataset.view;
+    $("confs").style.display = view === 'all' ? '' : 'none';
+    $("splitsView").style.display = view === 'splits' ? '' : 'none';
+    if(view === 'splits') renderTeamSplits();
+  });
+}
+
+/* ── HOME/ROAD SPLITS (dome/retractable-roof teams only) ────────────── */
+const TEAM_SPLITS_VENUE_LABEL = { fixed: 'Fixed dome', retractable: 'Retractable roof' };
+const TEAM_SPLITS_COLS = [
+  ['games','G',0], ['record','Record',null],
+  ['ppg','PPG',1], ['total_yds_pg','Tot Yds',1],
+  ['pass_yds_pg','Pass Yds',1], ['rush_yds_pg','Rush Yds',1],
+  ['pts_allowed_pg','Pts Allow',1], ['pass_yds_allowed_pg','Pass Allow',1],
+  ['rush_yds_allowed_pg','Rush Allow',1],
+];
+
+function renderTeamSplits(){
+  const dome = (TEAMSTATS && TEAMSTATS.team_dome_splits) || {};
+  const teams = Object.keys(dome).sort();
+  if(!teams.length){
+    $("splitsView").innerHTML = `<div class="empty">No dome/road splits available yet.<br>
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+
+  const row = (label, s) => {
+    if(!s) return `<tr><td class="name-col">${label}</td>
+      <td colspan="${TEAM_SPLITS_COLS.length}" style="color:var(--text-dim);text-align:center">No games</td></tr>`;
+    return `<tr><td class="name-col">${label}</td>` +
+      TEAM_SPLITS_COLS.map(([k,,dec]) => {
+        const v = s[k];
+        if(v == null) return `<td>—</td>`;
+        return `<td>${dec == null ? v : v.toFixed(dec)}</td>`;
+      }).join('') + `</tr>`;
+  };
+
+  const cards = teams.map(t => {
+    const q = dome[t];
+    const diff = (q.home && q.road) ? +(q.home.ppg - q.road.ppg).toFixed(1) : null;
+    return `<div class="splits-card">
+      <div class="splits-head">
+        <div>
+          <div class="splits-name">${fiLogoHTML(t,20)}${esc(FI_TEAM_NAME[t] || t)}
+            <span style="color:var(--text-dim);font-weight:400;font-size:11px">${t}</span></div>
+          <div class="splits-venue">${TEAM_SPLITS_VENUE_LABEL[q.venue]}</div>
+        </div>
+        ${diff!==null ? `<span class="splits-diff ${diff>=0?'up':'down'}">
+          ${diff>=0?'+':''}${diff} PPG at home</span>` : ''}
+      </div>
+      <div class="table-wrap"><table class="splits-table">
+        <thead><tr><th></th>${TEAM_SPLITS_COLS.map(([,l])=>`<th>${l}</th>`).join('')}</tr></thead>
+        <tbody>${row('Home', q.home)}${row('Road', q.road)}${row('Road (Outdoor)', q.road_outdoor)}</tbody>
+      </table></div>
+    </div>`;
+  }).join('');
+
+  $("splitsView").innerHTML = `
+    <div class="lineup-note" style="margin-bottom:12px">
+      Every fixed-dome or retractable-roof team · ${teams.length} qualifying teams ·
+      Home/Road is by team venue for the full season, not each game's actual roof state
+      (retractable-roof teams occasionally play a home game with the roof open).
+      Road (Outdoor) further narrows Road to games at a stadium that isn't itself
+      a dome/retractable-roof venue — a road trip to another dome team is excluded.
+    </div>
+    <div class="splits-grid">${cards}</div>`;
 }
 
 function recHTML(r){

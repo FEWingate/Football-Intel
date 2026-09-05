@@ -98,6 +98,28 @@
 }
 .subsect{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.18em;
   text-transform:uppercase;color:var(--text-dim);padding:14px 0 3px}
+
+.splits-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(480px,1fr));gap:14px}
+.splits-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  overflow:hidden;cursor:pointer}
+.splits-card:hover{border-color:var(--border2)}
+.splits-head{display:flex;align-items:center;gap:11px;padding:12px 14px;border-bottom:1px solid var(--border);
+  background:var(--surface2)}
+.splits-name{font-family:var(--font-display);font-weight:700;font-size:14.5px;display:flex;align-items:center;gap:6px}
+.splits-venue{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text-dim);margin-top:2px}
+.splits-diff{margin-left:auto;font-family:var(--font-mono);font-size:10.5px;font-weight:700;
+  padding:3px 8px;border-radius:var(--radius-sm);white-space:nowrap}
+.splits-diff.up{color:var(--accent-green);background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.3)}
+.splits-diff.down{color:var(--accent-red);background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.3)}
+.splits-table{width:100%;border-collapse:collapse}
+.splits-table th{font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--text-dim);text-align:right;padding:7px 10px;border-bottom:1px solid var(--border2)}
+.splits-table th:first-child,.splits-table td.name-col{text-align:left}
+.splits-table td{padding:7px 10px;font-family:var(--font-mono);font-size:12px;text-align:right;
+  font-variant-numeric:tabular-nums;border-bottom:1px solid var(--hairline)}
+.splits-table tr:last-child td{border-bottom:0}
+.splits-table td.name-col{font-family:var(--font-body,inherit);font-weight:600;color:var(--text-mid)}
 @media(max-width:900px){
   .browse-layout, .browse-layout.collapsed{grid-template-columns:1fr}
   .browse-layout.collapsed #browseCol{width:auto;overflow:visible;padding:0}
@@ -133,11 +155,13 @@ main.innerHTML = `
     <button role="tab" data-view="committee" aria-selected="false">Committee View</button>
     <button role="tab" data-view="compare" aria-selected="false">Compare</button>
     <button role="tab" data-view="tierlb" aria-selected="false">Tier Leaderboard</button>
+    <button role="tab" data-view="splits" aria-selected="false">Splits</button>
   </div>
   <div id="profileView"></div>
   <div id="committeeView" style="display:none"></div>
   <div id="compareView" style="display:none"></div>
-  <div id="tierView" style="display:none"></div>`;
+  <div id="tierView" style="display:none"></div>
+  <div id="splitsView" style="display:none"></div>`;
 
 const $ = id => document.getElementById(id);
 
@@ -166,9 +190,11 @@ async function load(){
     $("committeeView").style.display = view==='committee' ? '' : 'none';
     $("compareView").style.display = view==='compare' ? '' : 'none';
     $("tierView").style.display = view==='tierlb' ? '' : 'none';
+    $("splitsView").style.display = view==='splits' ? '' : 'none';
     if(view==='committee') renderCommittee();
     if(view==='compare') renderCompareView();
     if(view==='tierlb') renderTierLeaderboard();
+    if(view==='splits') renderSplits();
   });
 
   renderProfileView();
@@ -273,6 +299,8 @@ function openProfile(p, pos){
 
 function renderProfilePanel(){
   const p = activePlayer, pos = p.pos;
+  const hasHomeRoad = pos === 'QB' && PLAYERSTATS.qb_dome_splits &&
+    PLAYERSTATS.qb_dome_splits[p.team] && PLAYERSTATS.qb_dome_splits[p.team].gsis_id === p.gsis_id;
   $("profilePanel").innerHTML = `
     <div class="profile-head">
       <img class="profile-headshot" src="${esc(p.headshot||'')}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
@@ -288,6 +316,7 @@ function renderProfilePanel(){
       <button role="tab" data-sec="window" aria-selected="false">L5 / L10</button>
       <button role="tab" data-sec="log" aria-selected="false">Game Log</button>
       <button role="tab" data-sec="advanced" aria-selected="false">Advanced</button>
+      ${hasHomeRoad ? `<button role="tab" data-sec="homeroad" aria-selected="false">Home/Road</button>` : ''}
     </div>
     <div id="profileBody"></div>`;
 
@@ -313,7 +342,35 @@ function renderProfileBody(){
     box.innerHTML = `<div class="empty">Loading…</div>`;
     renderAdvanced(box, p); // async — updates box once real data arrives
   }
+  else if(activeSec === 'homeroad') renderHomeRoadTab(box, p);
   else renderGameLogFull(box, p);
+}
+
+// Home/Road (dome/retractable-roof QB1s only) — same data and column set
+// as the Splits leaderboard tab, just scoped to this one player, so the
+// two views can never drift into showing different numbers.
+function renderHomeRoadTab(box, p){
+  const q = PLAYERSTATS.qb_dome_splits[p.team];
+  const diff = (q.home && q.road) ? +(q.home.dk_pts_pg - q.road.dk_pts_pg).toFixed(1) : null;
+  const row = (label, s) => {
+    if(!s) return `<tr><td class="name-col">${label}</td>
+      <td colspan="${SPLITS_COLS.length}" style="color:var(--text-dim);text-align:center">No games</td></tr>`;
+    return `<tr><td class="name-col">${label}</td>` +
+      SPLITS_COLS.map(([k,,dec]) => {
+        const v = s[k];
+        return `<td>${v==null ? '—' : (dec ? v.toFixed(dec) : v)}</td>`;
+      }).join('') + `</tr>`;
+  };
+  box.innerHTML = `
+    <div class="empty" style="padding:8px 0 4px;text-align:left;font-size:10px">
+      ${esc(SPLITS_VENUE_LABEL[q.venue])} · Home/Road is by team venue for the full season,
+      not each game's actual roof state${diff!==null ? ` · ${diff>=0?'+':''}${diff} DK/G at home` : ''}
+      · Road (Outdoor) excludes road trips to other dome/retractable-roof teams
+    </div>
+    <div class="table-wrap"><table class="splits-table">
+      <thead><tr><th></th>${SPLITS_COLS.map(([,l])=>`<th>${l}</th>`).join('')}</tr></thead>
+      <tbody>${row('Home', q.home)}${row('Road', q.road)}${row('Road (Outdoor)', q.road_outdoor)}</tbody>
+    </table></div>`;
 }
 
 // Season-only (splits aren't tracked across career/team changes — same
@@ -975,6 +1032,80 @@ function renderTierTable(){
       browsePos = tierPos;
       renderProfileView();
       openProfile(p, tierPos);
+    };
+  });
+}
+
+/* ── SPLITS VIEW (QB1s, dome/retractable-roof teams, home vs road) ─── */
+const SPLITS_VENUE_LABEL = { fixed: 'Fixed dome', retractable: 'Retractable roof' };
+const SPLITS_COLS = [
+  ['games','G',0], ['comp','Cmp',0], ['att','Att',0], ['comp_pct','Cmp%',1],
+  ['pass_yds','Yds',0], ['pass_ypg','Yds/G',1], ['ypa','Y/A',1], ['pass_td','TD',0], ['int','INT',0],
+  ['rating','Rate',1], ['sacks','Sk',0], ['dk_pts_pg','DK/G',1],
+];
+
+function renderSplits(){
+  const dome = PLAYERSTATS.qb_dome_splits || {};
+  const teams = Object.keys(dome).sort();
+  if(!teams.length){
+    $("splitsView").innerHTML = `<div class="empty">No dome/road splits available yet.<br>
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+
+  const splitsRow = (label, s) => {
+    if(!s) return `<tr><td class="name-col">${label}</td>
+      <td colspan="${SPLITS_COLS.length}" style="color:var(--text-dim);text-align:center">No games</td></tr>`;
+    return `<tr><td class="name-col">${label}</td>` +
+      SPLITS_COLS.map(([k,,dec]) => {
+        const v = s[k];
+        return `<td>${v==null ? '—' : (dec ? v.toFixed(dec) : v)}</td>`;
+      }).join('') + `</tr>`;
+  };
+
+  const cards = teams.map(t => {
+    const q = dome[t];
+    const diff = (q.home && q.road) ? +(q.home.dk_pts_pg - q.road.dk_pts_pg).toFixed(1) : null;
+    return `<div class="splits-card" data-gsis="${esc(q.gsis_id)}">
+      <div class="splits-head">
+        <img class="browse-headshot" style="width:34px;height:34px" src="${esc(q.headshot||'')}"
+             referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div>
+          <div class="splits-name">${esc(q.name)} ${fiLogoHTML(t,16)}
+            <span style="color:var(--text-dim);font-weight:400;font-size:11px">${t}</span></div>
+          <div class="splits-venue">${SPLITS_VENUE_LABEL[q.venue]}</div>
+        </div>
+        ${diff!==null ? `<span class="splits-diff ${diff>=0?'up':'down'}">
+          ${diff>=0?'+':''}${diff} DK/G at home</span>` : ''}
+      </div>
+      <div class="table-wrap"><table class="splits-table">
+        <thead><tr><th></th>${SPLITS_COLS.map(([,l])=>`<th>${l}</th>`).join('')}</tr></thead>
+        <tbody>${splitsRow('Home', q.home)}${splitsRow('Road', q.road)}${splitsRow('Road (Outdoor)', q.road_outdoor)}</tbody>
+      </table></div>
+    </div>`;
+  }).join('');
+
+  $("splitsView").innerHTML = `
+    <div class="lineup-note" style="margin-bottom:12px">
+      QB1 for every fixed-dome or retractable-roof team · ${teams.length} qualifying starters ·
+      Home/Road is by team venue for the full season, not each game's actual roof state
+      (retractable-roof teams occasionally play a home game with the roof open).
+      Road (Outdoor) further narrows Road to games at a stadium that isn't itself
+      a dome/retractable-roof venue — a road trip to another dome team is excluded.
+    </div>
+    <div class="splits-grid">${cards}</div>`;
+
+  $("splitsView").querySelectorAll(".splits-card").forEach(el => {
+    el.onclick = () => {
+      const p = PLAYERSTATS.players.QB.find(x => x.gsis_id === el.dataset.gsis);
+      if(!p) return;
+      $("viewTabs").querySelectorAll("button").forEach(x =>
+        x.setAttribute("aria-selected", String(x.dataset.view==='profile')));
+      $("profileView").style.display = '';
+      $("splitsView").style.display = 'none';
+      browsePos = 'QB';
+      renderProfileView();
+      openProfile(p, 'QB');
     };
   });
 }

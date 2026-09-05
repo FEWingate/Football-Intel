@@ -34,6 +34,7 @@ import json
 import os
 import re
 import sys
+import unicodedata
 from datetime import datetime, timezone
 
 try:
@@ -58,6 +59,13 @@ SUFFIX_RE = re.compile(r"\b(jr|sr|ii|iii|iv|v)\b\.?\s*$")
 
 def normalize_name(name):
     n = str(name).lower().strip()
+    # Strip diacritics (Audric Estimé vs DK's plain-ASCII "Estime", confirmed
+    # a real miss on 2026-09-05 — DK's export has no accented characters at
+    # all, so any nflverse name that does carry one silently failed to match
+    # before this). NFKD decomposes each accented character into its base
+    # letter + a separate combining mark; dropping combining marks leaves
+    # just the plain letters.
+    n = "".join(c for c in unicodedata.normalize("NFKD", n) if not unicodedata.combining(c))
     n = n.replace(".", "").replace("'", "")
     n = SUFFIX_RE.sub("", n).strip()
     return re.sub(r"\s+", " ", n)
