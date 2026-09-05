@@ -535,19 +535,53 @@ _CSV_CACHE = {}
 
 
 def write_with_archive(payload, canonical_path):
-    """Writes to the canonical path exactly as before — every existing
-    page on the site keeps reading this path unchanged, zero ripple
-    effect — AND a second, permanent, season-scoped archival copy, so
-    building a later season never destroys an earlier one's data. Only
-    the new season-toggle pages (Matchup Stats, Contextual, Stats Hub,
-    Intel Reports) read the archive; nothing else needs to know it
-    exists. Returns the canonical file's size in KB, matching what the
-    existing print-logging at each call site already expects."""
+    """Writes to the canonical path — every existing page on the site
+    keeps reading this path unchanged, zero ripple effect — AND a
+    second, permanent, season-scoped archival copy under
+    archive/{season}/..., so history is never lost regardless of what
+    happens to canonical. Only the new season-toggle pages (Matchup
+    Stats, Contextual, Stats Hub, Intel Reports) read the archive;
+    nothing else needs to know it exists.
+
+    Also guards the canonical write itself: if canonical already holds
+    a LATER season than this run, the canonical write is skipped (the
+    archive copy still happens) and a clear warning is printed. This is
+    the real fix for the 2026-09-05 bug — a 2025 test run silently
+    overwrote real 2026 games/wk01.json with no warning. Without this
+    guard, simply routing every output through this helper does NOT
+    prevent that: the old version of this function wrote canonical
+    unconditionally, so an accidental older-season run would have
+    clobbered canonical for ALL SIX previously-protected output types
+    just as easily as it did for games/ — the archive copy alone never
+    stopped that, it only meant the real data was recoverable *after*
+    the fact. A same-season rebuild (e.g. backfilling week 3 after
+    week 5 already built) is untouched by this guard — it only blocks a
+    strictly OLDER season from overwriting a strictly NEWER one.
+
+    Returns the canonical file's size in KB, matching what the existing
+    print-logging at each call site already expects."""
     canonical_dir = os.path.dirname(canonical_path)
     if canonical_dir:
         os.makedirs(canonical_dir, exist_ok=True)
-    with open(canonical_path, "w") as f:
-        json.dump(payload, f)
+
+    new_season = payload.get("season", payload.get("through_season"))
+    skip_canonical = False
+    if new_season is not None and os.path.exists(canonical_path):
+        try:
+            with open(canonical_path) as f:
+                existing = json.load(f)
+            existing_season = existing.get("season", existing.get("through_season"))
+            if existing_season is not None and existing_season > new_season:
+                skip_canonical = True
+                print(f"  SKIPPING canonical write to {canonical_path} — it already holds "
+                      f"season {existing_season}, this run is season {new_season}. Writing "
+                      f"the archive copy only; canonical is left untouched.")
+        except (json.JSONDecodeError, OSError):
+            pass  # unreadable/corrupt existing file — don't block on it, just write through
+
+    if not skip_canonical:
+        with open(canonical_path, "w") as f:
+            json.dump(payload, f)
 
     archive_path = f"archive/{SEASON}/{canonical_path}"
     os.makedirs(os.path.dirname(archive_path), exist_ok=True)
@@ -794,6 +828,34 @@ def build(week):
         # the REAL count (no floor of 1 — a team with 0 real games so far
         # should show no v26/dv26 at all, not divide by a fake 1).
         carryover["real_gp"] = {t: len(wl.get(t, [])) for t in all_teams}
+
+        # BUG FIX (2026-09-05): gp/pts/pa above come from prior_games, the
+        # REAL current season's completed games — correctly ~0 in a
+        # carryover week. But team_off/team_def/pos_off/pos_def below are
+        # fed by `prior_stats`, which in a carryover week is `carry_stats`
+        # (the CARRYOVER season's full-season data) — a season mismatch
+        # between numerator and denominator. Dividing the carryover
+        # season's full-season sums by the real season's near-zero
+        # games-played floored every rate stat's denominator to 1, so
+        # "Total yards / game" etc. silently showed full SEASON totals
+        # mislabeled as per-game (confirmed via screenshot: 6650 "Total
+        # yards/game"; "Points/game" showed 0 for the same root cause,
+        # since pts/pa were also sourced from the real season's empty
+        # prior_games). build_threats() below already swaps in
+        # carryover["gp"] for exactly this reason — this brings team_off/
+        # team_def/pos_off/pos_def into line with that same, already-
+        # proven pattern. This does NOT touch `records` (the real "0-0"
+        # shown at the top of the matchup modal) — that's built from `wl`
+        # directly, above, and is correctly left alone.
+        gp = {t: (carry_gp.get(t, 0) or 1) for t in all_teams}
+        pts, pa = {}, {}
+        for _, g in carry_games.iterrows():
+            h, a = g["home_team"], g["away_team"]
+            hs, as_ = int(g["home_score"]), int(g["away_score"])
+            pts.setdefault(h, []).append(hs)
+            pa.setdefault(h, []).append(as_)
+            pts.setdefault(a, []).append(as_)
+            pa.setdefault(a, []).append(hs)
     records = {}
     for t in all_teams:
         r = wl.get(t, [])
@@ -922,6 +984,7 @@ def build(week):
         "season": SEASON,
         "week": week,
         "data_horizon": f"weeks 1-{week - 1}",
+        "carryover_season": carryover["season"] if carryover else None,
         "labels": {
             "team_off": {m: TEAM_OFF[m][0] for m in TEAM_OFF},
             "team_def": {m: TEAM_DEF[m][0] for m in TEAM_DEF},
@@ -1032,11 +1095,10 @@ def build_rosters():
     payload = {"season": SEASON, "teams": teams}
     os.makedirs("rosters", exist_ok=True)
     path = "rosters/latest.json"
-    with open(path, "w") as f:
-        json.dump(payload, f)
+    size = write_with_archive(payload, path)
     total = sum(len(v) for v in teams.values())
     print(f"Wrote {path} — {len(teams)} teams, {total} active players, "
-          f"{os.path.getsize(path)/1024:.0f} KB")
+          f"{size:.0f} KB")
 
 
 def build_rosters_espn():
@@ -1074,11 +1136,10 @@ def build_rosters_espn():
     payload = {"season": SEASON, "teams": teams, "source": "espn"}
     os.makedirs("rosters", exist_ok=True)
     path = "rosters/latest.json"
-    with open(path, "w") as f:
-        json.dump(payload, f)
+    size = write_with_archive(payload, path)
     total = sum(len(v) for v in teams.values())
     print(f"Wrote {path} (ESPN source) — {len(teams)} teams, {total} active players, "
-          f"{os.path.getsize(path)/1024:.0f} KB")
+          f"{size:.0f} KB")
 
 
 
@@ -1116,11 +1177,10 @@ def build_depth_charts():
     payload = {"season": SEASON, "as_of": latest_dt, "teams": teams}
     os.makedirs("depth_charts", exist_ok=True)
     path = "depth_charts/latest.json"
-    with open(path, "w") as f:
-        json.dump(payload, f)
+    size = write_with_archive(payload, path)
     total = sum(len(v) for v in teams.values())
     print(f"Wrote {path} — {len(teams)} teams, {total} depth-chart entries, "
-          f"as of {latest_dt}, {os.path.getsize(path)/1024:.0f} KB")
+          f"as of {latest_dt}, {size:.0f} KB")
 
 
 # ==========================================================================
@@ -1158,9 +1218,8 @@ def build_ngs_passing(week):
     payload = {"season": SEASON, "week": week, "players": players}
     os.makedirs("ngs_passing", exist_ok=True)
     path = f"ngs_passing/wk{week:02d}.json"
-    with open(path, "w") as f:
-        json.dump(payload, f)
-    print(f"Wrote {path} — {len(players)} qualifying passers, {os.path.getsize(path)/1024:.0f} KB")
+    size = write_with_archive(payload, path)
+    print(f"Wrote {path} — {len(players)} qualifying passers, {size:.0f} KB")
 
 
 def build_ngs_rushing(week):
@@ -1192,9 +1251,8 @@ def build_ngs_rushing(week):
     payload = {"season": SEASON, "week": week, "players": players}
     os.makedirs("ngs_rushing", exist_ok=True)
     path = f"ngs_rushing/wk{week:02d}.json"
-    with open(path, "w") as f:
-        json.dump(payload, f)
-    print(f"Wrote {path} — {len(players)} qualifying rushers, {os.path.getsize(path)/1024:.0f} KB")
+    size = write_with_archive(payload, path)
+    print(f"Wrote {path} — {len(players)} qualifying rushers, {size:.0f} KB")
 
 
 # ==========================================================================
@@ -1231,9 +1289,8 @@ def build_ff_opportunity(week):
     payload = {"season": SEASON, "week": week, "players": players}
     os.makedirs("ff_opportunity", exist_ok=True)
     path = f"ff_opportunity/wk{week:02d}.json"
-    with open(path, "w") as f:
-        json.dump(payload, f)
-    print(f"Wrote {path} — {len(players)} players, {os.path.getsize(path)/1024:.0f} KB")
+    size = write_with_archive(payload, path)
+    print(f"Wrote {path} — {len(players)} players, {size:.0f} KB")
 
 
 # ==========================================================================
@@ -1266,9 +1323,8 @@ def build_espn_qbr(week):
     payload = {"season": SEASON, "week": week, "players": players}
     os.makedirs("espn_qbr", exist_ok=True)
     path = f"espn_qbr/wk{week:02d}.json"
-    with open(path, "w") as f:
-        json.dump(payload, f)
-    print(f"Wrote {path} — {len(players)} QBs, {os.path.getsize(path)/1024:.0f} KB")
+    size = write_with_archive(payload, path)
+    print(f"Wrote {path} — {len(players)} QBs, {size:.0f} KB")
 
 
 # ==========================================================================
@@ -1321,10 +1377,9 @@ def build_injuries(week):
     payload = {"season": SEASON, "week": week, "players": players}
     os.makedirs("injuries", exist_ok=True)
     path = f"injuries/wk{week:02d}.json"
-    with open(path, "w") as f:
-        json.dump(payload, f)
+    size = write_with_archive(payload, path)
     print(f"Wrote {path} — {len(players)} players with a real report status, "
-          f"{os.path.getsize(path)/1024:.0f} KB")
+          f"{size:.0f} KB")
 
 
 # ==========================================================================
@@ -1432,12 +1487,11 @@ def build_games(week, all_teams, records, week_games, prior_games, stats=None):
     }
     os.makedirs("games", exist_ok=True)
     path = f"games/wk{week:02d}.json"
-    with open(path, "w") as f:
-        json.dump(payload, f)
+    size = write_with_archive(payload, path)
     lines = sum(1 for r in rows if r["spread_line"] is not None)
     kind = "schedule only" if stats is None else "with box scores"
     print(f"Wrote {path} — {len(rows)} games, {lines} with lines, {kind}, "
-          f"{os.path.getsize(path)/1024:.0f} KB")
+          f"{size:.0f} KB")
 
 
 # ==========================================================================
@@ -1648,10 +1702,9 @@ def build_threats(week, all_teams, records, prior_stats, week_games, gp, carryov
     }
     os.makedirs("threats", exist_ok=True)
     path = f"threats/wk{week:02d}.json"
-    with open(path, "w") as f:
-        json.dump(payload, f)
+    size = write_with_archive(payload, path)
     n = sum(len(v["starters"]) for v in teams_out.values())
-    print(f"Wrote {path} — {n} starters, {os.path.getsize(path)/1024:.0f} KB")
+    print(f"Wrote {path} — {n} starters, {size:.0f} KB")
 
 
 # ==========================================================================
@@ -2055,10 +2108,9 @@ def build_career_base():
     }
     os.makedirs("players", exist_ok=True)
     path = "players/career_base.json"
-    with open(path, "w") as f:
-        json.dump(payload, f)
+    size = write_with_archive(payload, path)
     print(f"Wrote {path} — {len(totals)} player-position entries, "
-          f"1999-{SEASON-1}, {os.path.getsize(path) / 1024:.0f} KB")
+          f"1999-{SEASON-1}, {size:.0f} KB")
 
 
 def dk_points_for_game(s):
@@ -3922,6 +3974,5 @@ if __name__ == "__main__":
     built_weeks = [w for w in weeks if w not in skipped]
     if built_weeks:
         os.makedirs("matchup", exist_ok=True)
-        with open("matchup/current.json", "w") as f:
-            json.dump({"season": SEASON, "week": max(built_weeks)}, f)
-        print(f"Wrote matchup/current.json — season {SEASON}, week {max(built_weeks)}")
+        size = write_with_archive({"season": SEASON, "week": max(built_weeks)}, "matchup/current.json")
+        print(f"Wrote matchup/current.json — season {SEASON}, week {max(built_weeks)}, {size:.1f} KB")

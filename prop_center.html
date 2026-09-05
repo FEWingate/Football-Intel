@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Prop Center — Football Intel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/fi-styles.css">
+<style>
+.parlay-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px;margin-bottom:22px}
+.parlay-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.parlay-card.invalid{border-color:rgba(244,63,94,.4)}
+.parlay-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);
+  background:var(--surface2)}
+.parlay-size{font-family:var(--font-display);font-weight:800;font-size:15px}
+.parlay-badge{margin-left:auto;font-family:var(--font-mono);font-size:9.5px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;padding:3px 9px;border-radius:var(--radius-sm)}
+.parlay-badge.pass{color:var(--accent-green);background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.3)}
+.parlay-badge.fail{color:var(--accent-red);background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.3)}
+.parlay-legs{padding:10px 14px}
+.parlay-leg{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--hairline);
+  font-size:12.5px}
+.parlay-leg:last-child{border-bottom:0}
+.parlay-leg .who{color:var(--text)}
+.parlay-leg .mkt{color:var(--text-dim);font-size:11px}
+.parlay-leg .px{font-family:var(--font-mono);color:var(--text-mid);white-space:nowrap}
+.parlay-foot{padding:10px 14px;border-top:1px solid var(--border);background:var(--surface2);
+  font-family:var(--font-mono);font-size:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.parlay-foot b{color:var(--text);font-weight:600}
+.parlay-note{font-size:10.5px;color:var(--accent-gold);padding:8px 14px 0;line-height:1.5}
+.parlay-error{font-size:11.5px;color:var(--accent-red);padding:8px 14px;line-height:1.5}
+.report-body{font-size:13.5px;line-height:1.7;color:var(--text-mid)}
+.report-body h1,.report-body h2,.report-body h3{color:var(--text);font-family:var(--font-display);margin:20px 0 8px}
+.report-body h1{font-size:20px}.report-body h2{font-size:17px}.report-body h3{font-size:14.5px}
+.report-body ul{margin:6px 0 14px 20px}
+.report-body li{margin:4px 0}
+.report-body strong{color:var(--text);font-weight:700}
+.toggle-report{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);cursor:pointer;
+  border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 12px;display:inline-block;margin-bottom:14px}
+.toggle-report:hover{color:var(--primary);border-color:var(--primary)}
+</style>
+</head>
+<body>
+<script src="js/fi-shell.js"></script>
+<script>
+const main = fiShell({ page:'props', pageLabel:'Prop Center', status:'loading' });
+const $ = id => document.getElementById(id);
+
+main.innerHTML = `<div id="body"></div>`;
+
+async function load(){
+  fiStatus('Loading','loading');
+  let pointer;
+  try{
+    const res = await fetch('props_reports/latest.json');
+    if(!res.ok) throw new Error('missing');
+    pointer = await res.json();
+  }catch(e){
+    fiStatus('No data','error'); fiUpdated('');
+    $('body').innerHTML = `<div class="empty">No props/parlay report has been generated yet.<br>
+      Run <b>python3 build_fanduel_props.py</b> then <b>python3 generate_props_report.py</b>
+      in your lab folder, then reload.</div>`;
+    return;
+  }
+  let report;
+  try{
+    const res = await fetch(pointer.report_path);
+    if(!res.ok) throw new Error('missing');
+    report = await res.json();
+  }catch(e){
+    fiStatus('No data','error'); fiUpdated('');
+    $('body').innerHTML = `<div class="empty">props_reports/latest.json points to
+      ${esc(pointer.report_path)}, but that file wasn't found. Re-run
+      generate_props_report.py.</div>`;
+    return;
+  }
+  fiStatus('Ready');
+  fiUpdated(`Generated ${new Date(report.generated_at).toLocaleString()}`);
+  render(report);
+}
+
+function priceLine(leg){
+  const dec = leg.price;
+  const american = dec >= 2 ? `+${Math.round((dec-1)*100)}` : `${Math.round(-100/(dec-1))}`;
+  return `${dec.toFixed(2)} (${american})`;
+}
+
+function parlayCard(size, p){
+  const invalid = !p.valid;
+  const legsHTML = (p.legs || []).map(leg => `
+    <div class="parlay-leg">
+      <div><div class="who">${esc(leg.player || leg.side || '—')}</div>
+        <div class="mkt">${esc(leg.market_key || '')}</div></div>
+      <div class="px">${leg.price != null ? priceLine(leg) : '—'}</div>
+    </div>`).join('');
+
+  let footHTML = '';
+  if(p.result){
+    footHTML = `<div class="parlay-foot">
+      <span>Combined: <b>${p.result.combined_decimal.toFixed(2)}</b>
+        (${p.result.combined_american >= 0 ? '+' : ''}${p.result.combined_american})</span>
+      <span>$${p.result.stake.toFixed(0)} → <b>$${p.result.payout.toFixed(2)}</b></span>
+    </div>`;
+  }
+
+  const notesHTML = (p.warnings || []).map(w => `<div class="parlay-note">⚠ ${esc(w)}</div>`).join('');
+  const errorsHTML = (p.errors || []).map(e => `<div class="parlay-error">✗ ${esc(e)}</div>`).join('');
+  const mismatchNote = (p.mismatches && p.mismatches.length)
+    ? `<div class="parlay-error">✗ ${p.mismatches.length} leg(s) don't exist in the real FanDuel data — not shown as valid.</div>`
+    : '';
+
+  return `<div class="parlay-card${invalid ? ' invalid' : ''}">
+    <div class="parlay-head">
+      <span class="parlay-size">${size}-Team Parlay</span>
+      <span class="parlay-badge ${invalid ? 'fail' : 'pass'}">${invalid ? 'Failed validation' : 'Validated'}</span>
+    </div>
+    <div class="parlay-legs">${legsHTML || '<div class="empty" style="padding:10px 0">No legs parsed</div>'}</div>
+    ${footHTML}
+    ${notesHTML}
+    ${errorsHTML}
+    ${mismatchNote}
+  </div>`;
+}
+
+/* Minimal markdown-ish renderer for the narrative report — headers, bold,
+   bullet lists, paragraphs. The PARLAY_*_TEAM JSON code blocks are stripped
+   entirely; that data already renders above as real, validated cards, so
+   showing the raw JSON again here would just be noise. */
+function renderMarkdown(md){
+  const stripped = md.replace(/```json[\s\S]*?```/g, '');
+  const lines = stripped.split('\n');
+  let html = '', inList = false;
+  const closeList = () => { if(inList){ html += '</ul>'; inList = false; } };
+  for(const raw of lines){
+    const line = raw.trim();
+    if(!line){ closeList(); continue; }
+    const h = line.match(/^(#{1,3})\s+(.*)/);
+    if(h){
+      closeList();
+      const level = h[1].length;
+      html += `<h${level}>${inlineMd(h[2])}</h${level}>`;
+      continue;
+    }
+    const li = line.match(/^[-*]\s+(.*)/);
+    if(li){
+      if(!inList){ html += '<ul>'; inList = true; }
+      html += `<li>${inlineMd(li[1])}</li>`;
+      continue;
+    }
+    closeList();
+    html += `<p>${inlineMd(line)}</p>`;
+  }
+  closeList();
+  return html;
+}
+function inlineMd(s){
+  const escaped = esc(s);
+  return escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+}
+
+function render(report){
+  const sizes = ['3','4','5','6','7'];
+  const cards = sizes.map(s => report.parlays[s] ? parlayCard(s, report.parlays[s]) : '').join('');
+
+  $('body').innerHTML = `
+    <div class="lineup-note" style="margin-bottom:14px">
+      ${report.games_included.length} game(s) · payout examples computed on a
+      $${report.stake_used_for_payout_examples.toFixed(0)} stake · every parlay below has been
+      independently re-checked against real FanDuel prices, not just Coeus's stated math.
+    </div>
+    <div class="parlay-grid">${cards}</div>
+    <div class="toggle-report" id="toggleReport">Show full report ▾</div>
+    <div class="report-body" id="reportBody" style="display:none">${renderMarkdown(report.markdown)}</div>
+  `;
+  $('toggleReport').addEventListener('click', () => {
+    const body = $('reportBody');
+    const open = body.style.display !== 'none';
+    body.style.display = open ? 'none' : '';
+    $('toggleReport').textContent = open ? 'Show full report ▾' : 'Hide full report ▴';
+  });
+}
+
+load();
+</script>
+</body>
+</html>

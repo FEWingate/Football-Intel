@@ -13,7 +13,7 @@ const NAV = [
   { key: 'teams',    label: 'Teams',        ico: '🛡️', href: 'teams.html' },
   { key: 'players',  label: 'Players',      ico: '👤', href: 'players.html' },
   { key: 'dfs',      label: 'DFS Center',   ico: '💰', href: 'dfs_center.html' },
-  { key: 'props',    label: 'Prop Center',  ico: '🎯' },
+  { key: 'props',    label: 'Prop Center',  ico: '🎯', href: 'prop_center.html' },
   { key: 'injuries', label: 'Injuries',     ico: '🩹', href: 'injuries.html' },
   { key: 'stats',    label: 'Stats Hub',    ico: '📈', href: 'stats_hub.html' },
   { key: 'reports',  label: 'Intel Reports',ico: '📄', href: 'intel_reports.html' },
