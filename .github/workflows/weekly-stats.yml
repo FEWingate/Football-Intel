@@ -1,0 +1,147 @@
+name: Weekly Stats Rebuild
+
+# Runs the real Football Intel stats rebuild every Tuesday around 2 PM
+# Eastern, and opens a pull request with whatever changed — it never
+# touches main directly. Merging that PR is what actually triggers
+# GitHub Pages to redeploy, so nothing goes live without Frank reviewing
+# it first in GitHub's normal PR diff view.
+#
+# Why a PR instead of a straight push: build_matchup_stats.py already has
+# a real, demonstrated case (the Aug 2026 roster-freshness episode) where
+# nflverse's own data publishing lagged behind a real deadline by several
+# days. The build script's correct behavior in that situation is to
+# gracefully skip whatever isn't published yet rather than fail loudly —
+# right for a supervised run, but exactly the kind of thing that could
+# quietly go live with nobody noticing on a fully unattended push.
+#
+# DST handling: GitHub Actions cron always runs in UTC and can't shift
+# for daylight saving on its own, so there are two cron entries below —
+# one for EDT (UTC-4), one for EST (UTC-5) — and a gate step that checks
+# the ACTUAL Eastern hour and only lets the correct one proceed each
+# week. This is self-adjusting: you should NOT need to touch the cron
+# lines when clocks change in November, only if the underlying US DST
+# rules themselves ever change (they haven't in years, but it's the kind
+# of thing worth a quick glance every preseason, not blind faith).
+on:
+  schedule:
+    - cron: '0 18 * * 2'   # 2:00 PM EDT (UTC-4) — mid-March to early November
+    - cron: '0 19 * * 2'   # 2:00 PM EST (UTC-5) — early November to mid-March
+  workflow_dispatch: {}    # lets Frank trigger a run manually from the Actions tab, any time
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Only proceed if it's actually 2pm Eastern (or a manual run)
+        id: gate
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manually triggered — running regardless of the current time."
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          hour_et=$(TZ="America/New_York" date +%H)
+          echo "Current Eastern hour: $hour_et"
+          if [ "$hour_et" = "14" ]; then
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+            echo "Eastern hour is $hour_et, not 14 — this is the cron entry for the other side of the DST boundary. Skipping; the other scheduled entry covers this week."
+          fi
+
+      - name: Checkout repo
+        if: steps.gate.outputs.proceed == 'true'
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        if: steps.gate.outputs.proceed == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        if: steps.gate.outputs.proceed == 'true'
+        run: |
+          pip install pandas requests pyarrow
+          # Locally (WSL2) this needed --break-system-packages because that
+          # Python install is externally-managed; GitHub's runner uses a
+          # clean, isolated Python where a plain pip install should just
+          # work. Confirmed this step actually installs cleanly the first
+          # time this workflow runs for real — don't take that on faith
+          # past this comment; if a future Python/runner image ever
+          # reintroduces the externally-managed-environment restriction,
+          # this step will fail loudly and the job will stop here, not
+          # silently produce a broken build.
+
+      - name: Run stats rebuild
+        if: steps.gate.outputs.proceed == 'true'
+        run: |
+          set -o pipefail
+          NFL_SEASON=2026 python3 build_matchup_stats.py all 2>&1 | tee build_output.log
+          # NFL_SEASON is hardcoded to 2026 here. Bump this to 2027 before
+          # next season starts — nothing about this workflow will remind
+          # you when that time comes; this comment is the only reminder.
+
+      - name: Check whether anything actually changed
+        if: steps.gate.outputs.proceed == 'true'
+        id: diff
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No files changed — nflverse likely hasn't published anything new since the last run. Skipping the PR."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Files changed:"
+            git diff --cached --stat
+          fi
+
+      - name: Read season/week for the PR title
+        if: steps.gate.outputs.proceed == 'true' && steps.diff.outputs.changed == 'true'
+        id: meta
+        run: |
+          if [ -f matchup/current.json ]; then
+            label=$(python3 -c "import json; d=json.load(open('matchup/current.json')); print(f\"{d['season']} Week {d['week']}\")")
+          else
+            label=$(date -u +%Y-%m-%d)
+          fi
+          echo "label=$label" >> "$GITHUB_OUTPUT"
+          echo "run_date=$(TZ='America/New_York' date '+%A, %B %-d, %Y %-I:%M %p ET')" >> "$GITHUB_OUTPUT"
+
+      - name: Build the PR description from the real build log
+        if: steps.gate.outputs.proceed == 'true' && steps.diff.outputs.changed == 'true'
+        run: |
+          {
+            echo "## Weekly stats rebuild — ${{ steps.meta.outputs.run_date }}"
+            echo ""
+            echo "Automated run of \`NFL_SEASON=2026 python3 build_matchup_stats.py all\`."
+            echo "Review the file diff below, then merge to publish to the live site."
+            echo ""
+            echo "### Build script output"
+            echo '```'
+            cat build_output.log
+            echo '```'
+            echo ""
+            echo "### Files changed"
+            echo '```'
+            git diff --cached --stat
+            echo '```'
+          } > pr_body.md
+
+      - name: Open pull request
+        if: steps.gate.outputs.proceed == 'true' && steps.diff.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          committer: "Football Intel Bot <actions@github.com>"
+          author: "Football Intel Bot <actions@github.com>"
+          branch: weekly-stats-${{ github.run_id }}
+          base: main
+          delete-branch: true
+          commit-message: "Weekly stats rebuild — ${{ steps.meta.outputs.label }}"
+          title: "Weekly stats rebuild — ${{ steps.meta.outputs.label }}"
+          body-path: pr_body.md
