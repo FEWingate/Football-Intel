@@ -15,6 +15,7 @@ import datetime
 import json
 import os
 import sys
+from zoneinfo import ZoneInfo
 import pandas as pd
 import requests
 from io import StringIO, BytesIO
@@ -2869,6 +2870,212 @@ def build_team_dome_splits(df, reg):
     return out
 
 
+# ── Travel Splits (Teams page) ───────────────────────────────────────────
+# West Coast (Pacific-zone) teams, per Frank's own definition (2026-09-06):
+# the 5 teams that play every home game in Pacific time, PLUS Arizona.
+# Arizona is officially Mountain Standard Time year-round (no DST) — this
+# makes it clock-ALIGNED with Pacific for most of the season (Pacific
+# Daylight = UTC-7 = same as AZ's permanent UTC-7) but one hour ahead of
+# Pacific once DST ends in November (Pacific Standard = UTC-8). This is
+# NOT hand-waved with a date-range guess — hours_behind_et() below uses
+# Python's real zoneinfo database, which applies the exact correct
+# historical DST rule for every individual game's real date.
+WEST_COAST_TEAMS = {"SEA", "SF", "LAR", "LAC", "LV", "ARI"}
+EAST_COAST_TEAMS = {
+    "NE", "NYJ", "NYG", "BUF", "MIA", "PHI", "PIT", "BAL", "WAS",
+    "CAR", "ATL", "JAX", "TB", "CIN", "CLE", "DET", "IND",
+}
+TEAM_TZ = {
+    "SEA": "America/Los_Angeles", "SF": "America/Los_Angeles", "LAR": "America/Los_Angeles",
+    "LAC": "America/Los_Angeles", "LV": "America/Los_Angeles", "ARI": "America/Phoenix",
+}
+TRAVEL_SEASONS = [2023, 2024, 2025]  # the last 3 real, completed seasons as of 2026-09-06
+
+
+def hours_behind_et(gameday, gametime_et, tz_name):
+    """nflverse's real gametime field is confirmed (verified directly
+    against real West Coast home games, 2026-09-06) to be expressed in
+    EASTERN TIME regardless of which team is hosting — a Chargers home
+    game listed as 16:25 is a real 4:25pm ET / 1:25pm PT kickoff, not a
+    4:25pm PT game. Returns (local_kickoff_HHMM, real_hours_behind_et)
+    using zoneinfo so DST is handled correctly for the exact real date,
+    not a hand-coded date range."""
+    hh, mm = (int(x) for x in gametime_et.split(":"))
+    y, m, d = (int(x) for x in gameday.split("-"))
+    et_dt = datetime.datetime(y, m, d, hh, mm, tzinfo=ZoneInfo("America/New_York"))
+    local_dt = et_dt.astimezone(ZoneInfo(tz_name))
+    gap = round((et_dt.utcoffset() - local_dt.utcoffset()).total_seconds() / 3600)
+    return local_dt.strftime("%H:%M"), gap
+
+
+ATS_START_SEASON = 2020
+
+
+def build_ats_records():
+    """Real ATS (against-the-spread) record for all 32 teams, every real
+    completed game from ATS_START_SEASON (2020) through the most recent
+    real completed season — overall AND split by home/away, since a
+    team's ATS profile at home can genuinely differ from its road ATS
+    profile (different game scripts, different real spreads). Deliberately
+    its OWN independent build step (see main()'s CLI orchestration) — NOT
+    nested inside build_team_stats(), which was exactly the mistake that
+    broke travel_splits on 2026-09-06: build_team_stats() dies whenever
+    the CURRENT season's player stats aren't published yet, which has
+    nothing to do with a fixed multi-year historical scope like this one.
+
+    Cover formula verified against real, known 2023 Week 1 outcomes
+    (e.g. Chiefs favored by 4, lost outright to Detroit — Lions clearly
+    cover): spread_line is positive when the home team is favored by
+    that many points. Home covers if (home_score - away_score) >
+    spread_line; away covers if <; push if equal.
+    """
+    games = fetch_csv(GAMES_URL)
+    games = normalize_team_cols(games, "home_team", "away_team")
+    reg = games[(games["game_type"] == "REG") & (games["season"] >= ATS_START_SEASON)
+                & games["spread_line"].notna() & games["home_score"].notna()]
+
+    def blank():
+        return {"W": 0, "L": 0, "P": 0}
+
+    records = {}  # team -> {"overall": {...}, "home": {...}, "away": {...}}
+    for _, g in reg.iterrows():
+        margin = g["home_score"] - g["away_score"]
+        line = g["spread_line"]
+        if margin > line:
+            home_res, away_res = "W", "L"
+        elif margin < line:
+            home_res, away_res = "L", "W"
+        else:
+            home_res, away_res = "P", "P"
+        for team, res, side in [(g["home_team"], home_res, "home"), (g["away_team"], away_res, "away")]:
+            rec = records.setdefault(team, {"overall": blank(), "home": blank(), "away": blank()})
+            rec["overall"][res] += 1
+            rec[side][res] += 1
+
+    def summarize(r):
+        decided = r["W"] + r["L"]
+        return {"w": r["W"], "l": r["L"], "p": r["P"],
+                "pct": round(r["W"] / decided * 100, 1) if decided else None}
+
+    out = {}
+    for team, rec in records.items():
+        out[team] = {
+            "since": ATS_START_SEASON,
+            "overall": summarize(rec["overall"]),
+            "home": summarize(rec["home"]),
+            "away": summarize(rec["away"]),
+        }
+    return out
+
+
+def build_travel_splits():
+    """Real game log, last 3 real seasons, every game between a West
+    Coast team (incl. Arizona) and an Eastern-time team — BOTH
+    directions: West traveling East (the '10am body clock' scenario
+    Frank is testing) and East traveling West (a real but mechanically
+    different effect per the research — more likely travel fatigue /
+    late local kickoff than the early-body-clock issue specifically).
+
+    For each game, reports the traveling team's real PPG/total-yards/
+    pass-yards/rush-yards in THAT game against their own real season
+    average for that season (not a cross-season blend) — so a game can
+    be read as 'better or worse than this team's normal week', not just
+    a raw number with no baseline.
+    """
+    games = fetch_csv(GAMES_URL)
+    games = normalize_team_cols(games, "home_team", "away_team")
+    games = games[games["game_type"] == "REG"]
+
+    # One team-week stats fetch per season — TEAM_STATS_URL is templated
+    # on the CURRENT build's SEASON, so these are constructed directly
+    # for each of the 3 real target seasons instead.
+    season_stats = {}
+    for yr in TRAVEL_SEASONS:
+        url = f"https://github.com/nflverse/nflverse-data/releases/download/stats_team/stats_team_week_{yr}.csv"
+        df = fetch_csv(url)
+        df = normalize_team_cols(df, "team")
+        df = df[df["season_type"] == "REG"]
+        season_stats[yr] = df.groupby(["team", "week"])[["passing_yards", "rushing_yards"]].sum()
+
+    def team_yards(season, team, week):
+        key = (team, week)
+        if season in season_stats and key in season_stats[season].index:
+            row = season_stats[season].loc[key]
+            return float(row["passing_yards"]), float(row["rushing_yards"])
+        return None, None
+
+    # Real season averages — PPG/total/pass/rush — from EVERY real game
+    # that team played that season, not just the cross-country ones,
+    # since the whole point is comparing a travel game against normal.
+    season_avg = {}  # (season, team) -> {"ppg":..., "total_ypg":..., "pass_ypg":..., "rush_ypg":...}
+    reg = games[games["home_score"].notna()]
+    for yr in TRAVEL_SEASONS:
+        yr_games = reg[reg["season"] == yr]
+        team_games = {}
+        for _, g in yr_games.iterrows():
+            for team, opp, pf, is_home in [
+                (g["home_team"], g["away_team"], g["home_score"], True),
+                (g["away_team"], g["home_team"], g["away_score"], False),
+            ]:
+                py, ry = team_yards(yr, team, int(g["week"]))
+                team_games.setdefault(team, []).append({"pts": pf, "pass_yds": py, "rush_yds": ry})
+        for team, rows in team_games.items():
+            n = len(rows)
+            pts = sum(r["pts"] for r in rows) / n
+            pass_rows = [r["pass_yds"] for r in rows if r["pass_yds"] is not None]
+            rush_rows = [r["rush_yds"] for r in rows if r["rush_yds"] is not None]
+            pass_avg = sum(pass_rows) / len(pass_rows) if pass_rows else None
+            rush_avg = sum(rush_rows) / len(rush_rows) if rush_rows else None
+            season_avg[(yr, team)] = {
+                "games": n, "ppg": round(pts, 1),
+                "pass_ypg": round(pass_avg, 1) if pass_avg is not None else None,
+                "rush_ypg": round(rush_avg, 1) if rush_avg is not None else None,
+                "total_ypg": round(pass_avg + rush_avg, 1) if pass_avg is not None and rush_avg is not None else None,
+            }
+
+    cross = reg[reg["season"].isin(TRAVEL_SEASONS) &
+                (reg["home_team"].isin(WEST_COAST_TEAMS) & reg["away_team"].isin(EAST_COAST_TEAMS) |
+                 reg["away_team"].isin(WEST_COAST_TEAMS) & reg["home_team"].isin(EAST_COAST_TEAMS))]
+
+    out = {t: [] for t in WEST_COAST_TEAMS}
+    for _, g in cross.iterrows():
+        yr, wk = int(g["season"]), int(g["week"])
+        home, away = g["home_team"], g["away_team"]
+        hs, aws = int(g["home_score"]), int(g["away_score"])
+        west_team, west_is_home = (home, True) if home in WEST_COAST_TEAMS else (away, False)
+        east_team = away if west_is_home else home
+        west_pts, east_pts = (hs, aws) if west_is_home else (aws, hs)
+
+        py, ry = team_yards(yr, west_team, wk)
+        avg = season_avg.get((yr, west_team))
+        total_yds = (py + ry) if (py is not None and ry is not None) else None
+
+        local_kickoff, gap = hours_behind_et(g["gameday"], g["gametime"], TEAM_TZ[west_team])
+
+        result = "W" if west_pts > east_pts else ("L" if west_pts < east_pts else "T")
+
+        out[west_team].append({
+            "season": yr, "week": wk, "gameday": g["gameday"], "weekday": g["weekday"],
+            "opponent": east_team, "is_home": west_is_home, "direction": "home" if west_is_home else "away",
+            "result": result, "west_pts": west_pts, "east_pts": east_pts,
+            "kickoff_et": g["gametime"], "kickoff_local": local_kickoff, "hours_behind_et": gap,
+            "roof": g.get("roof"),
+            "pts_vs_season_avg": round(west_pts - avg["ppg"], 1) if avg else None,
+            "total_yds": round(total_yds, 1) if total_yds is not None else None,
+            "total_yds_vs_season_avg": round(total_yds - avg["total_ypg"], 1) if (avg and avg["total_ypg"] is not None and total_yds is not None) else None,
+            "pass_yds": round(py, 1) if py is not None else None,
+            "pass_yds_vs_season_avg": round(py - avg["pass_ypg"], 1) if (avg and avg["pass_ypg"] is not None and py is not None) else None,
+            "rush_yds": round(ry, 1) if ry is not None else None,
+            "rush_yds_vs_season_avg": round(ry - avg["rush_ypg"], 1) if (avg and avg["rush_ypg"] is not None and ry is not None) else None,
+            "season_ppg": avg["ppg"] if avg else None,
+        })
+
+    for team in out:
+        out[team].sort(key=lambda r: (r["season"], r["week"]))
+
+    return {team: rows for team, rows in out.items() if rows}
+
+
 def build_team_stats():
     """Season-to-date team stats — every offense/defense/special-teams/penalty
     column nflverse's stats_team_week file provides, as both a season total
@@ -3900,6 +4107,33 @@ if __name__ == "__main__":
         build_team_stats()
     except SystemExit as e:
         print(f"  team stats: skipped — {e}")
+
+    # 3b. Travel splits + ATS records: DELIBERATELY independent of
+    # build_team_stats() above (bug fixed 2026-09-06 — travel_splits was
+    # originally nested inside build_team_stats() and got silently
+    # dragged down whenever THAT function aborted for lacking 2026 data,
+    # even though both of these analyze a fixed historical window and
+    # never depend on the current season's data at all). Reads whatever
+    # teamstats/latest.json already has, merges both in, writes it back
+    # once — so this works even in a run where build_team_stats() itself
+    # fails outright, like every real preseason run before Week 1.
+    try:
+        travel_splits = build_travel_splits()
+        ats_records = build_ats_records()
+        existing = {}
+        if os.path.exists("teamstats/latest.json"):
+            with open("teamstats/latest.json") as f:
+                existing = json.load(f)
+        existing["travel_splits"] = travel_splits
+        existing["ats_records"] = ats_records
+        existing.setdefault("season", SEASON)
+        size = write_with_archive(existing, "teamstats/latest.json")
+        print(f"  Merged travel_splits + ats_records into teamstats/latest.json — "
+              f"{sum(len(v) for v in travel_splits.values())} travel games across "
+              f"{len(travel_splits)} West Coast teams, {len(ats_records)} teams' "
+              f"ATS records since {ATS_START_SEASON}, {size:.0f} KB")
+    except SystemExit as e:
+        print(f"  travel splits / ATS records: skipped — {e}")
 
     # 4. Player leaderboards: always-current, for Stats Hub.
     try:

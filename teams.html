@@ -81,6 +81,40 @@
   font-variant-numeric:tabular-nums;border-bottom:1px solid var(--hairline)}
 .splits-table tr:last-child td{border-bottom:0}
 .splits-table td.name-col{font-family:var(--font-body,inherit);font-weight:600;color:var(--text-mid)}
+.cell-delta{font-size:9.5px;display:block;margin-top:1px;font-weight:600}
+.splits-table tr.avg-row{background:var(--surface2)}
+.splits-table tr.avg-row td{border-bottom:1px solid var(--border2);color:var(--text-mid)}
+.splits-table tr.avg-row td.name-col{font-style:italic;font-weight:500;color:var(--text-dim)}
+
+.travel-controls{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.travel-controls select{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);
+  color:var(--text);font-family:var(--font-mono);font-size:12px;padding:7px 10px}
+.travel-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:18px}
+.travel-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+.travel-stat .lbl{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-dim);margin-bottom:6px}
+.travel-stat .val{font-family:var(--font-display);font-weight:800;font-size:22px}
+.travel-stat .sub{font-family:var(--font-mono);font-size:10.5px;color:var(--text-mid);margin-top:3px}
+.travel-log{width:100%;border-collapse:collapse}
+.travel-log th{font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--text-dim);text-align:right;padding:8px 10px;border-bottom:1px solid var(--border2)}
+.travel-log th:first-child,.travel-log th:nth-child(2),.travel-log th:nth-child(3){text-align:left}
+.travel-log td{padding:8px 10px;font-family:var(--font-mono);font-size:12px;text-align:right;
+  font-variant-numeric:tabular-nums;border-bottom:1px solid var(--hairline)}
+.travel-log td:first-child,.travel-log td:nth-child(2),.travel-log td:nth-child(3){text-align:left}
+.travel-log tr:hover td{background:var(--surface2)}
+.travel-early{color:var(--accent-orange);font-weight:700}
+.travel-delta.up{color:var(--accent-green)}.travel-delta.down{color:var(--accent-red)}
+
+.ats-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.ats-row{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;
+  border-bottom:1px solid var(--hairline)}
+.ats-row:last-child{border-bottom:0}
+.ats-label{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text-dim)}
+.ats-val{font-family:var(--font-mono);font-size:16px;display:flex;align-items:baseline;gap:8px}
+.ats-val b{color:var(--text);font-weight:700}
+.ats-pct{font-size:12px;color:var(--text-mid)}
 </style>
 </head>
 <body>
@@ -99,9 +133,11 @@ main.innerHTML = `
   <div class="tabs" id="teamsViewTabs" role="tablist">
     <button role="tab" data-view="all" aria-selected="true">All Teams</button>
     <button role="tab" data-view="splits" aria-selected="false">Home/Road Splits</button>
+    <button role="tab" data-view="travel" aria-selected="false">Travel Splits</button>
   </div>
   <div id="confs" class="conf-split"></div>
   <div id="splitsView" style="display:none"></div>
+  <div id="travelView" style="display:none"></div>
   <div class="modal-overlay" id="scrim"></div>
   <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
     <div class="modal-header">
@@ -114,6 +150,7 @@ main.innerHTML = `
         <button data-sec="special_teams">Special Teams</button>
         <button data-sec="penalties">Penalties</button>
         <button data-sec="roster">Roster</button>
+        <button data-sec="ats">ATS Record</button>
       </div>
     </div>
     <div class="modal-body" id="mBody"></div>
@@ -191,7 +228,9 @@ async function load(){
     const view = b.dataset.view;
     $("confs").style.display = view === 'all' ? '' : 'none';
     $("splitsView").style.display = view === 'splits' ? '' : 'none';
+    $("travelView").style.display = view === 'travel' ? '' : 'none';
     if(view === 'splits') renderTeamSplits();
+    if(view === 'travel') renderTravelSplits();
   });
 }
 
@@ -204,6 +243,10 @@ const TEAM_SPLITS_COLS = [
   ['pts_allowed_pg','Pts Allow',1], ['pass_yds_allowed_pg','Pass Allow',1],
   ['rush_yds_allowed_pg','Rush Allow',1],
 ];
+// For these columns LOWER at home is the favorable direction (allowing
+// fewer points/yards) — coloring is inverted relative to the offensive
+// columns, where higher at home is favorable.
+const TEAM_SPLITS_INVERT = new Set(['pts_allowed_pg', 'pass_yds_allowed_pg', 'rush_yds_allowed_pg']);
 
 function renderTeamSplits(){
   const dome = (TEAMSTATS && TEAMSTATS.team_dome_splits) || {};
@@ -214,19 +257,61 @@ function renderTeamSplits(){
     return;
   }
 
-  const row = (label, s) => {
+  // Team's real overall season average per stat — derived from Home + Road
+  // only (Road (Outdoor) is already a SUBSET of Road, so including it too
+  // would double-count those games). avg*games reconstructs each split's
+  // real total, which is exactly what a weighted average needs.
+  const overallAvgFor = (q) => {
+    if(!q.home || !q.road) return null;
+    const hg = q.home.games, rg = q.road.games, tg = hg + rg;
+    if(!tg) return null;
+    const out = {};
+    for(const [k,,dec] of TEAM_SPLITS_COLS){
+      if(k === 'games' || k === 'record') continue;
+      const hv = q.home[k], rv = q.road[k];
+      if(hv == null || rv == null) continue;
+      out[k] = (hv*hg + rv*rg) / tg;
+    }
+    return out;
+  };
+
+  // Plain season-average row, no delta of its own — this IS the baseline
+  // every Home/Road/Road(Outdoor) delta below is measured against, shown
+  // up top so the reader can see the real number, not just the deviation.
+  const avgRow = (q, overall) => {
+    if(!overall) return '';
+    const tg = q.home.games + q.road.games;
+    return `<tr class="avg-row"><td class="name-col">Season Avg</td>` +
+      TEAM_SPLITS_COLS.map(([k,,dec]) => {
+        if(k === 'games') return `<td>${tg}</td>`;
+        if(k === 'record') return `<td>—</td>`;
+        const v = overall[k];
+        return `<td>${v == null ? '—' : v.toFixed(dec == null ? 1 : dec)}</td>`;
+      }).join('') + `</tr>`;
+  };
+
+  const row = (label, s, overall) => {
     if(!s) return `<tr><td class="name-col">${label}</td>
       <td colspan="${TEAM_SPLITS_COLS.length}" style="color:var(--text-dim);text-align:center">No games</td></tr>`;
     return `<tr><td class="name-col">${label}</td>` +
       TEAM_SPLITS_COLS.map(([k,,dec]) => {
         const v = s[k];
         if(v == null) return `<td>—</td>`;
-        return `<td>${dec == null ? v : v.toFixed(dec)}</td>`;
+        const main = dec == null ? v : v.toFixed(dec);
+        // vs the team's own overall season average — not vs the other rows
+        if(k === 'games' || k === 'record' || !overall || overall[k] == null){
+          return `<td>${main}</td>`;
+        }
+        const d = +(v - overall[k]).toFixed(dec == null ? 1 : dec);
+        const favorable = TEAM_SPLITS_INVERT.has(k) ? d <= 0 : d >= 0;
+        const dTxt = Math.abs(d) < (dec == null ? 1 : Math.pow(10,-dec))/2 ? '±0.0' : `${d>=0?'+':''}${dec==null?d:d.toFixed(dec)}`;
+        return `<td>${main} <span class="cell-delta travel-delta ${favorable?'up':'down'}">${dTxt}</span></td>`;
       }).join('') + `</tr>`;
   };
 
   const cards = teams.map(t => {
     const q = dome[t];
+    const overall = overallAvgFor(q);
     const diff = (q.home && q.road) ? +(q.home.ppg - q.road.ppg).toFixed(1) : null;
     return `<div class="splits-card">
       <div class="splits-head">
@@ -240,10 +325,15 @@ function renderTeamSplits(){
       </div>
       <div class="table-wrap"><table class="splits-table">
         <thead><tr><th></th>${TEAM_SPLITS_COLS.map(([,l])=>`<th>${l}</th>`).join('')}</tr></thead>
-        <tbody>${row('Home', q.home)}${row('Road', q.road)}${row('Road (Outdoor)', q.road_outdoor)}</tbody>
+        <tbody>${avgRow(q, overall)}${row('Home', q.home, overall)}${row('Road', q.road, overall)}${row('Road (Outdoor)', q.road_outdoor, overall)}</tbody>
       </table></div>
+      <div class="empty" style="padding:6px 14px 10px;text-align:left;font-size:9.5px">
+        Small numbers show each row's deviation from ${esc(FI_TEAM_NAME[t] || t)}'s own overall season average
+        (all games, weighted by games played) — not a Home-vs-Road comparison.
+      </div>
     </div>`;
   }).join('');
+
 
   $("splitsView").innerHTML = `
     <div class="lineup-note" style="margin-bottom:12px">
@@ -254,6 +344,107 @@ function renderTeamSplits(){
       a dome/retractable-roof venue — a road trip to another dome team is excluded.
     </div>
     <div class="splits-grid">${cards}</div>`;
+}
+
+/* ── TRAVEL SPLITS (West Coast incl. Arizona, vs Eastern-time teams) ─── */
+const WEST_COAST_LABEL = {
+  SEA: 'Seattle Seahawks', SF: 'San Francisco 49ers', LAR: 'Los Angeles Rams',
+  LAC: 'Los Angeles Chargers', LV: 'Las Vegas Raiders', ARI: 'Arizona Cardinals',
+};
+let travelTeam = null;
+
+function travelSummaryFor(games){
+  const n = games.length;
+  if(!n) return null;
+  const wins = games.filter(g => g.result === 'W').length;
+  const losses = games.filter(g => g.result === 'L').length;
+  const ties = games.filter(g => g.result === 'T').length;
+  const avgPtsDelta = games.reduce((s,g) => s + (g.pts_vs_season_avg ?? 0), 0) / n;
+  const record = `${wins}-${losses}` + (ties ? `-${ties}` : '');
+  return { n, record, avgPtsDelta };
+}
+
+function renderTravelSplits(){
+  const data = (TEAMSTATS && TEAMSTATS.travel_splits) || {};
+  const teams = Object.keys(data).sort();
+  if(!teams.length){
+    $("travelView").innerHTML = `<div class="empty">No travel splits available yet.<br>
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+  if(!travelTeam || !data[travelTeam]) travelTeam = teams[0];
+
+  $("travelView").innerHTML = `
+    <div class="lineup-note" style="margin-bottom:12px">
+      Every West Coast team (incl. Arizona) vs every Eastern-time team, real games from the
+      2023–2025 regular seasons, both directions. "Local" kickoff and hours-behind-ET are
+      computed from each game's real date, so Arizona's no-DST quirk is handled correctly —
+      it aligns with Pacific most of the season but is only 2 hours behind ET (not 3) once
+      daylight saving ends in November.
+    </div>
+    <div class="travel-controls">
+      <label class="lbl" for="travelTeamSel">Team</label>
+      <select id="travelTeamSel">${teams.map(t =>
+        `<option value="${t}" ${t===travelTeam?'selected':''}>${esc(WEST_COAST_LABEL[t]||t)}</option>`).join('')}</select>
+    </div>
+    <div id="travelBody"></div>`;
+
+  $("travelTeamSel").addEventListener("change", e => { travelTeam = e.target.value; renderTravelBody(data); });
+  renderTravelBody(data);
+}
+
+function renderTravelBody(data){
+  const games = data[travelTeam] || [];
+  const away = games.filter(g => !g.is_home);   // traveling TO the East Coast team
+  const home = games.filter(g => g.is_home);    // hosting an East Coast team
+  // "Early window" — kickoff local to the West Coast team before 11am, the specific
+  // scenario Frank's hypothesis is about (a 1pm ET game is 10am for a Pacific team).
+  const earlyAway = away.filter(g => parseInt(g.kickoff_local.split(':')[0], 10) < 11);
+  const otherAway = away.filter(g => parseInt(g.kickoff_local.split(':')[0], 10) >= 11);
+
+  const awaySum = travelSummaryFor(away), homeSum = travelSummaryFor(home);
+  const earlySum = travelSummaryFor(earlyAway), otherSum = travelSummaryFor(otherAway);
+
+  const statCard = (label, sum, sub) => {
+    if(!sum) return `<div class="travel-stat"><div class="lbl">${esc(label)}</div><div class="val">—</div></div>`;
+    const cls = sum.avgPtsDelta >= 0 ? 'up' : 'down';
+    return `<div class="travel-stat">
+      <div class="lbl">${esc(label)}</div>
+      <div class="val">${sum.record}</div>
+      <div class="sub travel-delta ${cls}">${sum.avgPtsDelta>=0?'+':''}${sum.avgPtsDelta.toFixed(1)} PPG vs season avg
+        ${sub ? ' · ' + esc(sub) : ''}</div>
+    </div>`;
+  };
+
+  const rows = games.map(g => {
+    const isEarly = !g.is_home && parseInt(g.kickoff_local.split(':')[0], 10) < 11;
+    const deltaCls = (g.pts_vs_season_avg ?? 0) >= 0 ? 'up' : 'down';
+    return `<tr>
+      <td>${g.season} · Wk ${g.week}</td>
+      <td>${g.is_home ? 'vs' : '@'} ${fiLogoHTML(g.opponent,16)}${esc(g.opponent)}</td>
+      <td>${esc(g.weekday)} ${esc(g.gameday)}</td>
+      <td class="${isEarly ? 'travel-early' : ''}">${esc(g.kickoff_et)} ET → ${esc(g.kickoff_local)} local
+        (-${g.hours_behind_et}h)${isEarly ? ' ⚠' : ''}</td>
+      <td>${g.result} ${g.west_pts}-${g.east_pts}</td>
+      <td class="travel-delta ${deltaCls}">${g.pts_vs_season_avg>=0?'+':''}${g.pts_vs_season_avg?.toFixed(1) ?? '—'}</td>
+      <td class="travel-delta ${(g.total_yds_vs_season_avg??0)>=0?'up':'down'}">${g.total_yds_vs_season_avg!=null ? (g.total_yds_vs_season_avg>=0?'+':'')+g.total_yds_vs_season_avg.toFixed(0) : '—'}</td>
+      <td class="travel-delta ${(g.pass_yds_vs_season_avg??0)>=0?'up':'down'}">${g.pass_yds_vs_season_avg!=null ? (g.pass_yds_vs_season_avg>=0?'+':'')+g.pass_yds_vs_season_avg.toFixed(0) : '—'}</td>
+      <td class="travel-delta ${(g.rush_yds_vs_season_avg??0)>=0?'up':'down'}">${g.rush_yds_vs_season_avg!=null ? (g.rush_yds_vs_season_avg>=0?'+':'')+g.rush_yds_vs_season_avg.toFixed(0) : '—'}</td>
+    </tr>`;
+  }).join('');
+
+  $("travelBody").innerHTML = `
+    <div class="travel-summary">
+      ${statCard('Traveling East (all)', awaySum)}
+      ${statCard('Traveling East — Early (<11am local)', earlySum, `${earlyAway.length} of ${away.length} road games`)}
+      ${statCard('Traveling East — Other windows', otherSum)}
+      ${statCard('Hosting an East Coast team', homeSum)}
+    </div>
+    <div class="table-wrap"><table class="travel-log">
+      <thead><tr><th>Season</th><th>Opponent</th><th>Date</th><th>Kickoff</th>
+        <th>Result</th><th>PPG Δ</th><th>Tot Yds Δ</th><th>Pass Yds Δ</th><th>Rush Yds Δ</th></tr></thead>
+      <tbody>${rows || '<tr><td colspan="9" class="empty">No games found.</td></tr>'}</tbody>
+    </table></div>`;
 }
 
 function recHTML(r){
@@ -401,6 +592,32 @@ const ROSTER_GROUPS = [
   { label: 'Specialist', positions: ['K', 'P', 'LS'] },
 ];
 
+function atsRecordHTML(team){
+  const ats = TEAMSTATS && TEAMSTATS.ats_records ? TEAMSTATS.ats_records[team] : null;
+  if(!ats){
+    return `<div class="empty">No ATS data yet.<br>
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+  }
+  const row = (label, r) => {
+    if(!r || r.pct == null) return `<div class="ats-row">
+      <div class="ats-label">${esc(label)}</div><div class="ats-val">No decided games</div></div>`;
+    return `<div class="ats-row">
+      <div class="ats-label">${esc(label)}</div>
+      <div class="ats-val"><b>${r.w}-${r.l}${r.p ? '-'+r.p : ''}</b>
+        <span class="ats-pct">${r.pct}%</span></div>
+    </div>`;
+  };
+  return `
+    <div class="empty" style="padding:8px 0 4px;text-align:left;font-size:10px">
+      Against the spread, real completed games with a real closing line, ${ats.since}–present.
+    </div>
+    <div class="ats-card">
+      ${row('Overall', ats.overall)}
+      ${row('Home', ats.home)}
+      ${row('Away', ats.away)}
+    </div>`;
+}
+
 function rosterHTML(team){
   if(!ROSTERS){
     return `<div class="empty">
@@ -460,6 +677,11 @@ function renderStats(){
 
   if(activeSec === 'roster'){
     box.innerHTML = rosterHTML(activeTeam);
+    return;
+  }
+
+  if(activeSec === 'ats'){
+    box.innerHTML = atsRecordHTML(activeTeam);
     return;
   }
 
