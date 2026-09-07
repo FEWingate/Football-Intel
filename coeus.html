@@ -154,6 +154,42 @@ async function loadData(){
   MATCHUP = await mRes.json();
   GAMES = await gRes.json();
 
+  // Real, current-season roster cross-reference — FIX (2026-09-07): during
+  // the preseason gap, players/latest.json's own "team" field reflects
+  // whatever team a player's stats were LAST recorded under (2025, since
+  // 2026 has no real games yet), not their real current 2026 team. A
+  // player traded, cut, or signed elsewhere over the offseason still shows
+  // their old team here otherwise — confirmed as the real cause of Coeus
+  // listing RBs no longer on the teams it named. rosters/latest.json is
+  // built separately (build_rosters()) and stays accurate through the
+  // whole offseason regardless of whether any 2026 games have been
+  // played, using the same real gsis_id as players/latest.json's own
+  // player_id — so it's used here to correct every player's team
+  // in-place, BEFORE POSITION_RANKS (below) computes anything from it.
+  // Optional/non-blocking like CONTEXT/DFS_DATA: if rosters/latest.json
+  // isn't available for some reason, players just keep their
+  // stats-based team rather than the page failing to load.
+  try{
+    const rRes = await fetch('rosters/latest.json');
+    if(rRes.ok){
+      const rosters = await rRes.json();
+      const currentTeamOf = {};
+      for(const [team, players] of Object.entries(rosters.teams || {})){
+        for(const p of players){
+          if(p.gsis_id) currentTeamOf[p.gsis_id] = team;
+        }
+      }
+      let corrected = 0;
+      for(const pos of Object.keys(PLAYERS.players || {})){
+        for(const p of PLAYERS.players[pos]){
+          const real = currentTeamOf[p.gsis_id];
+          if(real && real !== p.team){ p.team = real; corrected++; }
+        }
+      }
+      if(corrected) console.log(`Coeus: corrected ${corrected} player(s) to their real current-roster team.`);
+    }
+  }catch(e){ /* players keep their stats-based team — not a page-breaking failure */ }
+
   // Optional — context/wkNN.json may not exist yet for every week. Load it
   // if present; questions needing real game-log history just get an
   // honest "not available" instead of the page failing to load at all.
@@ -349,7 +385,7 @@ const OWN_STAT_FIELD = { QB: 'pass_ypg', RB: 'rush_ypg', WR: 'rec_ypg', TE: 'rec
 // particular query cares about.
 const MIN_RELEVANCE = { QB: 50, RB: 10, WR: 10, TE: 10 };
 
-// Default cap on role rank within a team — QB1 only, RB1/RB2, WR1-3,
+// Default cap on role rank within a team — QB1 only, RB1 only, WR1-3,
 // TE1/TE2 — using the same usage-based ranking already computed for
 // "show me the WR1s" style questions. Applied automatically to every
 // query by default, not just when a question explicitly asks for it, so
@@ -360,7 +396,7 @@ const MIN_RELEVANCE = { QB: 50, RB: 10, WR: 10, TE: 10 };
 // can still clear a modest pass_ypg floor while still being irrelevant
 // to "which QB should I care about this week." Capped at 1 instead, same
 // as every other position gets a real cap.
-const DEFAULT_POS_RANK_MAX = { QB: 1, RB: 2, WR: 3, TE: 2 };
+const DEFAULT_POS_RANK_MAX = { QB: 1, RB: 1, WR: 3, TE: 2 };
 
 function runFilter(spec){
   const pos = spec.position;
@@ -488,7 +524,17 @@ For a structured filter, respond exactly in this shape (omit fields that don't a
 {"mode":"filter","position":"WR","pos_rank_max":1,"opponent_rank_min":23,"opponent_def_stat":"rec_ypg","metric_field":"rush_ypg","min_metric_value":60}
 
 Field meaning: position is QB/RB/WR/TE. pos_rank_max=1 means "the team's WR1/RB1" (their own \
-target_share or rush_share rank within their team, 1=highest). opponent_def_stat is the real \
+target_share or rush_share rank within their team, 1=highest). DEFAULT POS_RANK_MAX IS ALREADY \
+APPLIED AUTOMATICALLY (QB1, RB1, WR1-3, TE1-2) whenever this field is omitted — omit it for a \
+normal question and let that default apply. Do NOT set pos_rank_max higher than the position's \
+real default just because the user asked for a specific COUNT of results (e.g. "show me 5 RBs \
+facing bottom 5 defenses") — a count in the question is how many ROWS to return (use limit for \
+that), never a reason to include backups/committee backs to pad the total. If RB1-only genuinely \
+only produces 3 qualifying results for a "5 RBs" question, return 3 real results, not 5 padded \
+with RB2s — real data honestly falling short of the requested count is correct behavior, not a \
+failure to fix by loosening the role cap. Only set pos_rank_max above the default when the \
+question ITSELF explicitly asks for backups, committee backs, RB2s, or similar (e.g. "show me \
+RB2s in good matchups" or "include committee backs"). opponent_def_stat is the real \
 defense-vs-position stat to check — "pass_ypg" for QB, "rush_ypg" for RB, "rec_ypg" for WR/TE. \
 opponent_rank_min is the MINIMUM league-wide rank (1=best defense, 32=worst) for "bottom N" \
 questions (weak defenses) — "bottom 10" means opponent_rank_min=23, "bottom 5" means \
@@ -549,7 +595,12 @@ TOUGHEST defense in the league; opponent_rank 32 is the WORST, WEAKEST defense. 
 HIGH opponent_rank (closer to 32) has a FAVORABLE, EASY matchup — never describe that as "the \
 toughest matchup" or "a tough defense." A LOW opponent_rank (closer to 1) is the genuinely tough \
 matchup. If the results are all high-numbered ranks (as they will be for a "facing bad \
-defenses" style question), frame them as favorable/plus matchups, not difficult ones.`;
+defenses" style question), frame them as favorable/plus matchups, not difficult ones.
+
+RANK + STAT MUST ALWAYS TRAVEL TOGETHER — every time you cite a rank number, state the real \
+stat value it's based on in the same breath; every time you cite a stat that has a real \
+league-wide rank, state that rank too. Both are present in the real results given to you — use \
+them together, not one without the other.`;
 
 // Step 2b: free-form reasoning, grounded in real current-week data.
 async function answerFreeform(question){
@@ -601,11 +652,26 @@ RANK DIRECTION (state this correctly): opponent_defense.rank 1 is the BEST, TOUG
 rank 32 is the WORST, WEAKEST. A high rank number is a FAVORABLE matchup for the player, not a \
 tough one — never state that backwards.
 
+RANK + STAT MUST ALWAYS TRAVEL TOGETHER, EVERYWHERE IN THE ANSWER — every time you cite a rank \
+number, state the real stat value it's based on in the same breath; every time you cite a stat \
+that has a real league-wide rank, state that rank too. This applies for the ENTIRE answer, \
+including any closing summary or "my take" section — do not drop the paired number just because \
+it already appeared earlier in the message. "Worst-ranked run defense" alone, later in a summary, \
+is NOT sufficient once the real value (e.g. 119.6 rush ypg allowed) was already given up top — \
+restate it: "the worst-ranked run defense (119.6 rush ypg allowed)". A rank or a stat mentioned \
+on its own, unpaired, anywhere in the answer, is a real error to avoid, not a minor style choice.
+
 You now have real matchup context, not just season-long profile — use it. A player with a \
 concerning season-long pattern (TD-rate regression risk, a shrinking committee role) facing a \
 weak defense (high opponent_defense.rank) may still be a fine play despite that risk; the same \
 concerning pattern against a tough defense (low rank) compounds the risk. Weigh both together \
 explicitly rather than reasoning from season averages alone.
+
+FORMATTING — when grouping players by team/offense (e.g. breaking down several teams' backs \
+one team at a time), lead each section header with the TEAM first, then the matchup context — \
+"Tampa Bay backs — vs. CIN (rank 32)", never "vs. CIN (rank 32) — Tampa Bay backs". The team \
+whose players you're about to list is the subject of that section; the opponent is context, not \
+the headline.
 
 DATA (current week, real players, real opponents, real opponent defensive strength):
 ${JSON.stringify(grounding)}
