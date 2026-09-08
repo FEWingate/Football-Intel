@@ -151,6 +151,7 @@ main.innerHTML = `
         <button data-sec="penalties">Penalties</button>
         <button data-sec="roster">Roster</button>
         <button data-sec="ats">ATS Record</button>
+        <button data-sec="homeroad">Home/Road</button>
       </div>
     </div>
     <div class="modal-body" id="mBody"></div>
@@ -592,6 +593,65 @@ const ROSTER_GROUPS = [
   { label: 'Specialist', positions: ['K', 'P', 'LS'] },
 ];
 
+function renderTeamHomeRoad(box, team){
+  const seasons = TEAMSTATS.home_road_splits_seasons || [];
+  if(!seasons.length){
+    box.innerHTML = `<div class="empty">No home/road data yet.<br>
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+  let selected = seasons[0]; // most recent available real season
+
+  const row = (label, s) => {
+    if(!s) return `<tr><td class="name-col">${label}</td>
+      <td colspan="${TEAM_SPLITS_COLS.length}" style="color:var(--text-dim);text-align:center">No games</td></tr>`;
+    return `<tr><td class="name-col">${label}</td>` +
+      TEAM_SPLITS_COLS.map(([k,,dec]) => {
+        const v = s[k];
+        if(v == null) return `<td>—</td>`;
+        return `<td>${dec == null ? v : v.toFixed(dec)}</td>`;
+      }).join('') + `</tr>`;
+  };
+
+  const draw = () => {
+    const q = ((TEAMSTATS.all_team_home_road_by_season || {})[selected] || {})[team];
+    // If this team is ALSO one of the 11 dome/retractable-roof teams for
+    // this same season, the more detailed dataset (with the Road-Outdoor
+    // breakdown) already exists — show that extra row too rather than
+    // making the reader check two different tabs for the same team.
+    const domeQ = ((TEAMSTATS.team_dome_splits_by_season || {})[selected] || {})[team];
+
+    let bodyHTML;
+    if(!q){
+      bodyHTML = `<div class="empty">No ${selected} home/road data for this team.</div>`;
+    } else {
+      const diff = (q.home && q.road) ? +(q.home.ppg - q.road.ppg).toFixed(1) : null;
+      bodyHTML = `
+        <div class="empty" style="padding:8px 0 4px;text-align:left;font-size:10px">
+          Home vs Road, real ${selected} season games.${domeQ ? ' This team is a fixed-dome/retractable-roof '
+            + 'venue, so the extra Road (Outdoor) row below further narrows Road to games at a stadium '
+            + "that isn't itself a dome/retractable-roof venue." : ''}
+          ${diff!==null ? ` <span class="splits-diff ${diff>=0?'up':'down'}" style="display:inline-flex;margin-left:6px">
+            ${diff>=0?'+':''}${diff} PPG at home</span>` : ''}
+        </div>
+        <div class="table-wrap"><table class="splits-table">
+          <thead><tr><th></th>${TEAM_SPLITS_COLS.map(([,l])=>`<th>${l}</th>`).join('')}</tr></thead>
+          <tbody>${row('Home', q.home)}${row('Road', q.road)}${domeQ ? row('Road (Outdoor)', domeQ.road_outdoor) : ''}</tbody>
+        </table></div>`;
+    }
+
+    box.innerHTML = `
+      <div class="travel-controls" style="margin-bottom:12px">
+        <label class="lbl" for="teamHRSeason">Season</label>
+        <select id="teamHRSeason">${seasons.map(y=>
+          `<option value="${y}" ${y===selected?'selected':''}>${y}</option>`).join('')}</select>
+      </div>
+      <div id="teamHRBody">${bodyHTML}</div>`;
+    $("teamHRSeason").addEventListener("change", e => { selected = Number(e.target.value); draw(); });
+  };
+  draw();
+}
+
 function atsRecordHTML(team){
   const ats = TEAMSTATS && TEAMSTATS.ats_records ? TEAMSTATS.ats_records[team] : null;
   if(!ats){
@@ -682,6 +742,11 @@ function renderStats(){
 
   if(activeSec === 'ats'){
     box.innerHTML = atsRecordHTML(activeTeam);
+    return;
+  }
+
+  if(activeSec === 'homeroad'){
+    renderTeamHomeRoad(box, activeTeam);
     return;
   }
 

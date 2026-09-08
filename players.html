@@ -299,8 +299,12 @@ function openProfile(p, pos){
 
 function renderProfilePanel(){
   const p = activePlayer, pos = p.pos;
-  const hasHomeRoad = pos === 'QB' && PLAYERSTATS.qb_dome_splits &&
-    PLAYERSTATS.qb_dome_splits[p.team] && PLAYERSTATS.qb_dome_splits[p.team].gsis_id === p.gsis_id;
+  const hrSeasons = (PLAYERSTATS.home_road_splits_seasons || []);
+  const hasHomeRoad = pos === 'QB' && PLAYERSTATS.all_qb_home_road_by_season &&
+    hrSeasons.some(y => {
+      const yearData = PLAYERSTATS.all_qb_home_road_by_season[y] || {};
+      return yearData[p.team] && yearData[p.team].gsis_id === p.gsis_id;
+    });
   $("profilePanel").innerHTML = `
     <div class="profile-head">
       <img class="profile-headshot" src="${esc(p.headshot||'')}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
@@ -346,12 +350,25 @@ function renderProfileBody(){
   else renderGameLogFull(box, p);
 }
 
-// Home/Road (dome/retractable-roof QB1s only) — same data and column set
-// as the Splits leaderboard tab, just scoped to this one player, so the
-// two views can never drift into showing different numbers.
+// Home/Road — every team's real QB1. If this QB's team is ALSO one of
+// the 11 dome/retractable-roof teams, the more detailed dataset (with
+// the Road-Outdoor breakdown) already exists — merged in below rather
+// than making the reader check two different tabs for the same player.
+// Home/Road — every team's real QB1, with a season dropdown (current +
+// last season, whichever have real data). If this QB's team is ALSO one
+// of the 11 dome/retractable-roof teams for the selected season, the
+// more detailed dataset (with the Road-Outdoor breakdown) already
+// exists — merged in below rather than making the reader check two
+// different tabs for the same player.
 function renderHomeRoadTab(box, p){
-  const q = PLAYERSTATS.qb_dome_splits[p.team];
-  const diff = (q.home && q.road) ? +(q.home.dk_pts_pg - q.road.dk_pts_pg).toFixed(1) : null;
+  const seasons = PLAYERSTATS.home_road_splits_seasons || [];
+  if(!seasons.length){
+    box.innerHTML = `<div class="empty">No home/road data yet.<br>
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+  let selected = seasons[0];
+
   const row = (label, s) => {
     if(!s) return `<tr><td class="name-col">${label}</td>
       <td colspan="${SPLITS_COLS.length}" style="color:var(--text-dim);text-align:center">No games</td></tr>`;
@@ -361,16 +378,39 @@ function renderHomeRoadTab(box, p){
         return `<td>${v==null ? '—' : (dec ? v.toFixed(dec) : v)}</td>`;
       }).join('') + `</tr>`;
   };
-  box.innerHTML = `
-    <div class="empty" style="padding:8px 0 4px;text-align:left;font-size:10px">
-      ${esc(SPLITS_VENUE_LABEL[q.venue])} · Home/Road is by team venue for the full season,
-      not each game's actual roof state${diff!==null ? ` · ${diff>=0?'+':''}${diff} DK/G at home` : ''}
-      · Road (Outdoor) excludes road trips to other dome/retractable-roof teams
-    </div>
-    <div class="table-wrap"><table class="splits-table">
-      <thead><tr><th></th>${SPLITS_COLS.map(([,l])=>`<th>${l}</th>`).join('')}</tr></thead>
-      <tbody>${row('Home', q.home)}${row('Road', q.road)}${row('Road (Outdoor)', q.road_outdoor)}</tbody>
-    </table></div>`;
+
+  const draw = () => {
+    const q = ((PLAYERSTATS.all_qb_home_road_by_season || {})[selected] || {})[p.team];
+    const domeQ = ((PLAYERSTATS.qb_dome_splits_by_season || {})[selected] || {})[p.team];
+
+    let bodyHTML;
+    if(!q || q.gsis_id !== p.gsis_id){
+      bodyHTML = `<div class="empty">${esc(p.name)} wasn't this team's identified QB1 in
+        ${selected} — no real home/road split to show for that season.</div>`;
+    } else {
+      const diff = (q.home && q.road) ? +(q.home.dk_pts_pg - q.road.dk_pts_pg).toFixed(1) : null;
+      bodyHTML = `
+        <div class="empty" style="padding:8px 0 4px;text-align:left;font-size:10px">
+          Home vs Road, real ${selected} season games${diff!==null ? ` · ${diff>=0?'+':''}${diff} DK/G at home` : ''}
+          ${domeQ ? ` · ${esc(SPLITS_VENUE_LABEL[domeQ.venue])} — the extra Road (Outdoor) row below
+            excludes road trips to other dome/retractable-roof teams` : ''}
+        </div>
+        <div class="table-wrap"><table class="splits-table">
+          <thead><tr><th></th>${SPLITS_COLS.map(([,l])=>`<th>${l}</th>`).join('')}</tr></thead>
+          <tbody>${row('Home', q.home)}${row('Road', q.road)}${domeQ ? row('Road (Outdoor)', domeQ.road_outdoor) : ''}</tbody>
+        </table></div>`;
+    }
+
+    box.innerHTML = `
+      <div class="travel-controls" style="margin-bottom:12px">
+        <label class="lbl" for="qbHRSeason">Season</label>
+        <select id="qbHRSeason">${seasons.map(y=>
+          `<option value="${y}" ${y===selected?'selected':''}>${y}</option>`).join('')}</select>
+      </div>
+      <div id="qbHRBody">${bodyHTML}</div>`;
+    $("qbHRSeason").addEventListener("change", e => { selected = Number(e.target.value); draw(); });
+  };
+  draw();
 }
 
 // Season-only (splits aren't tracked across career/team changes — same

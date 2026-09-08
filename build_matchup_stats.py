@@ -637,7 +637,8 @@ def normalize_team_cols(df, *cols):
     return df
 
 
-def norm_players(df):
+def norm_players(df, season=None):
+    season = SEASON if season is None else season
     team_col = "team" if "team" in df.columns else "recent_team"
     name_col = ("player_display_name" if "player_display_name" in df.columns
                 else "player_name")
@@ -646,7 +647,7 @@ def norm_players(df):
     if "season_type" in df.columns:
         df = df[df["season_type"] == "REG"]
     if "season" in df.columns:
-        df = df[df["season"] == SEASON]
+        df = df[df["season"] == season]
     cols = ["player_id", "name", "position", "team", "opponent_team", "week", "headshot_url"] + RAW_COLS
     for c in cols:
         if c not in df.columns:
@@ -2539,6 +2540,73 @@ def rz_season_stats(pdf, pos, rz_rush, rz_pass, team_rz_carries, team_rz_targets
 # the split below is Home vs Road by team, every home game counted the
 # same regardless of that day's roof state. LAR and LAC share SoFi
 # Stadium (fixed roof, open sides) and both count as retractable here.
+def resolve_splits_team_data_all():
+    """For Home/Road splits: collects EVERY available season's real data
+    (current season, if it has real games, and last season) rather than
+    picking just one — Frank's explicit ask (2026-09-08): let the reader
+    pick the year via a dropdown instead of the site silently choosing
+    one for them. Deliberately scoped to just current + last season for
+    now (each extra year is a real extra fetch per build) — easy to
+    widen later if more years in the dropdown are wanted.
+
+    Deliberately does NOT use fetch_csv()'s own multi-candidate-URL
+    fallback for this (passing multiple seasons' URLs as one call) —
+    that caches under the FIRST url's key, which would silently poison
+    the cache for every OTHER real, current-season-only caller
+    (build_team_stats() itself calls fetch_csv(TEAM_STATS_URL) with
+    that same URL as a bare string later in the same run). This loop
+    only ever calls fetch_csv with one explicit, season-specific URL at
+    a time, so no cache entry is ever shared between two different real
+    seasons.
+
+    Returns a dict {season: (df, reg)} for every season that had real
+    data — may be empty, may have 1 or 2 entries."""
+    out = {}
+    for yr in (SEASON, SEASON - 1):
+        url = f"https://github.com/nflverse/nflverse-data/releases/download/stats_team/stats_team_week_{yr}.csv"
+        try:
+            df = fetch_csv(url)
+        except SystemExit:
+            continue
+        df = normalize_team_cols(df, "team")
+        df = df[(df["season"] == yr) & (df["season_type"] == "REG")]
+        if df.empty:
+            continue
+        games = fetch_csv(GAMES_URL)
+        games = normalize_team_cols(games, "home_team", "away_team")
+        reg = games[(games["season"] == yr) & (games["game_type"] == "REG") & games["home_score"].notna()]
+        if reg.empty:
+            continue
+        out[yr] = (df, reg)
+    return out
+
+
+def resolve_splits_player_data_all():
+    """Same reasoning as resolve_splits_team_data_all(), for player-level
+    stats. Uses norm_players()'s optional season override (added
+    2026-09-08 specifically to support the fallback, reused here for the
+    same reason) rather than relying on the module's SEASON constant, so
+    each season's fetch actually returns that season's rows.
+
+    Returns a dict {season: stats_df} for every season that had real
+    data."""
+    out = {}
+    for yr in (SEASON, SEASON - 1):
+        urls = [
+            f"https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_{yr}.csv",
+            f"https://github.com/nflverse/nflverse-data/releases/download/player_stats/player_stats_{yr}.csv",
+        ]
+        try:
+            raw = fetch_csv(urls)
+        except SystemExit:
+            continue
+        stats = norm_players(raw, season=yr)
+        if stats.empty:
+            continue
+        out[yr] = stats
+    return out
+
+
 DOME_TEAMS = {
     "DET": "fixed", "LV": "fixed", "MIN": "fixed", "NO": "fixed",
     "ARI": "retractable", "ATL": "retractable", "DAL": "retractable",
@@ -2547,7 +2615,89 @@ DOME_TEAMS = {
 }
 
 
-def build_qb_dome_splits(stats):
+def build_all_qb_home_road(stats, season=None):
+    """Home vs Road splits, full QB stat set, for the current-season QB1
+    of EVERY team, not just the 11 dome/retractable ones. Same real
+    starter-identification and stat logic as build_qb_dome_splits(),
+    deliberately kept as its own function rather than refactoring that
+    one — it's already tested and verified; duplicating ~50 lines here
+    is a smaller real risk than touching working code. Lives inside
+    each QB's own Player Profile, not a separate leaderboard tab.
+
+    season: which real season's schedule to cross-reference for home/
+    away — defaults to the module SEASON, but MUST be passed explicitly
+    as the resolved season when `stats` came from
+    resolve_splits_player_data() and that resolved to a fallback season
+    (real bug, fixed 2026-09-08: without this, the schedule filter
+    silently used the CURRENT season regardless of what season `stats`
+    actually contained, so a fallback to last season's player stats
+    got cross-referenced against an empty current-season schedule and
+    every QB came back with 0 games — the bug looked like "no data"
+    but was really a season mismatch between the two real inputs)."""
+    season = SEASON if season is None else season
+    qb = stats[stats["pos"] == "QB"]
+    if qb.empty:
+        print("  WARNING: no QB stats yet — skipping all_qb_home_road.")
+        return {}
+
+    games = fetch_csv(GAMES_URL)
+    games = normalize_team_cols(games, "home_team", "away_team")
+    games = games[(games["season"] == season) & (games["game_type"] == "REG")
+                  & games["home_score"].notna()]
+    home_of = {}
+    for _, g in games.iterrows():
+        wk = int(g["week"])
+        home_of[(g["home_team"], wk)] = True
+        home_of[(g["away_team"], wk)] = False
+
+    def side_stats(sub):
+        n = len(sub)
+        if n == 0:
+            return None
+        att, comp = sub["attempts"].sum(), sub["completions"].sum()
+        yds, td = sub["passing_yards"].sum(), sub["passing_tds"].sum()
+        ints, sacks = sub["passing_interceptions"].sum(), sub["sacks_suffered"].sum()
+        dk = sum(dk_points_for_game(row) for _, row in sub.iterrows())
+        return {
+            "games": n,
+            "att": int(att), "att_pg": round(att / n, 1),
+            "comp": int(comp), "comp_pg": round(comp / n, 1),
+            "comp_pct": round(100 * comp / att, 1) if att else None,
+            "pass_yds": int(yds), "pass_ypg": round(yds / n, 1),
+            "ypa": round(yds / att, 1) if att else None,
+            "pass_td": int(td), "td_pg": round(td / n, 1),
+            "int": int(ints), "int_pg": round(ints / n, 1),
+            "rating": nfl_passer_rating(comp, att, yds, td, ints),
+            "sacks": int(sacks), "sacks_pg": round(sacks / n, 1),
+            "dk_pts_pg": round(dk / n, 1),
+        }
+
+    out = {}
+    for team, g in qb.groupby("team"):
+        weekly_starters = g.loc[g.groupby("week")["attempts"].idxmax()]
+        primary_pid = weekly_starters.groupby("player_id").size().idxmax()
+        pdf = weekly_starters[weekly_starters["player_id"] == primary_pid].sort_values("week")
+        if pdf.empty:
+            continue
+        name = pdf["name"].iloc[-1]
+        headshot = pdf["headshot_url"].iloc[-1] if "headshot_url" in pdf.columns else ""
+        if pd.isna(headshot):
+            headshot = ""
+
+        is_home = pdf.apply(lambda r: home_of.get((r["team"], int(r["week"])), None), axis=1)
+        home_split = side_stats(pdf[is_home == True])
+        road_split = side_stats(pdf[is_home == False])
+        if home_split is None and road_split is None:
+            continue
+
+        out[team] = {
+            "gsis_id": primary_pid, "name": name, "team": team, "headshot": headshot,
+            "home": home_split, "road": road_split,
+        }
+    return out
+
+
+def build_qb_dome_splits(stats, season=None):
     """Home vs Road splits, full QB stat set, for the current-season QB1
     of every team in DOME_TEAMS. QB1 = whoever started the most games
     this season (each week's starter = most attempts that team-week,
@@ -2569,7 +2719,14 @@ def build_qb_dome_splits(stats):
     does) understates how much a genuinely outdoor start differs from
     a dome start. "road" is kept as-is alongside this, not replaced —
     both are real, useful comparisons.
-    """
+
+    season: which real season's schedule to cross-reference for home/
+    away — defaults to the module SEASON, but MUST be passed explicitly
+    as the resolved season when `stats` came from
+    resolve_splits_player_data() and that resolved to a fallback
+    season (see build_all_qb_home_road()'s docstring for the full
+    real-bug writeup this fixes)."""
+    season = SEASON if season is None else season
     qb = stats[(stats["pos"] == "QB") & (stats["team"].isin(DOME_TEAMS))]
     if qb.empty:
         print("  WARNING: no QB stats yet for any dome/retractable team — "
@@ -2578,7 +2735,7 @@ def build_qb_dome_splits(stats):
 
     games = fetch_csv(GAMES_URL)
     games = normalize_team_cols(games, "home_team", "away_team")
-    games = games[(games["season"] == SEASON) & (games["game_type"] == "REG")
+    games = games[(games["season"] == season) & (games["game_type"] == "REG")
                   & games["home_score"].notna()]
     home_of, opp_of = {}, {}
     for _, g in games.iterrows():
@@ -2658,8 +2815,6 @@ def build_player_stats():
     stats = norm_players(fetch_csv(PLAYER_STATS_URLS))
     if stats.empty:
         raise SystemExit(f"no {SEASON} player stats available yet")
-
-    qb_dome_splits = build_qb_dome_splits(stats)
 
     career_base = {}
     if os.path.exists("players/career_base.json"):
@@ -2778,13 +2933,85 @@ def build_player_stats():
         "data_horizon": f"through {max(games_played.values())} games played",
         "labels": labels,
         "players": players_out,
-        "qb_dome_splits": qb_dome_splits,
     }
     path = "players/latest.json"
     size = write_with_archive(payload, path)
     total = sum(len(v) for v in players_out.values())
-    print(f"Wrote {path} — {total} players across {len(POSITIONS)} positions, "
-          f"{len(qb_dome_splits)} dome/retractable QB1 splits, {size:.0f} KB")
+    print(f"Wrote {path} — {total} players across {len(POSITIONS)} positions, {size:.0f} KB")
+
+
+def build_all_team_home_road(df, reg):
+    """Home vs Road splits — PPG, total/pass/rush yards, points/pass/rush
+    yards allowed, record — for ALL 32 teams, not just the 11 dome/
+    retractable-roof ones. Same real cross-reference method as
+    build_team_dome_splits() (opponent's own offensive output that week
+    = what this team's defense allowed), deliberately written as its
+    own function rather than refactoring build_team_dome_splits() to
+    share code — that function is already tested and verified working;
+    duplicating ~30 lines here is a smaller real risk than touching it.
+    Lives inside each team's own modal on the Teams page, not a
+    separate leaderboard tab, since every team has this now."""
+    wk_off = df.groupby(["team", "week"])[["passing_yards", "rushing_yards"]].sum()
+
+    def team_off(team, wk):
+        key = (team, wk)
+        if key in wk_off.index:
+            row = wk_off.loc[key]
+            return float(row["passing_yards"]), float(row["rushing_yards"])
+        return 0.0, 0.0
+
+    game_rows = []
+    for _, g in reg.iterrows():
+        wk = int(g["week"])
+        home, away = g["home_team"], g["away_team"]
+        hs, as_ = int(g["home_score"]), int(g["away_score"])
+        game_rows.append({"team": home, "opp": away, "week": wk, "home": True,
+                           "pts_for": hs, "pts_against": as_})
+        game_rows.append({"team": away, "opp": home, "week": wk, "home": False,
+                           "pts_for": as_, "pts_against": hs})
+
+    def side_stats(rows):
+        n = len(rows)
+        if n == 0:
+            return None
+        pts_for = sum(r["pts_for"] for r in rows)
+        pts_against = sum(r["pts_against"] for r in rows)
+        pass_yds = rush_yds = pass_yds_allowed = rush_yds_allowed = 0.0
+        wins = losses = ties = 0
+        for r in rows:
+            py, ry = team_off(r["team"], r["week"])
+            opy, ory = team_off(r["opp"], r["week"])
+            pass_yds += py; rush_yds += ry
+            pass_yds_allowed += opy; rush_yds_allowed += ory
+            if r["pts_for"] > r["pts_against"]:
+                wins += 1
+            elif r["pts_for"] < r["pts_against"]:
+                losses += 1
+            else:
+                ties += 1
+        total_yds = pass_yds + rush_yds
+        record = f"{wins}-{losses}" + (f"-{ties}" if ties else "")
+        return {
+            "games": n, "record": record,
+            "ppg": round(pts_for / n, 1),
+            "total_yds_pg": round(total_yds / n, 1),
+            "pass_yds_pg": round(pass_yds / n, 1),
+            "rush_yds_pg": round(rush_yds / n, 1),
+            "pts_allowed_pg": round(pts_against / n, 1),
+            "pass_yds_allowed_pg": round(pass_yds_allowed / n, 1),
+            "rush_yds_allowed_pg": round(rush_yds_allowed / n, 1),
+        }
+
+    all_teams = set(reg["home_team"]) | set(reg["away_team"])
+    out = {}
+    for team in all_teams:
+        rows = [r for r in game_rows if r["team"] == team]
+        home_split = side_stats([r for r in rows if r["home"]])
+        road_split = side_stats([r for r in rows if not r["home"]])
+        if home_split is None and road_split is None:
+            continue
+        out[team] = {"team": team, "home": home_split, "road": road_split}
+    return out
 
 
 def build_team_dome_splits(df, reg):
@@ -3127,8 +3354,6 @@ def build_team_stats():
         for t in pts_allowed_sum
     }
 
-    team_dome_splits = build_team_dome_splits(df, reg)
-
     all_cols = [c for section, grp in TEAM_STATS_GROUPS.items()
                 for sub, cols in grp.items() if sub not in CUSTOM_SUBGROUPS
                 for c in cols]
@@ -3180,12 +3405,10 @@ def build_team_stats():
         "data_horizon": f"through {max(games_played.values())} games played",
         "labels": labels,
         "teams": teams_out,
-        "team_dome_splits": team_dome_splits,
     }
     path = "teamstats/latest.json"
     size = write_with_archive(payload, path)
-    print(f"Wrote {path} — {len(teams_out)} teams, "
-          f"{len(team_dome_splits)} dome/retractable team splits, {size:.0f} KB")
+    print(f"Wrote {path} — {len(teams_out)} teams, {size:.0f} KB")
 
 
 def build_games_only(week):
@@ -4135,11 +4358,73 @@ if __name__ == "__main__":
     except SystemExit as e:
         print(f"  travel splits / ATS records: skipped — {e}")
 
+    # 3c. Home/Road splits (dome-specific AND general, ALL 32 teams) —
+    # DELIBERATELY independent of build_team_stats(), same reasoning as
+    # 3b. Built for EVERY available season (current + last, real data
+    # only) rather than picking one — Frank's explicit ask (2026-09-08,
+    # after discussing single-season-fallback vs. combining seasons):
+    # let the reader pick the year from a dropdown instead of the site
+    # silently choosing, and never silently combine two different real
+    # seasons into one blended number. Nested by season so the frontend
+    # can switch between them; "home_road_splits_seasons" lists which
+    # years actually have real data, in order, for building that
+    # dropdown without guessing.
+    try:
+        by_season = resolve_splits_team_data_all()
+        if not by_season:
+            print("  team home/road splits: skipped — no real season data found "
+                  f"for {SEASON} or {SEASON - 1}.")
+        else:
+            team_dome_by_season, all_team_by_season = {}, {}
+            for yr, (df, reg) in by_season.items():
+                team_dome_by_season[yr] = build_team_dome_splits(df, reg)
+                all_team_by_season[yr] = build_all_team_home_road(df, reg)
+            existing = {}
+            if os.path.exists("teamstats/latest.json"):
+                with open("teamstats/latest.json") as f:
+                    existing = json.load(f)
+            existing["team_dome_splits_by_season"] = {str(y): v for y, v in team_dome_by_season.items()}
+            existing["all_team_home_road_by_season"] = {str(y): v for y, v in all_team_by_season.items()}
+            existing["home_road_splits_seasons"] = sorted(by_season.keys(), reverse=True)
+            existing.setdefault("season", SEASON)
+            size = write_with_archive(existing, "teamstats/latest.json")
+            print(f"  Merged team home/road splits into teamstats/latest.json — "
+                  f"seasons {sorted(by_season.keys(), reverse=True)}, {size:.0f} KB")
+    except SystemExit as e:
+        print(f"  team home/road splits: skipped — {e}")
+
     # 4. Player leaderboards: always-current, for Stats Hub.
     try:
         build_player_stats()
     except SystemExit as e:
         print(f"  player stats: skipped — {e}")
+
+    # 4a. QB Home/Road splits (dome-specific AND general, EVERY team's
+    # QB1) — DELIBERATELY independent of build_player_stats(), same
+    # reasoning and multi-season approach as step 3c above.
+    try:
+        by_season = resolve_splits_player_data_all()
+        if not by_season:
+            print("  QB home/road splits: skipped — no real season data found "
+                  f"for {SEASON} or {SEASON - 1}.")
+        else:
+            qb_dome_by_season, all_qb_by_season = {}, {}
+            for yr, stats in by_season.items():
+                qb_dome_by_season[yr] = build_qb_dome_splits(stats, season=yr)
+                all_qb_by_season[yr] = build_all_qb_home_road(stats, season=yr)
+            existing = {}
+            if os.path.exists("players/latest.json"):
+                with open("players/latest.json") as f:
+                    existing = json.load(f)
+            existing["qb_dome_splits_by_season"] = {str(y): v for y, v in qb_dome_by_season.items()}
+            existing["all_qb_home_road_by_season"] = {str(y): v for y, v in all_qb_by_season.items()}
+            existing["home_road_splits_seasons"] = sorted(by_season.keys(), reverse=True)
+            existing.setdefault("season", SEASON)
+            size = write_with_archive(existing, "players/latest.json")
+            print(f"  Merged QB home/road splits into players/latest.json — "
+                  f"seasons {sorted(by_season.keys(), reverse=True)}, {size:.0f} KB")
+    except SystemExit as e:
+        print(f"  QB home/road splits: skipped — {e}")
 
     # 4b. Rosters and depth charts: always-current snapshots, same pattern
     # as team/player stats above. Built specifically to be re-run after
