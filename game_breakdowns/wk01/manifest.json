@@ -1,0 +1,11 @@
+{
+  "games": {
+    "NE_SEA": {
+      "away": "NE",
+      "home": "SEA",
+      "season": 2025,
+      "week": 1,
+      "generated_at": "2026-09-09T21:45:09.794792+00:00"
+    }
+  }
+}

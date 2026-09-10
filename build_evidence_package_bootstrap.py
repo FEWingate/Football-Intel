@@ -338,12 +338,85 @@ def main():
         bootstrap_week = args.bootstrap_week
     bwk = f"wk{bootstrap_week:02d}"
 
+    matchup_json = load_json(f"matchup/{bwk}.json")
+
+    # REAL BUG FIX (2026-09-09): bootstrap_season above comes straight from
+    # matchup/current.json's "season" field — which, under the carryover
+    # system added earlier this project, correctly reports the CURRENT
+    # season (e.g. 2026) even while every stat underneath is actually
+    # last season's data carried over (2026 has no games yet). Blindly
+    # trusting that field here meant this script's own "season-FINAL
+    # foundation data" label, and generate_game_breakdown.py's bootstrap-
+    # mode folder routing (target_season = bootstrap_source.season + 1),
+    # both silently assumed "2026" when the real foundation was "2025" —
+    # producing a genuinely wrong "2027" target and a wrong narrative
+    # claim that carried-over 2025 stats were "2026 season-FINAL data."
+    # matchup/wkNN.json's own carryover_season field (added specifically
+    # for this kind of honesty) is the real source of truth for what
+    # season the data underneath actually reflects — use it whenever
+    # present, since it's a real field on the exact file already loaded,
+    # not a second guess.
+    if matchup_json and matchup_json.get("carryover_season"):
+        real_foundation_season = matchup_json["carryover_season"]
+        if real_foundation_season != bootstrap_season:
+            print(f"  NOTE: matchup/{bwk}.json is carryover data from "
+                  f"{real_foundation_season} (matchup/current.json's season field says "
+                  f"{bootstrap_season}, but that's the CURRENT season label, not what "
+                  f"the stats underneath actually reflect). Using {real_foundation_season} "
+                  f"as the real bootstrap_season.")
+            # Real bug (2026-09-09): the context-file-selection fix below
+            # needs to know whether bootstrap_season got corrected away
+            # from the CURRENT actual season — this script has no module-
+            # level SEASON constant the way build_matchup_stats.py does
+            # (that was a wrong assumption in the first version of this
+            # fix, caught by a real NameError on the first live run).
+            # current["season"] read from matchup/current.json above is
+            # the real "current season" value — save it before it's
+            # overwritten below.
+            current_actual_season = bootstrap_season
+            bootstrap_season = real_foundation_season
+        else:
+            current_actual_season = bootstrap_season
+    else:
+        current_actual_season = bootstrap_season
+
     print(f"Bootstrap: using {bootstrap_season} season, week {bootstrap_week} team data "
           f"as the foundation for {len(real_games)} real upcoming game(s)")
 
-    matchup_json = load_json(f"matchup/{bwk}.json")
     threats_json = load_json(f"threats/{bwk}.json")
-    context_json = load_json(f"context/{bwk}.json")
+
+    # REAL BUG FIX (2026-09-09): unlike matchup/threats (which carry their
+    # own carryover_season field and stay populated even at "wk01" during
+    # the preseason gap), context/wkNN.json has NO carryover mechanism at
+    # all — it's built fresh each week from ONLY that season's own real
+    # prior games, and archived separately per season under
+    # archive/{season}/context/. Loading "context/wk01.json" here during a
+    # real cross-season bootstrap (bootstrap_season != current_actual_season)
+    # genuinely returns 2026's own near-empty file, not 2025's real,
+    # complete data — exactly what Frank found: team-level Contextual
+    # Stats came back "Unavailable" in a real Game Breakdown despite
+    # contextual_stats.html itself showing real, populated Week 18 2025
+    # data for the same team. Finds the real, highest archived week that
+    # actually exists on disk for bootstrap_season, rather than
+    # hardcoding "18" (right today, but not a real, checked fact — and
+    # wrong the moment a season runs short or long for any real reason).
+    if bootstrap_season != current_actual_season:
+        context_json = None
+        for wk_num in range(22, 0, -1):
+            candidate = load_json(f"archive/{bootstrap_season}/context/wk{wk_num:02d}.json")
+            if candidate:
+                context_json = candidate
+                print(f"  Using archive/{bootstrap_season}/context/wk{wk_num:02d}.json — the real "
+                      f"final archived week of {bootstrap_season}'s Contextual Stats — since "
+                      f"context/{bwk}.json has no carryover data at all this early in "
+                      f"{current_actual_season}.")
+                break
+        if context_json is None:
+            print(f"  WARNING: no archived context/*.json found for {bootstrap_season} at all — "
+                  f"team-level Contextual Stats evidence will be unavailable.")
+    else:
+        context_json = load_json(f"context/{bwk}.json")
+
     teamstats_json = load_json("teamstats/latest.json")
     players_json = load_json("players/latest.json")
     intel_json = load_json("intel/latest.json")
@@ -351,6 +424,40 @@ def main():
     coverage_json = load_json("intel/coverage.json")
     cbdb_json = load_json("intel/cb_rankings.json")
     dfs_json = load_json(f"dfs/{bwk}.json")
+
+    # REAL BUG FIX (2026-09-09): players_json's own "team" field reflects
+    # whichever team a player's STATS were last recorded under (2025
+    # season, since 2026 has none yet) — NOT their real current roster.
+    # Confirmed the real, concrete failure this caused: Kenneth Walker III
+    # (signed with KC as a free agent, March 2026) still showed on SEA in
+    # a real Game Breakdown, because nothing here ever cross-referenced
+    # rosters/latest.json (built separately, stays accurate through the
+    # whole offseason). This is the exact same class of bug already found
+    # and fixed in coeus.html — same real gsis_id shared between both
+    # files — just never applied to this script until now. Corrects every
+    # player's team in-place before any away/home filtering happens below,
+    # so every downstream use of players_json sees the real roster.
+    rosters_json = load_json("rosters/latest.json")
+    if rosters_json:
+        current_team_of = {}
+        for team, roster_players in (rosters_json.get("teams") or {}).items():
+            for rp in roster_players:
+                if rp.get("gsis_id"):
+                    current_team_of[rp["gsis_id"]] = team
+        corrected = 0
+        for pos, plist in (players_json.get("players") or {}).items():
+            for p in plist:
+                real_team = current_team_of.get(p.get("gsis_id"))
+                if real_team and real_team != p.get("team"):
+                    p["team"] = real_team
+                    corrected += 1
+        if corrected:
+            print(f"  Corrected {corrected} player(s) to their real current-roster team "
+                  f"(rosters/latest.json) before building evidence.")
+    else:
+        print("  WARNING: rosters/latest.json not found — player team assignments will "
+              "use players/latest.json's stats-based team, which may be stale during "
+              "the offseason (trades/signings won't be reflected).")
 
     required = {"matchup": matchup_json, "players": players_json}
     missing = [k for k, v in required.items() if v is None]

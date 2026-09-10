@@ -1818,19 +1818,23 @@ def build_context(week, all_teams, records, prior_stats, prior_games,
     print(f"Wrote {path} — {len(all_teams)} team logs, {size:.0f} KB")
 
 
-def fetch_pbp():
+def fetch_pbp(url=None):
     """Play-by-play is gzipped and much bigger than the other feeds, so it
     gets its own fetch path rather than reusing fetch_csv()'s text/StringIO
-    handling."""
-    if PBP_URL in _CSV_CACHE:
-        return _CSV_CACHE[PBP_URL].copy()
-    print(f"  fetching {PBP_URL}")
-    r = requests.get(PBP_URL, timeout=180)
+    handling. url defaults to PBP_URL (current season) but callers can pass
+    a season-specific URL explicitly — added so build_blitz_report() can
+    fall back to last season's real play-by-play during the preseason gap,
+    same principle as every other real season-fallback added 2026-09-09."""
+    url = url or PBP_URL
+    if url in _CSV_CACHE:
+        return _CSV_CACHE[url].copy()
+    print(f"  fetching {url}")
+    r = requests.get(url, timeout=180)
     if r.status_code != 200:
         sys.exit(f"FATAL: could not download play-by-play (HTTP {r.status_code}).")
     df = pd.read_csv(BytesIO(r.content), compression="gzip", low_memory=False)
     df = normalize_team_cols(df, "posteam", "defteam", "home_team", "away_team")
-    _CSV_CACHE[PBP_URL] = df
+    _CSV_CACHE[url] = df
     return df.copy()
 
 
@@ -3446,6 +3450,59 @@ def build_games_only(week):
     build_games(week, all_teams, records, week_games, prior_games, stats)
 
 
+def apply_current_rosters(players_df, id_col="player_id"):
+    """Corrects a raw player-stats dataframe's "team" column to each
+    player's REAL current roster team, and EXCLUDES any player not found
+    on any current roster at all (confirmed unsigned free agent, not
+    just a guess) — rather than leaving them attributed to a stale team.
+
+    Same real bug class already found and fixed twice tonight (Ask Coeus,
+    the Game Breakdown evidence pipeline): a raw player-stats dataframe's
+    own "team" column reflects whichever team a player's STATS were last
+    recorded under (e.g. 2025, via the season-fallback), not their real
+    2026 team. Confirmed concretely by Frank (2026-09-09): Geno Smith
+    showing as LV instead of his real team NYJ, and Kareem Hunt — a real
+    free agent signed to no team — showing under KC. A correction alone
+    (matching a stale team to a new one) fixes Geno Smith's case but NOT
+    Hunt's: leaving an unsigned player's stale team unchanged still wrongly
+    presents him as that team's current player. Exclusion is the only
+    honest answer for a player on no real roster at all.
+
+    build_intel_reports() and build_blitz_report() both independently
+    identify a team's "starter"/"lead back" straight from this same raw
+    stats data — this must run BEFORE any of that groupby/idxmax logic,
+    so the wrong-team stats are never even considered as a candidate.
+    """
+    if os.path.exists("rosters/latest.json"):
+        with open("rosters/latest.json") as f:
+            rosters_json = json.load(f)
+    else:
+        rosters_json = None
+    if not rosters_json:
+        print("  WARNING: rosters/latest.json not found — player team assignments will "
+              "use stats-based team, which may be stale (trades/signings won't show).")
+        return players_df
+    current_team_of = {}
+    for team, roster_players in (rosters_json.get("teams") or {}).items():
+        for rp in roster_players:
+            if rp.get("gsis_id"):
+                current_team_of[rp["gsis_id"]] = team
+
+    df = players_df.copy()
+    real_team = df[id_col].map(current_team_of)
+    on_roster = real_team.notna()
+    excluded = int((~on_roster).sum())
+    corrected = int((on_roster & (real_team != df["team"])).sum())
+    df = df[on_roster].copy()
+    df["team"] = real_team[on_roster]
+    if corrected:
+        print(f"  Corrected {corrected} player-week row(s) to their real current-roster team.")
+    if excluded:
+        print(f"  Excluded {excluded} player-week row(s) for players not on any current "
+              f"roster (unsigned free agents, retired, etc.) — not attributed to a stale team.")
+    return df
+
+
 def build_intel_reports(week=None):
     """Hidden Intelligence: how often does a team's starting QB reach his
     own season passing average when the run game is hot vs cold that same
@@ -3470,14 +3527,57 @@ def build_intel_reports(week=None):
     played = reg[reg["home_score"].notna()]
 
     # --- starting QB per team-week (most attempts that week, min volume) ---
-    players = fetch_csv(PLAYER_STATS_URLS)
+    # REAL BUG FIX (2026-09-09): during the preseason gap (no games played
+    # yet this season), fetch_csv(PLAYER_STATS_URLS) used to raise
+    # SystemExit immediately — crashing the WHOLE function before it ever
+    # reached the qb.empty graceful-empty-write fallback below. That meant
+    # intel/latest.json was NEVER touched on a failed run, silently leaving
+    # whatever stale data was there from some earlier, unrelated build —
+    # confirmed as the real cause of Intel Reports showing real 2026 Week 1
+    # teams paired with wrong opponents. Falls back to last season's
+    # complete real data for the HISTORICAL hot/cold pattern (same real
+    # season-fallback principle already used for Travel Splits / ATS /
+    # Home-Road splits), while still using the REAL CURRENT schedule for
+    # "upcoming opponent" context below — a team's real current-week
+    # opponent, not a stale one.
+    pattern_season = SEASON
+    try:
+        players = fetch_csv(PLAYER_STATS_URLS)
+    except SystemExit:
+        fallback_urls = [
+            f"https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_{SEASON-1}.csv",
+            f"https://github.com/nflverse/nflverse-data/releases/download/player_stats/player_stats_{SEASON-1}.csv",
+        ]
+        try:
+            players = fetch_csv(fallback_urls)
+            pattern_season = SEASON - 1
+            print(f"  No {SEASON} player stats yet — using {pattern_season}'s complete season "
+                  f"for the historical hot/cold pattern, tagged with real {SEASON} Week "
+                  f"{as_of_week} matchups.")
+        except SystemExit:
+            print(f"  No {SEASON} or {SEASON-1} player stats available at all — writing empty.")
+            write_with_archive({"season": SEASON, "as_of_week": as_of_week, "pattern_season": None,
+                                 "teams": {}, "rb_teams": {}}, "intel/latest.json")
+            return
+
     players = players[(players.get("season_type") == "REG") if "season_type" in players.columns
                        else pd.Series(True, index=players.index)]
+    players = apply_current_rosters(players)
+    # The chronological "only games before the week being previewed" filter
+    # only makes sense WITHIN the current, in-progress season. A fallback
+    # season is already complete, so use the whole thing as the historical
+    # foundation instead of (wrongly) restricting it to "before week 1".
+    if pattern_season == SEASON:
+        week_mask = players["week"] < as_of_week
+    else:
+        week_mask = pd.Series(True, index=players.index)
+
     qb = players[(players["position"] == "QB") & (players["attempts"].fillna(0) >= 10)
-                 & (players["week"] < as_of_week)].copy()
+                 & week_mask].copy()
     if qb.empty:
         print("  No qualifying QB games yet this season — skipping.")
-        write_with_archive({"season": SEASON, "as_of_week": as_of_week, "teams": {}, "rb_teams": {}}, "intel/latest.json")
+        write_with_archive({"season": SEASON, "as_of_week": as_of_week, "pattern_season": None,
+                             "teams": {}, "rb_teams": {}}, "intel/latest.json")
         return
     starters = qb.loc[qb.groupby(["team", "week"])["attempts"].idxmax()].copy()
     qb_season_avg = starters.groupby("player_id")["passing_yards"].mean().rename("qb_season_avg")
@@ -3490,10 +3590,15 @@ def build_intel_reports(week=None):
                          (["headshot_url"] if "headshot_url" in starters.columns else [])]
 
     # --- team rushing yards per week + season average ---
-    team_stats = fetch_csv(TEAM_STATS_URL)
+    # Same pattern_season fallback as the player-stats fetch above — must
+    # match, since merged (below) inner-joins the two on (team, week) and a
+    # season mismatch between them would silently produce zero real rows.
+    team_stats_url = (TEAM_STATS_URL if pattern_season == SEASON else
+                       f"https://github.com/nflverse/nflverse-data/releases/download/stats_team/stats_team_week_{pattern_season}.csv")
+    team_stats = fetch_csv(team_stats_url)
     team_stats = normalize_team_cols(team_stats, "team")
     team_stats = team_stats[team_stats["season_type"] == "REG"] if "season_type" in team_stats.columns else team_stats
-    team_stats = team_stats[team_stats["week"] < as_of_week]
+    team_stats = team_stats[team_stats["week"] < as_of_week] if pattern_season == SEASON else team_stats
     team_rush = team_stats[["team", "week", "rushing_yards"]].copy()
     team_rush_avg = team_rush.groupby("team")["rushing_yards"].mean().rename("team_rush_avg")
     team_rush = team_rush.join(team_rush_avg, on="team")
@@ -3503,17 +3608,26 @@ def build_intel_reports(week=None):
     merged["qb_hot"] = merged["passing_yards"] >= merged["qb_season_avg"]
 
     # --- run-defense rank for upcoming-opponent context (from teamstats, already built) ---
+    # Only trust teamstats/latest.json's rank context if its OWN season
+    # actually matches pattern_season — otherwise this would silently mix
+    # one season's hot/cold pattern with a DIFFERENT season's defense
+    # ranks, which is worse than just not showing a rank at all.
     run_def_rank = {}
     pass_def_rank = {}
     try:
         with open("teamstats/latest.json") as f:
             ts = json.load(f)
-        rush_allowed = {t: v["defense"]["Run Defense"]["rush_yds_allowed"]["avg"]
-                         for t, v in ts["teams"].items()}
-        pass_allowed = {t: v["defense"]["Pass Defense"]["pass_yds_allowed"]["avg"]
-                         for t, v in ts["teams"].items()}
-        run_def_rank = {t: i + 1 for i, t in enumerate(sorted(rush_allowed, key=lambda t: rush_allowed[t]))}
-        pass_def_rank = {t: i + 1 for i, t in enumerate(sorted(pass_allowed, key=lambda t: pass_allowed[t]))}
+        if ts.get("season") not in (pattern_season, SEASON):
+            print(f"  WARNING: teamstats/latest.json is season {ts.get('season')}, which matches "
+                  f"neither the pattern season ({pattern_season}) nor {SEASON} — skipping "
+                  f"run/pass-defense rank context rather than mixing mismatched seasons.")
+        else:
+            rush_allowed = {t: v["defense"]["Run Defense"]["rush_yds_allowed"]["avg"]
+                             for t, v in ts["teams"].items()}
+            pass_allowed = {t: v["defense"]["Pass Defense"]["pass_yds_allowed"]["avg"]
+                             for t, v in ts["teams"].items()}
+            run_def_rank = {t: i + 1 for i, t in enumerate(sorted(rush_allowed, key=lambda t: rush_allowed[t]))}
+            pass_def_rank = {t: i + 1 for i, t in enumerate(sorted(pass_allowed, key=lambda t: pass_allowed[t]))}
     except FileNotFoundError:
         print("  WARNING: teamstats/latest.json not found — run build_team_stats() first "
               "for upcoming-matchup context. Continuing without it.")
@@ -3594,7 +3708,7 @@ def build_intel_reports(week=None):
     # passing game, and vice versa. Reuses merged's qb_hot per team-week
     # rather than recomputing it. ---
     rb = players[(players["position"] == "RB") & (players["carries"].fillna(0) >= 8)
-                 & (players["week"] < as_of_week)].copy()
+                 & week_mask].copy()
     rb_out = {}
     if not rb.empty:
         rb_leaders = rb.loc[rb.groupby(["team", "week"])["carries"].idxmax()].copy()
@@ -3608,6 +3722,18 @@ def build_intel_reports(week=None):
         rb_leaders = rb_leaders.join(qb_hot_lookup, on=["team", "week"])
         rb_leaders = rb_leaders.join(qb_yds_lookup, on=["team", "week"], rsuffix="_qb")
         rb_leaders = rb_leaders.dropna(subset=["qb_hot"])  # only games where we also know the QB's game
+        # REAL BUG FIX (2026-09-09): the left-join above leaves "qb_hot" as
+        # object dtype (True/False/NaN mixed) even after dropna() removes
+        # the NaN rows — pandas doesn't downcast back to bool automatically.
+        # On object dtype, `~` does Python's bitwise-NOT on the underlying
+        # bool-as-int objects (~True == -2, ~False == -1) instead of
+        # logical negation, which then gets misread as a column-label list
+        # by g[...] and raises a real KeyError. Confirmed via an actual
+        # crash the first time this code path was exercised with a full
+        # season of real data (previously near-unreachable early in a
+        # season, before the season-fallback above existed). Explicit
+        # cast back to real bool dtype fixes it at the root.
+        rb_leaders["qb_hot"] = rb_leaders["qb_hot"].astype(bool)
         rb_leaders["rb_hot"] = rb_leaders["rushing_yards"] >= rb_leaders["rb_season_avg"]
 
         for team, g in rb_leaders.groupby("team"):
@@ -3660,7 +3786,8 @@ def build_intel_reports(week=None):
                 "log": rb_log,
             }
 
-    write_with_archive({"season": SEASON, "as_of_week": as_of_week, "teams": out, "rb_teams": rb_out}, "intel/latest.json")
+    write_with_archive({"season": SEASON, "as_of_week": as_of_week, "pattern_season": pattern_season,
+                         "teams": out, "rb_teams": rb_out}, "intel/latest.json")
     print(f"Wrote intel/latest.json — {len(out)} QB teams, {len(rb_out)} RB teams, as of week {as_of_week}")
 
 
@@ -4026,8 +4153,30 @@ def build_blitz_report(week=None):
     if as_of_week is None:
         sys.exit(f"FATAL: no {SEASON} schedule found in nflverse yet.")
 
-    pbp = fetch_pbp()
-    pbp = pbp[(pbp["season_type"] == "REG") & (pbp["week"] < as_of_week)]
+    # REAL BUG FIX (2026-09-09): same real cause as build_intel_reports() —
+    # fetch_pbp() used to raise SystemExit immediately when the current
+    # season's play-by-play doesn't exist yet, crashing this whole function
+    # before it ever reached a graceful fallback, silently leaving
+    # intel/blitz.json stuck on stale data from some earlier, unrelated
+    # build. Falls back to last season's complete real play-by-play, same
+    # principle as every other season-fallback added tonight.
+    pattern_season = SEASON
+    try:
+        pbp = fetch_pbp()
+    except SystemExit:
+        fallback_pbp_url = f"https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_{SEASON-1}.csv.gz"
+        try:
+            pbp = fetch_pbp(fallback_pbp_url)
+            pattern_season = SEASON - 1
+            print(f"  No {SEASON} play-by-play yet — using {pattern_season}'s complete season "
+                  f"for the blitz-impact pattern, tagged with real {SEASON} Week {as_of_week} matchups.")
+        except SystemExit:
+            print(f"  No {SEASON} or {SEASON-1} play-by-play available — writing empty.")
+            write_with_archive({"season": SEASON, "as_of_week": as_of_week, "pattern_season": None,
+                                 "qb_teams": {}, "wr_teams": {}}, "intel/blitz.json")
+            return
+    week_mask = (pbp["week"] < as_of_week) if pattern_season == SEASON else pd.Series(True, index=pbp.index)
+    pbp = pbp[(pbp["season_type"] == "REG") & week_mask]
     keep_cols = ["play_id", "game_id", "play_type", "epa", "yards_gained", "complete_pass", "success",
                  "passer_player_id", "passer_player_name", "receiver_player_id",
                  "receiver_player_name", "posteam", "defteam", "week"]
@@ -4036,9 +4185,20 @@ def build_blitz_report(week=None):
     try:
         ftn = fetch_csv(FTN_CHARTING_URL)
     except SystemExit:
-        print("  FTN Charting data not available yet this season — skipping blitz report.")
-        write_with_archive({"season": SEASON, "as_of_week": as_of_week, "qb_teams": {}, "wr_teams": {}}, "intel/blitz.json")
-        return
+        if pattern_season != SEASON:
+            fallback_ftn_url = f"https://github.com/nflverse/nflverse-data/releases/download/ftn_charting/ftn_charting_{pattern_season}.csv"
+            try:
+                ftn = fetch_csv(fallback_ftn_url)
+            except SystemExit:
+                print("  FTN Charting data not available for either season — skipping blitz report.")
+                write_with_archive({"season": SEASON, "as_of_week": as_of_week, "pattern_season": None,
+                                     "qb_teams": {}, "wr_teams": {}}, "intel/blitz.json")
+                return
+        else:
+            print("  FTN Charting data not available yet this season — skipping blitz report.")
+            write_with_archive({"season": SEASON, "as_of_week": as_of_week, "pattern_season": None,
+                                 "qb_teams": {}, "wr_teams": {}}, "intel/blitz.json")
+            return
     ftn = ftn[["nflverse_game_id", "nflverse_play_id", "n_pass_rushers"]].dropna(subset=["n_pass_rushers"])
 
     merged = pbp.merge(ftn, left_on=["game_id", "play_id"],
@@ -4078,10 +4238,17 @@ def build_blitz_report(week=None):
         opponent_of[(g["away_team"], g["week"])] = g["home_team"]
         opponent_of[(g["home_team"], g["week"])] = g["away_team"]
 
-    players = fetch_csv(PLAYER_STATS_URLS)
+    players = fetch_csv(PLAYER_STATS_URLS) if pattern_season == SEASON else fetch_csv([
+        f"https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_{pattern_season}.csv",
+        f"https://github.com/nflverse/nflverse-data/releases/download/player_stats/player_stats_{pattern_season}.csv",
+    ])
     if "season_type" in players.columns:
         players = players[players["season_type"] == "REG"]
-    players = players[players["week"] < as_of_week]
+    players = apply_current_rosters(players)
+    # Same reasoning as build_intel_reports(): the chronological "before
+    # the week being previewed" filter only makes sense within the
+    # current, in-progress season — a fallback season is already complete.
+    players = players[players["week"] < as_of_week] if pattern_season == SEASON else players
 
     def split_stats(sub, hit_col):
         n = len(sub)
@@ -4218,7 +4385,8 @@ def build_blitz_report(week=None):
             **(game_level_hit_rate("receiver_player_id", "receiving_yards", pid, prow, team) or {}),
         }
 
-    write_with_archive({"season": SEASON, "as_of_week": as_of_week, "qb_teams": qb_out, "wr_teams": wr_out}, "intel/blitz.json")
+    write_with_archive({"season": SEASON, "as_of_week": as_of_week, "pattern_season": pattern_season,
+                         "qb_teams": qb_out, "wr_teams": wr_out}, "intel/blitz.json")
     print(f"Wrote intel/blitz.json — {len(qb_out)} QB teams, {len(wr_out)} WR teams, as of week {as_of_week}")
 
 
