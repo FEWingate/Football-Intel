@@ -349,6 +349,135 @@ function rankDefensesByFantasyPointsAllowed(pos, lastN, limit){
 // listed. Requires DFS_DATA for status (players/latest.json has none)
 // and POSITION_RANKS for the actual depth-chart ordering.
 const INJURY_TAGS = ["Q", "D"];
+// Real player-vs-specific-opponent lookup — e.g. "how many rush yards did
+// McCaffrey average vs. the Rams this season?" Uses each player's real
+// per-game log (confirmed present on every player in players/latest.json,
+// tagged with the real opponent every game — build_player_log() in the
+// Python pipeline) rather than anything the LLM would otherwise have to
+// admit it doesn't have. Works for all four offensive positions and any
+// real opponent, since the log's shape is identical across positions.
+//
+// VALID_METRICS is the real, whitelisted set of raw (non-"_pg"/"_ypg")
+// counting stats each position's log entries actually carry — confirmed
+// directly against POS_METRICS in the Python pipeline, not guessed. A
+// classifier-supplied metric outside this list for the resolved
+// position is rejected rather than silently defaulting, since a
+// question naming a specific stat deserves that stat or a clear error,
+// not a quiet substitution.
+const VALID_METRICS = {
+  QB: ['pass_yds', 'completions', 'attempts', 'pass_td'],
+  RB: ['rush_yds', 'carries', 'rec_yds', 'rec', 'targets', 'rush_td', 'rec_td'],
+  WR: ['rec_yds', 'rec', 'targets', 'td'],
+  TE: ['rec_yds', 'rec', 'targets', 'td'],
+};
+const PRIMARY_METRIC = { QB: 'pass_yds', RB: 'rush_yds', WR: 'rec_yds', TE: 'rec_yds' };
+
+function findPlayerVsTeam(spec){
+  const wantName = (spec.player_name || '').trim().toLowerCase();
+  if(!wantName) return { error: 'No player name was understood from the question.' };
+  let player = null, pos = null;
+  for(const p of POSITIONS){
+    const hit = (PLAYERS.players[p] || []).find(x => x.name.toLowerCase() === wantName);
+    if(hit){ player = hit; pos = p; break; }
+  }
+  if(!player){
+    // Fuzzy fallback — last-name-only or partial questions ("McCaffrey"
+    // instead of "Christian McCaffrey") are common and shouldn't fail
+    // outright when there's exactly one real, unambiguous match.
+    const candidates = [];
+    for(const p of POSITIONS){
+      for(const x of (PLAYERS.players[p] || [])){
+        const n = x.name.toLowerCase();
+        if(n.includes(wantName) || wantName.includes(n)) candidates.push([x, p]);
+      }
+    }
+    if(candidates.length === 1){ [player, pos] = candidates[0]; }
+    else if(candidates.length > 1){
+      return { error: `"${spec.player_name}" matches more than one real player `
+        + `(${candidates.map(([x]) => x.name).join(', ')}) — ask with a fuller name.` };
+    }
+  }
+  if(!player) return { error: `No real player matching "${spec.player_name}" was found.` };
+
+  const opp = (spec.opponent || '').trim().toUpperCase();
+  if(!opp) return { error: 'No opponent team was understood from the question.' };
+  const games = (player.log || []).filter(e => e.opp === opp);
+
+  if(spec.all_stats){
+    // Every real per-game metric this position tracks, not just one —
+    // "show me all the stats" questions. Same real VALID_METRICS
+    // whitelist as the single-stat path, so this can never show a
+    // metric that doesn't genuinely apply to this position.
+    const metrics = VALID_METRICS[pos];
+    const perMetricAvg = {};
+    for(const m of metrics){
+      const vals = games.map(e => e.m ? e.m[m] : null).filter(v => v != null);
+      perMetricAvg[m] = vals.length ? +(vals.reduce((s, v) => s + v, 0) / vals.length).toFixed(1) : null;
+    }
+    return {
+      player: player.name, pos, team: player.team, opponent: opp, all_stats: true,
+      metrics, games_found: games.length, avg: perMetricAvg,
+      rows: games.map(e => ({ week: e.week, dk: e.dk,
+        values: Object.fromEntries(metrics.map(m => [m, e.m ? e.m[m] : null])) })),
+    };
+  }
+
+  let metric = spec.metric || PRIMARY_METRIC[pos];
+  if(!VALID_METRICS[pos].includes(metric)){
+    return { error: `"${metric}" isn't a real per-game stat tracked for a ${pos} — real options `
+      + `are: ${VALID_METRICS[pos].join(', ')}.` };
+  }
+
+  const values = games.map(e => e.m ? e.m[metric] : null).filter(v => v != null);
+  const avg = values.length ? +(values.reduce((s, v) => s + v, 0) / values.length).toFixed(1) : null;
+
+  return {
+    player: player.name, pos, team: player.team, opponent: opp, metric,
+    games_found: games.length,
+    avg, values,
+    rows: games.map(e => ({ week: e.week, value: e.m ? e.m[metric] : null, dk: e.dk })),
+  };
+}
+
+function renderPlayerVsTeamAllStatsTable(r){
+  if(!r.games_found){
+    return `<div class="result-empty">${esc(r.player)} (${r.pos}, ${esc(r.team)}) has no real games
+      logged against ${esc(r.opponent)} this season — 0 real meetings, not something to estimate
+      around.</div>`;
+  }
+  const rows = r.rows.map(row => `<tr>
+    <td>Week ${row.week}</td>
+    ${r.metrics.map(m => `<td>${row.values[m] != null ? row.values[m] : '—'}</td>`).join('')}
+    <td>${row.dk != null ? row.dk : '—'}</td>
+  </tr>`).join('');
+  return `<div class="table-wrap"><table class="result-table">
+    <thead><tr><th></th>${r.metrics.map(m => `<th>${esc(m.replace(/_/g, ' '))}</th>`).join('')}<th>DK pts</th></tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr><td><b>Real average (${r.games_found} game${r.games_found===1?'':'s'})</b></td>
+      ${r.metrics.map(m => `<td><b>${r.avg[m] != null ? r.avg[m] : '—'}</b></td>`).join('')}
+      <td></td></tr></tfoot>
+  </table></div>`;
+}
+
+function renderPlayerVsTeamTable(r){
+  const metricLabel = r.metric.replace(/_/g, ' ');
+  if(!r.games_found){
+    return `<div class="result-empty">${esc(r.player)} (${r.pos}, ${esc(r.team)}) has no real games
+      logged against ${esc(r.opponent)} this season — 0 real meetings, not something to estimate
+      around.</div>`;
+  }
+  const rows = r.rows.map(row => `<tr>
+    <td>Week ${row.week}</td><td>${row.value != null ? row.value : '—'}</td>
+    <td>${row.dk != null ? row.dk : '—'}</td>
+  </tr>`).join('');
+  return `<div class="table-wrap"><table class="result-table">
+    <thead><tr><th></th><th>${esc(metricLabel)}</th><th>DK pts</th></tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr><td><b>Real average (${r.games_found} game${r.games_found===1?'':'s'})</b></td>
+      <td><b>${r.avg}</b></td><td></td></tr></tfoot>
+  </table></div>`;
+}
+
 function findInjuredWithBackup(){
   if(!DFS_DATA) return null;
   const results = [];
@@ -551,7 +680,7 @@ sort_by (the stat field to rank by) and limit (how many results, 1 for "which si
 {"mode":"filter","position":"RB","metric_field":"rec_ypg","sort_by":"rec_ypg","limit":1,"opponent_rank_min":28}
 That example answers "which RB has the most receiving yards against a bottom-5 defense."
 
-FOUR MORE REAL MODES — check for these too before defaulting to freeform:
+FIVE MORE REAL MODES — check for these too before defaulting to freeform:
 
 "teamrank" — ranks DEFENSES (teams), not players, by season-long rank at a position. Use for \
 "which defenses are worst/best against POSITION" questions:
@@ -572,6 +701,27 @@ questions — needs no other fields:
 over each team's last N games (not a season-long stat — real per-game history, aggregated). Use \
 for "which defense has allowed the most fantasy points to POSITION" questions:
 {"mode":"fantasy_allowed","position":"RB","last_n":5,"limit":10}
+
+"player_vs_team" — a SPECIFIC named player's real per-game history against a SPECIFIC opponent \
+this season (e.g. "how many rushing yards did McCaffrey average vs. the Rams", "what does Josh \
+Allen usually do against the Jets", "show me an average of all the stats in the game logs vs the \
+49ers for Kyren Williams"). Works for all four offensive positions — the player's own real \
+position is looked up, not guessed. Use whenever the question names BOTH a specific player AND a \
+specific opponent team together:
+{"mode":"player_vs_team","player_name":"Christian McCaffrey","opponent":"LAR","metric":"rush_yds"}
+player_name: the player's name as given in the question (a partial/last-name-only match is fine —
+resolved against the real roster, not guessed). opponent: the real team abbreviation. metric: the
+REAL stat named in the question, using these exact real keys — QB: pass_yds, completions,
+attempts, pass_td. RB: rush_yds, carries, rec_yds, rec, targets, rush_td, rec_td (an RB genuinely
+has BOTH rushing AND receiving stats tracked — "rushing yards" means rush_yds, "receiving yards"
+means rec_yds, don't default one to the other). WR/TE: rec_yds, rec, targets, td. If the question
+doesn't name a specific stat, omit metric entirely and a sensible per-position default is used.
+all_stats: set to true (and omit metric) when the question asks for ALL stats / every stat / "the
+full stat line" rather than one named number — e.g. "average of all the stats", "everything he
+did against them":
+{"mode":"player_vs_team","player_name":"Kyren Williams","opponent":"SF","all_stats":true}
+Do NOT use this mode for "vs. this week's opponent" questions (that's the normal filter/freeform
+path using opponent_defense) — this mode is specifically for a NAMED opponent team, historical.
 
 For free-form questions (predictions, opinions, anything not a clean numeric filter or game-log \
 lookup), respond:
@@ -795,6 +945,20 @@ async function ask(question, prebuiltSpec){
       box.innerHTML = `<div class="answer-q">${esc(question)}</div>
         <span class="answer-mode filter">QB-WR correlation — computed, not guessed</span>
         ${renderCorrelationTable(rows)}
+        ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
+    } else if(spec.mode === 'player_vs_team'){
+      const r = findPlayerVsTeam(spec);
+      if(r.error){
+        box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+          <div class="error">${esc(r.error)}</div>`;
+        return;
+      }
+      const narration = r.games_found
+        ? await callClaude(NARRATE_SYSTEM, `Question: ${question}\nReal results: ${JSON.stringify(r)}`, 800)
+        : '';
+      box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+        <span class="answer-mode filter">Real per-game history vs. ${esc(r.opponent)} — computed, not guessed</span>
+        ${r.all_stats ? renderPlayerVsTeamAllStatsTable(r) : renderPlayerVsTeamTable(r)}
         ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
     } else if(spec.mode === 'injury_backup'){
       const rows = findInjuredWithBackup();

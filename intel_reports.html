@@ -222,20 +222,32 @@ async function load(){
   // week's folder (matchup/current.json), if one exists. A manifest.json
   // only appears in a folder once generate_game_breakdown.py has actually
   // written at least one report there — missing is expected, not an error.
+  // {cache:'no-store'} on all three fetches below is deliberate, not
+  // default fetch() behavior: confirmed real bug (2026-09-10) — a new
+  // game (SF_LAR) correctly generated and correctly listed in the real,
+  // on-disk manifest.json, but didn't show up even after a hard refresh
+  // and a brand new tab. The local dev server (python -m http.server)
+  // sends no explicit cache-control headers, so the browser was free to
+  // heuristically cache the OLDER manifest.json response (from before
+  // SF_LAR existed) and keep serving it. no-store means every load of
+  // this page genuinely re-fetches these three files instead of ever
+  // trusting a cached copy — correct here, since all three change
+  // whenever the build pipeline runs, which isn't reflected in any
+  // cache-invalidating URL change.
   GB_GAMES = [];
   try{
-    const rBoot = await fetch(`game_breakdowns/bootstrap/manifest.json`);
+    const rBoot = await fetch(`game_breakdowns/bootstrap/manifest.json`, { cache: 'no-store' });
     if(rBoot.ok){
       const mf = await rBoot.json();
       Object.values(mf.games || {}).forEach(g => GB_GAMES.push({ ...g, wk: 'bootstrap' }));
     }
   }catch(e){}
   try{
-    const rCur = await fetch(`matchup/current.json`);
+    const rCur = await fetch(`matchup/current.json`, { cache: 'no-store' });
     if(rCur.ok){
       const cur = await rCur.json();
       const wk = `wk${String(cur.week).padStart(2,'0')}`;
-      const rWk = await fetch(`game_breakdowns/${wk}/manifest.json`);
+      const rWk = await fetch(`game_breakdowns/${wk}/manifest.json`, { cache: 'no-store' });
       if(rWk.ok){
         const mf = await rWk.json();
         Object.values(mf.games || {}).forEach(g => GB_GAMES.push({ ...g, wk }));
@@ -1240,7 +1252,7 @@ async function renderGbSingleReport(){
   try{
     let md = gbReportCache[`${g.wk}:${key}`];
     if(!md){
-      const res = await fetch(`game_breakdowns/${g.wk}/${key}.md`);
+      const res = await fetch(`game_breakdowns/${g.wk}/${key}.md`, { cache: 'no-store' });
       if(!res.ok) throw new Error('not found');
       md = await res.text();
       gbReportCache[`${g.wk}:${key}`] = md;

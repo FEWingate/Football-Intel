@@ -194,8 +194,19 @@ async function load(week){
   $('slate').innerHTML = `<div class="empty">Loading week ${week}…</div>`;
   $('wksum').innerHTML = '';
   fiStatus('Loading', 'loading');
+  // {cache:'no-store'} on every fetch below is deliberate, not default
+  // fetch() behavior: confirmed real bug (2026-09-10, traced in
+  // intel_reports.html first, same root cause here) — a newly generated
+  // Game Breakdown was correctly on disk and correctly listed in the
+  // real manifest.json, but the "Game Breakdown" button stayed disabled
+  // even after a reload. The local dev server (python -m http.server)
+  // sends no cache-control headers, so the browser was free to
+  // heuristically keep serving an OLDER cached response for these same
+  // URLs. All of these files change whenever the build pipeline runs,
+  // with no URL change to signal that — no-store means every page load
+  // genuinely re-fetches them instead of ever trusting a stale copy.
   try {
-    const r = await fetch(`games/wk${pad(week)}.json`);
+    const r = await fetch(`games/wk${pad(week)}.json`, { cache: 'no-store' });
     if (!r.ok) throw new Error('missing');
     GAMES = await r.json();
   } catch (e){
@@ -207,17 +218,17 @@ async function load(week){
   }
   THREATS = null;
   try {
-    const r2 = await fetch(`threats/wk${pad(week)}.json`);
+    const r2 = await fetch(`threats/wk${pad(week)}.json`, { cache: 'no-store' });
     if (r2.ok) THREATS = await r2.json();
   } catch (e){ /* threat board not built for this week — cards still render */ }
   MATCHUP = null;
   try {
-    const r3 = await fetch(`matchup/wk${pad(week)}.json`);
+    const r3 = await fetch(`matchup/wk${pad(week)}.json`, { cache: 'no-store' });
     if (r3.ok) MATCHUP = await r3.json();
   } catch (e){ /* matchup stats not built for this week — Matchup button just disables */ }
   GB_MANIFEST = null;
   try {
-    const r4 = await fetch(`game_breakdowns/wk${pad(week)}/manifest.json`);
+    const r4 = await fetch(`game_breakdowns/wk${pad(week)}/manifest.json`, { cache: 'no-store' });
     if (r4.ok) GB_MANIFEST = await r4.json();
   } catch (e){ /* no Game Breakdowns generated for this week yet — button disables per-game */ }
   fiStatus('Ready');
@@ -508,7 +519,7 @@ async function openGameBreakdown(gid, source){
   try {
     let md = gbCache[key];
     if (!md){
-      const r = await fetch(`game_breakdowns/wk${pad(GAMES.week)}/${key}.md`);
+      const r = await fetch(`game_breakdowns/wk${pad(GAMES.week)}/${key}.md`, { cache: 'no-store' });
       if (!r.ok) throw new Error('not found');
       md = await r.text();
       gbCache[key] = md;
