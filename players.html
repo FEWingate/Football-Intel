@@ -253,8 +253,6 @@ function renderBrowseList(){
   let list = PLAYERSTATS.players[browsePos].slice();
   if(term) list = list.filter(p => p.name.toLowerCase().includes(term));
   else list.sort((a,b) => (b.season.m[key]||0) - (a.season.m[key]||0));
-  list = list.slice(0, 60);
-
   $("browseList").innerHTML = list.map(p => `
     <div class="browse-row${activePlayer && activePlayer.name===p.name && activePlayer.pos===browsePos ? ' active':''}"
          data-name="${esc(p.name)}">

@@ -1344,11 +1344,17 @@ def build_injuries(week):
         return
     df = normalize_team_cols(df, "team")
     df = df[(df["season"] == SEASON) & (df["week"] == week)]
-    # A blank report_status means the player was never on the official
-    # game-day report at all (a practice-only rest note, e.g. "resting
-    # player") — real, but not the kind of injury relevance this page is
-    # for. Keep only players who actually carry a real designation.
-    df = df[df["report_status"].fillna("").str.strip() != ""]
+    # Final game-status designations are commonly blank until Friday. During
+    # that window, limiting this dataset to report_status silently reduces the
+    # page to teams that have already played. Keep final designations plus
+    # materially limited practice participants so the current slate remains
+    # visible while official statuses are pending.
+    report_status = df["report_status"].fillna("").str.strip()
+    practice_status = df["practice_status"].fillna("").str.strip()
+    materially_limited = practice_status.str.contains(
+        r"Limited Participation|Did Not Participate", case=False, regex=True
+    )
+    df = df[(report_status != "") | materially_limited]
 
     # pandas represents a missing cell as its own NaN float, not Python's
     # None — and NaN is truthy in Python, so a naive "x or None" check
@@ -1365,23 +1371,34 @@ def build_injuries(week):
 
     players = []
     for _, r in df.iterrows():
+        final_status = clean(r.get("report_status"))
+        report_injury = clean(r.get("report_primary_injury"))
+        practice_injury = clean(r.get("practice_primary_injury"))
         players.append({
             "gsis_id": clean(r.get("gsis_id")), "name": clean(r.get("full_name")),
             "position": clean(r.get("position")), "team": clean(r.get("team")),
-            "report_status": clean(r.get("report_status")),
-            "report_primary_injury": clean(r.get("report_primary_injury")),
+            "report_status": final_status or "Pending",
+            "report_primary_injury": report_injury or practice_injury,
             "report_secondary_injury": clean(r.get("report_secondary_injury")),
             "practice_status": clean(r.get("practice_status")),
-            "practice_primary_injury": clean(r.get("practice_primary_injury")),
+            "practice_primary_injury": practice_injury,
             "practice_secondary_injury": clean(r.get("practice_secondary_injury")),
         })
 
-    payload = {"season": SEASON, "week": week, "players": players}
+    teams_represented = sorted({p["team"] for p in players if p["team"]})
+    payload = {
+        "season": SEASON,
+        "week": week,
+        "status_policy": "final_designation_or_limited_practice",
+        "teams_represented": teams_represented,
+        "team_count": len(teams_represented),
+        "players": players,
+    }
     os.makedirs("injuries", exist_ok=True)
     path = f"injuries/wk{week:02d}.json"
     size = write_with_archive(payload, path)
-    print(f"Wrote {path} — {len(players)} players with a real report status, "
-          f"{size:.0f} KB")
+    print(f"Wrote {path} — {len(players)} injury-relevant players across "
+          f"{len(teams_represented)} teams, {size:.0f} KB")
 
 
 # ==========================================================================
@@ -2922,8 +2939,73 @@ def build_player_stats():
                        "m": {k: round(v, 2) for k, v in career_metrics.items()}},
             "log": log, "splits": splits_acc, "ceiling": ceiling,
         })
+
+    # Season statistics define production, not roster membership. Early in a
+    # live week they contain only players whose teams have completed a game.
+    # Union the active roster into the player catalog so Players, Coeus, and
+    # other consumers retain a full-league player universe. Roster-only
+    # players carry games=0 and no fabricated production.
+    roster_only_count = 0
+    if os.path.exists("rosters/latest.json"):
+        with open("rosters/latest.json") as f:
+            rosters = json.load(f)
+        existing_ids = {
+            p.get("gsis_id") for rows in players_out.values() for p in rows
+            if p.get("gsis_id")
+        }
+        existing_names = {
+            (p.get("team"), p.get("name"), pos)
+            for pos, rows in players_out.items() for p in rows
+        }
+        for team, roster in rosters.get("teams", {}).items():
+            for rp in roster:
+                pos = POS_MAP.get(rp.get("position"))
+                pid = rp.get("gsis_id")
+                name = rp.get("name")
+                if not pos or not name:
+                    continue
+                if (pid and pid in existing_ids) or (team, name, pos) in existing_names:
+                    continue
+
+                season_metrics = pos_metrics_from_sums(pos, {}, 0)
+                if pos == "RB":
+                    season_metrics.update({"rush_share": None, "target_share": None})
+                elif pos in ("WR", "TE"):
+                    season_metrics["target_share"] = None
+                season_metrics["snap_pct"] = None
+
+                cb_entry = career_base.get(f"{pid}|{pos}") if pid else None
+                career_games = cb_entry["games"] if cb_entry else 0
+                career_metrics = pos_metrics_from_sums(
+                    pos, cb_entry.get("raw", {}) if cb_entry else {}, career_games
+                )
+                players_out[pos].append({
+                    "gsis_id": pid,
+                    "name": name,
+                    "team": team,
+                    "games": 0,
+                    "headshot": "",
+                    "season": {
+                        "games": 0,
+                        "m": {k: (round(v, 2) if v is not None else None)
+                              for k, v in season_metrics.items()},
+                    },
+                    "career": {
+                        "games": career_games,
+                        "through": career_through,
+                        "m": {k: round(v, 2) for k, v in career_metrics.items()},
+                    },
+                    "log": [],
+                    "splits": {},
+                    "ceiling": None,
+                    "roster_only": True,
+                })
+                if pid:
+                    existing_ids.add(pid)
+                existing_names.add((team, name, pos))
+                roster_only_count += 1
     for p in POSITIONS:
-        players_out[p].sort(key=lambda r: r["games"], reverse=True)
+        players_out[p].sort(key=lambda r: (-r["games"], r["name"]))
 
     labels = {}
     for pos, metrics in POS_METRICS.items():
@@ -2935,13 +3017,16 @@ def build_player_stats():
     payload = {
         "season": SEASON,
         "data_horizon": f"through {max(games_played.values())} games played",
+        "player_universe": "active_roster_plus_season_participants",
+        "roster_only_count": roster_only_count,
         "labels": labels,
         "players": players_out,
     }
     path = "players/latest.json"
     size = write_with_archive(payload, path)
     total = sum(len(v) for v in players_out.values())
-    print(f"Wrote {path} — {total} players across {len(POSITIONS)} positions, {size:.0f} KB")
+    print(f"Wrote {path} — {total} players across {len(POSITIONS)} positions "
+          f"({roster_only_count} active roster players awaiting season stats), {size:.0f} KB")
 
 
 def build_all_team_home_road(df, reg):
