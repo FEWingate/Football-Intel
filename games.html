@@ -36,7 +36,45 @@
 .trow.win .tscore{color:var(--text);font-weight:700}
 .kick{text-align:right;font-family:var(--font-mono);font-size:12px;color:var(--text-mid);
   white-space:nowrap;line-height:1.7}
-.kick .final{color:var(--accent-green);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+.kick .final{color:var(--accent-red);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+.kick .live{color:var(--accent-green);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  display:flex;align-items:center;gap:5px;justify-content:flex-end}
+.kick .live::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent-green);
+  animation:livepulse 1.4s ease-in-out infinite}
+@keyframes livepulse{0%,100%{opacity:1}50%{opacity:.25}}
+.kick .bcast{color:var(--text-dim);font-size:10px;text-align:right;margin-top:2px}
+
+/* ── 3 scrolling leader tickers: Passing/Receiving/Rushing. Live across
+   the whole week's real games (Thursday included) from Sunday kickoff
+   through end of Monday; season-cumulative leaders the rest of the week.
+   Classic marquee technique: content rendered twice back-to-back, track
+   animated by exactly -50% of its own width, so the loop is seamless.
+   Flexbox with an explicit row height, not inline-block + vertical-align
+   — real bug found (2026-09-11): the inline-block version left each
+   row's actual box height at the mercy of default line-height
+   calculations, which came out shorter than the text needed and let
+   adjacent ticker rows visually bleed into each other. Flex + a fixed
+   height sidesteps that whole class of bug rather than tuning padding
+   numbers and hoping. ── */
+#tickers{border-bottom:1px solid var(--border)}
+.ticker-wrap{display:flex;align-items:center;height:30px;background:var(--surface);
+  border-bottom:1px solid var(--hairline);overflow:hidden}
+.ticker-wrap:last-child{border-bottom:1px solid var(--border)}
+.ticker-label{flex:0 0 auto;font-family:var(--font-mono);font-size:10px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--accent-gold);
+  padding:0 14px 0 20px;white-space:nowrap}
+.ticker-scroll{flex:1 1 auto;overflow:hidden;white-space:nowrap;height:100%;position:relative}
+.ticker-track{display:inline-flex;align-items:center;height:100%;white-space:nowrap;
+  animation:tickerscroll linear infinite}
+.ticker-wrap:hover .ticker-track{animation-play-state:paused}
+@keyframes tickerscroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ticker-item{display:inline-flex;align-items:center;padding:0 22px;font-size:12px;white-space:nowrap}
+.ticker-item .tk-rank{color:var(--text-dim);margin-right:6px}
+.ticker-item .tk-name{font-weight:600;margin-right:6px}
+.ticker-item .tk-team{color:var(--text-dim);margin-right:6px}
+.ticker-item .tk-pos{color:var(--accent-gold);margin-right:6px;font-size:10px}
+.ticker-item .tk-val{color:var(--accent-green);font-weight:700}
+.ticker-empty{padding:0 20px;font-size:11px;color:var(--text-dim);white-space:nowrap}
 .odds{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:14px;
   border-top:1px solid var(--hairline)}
 .odd{font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;padding:5px 10px;
@@ -161,12 +199,13 @@
 <script src="js/fi-shell.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/16.3.0/lib/marked.umd.min.js"></script>
 <script>
-let GAMES = null, THREATS = null, MATCHUP = null, GB_MANIFEST = null;
+let GAMES = null, THREATS = null, MATCHUP = null, GB_MANIFEST = null, PLAYERS = null;
 const main = fiShell({ page: 'games', pageLabel: 'Games', status: 'loading' });
 const $ = id => document.getElementById(id);
 const pad = n => String(n).padStart(2, '0');
 
 main.innerHTML = `
+  <div id="tickers"></div>
   <div class="bar">
     <label class="lbl" for="wk">Week</label><select id="wk"></select>
     <div class="legend" id="wksum"></div>
@@ -231,9 +270,19 @@ async function load(week){
     const r4 = await fetch(`game_breakdowns/wk${pad(week)}/manifest.json`, { cache: 'no-store' });
     if (r4.ok) GB_MANIFEST = await r4.json();
   } catch (e){ /* no Game Breakdowns generated for this week yet — button disables per-game */ }
+  // Real season-cumulative leaders (players/latest.json) — for the
+  // Tue-Sat ticker state. Fetched every load regardless of current day,
+  // since the day can roll over while the tab stays open.
+  PLAYERS = null;
+  try {
+    const r5 = await fetch(`players/latest.json`, { cache: 'no-store' });
+    if (r5.ok) PLAYERS = await r5.json();
+  } catch (e){ /* season-leader ticker just won't have data — live-week ticker doesn't need this file at all */ }
   fiStatus('Ready');
   fiUpdated(`${GAMES.season} · week ${GAMES.week}`);
   render();
+  renderTickers();
+  startEspnPolling(); // re-armed on every week load/switch — resumes automatically if the newly loaded week has a live game
 }
 
 function threatCount(team){
@@ -246,7 +295,248 @@ function formHTML(f){
   return (f || '').split('').map(c => `<span class="${c}">${c}</span>`).join('');
 }
 
+function etOffsetMinutes(dateStr){
+  // Real, DST-aware America/New_York UTC offset for a given calendar date
+  // (240 min = EDT, 300 min = EST) — computed via Intl, not hardcoded,
+  // since the NFL season genuinely spans both sides of the changeover.
+  const d = new Date(`${dateStr}T12:00:00Z`);
+  const utcStr = d.toLocaleString('en-US', { timeZone: 'UTC', hour12: false });
+  const etStr = d.toLocaleString('en-US', { timeZone: 'America/New_York', hour12: false });
+  return (new Date(utcStr) - new Date(etStr)) / 60000;
+}
+function kickoffHasPassed(g){
+  if(!g.gameday || !g.gametime) return false;
+  const [h, m] = g.gametime.split(':').map(Number);
+  const kickoffUTC = new Date(`${g.gameday}T00:00:00Z`);
+  kickoffUTC.setUTCMinutes(kickoffUTC.getUTCMinutes() + h * 60 + m + etOffsetMinutes(g.gameday));
+  return new Date() >= kickoffUTC;
+}
+
+// ── ESPN live overlay ──────────────────────────────────────────────────
+// nflverse (games/wkNN.json) is the reliable base — real, accurate, but
+// only as fresh as the last manual rebuild. ESPN's public scoreboard
+// (confirmed real, live, and callable directly from this site's origin —
+// CORS verified 2026-09-11) is the automatic layer on top: polled
+// periodically and merged into the SAME GAMES.games objects nflverse
+// already built, so the existing cards update in place — no separate
+// "live" UI to maintain, per Frank's explicit call (2026-09-11): overlay
+// onto the working cards, not a parallel live view, because nflverse
+// isn't automatic and this needs to be.
+const ESPN_SCOREBOARD_URL = 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard';
+const ESPN_POLL_MS = 30000;
+let espnPollTimer = null;
+
+// A handful of team codes are known to occasionally differ between
+// nflverse and ESPN's own abbreviation conventions league-wide. Empty
+// today — every code seen in real testing has matched exactly — but kept
+// as an explicit, checkable seam rather than assumed permanent: if a
+// future mismatch shows up, it's fixed once here, not wherever a code
+// comparison happens to live in this file.
+const ESPN_TEAM_CODE_FIXUPS = {};
+function espnCode(abbr){ return ESPN_TEAM_CODE_FIXUPS[abbr] || abbr; }
+
+async function pollEspnScoreboard(){
+  let data;
+  try {
+    const r = await fetch(ESPN_SCOREBOARD_URL, { cache: 'no-store' });
+    if (!r.ok) { console.warn('ESPN scoreboard poll: HTTP', r.status); return false; }
+    data = await r.json();
+  } catch (e) {
+    // ESPN being briefly unreachable is never fatal — nflverse's own data
+    // still renders fine — but failing with zero visible trace anywhere
+    // makes this exact class of "why isn't X showing" impossible to
+    // diagnose from a screenshot alone. A real console warning costs
+    // nothing and turns a silent gap into something checkable.
+    console.warn('ESPN scoreboard poll failed:', e);
+    return false;
+  }
+
+  if (!GAMES) return false;
+  const events = data.events || [];
+  let anyStillLive = false;
+  events.forEach(ev => {
+    const comp = (ev.competitions || [])[0];
+    if (!comp || !comp.competitors) return;
+    const away = comp.competitors.find(c => c.homeAway === 'away');
+    const home = comp.competitors.find(c => c.homeAway === 'home');
+    if (!away || !home) return;
+    const awayCode = espnCode(away.team.abbreviation);
+    const homeCode = espnCode(home.team.abbreviation);
+
+    const g = GAMES.games.find(x => x.away === awayCode && x.home === homeCode);
+    if (!g) return; // this ESPN event isn't on the currently-viewed week — ignore it, not an error
+
+    const state = comp.status.type.state; // 'pre' | 'in' | 'post'
+    if (state === 'in') anyStillLive = true;
+
+    g.live = state === 'in';
+    g.away_score = Number(away.score);
+    g.home_score = Number(home.score);
+    g.played = g.played || state === 'post';
+    g.liveClock = state === 'in' ? `Q${comp.status.period} ${comp.status.displayClock}` : null;
+    g.broadcast = ev.broadcast || null; // same ESPN payload, no extra fetch — real for every state (pre/live/final)
+
+    // ESPN's per-game leaders are real-time, so they're the only source
+    // of "who's doing what" while a game is still live — nflverse can't
+    // have this yet, since its own stats aren't real-time. Once the real
+    // nflverse box score/leaders exist (g.box / g.leaders, filled in on
+    // the next rebuild), those take over in openGame() below — this is a
+    // live stand-in, not a replacement for the real pipeline. ESPN's own
+    // leaders are ONE leader per stat category for the WHOLE GAME (not
+    // split by side the way nflverse's are), keyed by ESPN's numeric
+    // team id — the id map lets the live-leaders render below say which
+    // real team each one belongs to.
+    //
+    // Captured for 'post' (Final) as well as 'in' (live), not just live —
+    // confirmed directly from a real fetch that ESPN keeps real leaders
+    // data on a finished game too. Needed for the live-week ticker, which
+    // must include Thursday's (already-final by Sunday) and any early
+    // Sunday games alongside whatever's actually in progress right now.
+    if ((state === 'in' || state === 'post') && Array.isArray(comp.leaders)) {
+      g.espnLeaders = comp.leaders;
+      g.espnTeamIdMap = { [away.team.id]: awayCode, [home.team.id]: homeCode };
+    }
+  });
+
+  render();
+  renderTickers();
+  if (currentModalGameId) {
+    const stillThere = GAMES.games.find(x => x.game_id === currentModalGameId);
+    if (stillThere) openGame(currentModalGameId, lastFocus); // refresh the open modal in place rather than leaving it stale
+  }
+  return anyStillLive;
+}
+
+function startEspnPolling(){
+  if (espnPollTimer) { clearInterval(espnPollTimer); espnPollTimer = null; }
+  pollEspnScoreboard().then(stillLive => {
+    // Only keep polling if something on THIS loaded week is actually
+    // live right now — no reason to hit ESPN's API every 30s on a
+    // Tuesday, or for a past/future week with nothing in progress.
+    if (!stillLive) return;
+    espnPollTimer = setInterval(async () => {
+      const live = await pollEspnScoreboard();
+      if (!live) { clearInterval(espnPollTimer); espnPollTimer = null; }
+    }, ESPN_POLL_MS);
+  });
+}
+
+// ── Ticker mode: "live" across the whole real week (Thu included) from
+// Sunday's earliest real kickoff through the end of Monday's calendar
+// date in ET; "season" the rest of the time. Reuses etOffsetMinutes()/
+// kickoffHasPassed() above for the same real, DST-aware time handling —
+// no separate date-math system to keep in sync with that one.
+function tickerMode(){
+  if (!GAMES || !GAMES.games.length) return 'season';
+  const sunGames = GAMES.games.filter(g => g.weekday === 'Sunday' && g.gameday && g.gametime);
+  const monGames = GAMES.games.filter(g => g.weekday === 'Monday' && g.gameday);
+  if (!sunGames.length) return 'season'; // a bye/rescheduled week with no real Sunday slate
+
+  const sunDate = sunGames[0].gameday;
+  const monDate = monGames.length ? monGames[monGames.length - 1].gameday : sunDate;
+
+  const now = new Date();
+  const offsetMin = etOffsetMinutes(now.toISOString().slice(0, 10));
+  const etDateStr = new Date(now.getTime() - offsetMin * 60000).toISOString().slice(0, 10);
+
+  if (etDateStr < sunDate || etDateStr > monDate) return 'season';
+  if (etDateStr === sunDate) {
+    const earliestSun = sunGames.reduce((min, g) => (!min || g.gametime < min.gametime) ? g : min, null);
+    if (!kickoffHasPassed(earliestSun)) return 'season';
+  }
+  return 'live';
+}
+
+// Live-week leaders: ESPN gives exactly ONE leader per stat category per
+// game (not split by side), for both live AND final games (the merge
+// above captures 'post' as well as 'in' specifically so Thursday's
+// already-finished game counts here too, not just what's in progress
+// right now). Aggregated across every real game on the currently loaded
+// week and sorted — this is the union of each game's own top performer,
+// not a true league-wide per-player search, which is the real limit of
+// what ESPN's scoreboard endpoint can give without a call per game.
+function buildLiveTickerData(){
+  const cats = { passingYards: [], rushingYards: [], receivingYards: [] };
+  (GAMES.games || []).forEach(g => {
+    if (!g.espnLeaders) return;
+    g.espnLeaders.forEach(cat => {
+      if (!cats[cat.name] || !cat.leaders || !cat.leaders[0]) return;
+      const lead = cat.leaders[0];
+      const teamCode = (g.espnTeamIdMap || {})[lead.team.id] || '';
+      cats[cat.name].push({
+        name: lead.athlete.fullName, team: teamCode,
+        pos: lead.athlete.position ? lead.athlete.position.abbreviation : '',
+        value: lead.value,
+      });
+    });
+  });
+  Object.values(cats).forEach(list => list.sort((a, b) => b.value - a.value));
+  return {
+    passing: cats.passingYards.slice(0, 10),
+    rushing: cats.rushingYards.slice(0, 10),
+    receiving: cats.receivingYards.slice(0, 10),
+  };
+}
+
+// Season leaders: real nflverse season-cumulative totals from
+// players/latest.json. season.m holds BOTH raw cumulative stats
+// (pass_yds) AND running per-game averages (pass_ypg) on the same
+// object — pulling the raw total here is deliberate, same real
+// distinction this project has been careful about all session (a
+// leaderboard is about total production, not a per-game rate).
+function buildSeasonTickerData(){
+  if (!PLAYERS || !PLAYERS.players) return { passing: [], rushing: [], receiving: [] };
+  const all = [];
+  ['QB', 'RB', 'WR', 'TE'].forEach(pos => {
+    (PLAYERS.players[pos] || []).forEach(p => all.push({ ...p, pos }));
+  });
+  const topBy = (key, n = 10) => all
+    .filter(p => p.season && p.season.m && p.season.m[key] != null)
+    .sort((a, b) => b.season.m[key] - a.season.m[key])
+    .slice(0, n)
+    .map(p => ({ name: p.name, team: p.team, pos: p.pos, value: p.season.m[key] }));
+  return {
+    passing: topBy('pass_yds'),
+    rushing: topBy('rush_yds'),
+    receiving: topBy('rec_yds'),
+  };
+}
+
+function renderTickerRow(label, items){
+  if (!items.length){
+    return `<div class="ticker-wrap"><span class="ticker-label">${esc(label)}</span>
+      <span class="ticker-empty">No real data yet.</span></div>`;
+  }
+  const one = items.map((it, i) => `<span class="ticker-item">
+    <span class="tk-rank">${i + 1}</span>
+    <span class="tk-name">${esc(it.name)}</span>
+    <span class="tk-team">${esc(it.team)}</span>
+    ${it.pos ? `<span class="tk-pos">${esc(it.pos)}</span>` : ''}
+    <span class="tk-val">${Math.round(it.value)} yds</span>
+  </span>`).join('');
+  // Real duration scaled to content — a longer list scrolls
+  // proportionally longer so the per-item pace stays roughly constant.
+  const seconds = Math.max(18, items.length * 3.5);
+  return `<div class="ticker-wrap"><span class="ticker-label">${esc(label)}</span>
+    <div class="ticker-scroll"><div class="ticker-track" style="animation-duration:${seconds}s">${one}${one}</div></div>
+  </div>`;
+}
+
+function renderTickers(){
+  const el = $('tickers');
+  if (!el) return;
+  if (!GAMES) { el.innerHTML = ''; return; }
+  const mode = tickerMode();
+  const data = mode === 'live' ? buildLiveTickerData() : buildSeasonTickerData();
+  const suffix = mode === 'live' ? 'this week' : 'season';
+  el.innerHTML =
+    renderTickerRow(`Passing Leaders — ${suffix}`, data.passing) +
+    renderTickerRow(`Receiving Leaders — ${suffix}`, data.receiving) +
+    renderTickerRow(`Rushing Leaders — ${suffix}`, data.rushing);
+}
+
 function timeLabel(g){
+  if (g.live) return `<div class="live">${esc(g.liveClock || 'Live')}</div>`;
   if (g.played) return `<div class="final">Final</div>`;
   if (!g.gametime) return '';
   const [h, m] = g.gametime.split(':').map(Number);
@@ -271,8 +561,13 @@ function render(){
     list.forEach(g => {
       if (g.spread_line !== null) withLines++;
       if (g.played) played++;
-      const aw = g.played && g.away_score > g.home_score;
-      const hw = g.played && g.home_score > g.away_score;
+      // "leading" highlight applies for a real Final AND for a live,
+      // in-progress game (per-quarter lead, not just the final result) —
+      // both are real, current scores at this point, just one is settled
+      // and one isn't yet.
+      const scoreKnown = g.played || g.live;
+      const aw = scoreKnown && g.away_score > g.home_score;
+      const hw = scoreKnown && g.home_score > g.away_score;
       const at = threatCount(g.away), ht = threatCount(g.home);
       const totalThreats = (at || 0) + (ht || 0);
 
@@ -285,8 +580,17 @@ function render(){
       const thrTxt = totalThreats
         ? `<span class="odd thr"><b>${totalThreats}</b> threat${totalThreats === 1 ? '' : 's'}</span>` : '';
 
-      const hasGB = GB_MANIFEST && GB_MANIFEST.games &&
+      const gbManifestHas = GB_MANIFEST && GB_MANIFEST.games &&
         (GB_MANIFEST.games[`${g.away}_${g.home}`] || GB_MANIFEST.games[`${g.home}_${g.away}`]);
+      // Game Breakdown is real pre-game analysis — once the real game has
+      // started (or, the only state this data currently distinguishes,
+      // is fully Final), reading a "preview" of it stops making sense.
+      // kickoffHasPassed() covers the in-progress window using just the
+      // real schedule's own gameday/gametime — true live in-play state
+      // isn't tracked yet (that's the separate live-scores work), but a
+      // real kickoff-time check needs no live data at all to be correct.
+      const gameStarted = g.played || kickoffHasPassed(g);
+      const hasGB = gbManifestHas && !gameStarted;
       const hasMatchup = MATCHUP && MATCHUP.teams && MATCHUP.teams[g.away] && MATCHUP.teams[g.home];
       const hasThreats = THREATS && THREATS.teams && (THREATS.teams[g.away] || THREATS.teams[g.home]);
 
@@ -299,17 +603,17 @@ function render(){
               <span class="tabbr">${g.away}</span>
               <span class="trec">${esc(g.away_record)}</span>
               <span class="tform">${formHTML(g.away_form)}</span>
-              ${g.played ? `<span class="tscore">${g.away_score}</span>` : ''}
+              ${scoreKnown ? `<span class="tscore">${g.away_score}</span>` : ''}
             </div>
             <div class="trow${hw ? ' win' : ''}">
               ${fiLogoHTML(g.home, 32)}
               <span class="tabbr">${g.home}</span>
               <span class="trec">${esc(g.home_record)}</span>
               <span class="tform">${formHTML(g.home_form)}</span>
-              ${g.played ? `<span class="tscore">${g.home_score}</span>` : ''}
+              ${scoreKnown ? `<span class="tscore">${g.home_score}</span>` : ''}
             </div>
           </div>
-          <div class="kick">${timeLabel(g)}</div>
+          <div class="kick">${timeLabel(g)}${g.broadcast ? `<div class="bcast">${esc(g.broadcast)}</div>` : ''}</div>
         </div>
         <div class="odds">${spreadTxt}${totalTxt}${thrTxt}</div>
         <div class="meta">
@@ -326,7 +630,9 @@ function render(){
             title="${hasThreats ? '' : 'No threat board for this week'}">Threats</button>
           <button type="button" data-action="box">Box score</button>
           <button type="button" data-action="breakdown" ${hasGB ? '' : 'disabled'}
-            title="${hasGB ? '' : 'Game Breakdown not available for this game yet'}">Game Breakdown</button>
+            title="${hasGB ? '' : (gameStarted
+              ? 'Game Breakdown is pre-game analysis — no longer shown once the game has started'
+              : 'Game Breakdown not available for this game yet')}">Game Breakdown</button>
         </div>
       </div>`;
     });
@@ -360,6 +666,7 @@ function render(){
 
 /* ── game modal: box score + offensive leaders ── */
 let lastFocus = null;
+let currentModalGameId = null; // tracks which game's modal is open, so a live poll can refresh it in place
 const BOX_ROWS = [
   ['pts', 'Points'], ['total_yds', 'Total yards'], ['pass_yds', 'Passing yards'],
   ['rush_yds', 'Rushing yards'], ['first_downs', 'First downs'],
@@ -386,18 +693,51 @@ function leaderBlock(side, team, L){
     ${qb}${rush}${rec}</div>`;
 }
 
+// ESPN's own per-game leaders — one leader per stat category for the
+// WHOLE game (not split by side the way nflverse's box/leaders are),
+// shown as a real-time stand-in while a game is live and nflverse's own
+// (not real-time) leaders don't exist yet for it.
+const ESPN_LEADER_LABELS = { passingYards: 'PASS', rushingYards: 'RUSH', receivingYards: 'REC' };
+function renderEspnLiveLeaders(g){
+  const rows = (g.espnLeaders || [])
+    .filter(cat => ESPN_LEADER_LABELS[cat.name] && cat.leaders && cat.leaders[0])
+    .map(cat => {
+      const lead = cat.leaders[0];
+      const teamCode = (g.espnTeamIdMap || {})[lead.team.id] || '';
+      return `<div class="lead-row"><span class="lp">${ESPN_LEADER_LABELS[cat.name]}</span>
+        <span class="ln">${esc(lead.athlete.fullName)} <span style="color:var(--text-dim)">(${esc(teamCode)})</span></span>
+        <span class="lv">${esc(lead.displayValue)}</span></div>`;
+    }).join('');
+  if (!rows) return '';
+  return `<div class="sect"><h3>Live leaders</h3><span class="rule"></span></div>
+    <div class="empty" style="padding:4px 0 8px;text-align:left;font-size:10px">
+      Real-time from ESPN, updated automatically — the full box score above
+      fills in from Football Intel's own data once the game is final.</div>
+    <div class="lead-col">${rows}</div>`;
+}
+
 function openGame(gid, source){
   const g = GAMES.games.find(x => x.game_id === gid);
   if (!g) return;
   lastFocus = source;
+  currentModalGameId = gid;
   $('mTitle').innerHTML =
     `${fiLogoHTML(g.away, 34)} ${g.away} <em>at</em> ${g.home} ${fiLogoHTML(g.home, 34)}`;
-  const when = g.played
-    ? `Final — ${g.away} ${g.away_score}, ${g.home} ${g.home_score}`
-    : `${esc(g.weekday)} ${esc(g.gameday)}`;
+  const when = g.live
+    ? `${g.liveClock || 'Live'} — ${g.away} ${g.away_score}, ${g.home} ${g.home_score}`
+    : g.played
+      ? `Final — ${g.away} ${g.away_score}, ${g.home} ${g.home_score}`
+      : `${esc(g.weekday)} ${esc(g.gameday)}`;
   $('mSub').textContent = `${when} · ${g.stadium}`;
 
   let h = '';
+  // While a game is live and nflverse's own real box score/leaders don't
+  // exist for it yet (they're not real-time — see the fetch comment
+  // above), show ESPN's real-time leaders as a clearly-labeled stand-in
+  // rather than the empty "no player data yet" state.
+  if (g.live && !(g.leaders && (g.leaders.away || g.leaders.home))) {
+    h += renderEspnLiveLeaders(g);
+  }
   const box = g.box || {};
   if (box.away && box.home){
     h += `<div class="sect"><h3>${g.played ? 'Box score' : 'Season totals'}</h3><span class="rule"></span></div>
@@ -436,6 +776,7 @@ function openGame(gid, source){
 }
 function closeModal(){
   $('scrim').classList.remove('open'); $('modal').classList.remove('open');
+  currentModalGameId = null;
   if (lastFocus) lastFocus.focus();
 }
 
