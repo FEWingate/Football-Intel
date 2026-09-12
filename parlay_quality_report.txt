@@ -2,42 +2,43 @@
 ======================================================================
 ODDS FORMAT CONSISTENCY (/odds)
 ======================================================================
-Overall price-format counts across all books/markets: {'decimal': 486}
-  bet365         : {'decimal': 32}
-  betmgm         : {'decimal': 32}
-  betrivers      : {'decimal': 32}
-  bovada         : {'decimal': 32}
-  caesars        : {'decimal': 32}
-  draftkings     : {'decimal': 38}
-  fanatics       : {'decimal': 32}
-  fanduel        : {'decimal': 64}
-  fliff          : {'decimal': 32}
-  hardrock       : {'decimal': 30}
-  novig          : {'decimal': 36}
-  parx           : {'decimal': 32}
-  pinnacle       : {'decimal': 32}
-  prophetx       : {'decimal': 30}
+Overall price-format counts across all books/markets: {'decimal': 600}
+  bet365         : {'decimal': 28}
+  betmgm         : {'decimal': 28}
+  betonline      : {'decimal': 26}
+  betrivers      : {'decimal': 28}
+  bovada         : {'decimal': 28}
+  caesars        : {'decimal': 28}
+  draftkings     : {'decimal': 150}
+  fanatics       : {'decimal': 28}
+  fanduel        : {'decimal': 54}
+  fliff          : {'decimal': 28}
+  hardrock       : {'decimal': 28}
+  novig          : {'decimal': 62}
+  parx           : {'decimal': 28}
+  pinnacle       : {'decimal': 28}
+  prophetx       : {'decimal': 28}
 
 Each individual book is internally consistent — the inconsistency (if any, see overall counts above) is BETWEEN books, not within one.
 
 ======================================================================
 BLANK TEAM NAMES (/props)
 ======================================================================
-336 of 5000 rows (6.7%) have a blank home_team or away_team.
+10 of 5000 rows (0.2%) have a blank home_team or away_team.
 Partial — some rows have real team names, some don't. Needs a fallback (e.g. resolve via canonical_event_id) for the blank ones.
 
 ======================================================================
 MARKET KEY TAXONOMY (/props)
 ======================================================================
-Total unique market_key values: 264
-Milestone-ladder keys (e.g. '..._or_more'): 66
-Player-name-embedded keys (e.g. 'player_x_to_score_1__tds'): 79
+Total unique market_key values: 229
+Milestone-ladder keys (e.g. '..._or_more'): 72
+Player-name-embedded keys (e.g. 'player_x_to_score_1__tds'): 6
 
 Real example — how many raw keys map to ONE actual stat concept:
-  'receiving_yards' is spelled 23 different way(s): ['player_rec_yds', 'player_receiving_yards', 'player_receiving_yards_milestones_100_or_more', 'player_receiving_yards_milestones_10_or_more', 'player_receiving_yards_milestones_110_or_more', 'player_receiving_yards_milestones_125_or_more', 'player_receiving_yards_milestones_150_or_more', 'player_receiving_yards_milestones_15_or_more', 'player_receiving_yards_milestones_20_or_more', 'player_receiving_yards_milestones_25_or_more', 'player_receiving_yards_milestones_30_or_more', 'player_receiving_yards_milestones_40_or_more', 'player_receiving_yards_milestones_50_or_more', 'player_receiving_yards_milestones_60_or_more', 'player_receiving_yards_milestones_70_or_more', 'player_receiving_yards_milestones_75_or_more', 'player_receiving_yards_milestones_80_or_more', 'player_receiving_yards_milestones_90_or_more', 'player_reception_yds', 'player_rush+rec_yds', 'player_rushing_and_receiving_yards', 'player_rushing_receiving_yards', 'prophetx_player_total_receiving_yards']
-  'rushing_yards' is spelled 21 different way(s): ['exchange_passing_and_rushing_yards', 'player_pass+rush_yds', 'player_passing_and_rushing_yards', 'player_passing_rushing_yards', 'player_rush_yds', 'player_rushing_yards', 'player_rushing_yards_milestones_100_or_more', 'player_rushing_yards_milestones_10_or_more', 'player_rushing_yards_milestones_110_or_more', 'player_rushing_yards_milestones_15_or_more', 'player_rushing_yards_milestones_20_or_more', 'player_rushing_yards_milestones_25_or_more', 'player_rushing_yards_milestones_30_or_more', 'player_rushing_yards_milestones_40_or_more', 'player_rushing_yards_milestones_50_or_more', 'player_rushing_yards_milestones_60_or_more', 'player_rushing_yards_milestones_70_or_more', 'player_rushing_yards_milestones_75_or_more', 'player_rushing_yards_milestones_80_or_more', 'player_rushing_yards_milestones_90_or_more', 'prophetx_player_total_rushing_yards']
-  'passing_yards' is spelled 14 different way(s): ['player_pass_yds', 'player_passing_yards', 'player_passing_yards_milestones_150_or_more', 'player_passing_yards_milestones_175_or_more', 'player_passing_yards_milestones_200_or_more', 'player_passing_yards_milestones_220_or_more', 'player_passing_yards_milestones_225_or_more', 'player_passing_yards_milestones_250_or_more', 'player_passing_yards_milestones_275_or_more', 'player_passing_yards_milestones_300_or_more', 'player_passing_yards_milestones_325_or_more', 'player_passing_yards_milestones_350_or_more', 'player_to_have_most_passing_yards', 'prophetx_player_total_passing_yards']
+  'receiving_yards' is spelled 26 different way(s): ['exchange_rushing_and_receiving_yards', 'player_rec_yds', 'player_receiving_yards', 'player_receiving_yards_(combo)', 'player_receiving_yards_milestones_100_or_more', 'player_receiving_yards_milestones_10_or_more', 'player_receiving_yards_milestones_110_or_more', 'player_receiving_yards_milestones_125_or_more', 'player_receiving_yards_milestones_150_or_more', 'player_receiving_yards_milestones_15_or_more', 'player_receiving_yards_milestones_20_or_more', 'player_receiving_yards_milestones_25_or_more', 'player_receiving_yards_milestones_30_or_more', 'player_receiving_yards_milestones_40_or_more', 'player_receiving_yards_milestones_50_or_more', 'player_receiving_yards_milestones_60_or_more', 'player_receiving_yards_milestones_70_or_more', 'player_receiving_yards_milestones_80_or_more', 'player_receiving_yards_milestones_90_or_more', 'player_reception_yds', 'player_rush+rec_yds', 'player_rushing_and_receiving_yards', 'player_rushing_receiving_yards', 'player_to_have_most_receiving_yards', 'prophetx_player_total_receiving_yards', 'prophetx_player_total_rushing_receiving_yards']
+  'rushing_yards' is spelled 22 different way(s): ['player_pass+rush_yds', 'player_passing_and_rushing_yards', 'player_passing_rushing_yards', 'player_rush_yds', 'player_rushing_yards', 'player_rushing_yards_milestones_100_or_more', 'player_rushing_yards_milestones_10_or_more', 'player_rushing_yards_milestones_110_or_more', 'player_rushing_yards_milestones_15_or_more', 'player_rushing_yards_milestones_20_or_more', 'player_rushing_yards_milestones_25_or_more', 'player_rushing_yards_milestones_30_or_more', 'player_rushing_yards_milestones_40_or_more', 'player_rushing_yards_milestones_50_or_more', 'player_rushing_yards_milestones_60_or_more', 'player_rushing_yards_milestones_70_or_more', 'player_rushing_yards_milestones_75_or_more', 'player_rushing_yards_milestones_80_or_more', 'player_rushing_yards_milestones_90_or_more', 'player_to_have_most_rushing_yards', 'prophetx_player_total_passing_rushing_yards', 'prophetx_player_total_rushing_yards']
+  'passing_yards' is spelled 15 different way(s): ['player_pass_yds', 'player_passing_yards', 'player_passing_yards_milestones_150_or_more', 'player_passing_yards_milestones_175_or_more', 'player_passing_yards_milestones_200_or_more', 'player_passing_yards_milestones_220_or_more', 'player_passing_yards_milestones_225_or_more', 'player_passing_yards_milestones_250_or_more', 'player_passing_yards_milestones_275_or_more', 'player_passing_yards_milestones_300_or_more', 'player_passing_yards_milestones_325_or_more', 'player_passing_yards_milestones_350_or_more', 'player_passing_yards_milestones_400_or_more', 'player_to_have_most_passing_yards', 'prophetx_player_total_passing_yards']
   'receptions' is spelled 12 different way(s): ['player_rec_targets', 'player_receptions', 'player_receptions_milestones_10_or_more', 'player_receptions_milestones_2_or_more', 'player_receptions_milestones_3_or_more', 'player_receptions_milestones_4_or_more', 'player_receptions_milestones_5_or_more', 'player_receptions_milestones_6_or_more', 'player_receptions_milestones_7_or_more', 'player_receptions_milestones_8_or_more', 'player_receptions_milestones_9_or_more', 'prophetx_player_total_receptions']
-  'passing_tds' is spelled 10 different way(s): ['exchange_passing_touchdowns', 'player_pass_tds', 'player_passing_tds', 'player_passing_touchdowns', 'player_passing_touchdowns_milestones_1_or_more', 'player_passing_touchdowns_milestones_2_or_more', 'player_passing_touchdowns_milestones_3_or_more', 'player_passing_touchdowns_milestones_4_or_more', 'player_touchdown_passes', 'prophetx_player_total_passing_touchdowns']
+  'passing_tds' is spelled 11 different way(s): ['exchange_passing_touchdowns', 'player_pass_tds', 'player_passing_tds', 'player_passing_touchdowns', 'player_passing_touchdowns_milestones_1_or_more', 'player_passing_touchdowns_milestones_2_or_more', 'player_passing_touchdowns_milestones_3_or_more', 'player_passing_touchdowns_milestones_4_or_more', 'player_passing_touchdowns_milestones_5_or_more', 'player_touchdown_passes', 'prophetx_player_total_passing_touchdowns']
 
-Keys not accounted for by any of the above categories: 92 (sample: ['alternate_spreads', 'alternate_totals', 'anytime_touchdown_scorer', 'exchange_first_touchdown_scorer', 'exchange_interceptions_thrown', 'exchange_passing_completions', 'exchange_rushing_attempts', 'exchange_total_1h', 'h2h_1st_half', 'player_1h_rec_yards', 'player_1h_rush___rec_tds', 'player_1q_rec_yards', 'player_1q_rush___rec_tds', 'player_1q_rush_yards', 'player_1st_half', 'player_1st_half_moneyline', 'player_1st_half_spread', 'player_1st_half_tds', 'player_1st_half_totals', 'player_1st_quarter', 'player_1st_quarter_moneyline', 'player_1st_quarter_spread', 'player_1st_quarter_totals', 'player_anytime_td', 'player_anytime_touchdown_scorer', 'player_anytime_touchdowns', 'player_completion_percentage', 'player_completions_in_first_10_pass_attempts', 'player_defensive_ints', 'player_extra_point_made'])
+Keys not accounted for by any of the above categories: 119 (sample: ['alternate_spreads', 'alternate_totals', 'anytime_touchdown_scorer', 'exchange_first_touchdown_scorer', 'exchange_interceptions_thrown', 'exchange_longest_reception', 'exchange_longest_rush', 'exchange_passing_completions', 'exchange_rushing_attempts', 'exchange_tackles_assists', 'exchange_total_1h', 'first_touchdown_scorer', 'h2h_1st_half', 'player_1h_pass_yards', 'player_1h_rec_yards', 'player_1h_rush___rec_tds', 'player_1h_rush_yards', 'player_1q_pass_yards', 'player_1q_rec_yards', 'player_1q_rush___rec_tds', 'player_1q_rush_yards', 'player_alternate_passing_completions___c.j._stroud_(hou)', 'player_alternate_passing_completions___josh_allen_(buf)', 'player_anytime_td', 'player_anytime_touchdown_scorer', 'player_anytime_touchdowns', 'player_assists', 'player_completions', 'player_defensive_ints', 'player_extra_point_made'])

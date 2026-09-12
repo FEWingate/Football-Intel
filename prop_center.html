@@ -40,6 +40,66 @@
 .toggle-report{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);cursor:pointer;
   border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 12px;display:inline-block;margin-bottom:14px}
 .toggle-report:hover{color:var(--primary);border-color:var(--primary)}
+
+/* ── Player Props (real, live FanDuel data — no LLM) ─────────────────── */
+.pc-empty-inline{font-size:11px;color:var(--text-dim);font-style:italic}
+.pc-line-px{font-family:var(--font-mono);color:var(--text-mid)}
+.pc-stat-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.pc-stat-tab{font-family:var(--font-mono);font-size:11px;padding:7px 14px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);color:var(--text-dim);cursor:pointer;background:var(--surface)}
+.pc-stat-tab[aria-selected="true"]{color:var(--primary);border-color:var(--primary);background:rgba(99,102,241,.08)}
+.pc-props-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.pc-props-table th{text-align:left;font-family:var(--font-mono);font-size:10px;color:var(--text-dim);
+  text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;border-bottom:1px solid var(--border)}
+.pc-props-table td{padding:7px 10px;border-bottom:1px solid var(--hairline)}
+.pc-props-table tr:last-child td{border-bottom:0}
+.pc-player-name{color:var(--text);font-weight:600}
+.pc-alts-toggle{font-family:var(--font-mono);font-size:10.5px;color:var(--primary);cursor:pointer;
+  background:none;border:0;padding:0}
+.pc-alts-row{display:none}
+.pc-alts-row.open{display:table-row}
+.pc-alts-grid{display:flex;flex-wrap:wrap;gap:6px;padding:8px 10px}
+.pc-alt-chip{font-family:var(--font-mono);font-size:10.5px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:4px 8px;color:var(--text-mid)}
+.pc-td-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.pc-td-chip{display:flex;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:7px 10px;font-size:12px}
+
+.pc-topnav{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:18px;border-bottom:1px solid var(--border);padding-bottom:0}
+.pc-topnav button{font-family:var(--font-mono);font-size:12px;font-weight:600;padding:10px 16px;
+  background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);cursor:pointer}
+.pc-topnav button[aria-selected="true"]{color:var(--primary);border-bottom-color:var(--primary)}
+
+/* ── Game Lines cards — same shape/size as the Games page, real .gcard
+   classes reused directly (defined in the shared css/fi-styles.css) so
+   this looks and feels identical, not just visually similar. ── */
+/* ── Real .gcard family — copied directly from games.html's own <style>
+   block, confirmed NOT to live in the shared css/fi-styles.css (my
+   earlier mistake was assuming it did, which is why the cards rendered
+   as bare, unstyled text instead of real bordered cards). Only the
+   pieces this page actually uses — no .tform/.tscore/.links, since
+   props cards don't show records, live scores, or action buttons. ── */
+.gcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:20px 22px 20px;display:block;text-decoration:none;color:inherit;
+  transition:border-color .18s,transform .15s;cursor:pointer}
+.gcard:hover{border-color:var(--border2);transform:translateY(-1px)}
+.gcard:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.gcard-top{display:flex;align-items:flex-start;gap:14px}
+.teams-col{flex:1;min-width:0}
+.trow{display:flex;align-items:center;gap:11px;padding:6px 0}
+.tabbr{font-family:var(--font-display);font-weight:800;font-size:23px;letter-spacing:-.02em;min-width:60px}
+.trec{font-family:var(--font-mono);font-size:11.5px;color:var(--text-dim)}
+.kick{text-align:right;font-family:var(--font-mono);font-size:12px;color:var(--text-mid);
+  white-space:nowrap;line-height:1.7}
+.odds{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:14px;
+  border-top:1px solid var(--hairline)}
+.odd{font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;padding:5px 10px;
+  border-radius:var(--radius-sm);border:1px solid var(--border);color:var(--text-mid)}
+.odd b{color:var(--text);font-weight:600}
+
+#pcSlate{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+.pc-modal-stat-sect{margin:18px 0 8px}
+.pc-modal-stat-sect h4{font-family:var(--font-display);font-size:13px;color:var(--text);margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -48,52 +108,282 @@
 const main = fiShell({ page:'props', pageLabel:'Prop Center', status:'loading' });
 const $ = id => document.getElementById(id);
 
-main.innerHTML = `<div id="body"></div>`;
+main.innerHTML = `
+  <div class="pc-topnav" id="pcTopNav">
+    <button data-s="lines" aria-selected="true">Game Lines / Totals / ML</button>
+    <button data-s="props">Player Props</button>
+    <button data-s="breakdown">Coeus Prop Breakdown</button>
+    <button data-s="overunder">Favorite O/U</button>
+    <button data-s="parlays">Parlays</button>
+  </div>
+  <div id="body"></div>
+  <div class="modal-overlay" id="scrim"></div>
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="modal-header">
+      <div class="modal-title" id="mTitle"></div>
+      <div class="modal-subtitle" id="mSub"></div>
+      <button class="modal-close" id="mClose" aria-label="Close game">✕</button>
+    </div>
+    <div class="modal-body" id="mBody"></div>
+  </div>`;
+
+let FDPROPS = null;   // fanduel_props/latest.json — real, live data, no LLM
+let REPORT = null;    // props_reports — Coeus's picks + parlays
+let activeSection = 'lines';
+let activeStat = 'passing_yards';
 
 async function load(){
   fiStatus('Loading','loading');
-  let pointer;
+
   try{
-    const res = await fetch('props_reports/latest.json');
-    if(!res.ok) throw new Error('missing');
-    pointer = await res.json();
-  }catch(e){
-    fiStatus('No data','error'); fiUpdated('');
-    $('body').innerHTML = `<div class="empty">No props/parlay report has been generated yet.<br>
-      Run <b>python3 build_fanduel_props.py</b> then <b>python3 generate_props_report.py</b>
-      in your lab folder, then reload.</div>`;
-    return;
-  }
-  let report;
+    const res = await fetch('fanduel_props/latest.json', { cache: 'no-store' });
+    if(res.ok) FDPROPS = await res.json();
+  }catch(e){ /* Game Lines / Player Props just won't have data yet */ }
+
   try{
-    const res = await fetch(pointer.report_path);
-    if(!res.ok) throw new Error('missing');
-    report = await res.json();
-  }catch(e){
-    fiStatus('No data','error'); fiUpdated('');
-    $('body').innerHTML = `<div class="empty">props_reports/latest.json points to
-      ${esc(pointer.report_path)}, but that file wasn't found. Re-run
-      generate_props_report.py.</div>`;
-    return;
-  }
+    const res = await fetch('props_reports/latest.json', { cache: 'no-store' });
+    if(res.ok){
+      const pointer = await res.json();
+      const res2 = await fetch(pointer.report_path, { cache: 'no-store' });
+      if(res2.ok) REPORT = await res2.json();
+    }
+  }catch(e){ /* Coeus Prop Breakdown / Favorite O/U / Parlays just won't have data yet */ }
+
   fiStatus('Ready');
-  fiUpdated(`Generated ${new Date(report.generated_at).toLocaleString()}`);
-  render(report);
+  fiUpdated(FDPROPS ? `Lines updated ${new Date(FDPROPS.generated_at).toLocaleString()}` : '');
+
+  $('pcTopNav').querySelectorAll('button').forEach(b => b.onclick = () => {
+    activeSection = b.dataset.s;
+    $('pcTopNav').querySelectorAll('button').forEach(x => x.setAttribute('aria-selected', String(x===b)));
+    render();
+  });
+
+  $('mClose').addEventListener('click', closeModal);
+  $('scrim').addEventListener('click', closeModal);
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape' && $('modal').classList.contains('open')) closeModal();
+  });
+
+  render();
 }
 
-function priceLine(leg){
-  const dec = leg.price;
-  const american = dec >= 2 ? `+${Math.round((dec-1)*100)}` : `${Math.round(-100/(dec-1))}`;
-  return `${dec.toFixed(2)} (${american})`;
+/* ── decimal -> American only, per Frank's real preference — decimal is
+   the internal format everything is stored/computed in (parlay math
+   needs it), but nobody actually wants to read it on the page. ── */
+function priceLine(dec){
+  if(dec == null) return '—';
+  return dec >= 2 ? `+${Math.round((dec-1)*100)}` : `${Math.round(-100/(dec-1))}`;
 }
 
+function gameTitle(g){
+  const t = g.commence_time ? new Date(g.commence_time).toLocaleString([], {weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit'}) : '';
+  return `<div class="pc-game-head">
+    <span class="pc-game-teams">${esc(g.away_team)} @ ${esc(g.home_team)}</span>
+    <span class="pc-game-time">${esc(t)}</span>
+  </div>`;
+}
+
+/* ── GAME LINES / TOTALS / ML — real, live data, no LLM involved.
+   Same real .gcard markup/classes as the Games page (not just visually
+   similar — the actual shared classes), so this looks and behaves
+   identically. Clicking a card opens that game's full player props in
+   the same modal pattern the Games page already uses. ── */
+function renderGameLines(){
+  if(!FDPROPS || !FDPROPS.games || !FDPROPS.games.length){
+    $('body').innerHTML = `<div class="empty">No live FanDuel line data available yet.<br>
+      Run <b>python3 build_fanduel_props.py</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+  const cards = FDPROPS.games.map(g => {
+    const h2h = g.game_lines.h2h || [];
+    const spreads = g.game_lines.spreads || [];
+    const totals = g.game_lines.totals || [];
+    const mlFor = code => {
+      const o = h2h.find(x => x.name === (code === g.away_code ? g.away_team : g.home_team));
+      return o ? priceLine(o.price) : '—';
+    };
+    const favSpread = spreads.find(o => o.point < 0);
+    const total = totals[0];
+    const spreadTxt = favSpread
+      ? `<span class="odd"><b>${favSpread.name === g.away_team ? g.away_code : g.home_code}</b> ${favSpread.point}</span>` : '';
+    const totalTxt = total ? `<span class="odd">O/U <b>${total.point}</b></span>` : '';
+    const t = g.commence_time ? new Date(g.commence_time).toLocaleString([], {weekday:'short', hour:'numeric', minute:'2-digit'}) : '';
+
+    return `<div class="gcard" data-eid="${esc(g.canonical_event_id)}" tabindex="0" role="button"
+      aria-label="View player props, ${g.away_code} at ${g.home_code}">
+      <div class="gcard-top">
+        <div class="teams-col">
+          <div class="trow">
+            ${fiLogoHTML(g.away_code, 32)}
+            <span class="tabbr">${esc(g.away_code)}</span>
+            <span class="trec">${mlFor(g.away_code)}</span>
+          </div>
+          <div class="trow">
+            ${fiLogoHTML(g.home_code, 32)}
+            <span class="tabbr">${esc(g.home_code)}</span>
+            <span class="trec">${mlFor(g.home_code)}</span>
+          </div>
+        </div>
+        <div class="kick">${esc(t)}</div>
+      </div>
+      <div class="odds">${spreadTxt}${totalTxt}</div>
+    </div>`;
+  }).join('');
+
+  $('body').innerHTML = `
+    <div class="lineup-note" style="margin-bottom:14px">
+      ${FDPROPS.games.length} game(s) · real, live FanDuel lines · click a game to see its full player props.
+    </div>
+    <div id="pcSlate">${cards}</div>`;
+
+  $('pcSlate').querySelectorAll('.gcard').forEach(card => {
+    card.addEventListener('click', () => openGameProps(card.dataset.eid, card));
+    card.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openGameProps(card.dataset.eid, card); } });
+  });
+}
+
+let lastFocus = null;
+
+function statBlockForGame(g, statKey, label){
+  const byPlayer = (g.player_props && g.player_props[statKey]) || {};
+  const names = Object.keys(byPlayer);
+  if(!names.length) return '';
+  const rows = names.map(name => {
+    const p = byPlayer[name];
+    const lineHTML = p.line
+      ? `${p.line.point} — O ${priceLine(p.line.over_price)} / U ${priceLine(p.line.under_price)}`
+      : '<span class="pc-empty-inline">No plain line posted</span>';
+    const altsHTML = p.alts && p.alts.length
+      ? `<div class="pc-alts-grid">${p.alts.map(a =>
+          `<span class="pc-alt-chip">${a.threshold}+ : ${priceLine(a.over_price != null ? a.over_price : a.under_price)}</span>`).join('')}</div>`
+      : '';
+    return `<tr><td class="pc-player-name">${esc(name)}</td><td>${lineHTML}</td></tr>
+      ${altsHTML ? `<tr><td colspan="2">${altsHTML}</td></tr>` : ''}`;
+  }).join('');
+  return `<div class="pc-modal-stat-sect"><h4>${esc(label)}</h4>
+    <table class="pc-props-table"><tbody>${rows}</tbody></table></div>`;
+}
+
+function openGameProps(eid, source){
+  const g = FDPROPS.games.find(x => x.canonical_event_id === eid);
+  if(!g) return;
+  lastFocus = source;
+  $('mTitle').innerHTML = `${fiLogoHTML(g.away_code, 34)} ${g.away_code} <em>at</em> ${g.home_code} ${fiLogoHTML(g.home_code, 34)}`;
+  const t = g.commence_time ? new Date(g.commence_time).toLocaleString([], {weekday:'long', month:'short', day:'numeric', hour:'numeric', minute:'2-digit'}) : '';
+  $('mSub').textContent = t;
+
+  let h = '';
+  h += statBlockForGame(g, 'passing_yards', 'Passing Yards');
+  h += statBlockForGame(g, 'rushing_yards', 'Rushing Yards');
+  h += statBlockForGame(g, 'receiving_yards', 'Receiving Yards');
+  h += statBlockForGame(g, 'receptions', 'Receptions');
+  if(g.anytime_td && g.anytime_td.length){
+    const chips = g.anytime_td.slice().sort((a,b) => a.price - b.price)
+      .map(p => `<div class="pc-td-chip"><span>${esc(p.player)}</span><span class="pc-line-px">${priceLine(p.price)}</span></div>`).join('');
+    h += `<div class="pc-modal-stat-sect"><h4>Anytime TD</h4><div class="pc-td-grid">${chips}</div></div>`;
+  }
+  if(!h) h = `<div class="empty">No real player props posted for this game yet.</div>`;
+
+  $('mBody').innerHTML = h;
+  $('scrim').classList.add('open'); $('modal').classList.add('open');
+  $('mClose').focus();
+}
+function closeModal(){
+  $('scrim').classList.remove('open'); $('modal').classList.remove('open');
+  if(lastFocus) lastFocus.focus();
+}
+
+/* ── PLAYER PROPS — real, live data, browsable by stat, no LLM ──────── */
+const STAT_LABELS = {
+  passing_yards: 'Passing Yards', rushing_yards: 'Rushing Yards',
+  receiving_yards: 'Receiving Yards', receptions: 'Receptions', anytime_td: 'Anytime TD',
+};
+
+function renderPlayerProps(){
+  if(!FDPROPS || !FDPROPS.games || !FDPROPS.games.length){
+    $('body').innerHTML = `<div class="empty">No live FanDuel prop data available yet.<br>
+      Run <b>python3 build_fanduel_props.py</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+  $('body').innerHTML = `
+    <div class="pc-stat-tabs" id="pcStatTabs">
+      ${Object.entries(STAT_LABELS).map(([k, label]) =>
+        `<button class="pc-stat-tab" data-stat="${k}" aria-selected="${k===activeStat}">${esc(label)}</button>`).join('')}
+    </div>
+    <div id="pcPropsBody"></div>`;
+
+  $('pcStatTabs').querySelectorAll('button').forEach(b => b.onclick = () => {
+    activeStat = b.dataset.stat;
+    $('pcStatTabs').querySelectorAll('button').forEach(x => x.setAttribute('aria-selected', String(x===b)));
+    renderPropsBody();
+  });
+  renderPropsBody();
+}
+
+function renderPropsBody(){
+  if(activeStat === 'anytime_td'){
+    const cards = FDPROPS.games.map(g => {
+      if(!g.anytime_td || !g.anytime_td.length) return '';
+      const chips = g.anytime_td
+        .sort((a, b) => a.price - b.price)
+        .map(p => `<div class="pc-td-chip"><span>${esc(p.player)}</span>
+          <span class="pc-line-px">${priceLine(p.price)}</span></div>`).join('');
+      return `<div class="pc-game-card">${gameTitle(g)}<div class="pc-td-grid">${chips}</div></div>`;
+    }).join('');
+    $('pcPropsBody').innerHTML = cards || `<div class="empty">No real anytime-TD data for this stat yet.</div>`;
+    return;
+  }
+
+  const cards = FDPROPS.games.map(g => {
+    const byPlayer = (g.player_props && g.player_props[activeStat]) || {};
+    const names = Object.keys(byPlayer);
+    if(!names.length) return '';
+    const rows = names.map((name, i) => {
+      const p = byPlayer[name];
+      const rowId = `alts-${g.canonical_event_id}-${activeStat}-${i}`;
+      const lineHTML = p.line
+        ? `${p.line.point} — O ${priceLine(p.line.over_price)} / U ${priceLine(p.line.under_price)}`
+        : '<span class="pc-empty-inline">No plain line posted</span>';
+      const altsHTML = p.alts && p.alts.length
+        ? `<button class="pc-alts-toggle" onclick="document.getElementById('${rowId}').classList.toggle('open')">
+             ${p.alts.length} alt line(s) ▾</button>`
+        : '<span class="pc-empty-inline">No alt lines</span>';
+      const altsExpanded = p.alts && p.alts.length
+        ? `<tr class="pc-alts-row" id="${rowId}"><td colspan="3"><div class="pc-alts-grid">
+             ${p.alts.map(a => `<span class="pc-alt-chip">${a.threshold}+ : ${priceLine(a.over_price != null ? a.over_price : a.under_price)}</span>`).join('')}
+           </div></td></tr>`
+        : '';
+      return `<tr>
+        <td class="pc-player-name">${esc(name)}</td>
+        <td>${lineHTML}</td>
+        <td>${altsHTML}</td>
+      </tr>${altsExpanded}`;
+    }).join('');
+    return `<div class="pc-game-card">${gameTitle(g)}
+      <table class="pc-props-table">
+        <thead><tr><th>Player</th><th>Line</th><th>Alt Lines</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+  }).join('');
+
+  $('pcPropsBody').innerHTML = cards || `<div class="empty">No real ${esc(STAT_LABELS[activeStat])} data posted yet for this slate.</div>`;
+}
+
+/* ── COEUS PROP BREAKDOWN / FAVORITE O/U — pending the report rewrite ── */
+function renderPending(sectionLabel){
+  $('body').innerHTML = `<div class="empty">${esc(sectionLabel)} isn't built yet.<br>
+    This section needs generate_props_report.py rewritten to produce it — coming next.</div>`;
+}
+
+/* ── PARLAYS — existing, working feature ─────────────────────────────── */
 function parlayCard(size, p){
   const invalid = !p.valid;
   const legsHTML = (p.legs || []).map(leg => `
     <div class="parlay-leg">
       <div><div class="who">${esc(leg.player || leg.side || '—')}</div>
         <div class="mkt">${esc(leg.market_key || '')}</div></div>
-      <div class="px">${leg.price != null ? priceLine(leg) : '—'}</div>
+      <div class="px">${leg.price != null ? priceLine(leg.price) : '—'}</div>
     </div>`).join('');
 
   let footHTML = '';
@@ -124,10 +414,6 @@ function parlayCard(size, p){
   </div>`;
 }
 
-/* Minimal markdown-ish renderer for the narrative report — headers, bold,
-   bullet lists, paragraphs. The PARLAY_*_TEAM JSON code blocks are stripped
-   entirely; that data already renders above as real, validated cards, so
-   showing the raw JSON again here would just be noise. */
 function renderMarkdown(md){
   const stripped = md.replace(/```json[\s\S]*?```/g, '');
   const lines = stripped.split('\n');
@@ -160,19 +446,25 @@ function inlineMd(s){
   return escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 }
 
-function render(report){
+function renderParlays(){
+  if(!REPORT || !REPORT.parlays){
+    $('body').innerHTML = `<div class="empty">No props/parlay report has been generated yet.<br>
+      Run <b>python3 build_fanduel_props.py</b> then <b>python3 generate_props_report.py</b>
+      in your lab folder, then reload.</div>`;
+    return;
+  }
   const sizes = ['3','4','5','6','7'];
-  const cards = sizes.map(s => report.parlays[s] ? parlayCard(s, report.parlays[s]) : '').join('');
+  const cards = sizes.map(s => REPORT.parlays[s] ? parlayCard(s, REPORT.parlays[s]) : '').join('');
 
   $('body').innerHTML = `
     <div class="lineup-note" style="margin-bottom:14px">
-      ${report.games_included.length} game(s) · payout examples computed on a
-      $${report.stake_used_for_payout_examples.toFixed(0)} stake · every parlay below has been
+      ${REPORT.games_included.length} game(s) · payout examples computed on a
+      $${REPORT.stake_used_for_payout_examples.toFixed(0)} stake · every parlay below has been
       independently re-checked against real FanDuel prices, not just Coeus's stated math.
     </div>
     <div class="parlay-grid">${cards}</div>
     <div class="toggle-report" id="toggleReport">Show full report ▾</div>
-    <div class="report-body" id="reportBody" style="display:none">${renderMarkdown(report.markdown)}</div>
+    <div class="report-body" id="reportBody" style="display:none">${renderMarkdown(REPORT.markdown)}</div>
   `;
   $('toggleReport').addEventListener('click', () => {
     const body = $('reportBody');
@@ -180,6 +472,14 @@ function render(report){
     body.style.display = open ? 'none' : '';
     $('toggleReport').textContent = open ? 'Show full report ▾' : 'Hide full report ▴';
   });
+}
+
+function render(){
+  if(activeSection === 'lines') return renderGameLines();
+  if(activeSection === 'props') return renderPlayerProps();
+  if(activeSection === 'breakdown') return renderPending('Coeus Prop Breakdown');
+  if(activeSection === 'overunder') return renderPending('Favorite Overs and Unders');
+  if(activeSection === 'parlays') return renderParlays();
 }
 
 load();
