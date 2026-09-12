@@ -332,13 +332,34 @@ let espnPollTimer = null;
 // as an explicit, checkable seam rather than assumed permanent: if a
 // future mismatch shows up, it's fixed once here, not wherever a code
 // comparison happens to live in this file.
-const ESPN_TEAM_CODE_FIXUPS = {};
+const ESPN_TEAM_CODE_FIXUPS = { WSH: 'WAS' };
 function espnCode(abbr){ return ESPN_TEAM_CODE_FIXUPS[abbr] || abbr; }
+
+function espnScoreboardUrl(){
+  const url = new URL(ESPN_SCOREBOARD_URL);
+  url.searchParams.set('dates', GAMES.season);
+  url.searchParams.set('seasontype', 2);
+  url.searchParams.set('week', GAMES.week);
+  url.searchParams.set('limit', 100);
+  return url.toString();
+}
+
+function espnBroadcast(comp, ev){
+  const national = (comp.broadcasts || [])
+    .filter(b => !b.market || b.market === 'national')
+    .flatMap(b => b.names || []);
+  const geo = (comp.geoBroadcasts || [])
+    .filter(b => (!b.region || b.region === 'us') && (!b.lang || b.lang === 'en'))
+    .map(b => b.media && b.media.shortName)
+    .filter(Boolean);
+  const legacy = ev.broadcast ? [ev.broadcast] : [];
+  return [...new Set([...national, ...geo, ...legacy])].join(' / ') || null;
+}
 
 async function pollEspnScoreboard(){
   let data;
   try {
-    const r = await fetch(ESPN_SCOREBOARD_URL, { cache: 'no-store' });
+    const r = await fetch(espnScoreboardUrl(), { cache: 'no-store' });
     if (!r.ok) { console.warn('ESPN scoreboard poll: HTTP', r.status); return false; }
     data = await r.json();
   } catch (e) {
@@ -374,17 +395,10 @@ async function pollEspnScoreboard(){
     g.home_score = Number(home.score);
     g.played = g.played || state === 'post';
     g.liveClock = state === 'in' ? `Q${comp.status.period} ${comp.status.displayClock}` : null;
-    // REAL BUG FIX (2026-09-12): was reading ev.broadcast — the top-level
-    // event object — but confirmed directly against a live fetch that
-    // ESPN nests this inside the competition object instead, on comp
-    // (comp.broadcast as a plain string, comp.broadcasts as a parallel
-    // array — both genuinely populated for every game checked). This is
-    // the real reason it always came back null during the original
-    // investigation: not missing data, a wrong nesting level the whole
-    // time. comp.broadcasts[0].names[0] kept as a fallback in case the
-    // singular field is ever absent while the array form still exists.
-    g.broadcast = comp.broadcast || (comp.broadcasts && comp.broadcasts[0] &&
-      comp.broadcasts[0].names && comp.broadcasts[0].names[0]) || null;
+    // ESPN publishes networks on the competition, not the event. Keep
+    // every announced national outlet so simulcasts such as ESPN/ABC
+    // remain visible, with geoBroadcasts as a compatibility fallback.
+    g.broadcast = espnBroadcast(comp, ev);
 
     // ESPN's per-game leaders are real-time, so they're the only source
     // of "who's doing what" while a game is still live — nflverse can't
@@ -623,7 +637,7 @@ function render(){
               ${scoreKnown ? `<span class="tscore">${g.home_score}</span>` : ''}
             </div>
           </div>
-          <div class="kick">${timeLabel(g)}${g.broadcast ? `<div class="bcast">${esc(g.broadcast)}</div>` : ''}</div>
+          <div class="kick">${timeLabel(g)}<div class="bcast">${esc(g.broadcast || 'Network TBA')}</div></div>
         </div>
         <div class="odds">${spreadTxt}${totalTxt}${thrTxt}</div>
         <div class="meta">
