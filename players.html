@@ -168,8 +168,14 @@ const $ = id => document.getElementById(id);
 async function load(){
   fiStatus("Loading","loading");
   try{
-    const res = await fetch(`players/latest.json`);
-    if(res.ok) PLAYERSTATS = await res.json();
+    const [statsRes, rosterRes] = await Promise.all([
+      fetch(`players/latest.json`),
+      fetch(`rosters/latest.json`).catch(() => null),
+    ]);
+    if(statsRes.ok) PLAYERSTATS = await statsRes.json();
+    if(PLAYERSTATS && rosterRes && rosterRes.ok){
+      mergeActiveRoster(await rosterRes.json());
+    }
   }catch(e){}
 
   if(!PLAYERSTATS){
@@ -198,6 +204,33 @@ async function load(){
   });
 
   renderProfileView();
+}
+
+function mergeActiveRoster(rosters){
+  const posMap = {QB:'QB', RB:'RB', FB:'RB', WR:'WR', TE:'TE'};
+  const ids = new Set();
+  const keys = new Set();
+  for(const [pos, rows] of Object.entries(PLAYERSTATS.players || {})){
+    for(const p of rows){
+      if(p.gsis_id) ids.add(p.gsis_id);
+      keys.add(`${p.team}|${p.name}|${pos}`);
+    }
+  }
+  for(const [team, roster] of Object.entries(rosters.teams || {})){
+    for(const rp of roster){
+      const pos = posMap[rp.position];
+      const key = `${team}|${rp.name}|${pos}`;
+      if(!pos || !rp.name || (rp.gsis_id && ids.has(rp.gsis_id)) || keys.has(key)) continue;
+      PLAYERSTATS.players[pos].push({
+        gsis_id: rp.gsis_id || null, name: rp.name, team, games: 0, headshot: '',
+        season: {games: 0, m: {}},
+        career: {games: 0, through: PLAYERSTATS.season - 1, m: {}},
+        log: [], splits: {}, ceiling: null, roster_only: true,
+      });
+      if(rp.gsis_id) ids.add(rp.gsis_id);
+      keys.add(key);
+    }
+  }
 }
 
 /* ── PLAYER PROFILE VIEW ─────────────────────────────────────────── */
