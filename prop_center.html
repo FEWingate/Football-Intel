@@ -64,6 +64,9 @@
 .pc-td-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
 .pc-td-chip{display:flex;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);
   border-radius:var(--radius-sm);padding:7px 10px;font-size:12px}
+.pc-data-warning{margin:0 0 14px;padding:10px 12px;border:1px solid rgba(245,158,11,.45);
+  border-radius:var(--radius-sm);background:rgba(245,158,11,.07);color:var(--accent-gold);
+  font-family:var(--font-mono);font-size:11px;line-height:1.55}
 
 .pc-topnav{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:18px;border-bottom:1px solid var(--border);padding-bottom:0}
 .pc-topnav button{font-family:var(--font-mono);font-size:12px;font-weight:600;padding:10px 16px;
@@ -150,7 +153,11 @@ async function load(){
   }catch(e){ /* Coeus Prop Breakdown / Favorite O/U / Parlays just won't have data yet */ }
 
   fiStatus('Ready');
-  fiUpdated(FDPROPS ? `Lines updated ${new Date(FDPROPS.generated_at).toLocaleString()}` : '');
+  const hasStaleProps = FDPROPS && Object.values(FDPROPS.coverage || {})
+    .some(item => item.status === 'stale_last_known_good');
+  fiUpdated(FDPROPS
+    ? `Lines updated ${new Date(FDPROPS.generated_at).toLocaleString()}${hasStaleProps ? ' - some props are stale' : ''}`
+    : '');
 
   $('pcTopNav').querySelectorAll('button').forEach(b => b.onclick = () => {
     activeSection = b.dataset.s;
@@ -299,6 +306,21 @@ const STAT_LABELS = {
   receiving_yards: 'Receiving Yards', receptions: 'Receptions', anytime_td: 'Anytime TD',
 };
 
+function coverageNotice(stat){
+  const meta = FDPROPS && FDPROPS.coverage && FDPROPS.coverage[stat];
+  if(!meta || meta.status === 'current') return '';
+  if(meta.status === 'stale_last_known_good'){
+    const source = meta.source_generated_at
+      ? new Date(meta.source_generated_at).toLocaleString()
+      : 'an earlier verified pull';
+    return `<div class="pc-data-warning">FanDuel ${esc(STAT_LABELS[stat])} coverage dropped sharply at the provider. ` +
+      `Showing last-known-good lines from ${esc(source)} for ${meta.carried_event_count || 0} game(s). ` +
+      `Confirm prices at the sportsbook before acting.</div>`;
+  }
+  return `<div class="pc-data-warning">The provider returned no current FanDuel ${esc(STAT_LABELS[stat])} ` +
+    `coverage for this slate. Football Intel is not substituting or estimating lines.</div>`;
+}
+
 function renderPlayerProps(){
   if(!FDPROPS || !FDPROPS.games || !FDPROPS.games.length){
     $('body').innerHTML = `<div class="empty">No live FanDuel prop data available yet.<br>
@@ -321,6 +343,7 @@ function renderPlayerProps(){
 }
 
 function renderPropsBody(){
+  const notice = coverageNotice(activeStat);
   if(activeStat === 'anytime_td'){
     const cards = FDPROPS.games.map(g => {
       if(!g.anytime_td || !g.anytime_td.length) return '';
@@ -330,7 +353,7 @@ function renderPropsBody(){
           <span class="pc-line-px">${priceLine(p.price)}</span></div>`).join('');
       return `<div class="pc-game-card">${gameTitle(g)}<div class="pc-td-grid">${chips}</div></div>`;
     }).join('');
-    $('pcPropsBody').innerHTML = cards || `<div class="empty">No real anytime-TD data for this stat yet.</div>`;
+    $('pcPropsBody').innerHTML = notice + (cards || `<div class="empty">No real anytime-TD data for this stat yet.</div>`);
     return;
   }
 
@@ -367,7 +390,7 @@ function renderPropsBody(){
     </div>`;
   }).join('');
 
-  $('pcPropsBody').innerHTML = cards || `<div class="empty">No real ${esc(STAT_LABELS[activeStat])} data posted yet for this slate.</div>`;
+  $('pcPropsBody').innerHTML = notice + (cards || `<div class="empty">No real ${esc(STAT_LABELS[activeStat])} data posted yet for this slate.</div>`);
 }
 
 /* ── COEUS PROP BREAKDOWN / FAVORITE O/U — pending the report rewrite ── */

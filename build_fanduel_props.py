@@ -54,18 +54,22 @@ USAGE:
 """
 
 import glob
+import copy
 import json
 import os
 import re
 import sys
+import time
 from datetime import datetime, timezone
 
 import requests
 
 PARLAY_API_KEY = os.environ.get("PARLAY_API_KEY")
-BASE_URL = "https://parlay-api.com/v1"
+BASE_URL = "https://api.parlay-api.com/v1"
 NFL_SPORT_KEY = "americanfootball_nfl"
 AUTH_HEADER = "X-API-Key"
+OUTPUT_PATH = "fanduel_props/latest.json"
+STALE_MAX_AGE_SECONDS = 6 * 60 * 60
 
 # Standard, stable NFL team name/code mapping — used only to cross-
 # reference parlay-api.com's full team names against this project's
@@ -157,11 +161,29 @@ def _get(path, params=None):
         sys.exit("FATAL: PARLAY_API_KEY not set. Add `export PARLAY_API_KEY=...` "
                  "to ~/.bashrc, then `source ~/.bashrc`.")
     url = f"{BASE_URL}/{path}"
-    resp = requests.get(url, headers={AUTH_HEADER: PARLAY_API_KEY}, params=params or {}, timeout=30)
-    if resp.status_code != 200:
+    for attempt in range(3):
+        resp = requests.get(
+            url,
+            headers={AUTH_HEADER: PARLAY_API_KEY},
+            params=params or {},
+            timeout=45,
+        )
+        if resp.status_code == 200:
+            break
+        if resp.status_code == 429 or 500 <= resp.status_code < 600:
+            delay = min(int(resp.headers.get("Retry-After", 2 ** attempt)), 30)
+            print(f"  WARNING: {path} returned HTTP {resp.status_code}; retrying in {delay}s")
+            time.sleep(delay)
+            continue
         sys.exit(f"FATAL: {url} returned HTTP {resp.status_code}: {resp.text[:300]}")
-    print(f"  {path} -> HTTP 200 (x-requests-used={resp.headers.get('x-requests-used')}, "
-          f"remaining={resp.headers.get('x-requests-remaining')})")
+    else:
+        sys.exit(f"FATAL: {url} did not recover after three attempts: {resp.text[:300]}")
+    print(
+        f"  {path} -> HTTP 200 (last-cost={resp.headers.get('x-requests-last')}, "
+        f"remaining={resp.headers.get('x-requests-remaining')}, "
+        f"served={resp.headers.get('x-markets-served')}, "
+        f"unservable={resp.headers.get('x-markets-unservable')})"
+    )
     return resp.json()
 
 
@@ -169,7 +191,14 @@ def fetch_odds(markets):
     """Real /odds call for the given market keys, filtered to FanDuel.
     Same endpoint and shape for game lines and player props — the only
     difference is which market keys get requested."""
-    data = _get(f"sports/{NFL_SPORT_KEY}/odds", {"regions": "us", "markets": ",".join(markets)})
+    data = _get(
+        f"sports/{NFL_SPORT_KEY}/odds",
+        {
+            "regions": "us",
+            "markets": ",".join(markets),
+            "oddsFormat": "decimal",
+        },
+    )
     events = []
     for event in data:
         fd = next((bk for bk in event.get("bookmakers", []) if bk.get("key") == "fanduel"), None)
@@ -265,8 +294,124 @@ def reshape_player_props(prop_events):
     return players, anytime_td
 
 
+def parse_timestamp(value):
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+
+
+def family_value(game, family):
+    if family == "anytime_td":
+        return game.get("anytime_td") or []
+    return (game.get("player_props") or {}).get(family) or {}
+
+
+def set_family_value(game, family, value):
+    if family == "anytime_td":
+        game["anytime_td"] = copy.deepcopy(value)
+    else:
+        game.setdefault("player_props", {})[family] = copy.deepcopy(value)
+
+
+def protect_against_coverage_collapse(games, previous_payload, generated_at):
+    """Carry recent same-game data only after a catastrophic family drop.
+
+    This is intentionally not a silent whole-file fallback. Each family gets
+    explicit freshness metadata, and carried data expires six hours after the
+    original successful fetch.
+    """
+    families = list(PLAIN_KEY_TO_STAT.values()) + ["anytime_td"]
+    previous_games = {
+        game.get("canonical_event_id"): game
+        for game in (previous_payload or {}).get("games", [])
+        if game.get("canonical_event_id")
+    }
+    previous_coverage = (previous_payload or {}).get("coverage", {})
+    now = parse_timestamp(generated_at) or datetime.now(timezone.utc)
+    coverage = {}
+    warnings = []
+
+    for family in families:
+        current_count = sum(bool(family_value(game, family)) for game in games)
+        matching_previous = [
+            previous_games.get(game.get("canonical_event_id")) for game in games
+        ]
+        previous_count = sum(
+            bool(family_value(game, family)) for game in matching_previous if game
+        )
+        prior_meta = previous_coverage.get(family, {})
+        source_generated_at = prior_meta.get("source_generated_at") or (
+            previous_payload or {}
+        ).get("generated_at")
+        source_time = parse_timestamp(source_generated_at)
+        source_age = (now - source_time).total_seconds() if source_time else None
+        collapsed = previous_count >= 2 and current_count * 2 < previous_count
+        recent_enough = source_age is not None and 0 <= source_age <= STALE_MAX_AGE_SECONDS
+        carried_count = 0
+
+        if collapsed and recent_enough:
+            for game in games:
+                if family_value(game, family):
+                    continue
+                previous_game = previous_games.get(game.get("canonical_event_id"))
+                previous_value = family_value(previous_game, family) if previous_game else None
+                if previous_value:
+                    set_family_value(game, family, previous_value)
+                    carried_count += 1
+
+        displayed_count = sum(bool(family_value(game, family)) for game in games)
+        if carried_count:
+            status = "stale_last_known_good"
+            warnings.append(
+                f"{family}: provider coverage fell from {previous_count} to {current_count} "
+                f"same-game events; carrying {carried_count} recent event(s) from "
+                f"{source_generated_at}."
+            )
+        elif current_count:
+            status = "current"
+            source_generated_at = generated_at
+            source_age = 0
+        else:
+            status = "unavailable"
+            source_generated_at = None
+            source_age = None
+
+        coverage[family] = {
+            "status": status,
+            "current_event_count": current_count,
+            "displayed_event_count": displayed_count,
+            "previous_event_count": previous_count,
+            "carried_event_count": carried_count,
+            "source_generated_at": source_generated_at,
+            "source_age_seconds": int(source_age) if source_age is not None else None,
+        }
+
+    return coverage, warnings
+
+
+def write_json_atomic(payload, path):
+    temp_path = f"{path}.tmp"
+    with open(temp_path, "w", encoding="utf-8") as output:
+        json.dump(payload, output)
+        output.flush()
+        os.fsync(output.fileno())
+    os.replace(temp_path, path)
+
+
 def main():
-    print(f"Building FanDuel game lines + player props — {datetime.now(timezone.utc).isoformat()}")
+    generated_at = datetime.now(timezone.utc).isoformat()
+    print(f"Building FanDuel game lines + player props - {generated_at}")
+
+    previous_payload = None
+    if os.path.exists(OUTPUT_PATH):
+        try:
+            with open(OUTPUT_PATH, encoding="utf-8") as previous_file:
+                previous_payload = json.load(previous_file)
+        except (OSError, json.JSONDecodeError) as error:
+            print(f"  WARNING: could not read prior snapshot for coverage protection: {error}")
 
     print("Fetching game lines (h2h/spreads/totals/alternates)...")
     line_events = fetch_odds(GAME_LINE_MARKETS)
@@ -279,17 +424,12 @@ def main():
                   f"unexplained gap for 'spreads' specifically as of 2026-09-05 — if that's "
                   f"still true this close to kickoff, that's now a real, not just early-week, gap.")
 
-    # REAL BUG FIX (2026-09-12): passing_yards came back completely empty
-    # for EVERY game when requested alongside all 52 other player-prop
-    # markets in one combined call — confirmed directly, not assumed,
-    # by then querying passing_yards alone and finding real data DOES
-    # exist (3 of 14 games at the time of that test). Something about
-    # this API's handling of a large combined market list drops passing
-    # yards specifically. Isolating it into its own call sidesteps
-    # whatever the real cause is, without needing to know it exactly.
-    # Confirmed the OTHER stats (rushing/receiving/receptions/anytime TD)
-    # DO come back correctly combined together, so only passing needs
-    # to be split out — not every stat into its own call.
+    # Passing remains isolated so its coverage and credit cost are observable
+    # independently. A 2026-09-12 investigation disproved the earlier belief
+    # that isolation itself fixes missing data: the isolated call later stayed
+    # empty across both API hostnames, with and without a FanDuel filter, and
+    # for a single event. Coverage protection below is therefore the safeguard;
+    # this split is diagnostic, not a claimed upstream workaround.
     passing_yards_markets = [k for k in PLAYER_PROP_MARKETS
                               if k == "player_passing_yards" or k.startswith("player_passing_yards_milestones_")]
     other_prop_markets = [k for k in PLAYER_PROP_MARKETS if k not in passing_yards_markets]
@@ -342,15 +482,22 @@ def main():
               f"played — sportsbooks correctly pull a line once there's nothing left to bet on. Worth a "
               f"second look only if one of these hasn't actually kicked off yet.")
 
+    coverage, warnings = protect_against_coverage_collapse(
+        games, previous_payload, generated_at
+    )
+    for warning in warnings:
+        print(f"  WARNING: {warning}")
+
     os.makedirs("fanduel_props", exist_ok=True)
     payload = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": generated_at,
         "bookmaker": "fanduel",
+        "coverage": coverage,
+        "warnings": warnings,
         "games": games,
     }
-    path = "fanduel_props/latest.json"
-    with open(path, "w") as f:
-        json.dump(payload, f)
+    path = OUTPUT_PATH
+    write_json_atomic(payload, path)
 
     real_players_count = sum(
         len(by_player) for g in games for by_player in g["player_props"].values()

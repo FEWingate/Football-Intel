@@ -5,6 +5,8 @@ data/dfs/
 dfs/
 evidence/
 evidence_bootstrap/
+__pycache__/
+*.py[cod]
 
 # Coeus's actual prompt engineering (Master Prompt, DFS/Prop Standards) —
 # kept private for now, per decision on 2026-08-12. This is real strategic
