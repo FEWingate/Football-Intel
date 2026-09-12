@@ -172,7 +172,7 @@ async function load(){
   for (let w = 1; w <= 22; w++){
     let data;
     try{
-      const res = await fetch(`games/wk${pad(w)}.json`);
+      const res = await fetch(`games/wk${pad(w)}.json`, { cache: 'no-store' });
       if(!res.ok) continue;
       data = await res.json();
     }catch(e){ continue; }
@@ -201,24 +201,24 @@ async function load(){
   RECORDS = records;
 
   try{
-    const res = await fetch(`teamstats/latest.json`);
+    const res = await fetch(`teamstats/latest.json`, { cache: 'no-store' });
     if(res.ok) TEAMSTATS = await res.json();
-  }catch(e){ /* stats section just won't have data yet */ }
+  }catch(e){ console.error('teamstats/latest.json failed to load or parse:', e); }
 
   try{
-    const resC = await fetch(`intel/coverage.json`);
+    const resC = await fetch(`intel/coverage.json`, { cache: 'no-store' });
     if(resC.ok) COVERAGE = await resC.json();
-  }catch(e){ /* coverage section just won't have data yet */ }
+  }catch(e){ console.error('intel/coverage.json failed to load or parse:', e); }
 
   try{
-    const resD = await fetch(`intel/cb_rankings.json`);
+    const resD = await fetch(`intel/cb_rankings.json`, { cache: 'no-store' });
     if(resD.ok) CBDB = await resD.json();
-  }catch(e){ /* cb/db rankings section just won't have data yet */ }
+  }catch(e){ console.error('intel/cb_rankings.json failed to load or parse:', e); }
 
   try{
-    const resR = await fetch(`rosters/latest.json`);
+    const resR = await fetch(`rosters/latest.json`, { cache: 'no-store' });
     if(resR.ok) ROSTERS = await resR.json();
-  }catch(e){ /* roster section just won't have data yet */ }
+  }catch(e){ console.error('rosters/latest.json failed to load or parse:', e); }
 
   fiStatus("Ready");
   fiUpdated(`through week ${latestWeek}`);
@@ -250,7 +250,29 @@ const TEAM_SPLITS_COLS = [
 const TEAM_SPLITS_INVERT = new Set(['pts_allowed_pg', 'pass_yds_allowed_pg', 'rush_yds_allowed_pg']);
 
 function renderTeamSplits(){
-  const dome = (TEAMSTATS && TEAMSTATS.team_dome_splits) || {};
+  // REAL BUG FIX (2026-09-12, two parts): (1) this used to read
+  // TEAMSTATS.team_dome_splits directly — the OLD, single-season key
+  // the backend no longer writes at all since last night's multi-season
+  // refactor, so this always came back empty. (2) simply defaulting to
+  // the most recent season (like the per-team modal does) isn't right
+  // HERE specifically — with only 1 of 11 real dome/retractable teams
+  // having played in 2026 so far, defaulting to 2026 hid the other 10
+  // that DO have real, complete 2025 data. Defaults instead to whichever
+  // available season has the MOST real qualifying teams — right now
+  // that's 2025 — and adds a real season dropdown (Frank's own explicit
+  // design call from last night: let the reader pick the year, don't
+  // silently choose) so 2026 stays one click away as it fills in.
+  const seasons = (TEAMSTATS && TEAMSTATS.home_road_splits_seasons) || [];
+  if(domeSplitsSeason == null || !seasons.includes(domeSplitsSeason)){
+    let best = null, bestCount = -1;
+    seasons.forEach(s => {
+      const count = Object.keys((TEAMSTATS.team_dome_splits_by_season || {})[s] || {}).length;
+      if(count > bestCount){ bestCount = count; best = s; }
+    });
+    domeSplitsSeason = best;
+  }
+  const dome = (TEAMSTATS && domeSplitsSeason != null &&
+    (TEAMSTATS.team_dome_splits_by_season || {})[domeSplitsSeason]) || {};
   const teams = Object.keys(dome).sort();
   if(!teams.length){
     $("splitsView").innerHTML = `<div class="empty">No dome/road splits available yet.<br>
@@ -337,6 +359,11 @@ function renderTeamSplits(){
 
 
   $("splitsView").innerHTML = `
+    <div class="travel-controls" style="margin-bottom:12px">
+      <label class="lbl" for="domeSplitsSeasonSel">Season</label>
+      <select id="domeSplitsSeasonSel">${seasons.map(s =>
+        `<option value="${s}" ${s===domeSplitsSeason?'selected':''}>${s}</option>`).join('')}</select>
+    </div>
     <div class="lineup-note" style="margin-bottom:12px">
       Every fixed-dome or retractable-roof team · ${teams.length} qualifying teams ·
       Home/Road is by team venue for the full season, not each game's actual roof state
@@ -345,6 +372,11 @@ function renderTeamSplits(){
       a dome/retractable-roof venue — a road trip to another dome team is excluded.
     </div>
     <div class="splits-grid">${cards}</div>`;
+
+  $("domeSplitsSeasonSel").addEventListener("change", e => {
+    domeSplitsSeason = Number(e.target.value);
+    renderTeamSplits();
+  });
 }
 
 /* ── TRAVEL SPLITS (West Coast incl. Arizona, vs Eastern-time teams) ─── */
@@ -353,6 +385,7 @@ const WEST_COAST_LABEL = {
   LAC: 'Los Angeles Chargers', LV: 'Las Vegas Raiders', ARI: 'Arizona Cardinals',
 };
 let travelTeam = null;
+let domeSplitsSeason = null;
 
 function travelSummaryFor(games){
   const n = games.length;

@@ -95,6 +95,46 @@ def load_json(path):
         return json.load(f)
 
 
+def flag_off_roster_players(report_text, away, home):
+    """Real, deterministic safety net (2026-09-12): scans the finished
+    report text against the FULL current league roster (rosters/latest.json,
+    all 32 teams) for any player whose real current team is neither `away`
+    nor `home`, but whose full name still shows up in the text anyway.
+    This doesn't depend on any prompt instruction or evidence-package fix
+    holding — it catches the actual failure mode directly, every run,
+    regardless of which upstream layer let it through. Confirmed real
+    case behind this: Mike Evans (real current team SF) appeared in a
+    TB@CIN report — first via a stale threats-list data source, then
+    (after that was fixed) apparently via the model's own prior
+    knowledge overriding correct evidence. This check would have caught
+    either cause the same way, without needing to know which one it was.
+    A name match here is a real signal worth a human's attention, not an
+    auto-fix — a shared name or a legitimate historical reference is
+    possible, if rare — so this warns rather than silently blocking."""
+    rosters_json = load_json("rosters/latest.json")
+    if not rosters_json:
+        print("\n  WARNING: rosters/latest.json not found — skipping the "
+              "off-roster player name check.")
+        return
+    flagged = []
+    for team, roster_players in (rosters_json.get("teams") or {}).items():
+        if team in (away, home):
+            continue
+        for rp in roster_players:
+            name = rp.get("name")
+            if name and name in report_text:
+                flagged.append((name, team))
+    if flagged:
+        print(f"\n  \u26a0 WARNING: {len(flagged)} player name(s) found in this report "
+              f"who currently play for neither {away} nor {home} — worth a manual "
+              f"check before trusting this report:")
+        for name, team in flagged:
+            print(f"    - {name} (real current team: {team})")
+    else:
+        print(f"\n  Off-roster player check: clean — no player names found who "
+              f"currently play for a team other than {away}/{home}.")
+
+
 def main():
     ap = argparse.ArgumentParser(description="Generate one game's Coeus Game Breakdown.")
     ap.add_argument("--away", required=True, help="Away team code, e.g. BUF")
@@ -289,6 +329,8 @@ def main():
             f.write(f"[EMPTY RESPONSE — stop_reason={response.stop_reason}, "
                      f"content block types={block_types}. Not a valid report.]")
         sys.exit(1)
+
+    flag_off_roster_players(report_text, args.away, args.home)
 
     with open(f"{out_stem}.md", "w") as f:
         f.write(report_text)

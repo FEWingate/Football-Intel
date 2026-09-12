@@ -440,10 +440,26 @@ def main():
     rosters_json = load_json("rosters/latest.json")
     if rosters_json:
         current_team_of = {}
+        # REAL BUG FIX (2026-09-12): threats_json's own starter entries
+        # carry no gsis_id at all — confirmed directly (a real starter
+        # entry has only name/pos/snap_pct/cats, nothing else usable as
+        # an id) — only a "name" string. The first version of the
+        # starters-list fix below checked gsis_id exclusively, which
+        # meant its safety fallback (keep anyone unverifiable) silently
+        # fired on every single starter, correcting nothing. Name
+        # matching is real data available here where an id isn't — not
+        # as airtight as an id (a rare shared name could misfire), but a
+        # real, working correction beats a check that can never fire at
+        # all. Keyed on the exact "name" string as rosters/latest.json
+        # itself provides it (nflverse's own full_name field), same
+        # source and format the threats system's own names come from.
+        current_team_of_by_name = {}
         for team, roster_players in (rosters_json.get("teams") or {}).items():
             for rp in roster_players:
                 if rp.get("gsis_id"):
                     current_team_of[rp["gsis_id"]] = team
+                if rp.get("name"):
+                    current_team_of_by_name[rp["name"]] = team
         corrected = 0
         for pos, plist in (players_json.get("players") or {}).items():
             for p in plist:
@@ -533,6 +549,33 @@ def main():
             # Deep-copy before mutating — threats_json is one shared object
             # loaded once and reused for every game in this script run.
             starters_copy = copy.deepcopy(t.get("starters", []))
+            # REAL BUG FIX (2026-09-12): confirmed the actual root cause of
+            # Mike Evans showing up on Tampa Bay in a real generated
+            # breakdown — NOT pretrained-knowledge override as first
+            # suspected, but a second, completely separate data path that
+            # never got the same roster-correction fix applied to
+            # players_json above. threats_json's own "starters" list is
+            # built from the bootstrap season's real historical data (true
+            # and accurate for THAT season) but was never cross-referenced
+            # against rosters/latest.json the way players_json now is —
+            # so a real player who has since changed teams still showed up
+            # under their OLD team here, even though the current-roster
+            # correction elsewhere in this same script was already
+            # working correctly. Filtered out here, not reassigned — a
+            # player who's left this team shouldn't appear in ITS starters
+            # list at all, whether or not their new team happens to be
+            # the opponent in this specific game (their own per-player
+            # entry in players_json, corrected above, is what represents
+            # them for whichever team they actually play for now).
+            if rosters_json:
+                before_n = len(starters_copy)
+                starters_copy = [s for s in starters_copy
+                                  if not (s.get("name")
+                                          and current_team_of_by_name.get(s["name"]) not in (None, team))]
+                if len(starters_copy) < before_n:
+                    notes.append(f"{before_n - len(starters_copy)} starter(s) removed from {team}'s "
+                                  f"{bootstrap_season} threats list — real current roster shows they've "
+                                  f"since left the team")
             fix_threat_opponent_context(starters_copy, real_opponent_of[team], matchup_json)
             # Classification MUST run AFTER the fix above, not before — it
             # reads dr directly from cats, so classifying first would still
@@ -543,9 +586,22 @@ def main():
             threats_block[side] = {"team": team, "record": t.get("record"),
                                     "opp": real_opponent_of[team], "starters": starters_out}
 
+        # REAL FIX (2026-09-12, revised): the first version of this filter
+        # only checked THIS season's games — but that wrongly excluded
+        # real players with zero 2026 games so far (most of the league,
+        # this early in the season) even when they have a real, complete
+        # PRIOR season in their "career" totals. That's exactly the
+        # context a pre-game breakdown should have — "what did this guy
+        # do last year" — not something worth throwing away. Only
+        # excludes a player when BOTH this season AND career show zero
+        # real games — a genuinely blank slate (a true rookie who hasn't
+        # debuted, or real roster filler with no track record at all),
+        # not just "hasn't played yet in the current, still-young season."
         players_block = {"away": [], "home": []}
         for pos, plist in (players_json.get("players", {}) or {}).items():
             for p in plist:
+                if not p.get("games") and not (p.get("career") or {}).get("games"):
+                    continue
                 if p.get("team") == away:
                     players_block["away"].append(p)
                 elif p.get("team") == home:

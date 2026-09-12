@@ -15,6 +15,13 @@
   background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);
   color:var(--text);font-size:12px;padding:8px 12px;width:220px;
 }
+.season-controls{display:flex;align-items:center;gap:8px}
+.season-controls .lbl{font-family:var(--font-mono);font-size:10px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--text-dim)}
+.season-controls select{
+  background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);
+  color:var(--text);font-size:12px;padding:7px 10px;
+}
 .intel-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
 .intel-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px}
 .ic-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
@@ -160,6 +167,7 @@ let blitzPos = 'QB';
 let blitzSortKey = 'watch';
 let blitzSearchTerm = '';
 let coveragePos = 'QB';
+let coverageSeason = null;
 let coverageModalTeam = null;
 let coverageModalView = 'log'; // 'log' | 'splits'
 let coverageSearchTerm = '';
@@ -167,6 +175,7 @@ let CBDB = null;
 let cbdbSortKey = 'yds_per_tgt_allowed';
 let cbdbSortDir = 'asc';
 let cbdbSearchTerm = '';
+let cbdbSeason = null;
 
 let GB_GAMES = [];        // merged list of {away, home, wk} across every manifest found
 let gbSelected = null;    // {away, home, wk} of the report currently open, or null for the grid
@@ -255,17 +264,24 @@ async function load(){
     }
   }catch(e){}
 
-  if(!INTEL || !Object.keys(INTEL.teams||{}).length){
-    fiStatus("No data","error"); fiUpdated("");
-    $("body").innerHTML = `<div class="empty">
-      No Intel Reports data found yet.<br>
-      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
-    return;
-  }
+  const hasIntel = INTEL && Object.keys(INTEL.teams||{}).length;
+  fiStatus(hasIntel ? "Ready" : "No data", hasIntel ? undefined : "error");
+  fiUpdated(hasIntel ? `${INTEL.season} · as of week ${INTEL.as_of_week}` : "");
 
-  fiStatus("Ready");
-  fiUpdated(`${INTEL.season} · as of week ${INTEL.as_of_week}`);
-
+  // REAL BUG FIX (2026-09-11): this click-wiring used to sit AFTER an
+  // early return that fired whenever INTEL (the QB/RB report's own data
+  // source) was empty — which silently skipped attaching a click handler
+  // to any of the 6 tab buttons, not just the QB one. That meant a
+  // missing intel/latest.json locked out every tab, including
+  // Blitz Impact/Coverage/CB-DB Rankings even when THEIR OWN data
+  // (blitz.json, coverage.json, cb_rankings.json) was perfectly fine.
+  // Confirmed as the real, full explanation for "nothing clicks, nothing
+  // switches" — not a rendering bug, a wiring bug gated behind an
+  // unrelated data check. Tab navigation must never depend on any one
+  // specific report's data existing; each report's OWN render function
+  // is responsible for its own "no data yet" empty state (renderQBReport
+  // and renderRBReport now do this too, matching how Blitz/Coverage/
+  // CB-DB already handled it correctly).
   $("reportTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
     activeReport = b.dataset.r;
     gbSelected = null;
@@ -405,6 +421,12 @@ function isBlitzWatchFlag(t){
 }
 
 function renderQBReport(){
+  if(!INTEL || !Object.keys(INTEL.teams||{}).length){
+    $("body").innerHTML = `<div class="empty">
+      No Intel Reports data found yet.<br>
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+    return;
+  }
   $("body").innerHTML = `
     <div class="sect"><h3>QB Passing vs. Run Game — Hit Rate Correlation</h3><span class="rule"></span></div>
     <div class="report-intro">
@@ -532,6 +554,12 @@ function renderGrid(){
 /* ── GAME LOG MODAL ──────────────────────────────────────────────── */
 /* ── RB REPORT (reverse signal) ──────────────────────────────────── */
 function renderRBReport(){
+  if(!INTEL || !Object.keys(INTEL.rb_teams||{}).length){
+    $("body").innerHTML = `<div class="empty">
+      No Intel Reports data found yet.<br>
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+    return;
+  }
   $("body").innerHTML = `
     <div class="sect"><h3>RB Rushing vs. Passing Game — Hit Rate Correlation</h3><span class="rule"></span></div>
     <div class="report-intro">
@@ -843,10 +871,15 @@ function openBlitzGameLog(team){
 }
 
 /* ── COVERAGE BREAKDOWN REPORT (historical, season retrospective) ──── */
+function coverageSeasonData(){
+  return (COVERAGE && coverageSeason != null &&
+    (COVERAGE.by_season || {})[coverageSeason]) || {};
+}
 function coverageDataset(pos){
-  if(pos === 'QB') return COVERAGE.qb_teams || {};
-  if(pos === 'TE') return COVERAGE.te_teams || {};
-  return COVERAGE.wr_teams || {};
+  const data = coverageSeasonData();
+  if(pos === 'QB') return data.qb_teams || {};
+  if(pos === 'TE') return data.te_teams || {};
+  return data.wr_teams || {};
 }
 
 const COVERAGE_LABELS = {
@@ -857,19 +890,31 @@ const COVERAGE_LABELS = {
 };
 
 function renderCoverageReport(){
-  if(!COVERAGE || !COVERAGE.available){
+  // REAL BUG FIX (2026-09-12): this report uses nflverse's participation
+  // data, which is only ever released once a season is FULLY over — it
+  // genuinely doesn't exist for the current season until then, which
+  // used to mean this whole report stayed completely empty for months.
+  // The backend now builds this for every recent season that has real,
+  // published data (same real design call already made for Home/Road
+  // Splits and CB/DB Rankings) — this adds the matching season dropdown
+  // so a real, complete prior season stays visible while the current one
+  // fills in.
+  const seasons = (COVERAGE && COVERAGE.seasons) || [];
+  if(coverageSeason == null || !seasons.includes(coverageSeason)) coverageSeason = seasons[0];
+
+  if(!COVERAGE || !seasons.length){
     $("body").innerHTML = `<div class="empty">
-      No Coverage Breakdown data available for ${COVERAGE?COVERAGE.season:'this season'} yet.<br>
+      No Coverage Breakdown data available yet.<br>
       This report uses nflverse's participation data, which is only released after the full season
       (including playoffs) concludes — it doesn't update during a live season. Run
       <b>python3 build_matchup_stats.py all</b> again once that season is fully over.</div>`;
     return;
   }
   $("body").innerHTML = `
-    <div class="sect"><h3>Coverage Breakdown — ${COVERAGE.season} Season Retrospective</h3><span class="rule"></span></div>
+    <div class="sect"><h3>Coverage Breakdown — ${coverageSeason} Season Retrospective</h3><span class="rule"></span></div>
     <div class="report-intro">
       How did each team's starting QB (and their target leader) actually perform against man vs. zone
-      coverage, and against specific calls like Cover 2 or Cover 3, over the full ${COVERAGE.season} season?
+      coverage, and against specific calls like Cover 2 or Cover 3, over the full ${coverageSeason} season?
       This is deliberately a look-back, not a "this week" report — coverage-scheme charting only gets
       released once a season fully wraps up, so there's no forward-looking matchup angle here, just real
       season totals. Coverage types with fewer than 10 plays are hidden — too small a sample to mean anything.
@@ -879,6 +924,11 @@ function renderCoverageReport(){
         <button role="tab" data-p="QB" aria-selected="true">QB</button>
         <button role="tab" data-p="WR" aria-selected="false">WR</button>
         <button role="tab" data-p="TE" aria-selected="false">TE</button>
+      </div>
+      <div class="season-controls">
+        <label class="lbl" for="coverageSeasonSel">Season</label>
+        <select id="coverageSeasonSel">${seasons.map(s =>
+          `<option value="${s}" ${s===coverageSeason?'selected':''}>${s}</option>`).join('')}</select>
       </div>
       <input class="search-box" id="coverageSearchBox" placeholder="Search team or player…">
     </div>
@@ -890,6 +940,10 @@ function renderCoverageReport(){
     renderCoverageGrid();
   });
   $("coverageSearchBox").oninput = e => { coverageSearchTerm = e.target.value.toLowerCase(); renderCoverageGrid(); };
+  $("coverageSeasonSel").addEventListener("change", e => {
+    coverageSeason = Number(e.target.value);
+    renderCoverageReport();
+  });
 
   renderCoverageGrid();
 }
@@ -975,7 +1029,7 @@ function openCoverageModal(team){
   coverageModalView = coverageModalView || 'log';
 
   $("mTitle").textContent = `${t.name} — ${team}`;
-  $("mSub").textContent = `${(t.log||[]).length} games · ${COVERAGE.season} season · ${seasonAvgLineHTML(t, coveragePos)}`;
+  $("mSub").textContent = `${(t.log||[]).length} games · ${coverageSeason} season · ${seasonAvgLineHTML(t, coveragePos)}`;
 
   $("mBody").innerHTML = `
     <div class="tabs" id="coverageModalTabs" role="tablist" style="margin-bottom:12px">
@@ -1125,32 +1179,54 @@ const CBDB_COLS = [
 ];
 
 function renderCbDbReport(){
-  if(!CBDB || !CBDB.available || !CBDB.players.length){
+  // REAL BUG FIX (2026-09-12): MIN_TARGETS=20 alone means this can look
+  // genuinely empty in Week 1 even with real, successfully-fetched
+  // current-season data — 2 games isn't enough volume for most DBs to
+  // clear the threshold — on top of PFR's current-season file possibly
+  // not existing yet at all this early. The backend now builds this for
+  // every recent season that has a real qualifying leaderboard (same
+  // real design call already made for Home/Road Splits and Coverage
+  // Breakdown) — this adds the matching season dropdown.
+  const seasons = (CBDB && CBDB.seasons) || [];
+  if(cbdbSeason == null || !seasons.includes(cbdbSeason)) cbdbSeason = seasons[0];
+  const rows = (CBDB && cbdbSeason != null && (CBDB.players_by_season || {})[cbdbSeason]) || [];
+
+  if(!CBDB || !seasons.length || !rows.length){
     $("body").innerHTML = `<div class="empty">
-      No CB/DB Coverage Rankings data available for ${CBDB?CBDB.season:'this season'} yet.<br>
+      No CB/DB Coverage Rankings data available yet.<br>
       This report uses PFR Advanced Stats (defense), which updates during a live season — run
       <b>python3 build_matchup_stats.py all</b> again once games have been played.</div>`;
     return;
   }
   $("body").innerHTML = `
-    <div class="sect"><h3>CB/DB Coverage Rankings — ${CBDB.season} Season</h3><span class="rule"></span></div>
+    <div class="sect"><h3>CB/DB Coverage Rankings — ${cbdbSeason} Season</h3><span class="rule"></span></div>
     <div class="report-intro">
       Individual defensive backs (CB/S/FS/SAF), ranked league-wide on what they've allowed in coverage —
       not a "this WR vs this specific CB" matchup, since no data source tracks who actually covered whom on
-      a given play. ${CBDB.data_horizon}. Minimum ${CBDB.min_targets} targets faced to qualify — smaller
-      samples are hidden as noise. Rank 1 = stingiest. Data via Pro Football Reference (nflverse).
+      a given play. Through ${Math.max(...rows.map(r => r.games))} games played. Minimum ${CBDB.min_targets}
+      targets faced to qualify — smaller samples are hidden as noise. Rank 1 = stingiest. Data via Pro
+      Football Reference (nflverse).
     </div>
     <div class="report-controls">
+      <div class="season-controls">
+        <label class="lbl" for="cbdbSeasonSel">Season</label>
+        <select id="cbdbSeasonSel">${seasons.map(s =>
+          `<option value="${s}" ${s===cbdbSeason?'selected':''}>${s}</option>`).join('')}</select>
+      </div>
       <input class="search-box" id="cbdbSearchBox" placeholder="Search player or team…">
     </div>
     <div class="lead-wrap"><table class="lead-table" id="cbdbTable"></table></div>`;
 
   $("cbdbSearchBox").oninput = e => { cbdbSearchTerm = e.target.value.toLowerCase(); renderCbDbTable(); };
+  $("cbdbSeasonSel").addEventListener("change", e => {
+    cbdbSeason = Number(e.target.value);
+    renderCbDbReport();
+  });
   renderCbDbTable();
 }
 
 function renderCbDbTable(){
-  let rows = CBDB.players;
+  let rows = (CBDB && cbdbSeason != null && (CBDB.players_by_season || {})[cbdbSeason]) || [];
   if(cbdbSearchTerm){
     rows = rows.filter(r => r.name.toLowerCase().includes(cbdbSearchTerm)
       || r.team.toLowerCase().includes(cbdbSearchTerm));

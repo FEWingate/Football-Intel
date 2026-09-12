@@ -374,7 +374,17 @@ async function pollEspnScoreboard(){
     g.home_score = Number(home.score);
     g.played = g.played || state === 'post';
     g.liveClock = state === 'in' ? `Q${comp.status.period} ${comp.status.displayClock}` : null;
-    g.broadcast = ev.broadcast || null; // same ESPN payload, no extra fetch — real for every state (pre/live/final)
+    // REAL BUG FIX (2026-09-12): was reading ev.broadcast — the top-level
+    // event object — but confirmed directly against a live fetch that
+    // ESPN nests this inside the competition object instead, on comp
+    // (comp.broadcast as a plain string, comp.broadcasts as a parallel
+    // array — both genuinely populated for every game checked). This is
+    // the real reason it always came back null during the original
+    // investigation: not missing data, a wrong nesting level the whole
+    // time. comp.broadcasts[0].names[0] kept as a fallback in case the
+    // singular field is ever absent while the array form still exists.
+    g.broadcast = comp.broadcast || (comp.broadcasts && comp.broadcasts[0] &&
+      comp.broadcasts[0].names && comp.broadcasts[0].names[0]) || null;
 
     // ESPN's per-game leaders are real-time, so they're the only source
     // of "who's doing what" while a game is still live — nflverse can't
