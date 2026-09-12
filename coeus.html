@@ -180,13 +180,35 @@ async function loadData(){
         }
       }
       let corrected = 0;
+      const existingIds = new Set();
+      const existingKeys = new Set();
       for(const pos of Object.keys(PLAYERS.players || {})){
         for(const p of PLAYERS.players[pos]){
+          if(p.gsis_id) existingIds.add(p.gsis_id);
+          existingKeys.add(`${p.team}|${p.name}|${pos}`);
           const real = currentTeamOf[p.gsis_id];
           if(real && real !== p.team){ p.team = real; corrected++; }
         }
       }
+      const posMap = {QB:'QB', RB:'RB', FB:'RB', WR:'WR', TE:'TE'};
+      let added = 0;
+      for(const [team, roster] of Object.entries(rosters.teams || {})){
+        for(const rp of roster){
+          const pos = posMap[rp.position];
+          const key = `${team}|${rp.name}|${pos}`;
+          if(!pos || !rp.name || (rp.gsis_id && existingIds.has(rp.gsis_id)) || existingKeys.has(key)) continue;
+          PLAYERS.players[pos].push({
+            gsis_id: rp.gsis_id || null, name: rp.name, team, games: 0, headshot: '',
+            season: {games: 0, m: {}}, career: {games: 0, m: {}},
+            log: [], splits: {}, ceiling: null, roster_only: true,
+          });
+          if(rp.gsis_id) existingIds.add(rp.gsis_id);
+          existingKeys.add(key);
+          added++;
+        }
+      }
       if(corrected) console.log(`Coeus: corrected ${corrected} player(s) to their real current-roster team.`);
+      if(added) console.log(`Coeus: added ${added} active roster player(s) awaiting season statistics.`);
     }
   }catch(e){ /* players keep their stats-based team — not a page-breaking failure */ }
 
