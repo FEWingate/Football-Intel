@@ -1,26 +1,42 @@
 """
 GENERATE_PROPS_REPORT.PY
 ==========================
-Generates the Props & Parlay Report: 3 favorite props per game, plus
-five separate parlays (3/4/5/6/7-team), from real FanDuel data only.
-Same architecture as generate_weekly_dfs_report.py — reads every
-finished Game Breakdown for the slate plus real bookmaker data, one
-API call for the whole slate, then runs the model's proposed parlays
-through parlay_validator.py (a real, deterministic check) rather than
-trusting Coeus's own arithmetic.
+Generates the real, structured content behind three of Prop Center's
+five sub-sections: Coeus Prop Breakdown (3 favorite props per game,
+plus one favorite per skill position, each with a suggested line or
+alt), Favorite Overs and Unders for the week, and the existing 3/4/5/
+6/7-team parlays. (Game Lines/Totals/ML and Player Props are pure,
+real, live data display, built and read directly from
+fanduel_props/latest.json — no LLM involved, see prop_center.html.)
+
+REAL DESIGN CHANGE (2026-09-12): the original version of this script
+only gave Coeus the FINISHED Game Breakdown text for each game — never
+the original evidence packages behind them (Contextual Stats,
+Matchup Intelligence, Threat Intelligence). Per Frank's explicit
+instruction, Coeus's prop picks must be grounded in the SAME evidence
+used to build the Game Breakdowns, especially Contextual Stats — not
+just a prose summary of it. Both are now included: the Game Breakdown
+text (trusted, already-vetted analysis) AND the raw evidence package
+(the real underlying data) for every game on the slate.
+
+REAL DESIGN CHANGE (2026-09-12): build_fanduel_props.py now tracks
+real per-family coverage (current / stale_last_known_good /
+unavailable) after a real, confirmed upstream reliability problem with
+parlay-api.com (see PARLAY_API_RELIABILITY_INVESTIGATION.md). This
+script reads that coverage metadata and tells Coeus explicitly, in
+plain language, which stat families are live, which are stale (and
+how old), and which have nothing at all — so it can caveat picks
+honestly instead of presenting stale numbers as current, silently
+skipping a category, or guessing. A stat family with zero real
+coverage (live or stale) gets no pick at all — Coeus is told plainly
+not to produce one, matching the Standard's "an honest gap is better
+than a filled-in placeholder" rule already established for Game
+Breakdowns and Contextual Stats.
 
 REQUIRES: pip install anthropic --break-system-packages
           export ANTHROPIC_API_KEY=...   (never commit)
           fanduel_props/latest.json must already exist — run
           build_fanduel_props.py first.
-
-BLOCKED as of 2026-09-05 — see the Props & Parlay Report Standard's
-OPEN ISSUES section: FanDuel spreads are currently absent from the
-real data, and FanDuel's real player props are alt-line ladders, not
-single-line props. This script will still RUN against whatever real
-data exists (it does not invent what's missing), but the resulting
-report inherits those same real gaps until a re-test closer to kickoff
-resolves them.
 
 USAGE:
     python3 generate_props_report.py
@@ -38,26 +54,43 @@ from parlay_validator import validate_parlay, verify_legs_against_source, leg_ke
 
 PROMPTS_DIR = "prompts"
 MASTER_PROMPT_PATH = f"{PROMPTS_DIR}/Coeus_Master_Prompt_v1.1.md"
-PROPS_STANDARD_PATH = f"{PROMPTS_DIR}/Coeus_Props_Parlay_Report_Standard_v1.0.md"
+PROPS_STANDARD_PATH = f"{PROMPTS_DIR}/Coeus_Props_Parlay_Report_Standard_v2.0.md"
 FANDUEL_DATA_PATH = "fanduel_props/latest.json"
 
 DEFAULT_MODEL = "claude-sonnet-5"
 PARLAY_SIZES = [3, 4, 5, 6, 7]
+SKILL_POSITIONS = ["QB", "RB", "WR", "TE"]
+STAT_LABELS = {"passing_yards": "Passing Yards", "rushing_yards": "Rushing Yards",
+               "receiving_yards": "Receiving Yards", "receptions": "Receptions",
+               "anytime_td": "Anytime TD"}
 
 TASK_INSTRUCTION = """\
-Generate this week's Props & Parlay Report for the FULL slate below, \
-following the Props & Parlay Report Standard exactly — 3 Favorite Props \
-per game, then five separate parlays (3, 4, 5, 6, and 7 team), in that \
-order. Lists and short entries only, per the No Paragraphs Rule — never \
-prose paragraphs. Every football claim must come from one of the Game \
-Breakdowns below; you do not have access to the original evidence \
-packages behind them. Every market, line, and price must come from the \
-real FanDuel data below — never invent a market or a single-line price \
-where only ladder thresholds exist. Each of the five parlays MUST include \
-its exact JSON block as specified in the Standard — this is not optional, \
-a real program checks every parlay after you finish.
+Generate this week's Props report for the FULL slate below, following the \
+Props & Parlay Report Standard exactly, in this order:
 
-=== GAME BREAKDOWNS (every finished game on this slate) ===
+1. Coeus Prop Breakdown — 3 favorite props for EACH game on the slate, \
+plus one favorite prop for each of QB/RB/WR/TE league-wide across the \
+whole slate. For every pick, name the real line FanDuel has posted AND \
+suggest a specific line or alt-line threshold from the real data — \
+never an invented number.
+2. Favorite Overs and Unders for the week — your best Over picks and \
+best Under picks across the ENTIRE slate, ranked by conviction, not \
+grouped by game.
+3. Five separate parlays (3, 4, 5, 6, and 7 team).
+
+Lists and short entries only, per the No Paragraphs Rule — never prose \
+paragraphs. Every football claim must come from the Game Breakdowns \
+and/or the real evidence packages below (Contextual Stats especially) \
+— never from outside knowledge. Every market, line, and price must \
+come from the real FanDuel data below — never invent one. The REAL \
+DATA COVERAGE section below tells you which stat families are live, \
+which are stale, and which have no real data at all right now — a \
+stat family with no real data (live or stale) gets no pick; say so \
+plainly rather than skipping it silently or guessing. Every JSON block \
+specified in the Standard is required, not optional — a real program \
+checks every one of them after you finish.
+
+=== REAL DATA COVERAGE (what you can actually trust right now) ===
 """
 
 
@@ -90,6 +123,97 @@ def discover_all_games():
     return list(seen.values())
 
 
+def load_evidence_for_game(away, home):
+    """Real evidence package for this game — bootstrap or regular,
+    whichever actually exists, same lookup order the Game Breakdown
+    generation itself uses. Returns (None, None) if neither exists,
+    which is a real, reportable gap for this specific game, not
+    something to silently paper over."""
+    for path in (f"evidence_bootstrap/{away}_{home}.json", f"evidence/current/{away}_{home}.json"):
+        data = load_json(path)
+        if data:
+            return data, path
+    return None, None
+
+
+def coverage_summary_text(coverage):
+    """Real, human-readable summary of which stat families Coeus can
+    actually trust right now — built directly from build_fanduel_props.py's
+    real coverage metadata (current / stale_last_known_good /
+    unavailable), not re-derived or guessed at from the raw game data."""
+    lines = []
+    for stat, label in STAT_LABELS.items():
+        meta = (coverage or {}).get(stat, {})
+        status = meta.get("status", "unavailable")
+        if status == "current":
+            lines.append(f"- {label}: LIVE, current data ({meta.get('current_event_count', 0)} real game(s)).")
+        elif status == "stale_last_known_good":
+            age_min = round((meta.get("source_age_seconds") or 0) / 60)
+            lines.append(f"- {label}: STALE — the live provider feed dropped out; showing the last real "
+                         f"data from about {age_min} minute(s) ago, for {meta.get('carried_event_count', 0)} "
+                         f"game(s). Say so plainly wherever this data is used — do not present it as live.")
+        else:
+            lines.append(f"- {label}: UNAVAILABLE — no real data at all right now, live or stale. "
+                         f"Do not produce a pick for this stat; say plainly that none is available.")
+    return "\n".join(lines)
+
+
+def build_real_index(fanduel_data):
+    """Real (canonical_event_id, market_key, player) -> real row index,
+    built from the current games[]-based fanduel_props schema. Uses the
+    exact same real market_key naming convention build_fanduel_props.py
+    itself uses (e.g. "player_passing_yards",
+    "player_passing_yards_milestones_250_or_more") so this matches
+    leg_key()'s expected identity with no changes needed to
+    parlay_validator.py."""
+    index = {}
+    for g in fanduel_data.get("games", []):
+        eid = g["canonical_event_id"]
+        for mkey in ("h2h", "spreads", "totals"):
+            for o in g.get("game_lines", {}).get(mkey, []):
+                index[(eid, mkey, o.get("name"))] = {
+                    "canonical_event_id": eid, "market_key": mkey,
+                    "player": o.get("name"), "price": o.get("price"), "point": o.get("point"),
+                }
+        for stat, by_player in (g.get("player_props") or {}).items():
+            for name, p in by_player.items():
+                if p.get("line"):
+                    plain_key = f"player_{stat}"
+                    index[(eid, plain_key, name)] = {
+                        "canonical_event_id": eid, "market_key": plain_key,
+                        "player": name, "price": p["line"]["over_price"],
+                        "under_price": p["line"]["under_price"], "point": p["line"]["point"],
+                    }
+                for alt in (p.get("alts") or []):
+                    alt_key = f"player_{stat}_milestones_{alt['threshold']}_or_more"
+                    index[(eid, alt_key, name)] = {
+                        "canonical_event_id": eid, "market_key": alt_key,
+                        "player": name, "price": alt.get("over_price") or alt.get("under_price"),
+                        "threshold": alt["threshold"],
+                    }
+        for p in (g.get("anytime_td") or []):
+            index[(eid, "player_anytime_touchdown_scorer", p["player"])] = {
+                "canonical_event_id": eid, "market_key": "player_anytime_touchdown_scorer",
+                "player": p["player"], "price": p["price"],
+            }
+    return index
+
+
+def extract_json_block(report_text, tag):
+    """Pulls one named JSON block (a JSON object, not a bare array —
+    the parlay blocks use arrays, these use objects) out of the
+    response. Returns None if the tag is missing or the JSON is
+    unparseable — a real failure for that specific block, not something
+    to silently paper over with an empty result."""
+    match = re.search(rf"{tag}\s*\n(\{{.*?\n\}})", report_text, re.DOTALL)
+    if not match:
+        return None
+    try:
+        return json.loads(match.group(1))
+    except json.JSONDecodeError:
+        return None
+
+
 def extract_parlay_blocks(report_text):
     """Pulls all five PARLAY_N_TEAM JSON blocks out of the response.
     Returns {size: legs_list_or_None} — a missing or unparseable block
@@ -107,6 +231,71 @@ def extract_parlay_blocks(report_text):
         except json.JSONDecodeError:
             result[size] = None
     return result
+
+
+def verify_pick(pick, real_by_key):
+    """Cross-checks one proposed pick (player/market_key/canonical_event_id)
+    against the real source data — same principle as
+    verify_legs_against_source() for parlay legs. Returns (verified_pick,
+    is_real) — verified_pick has its price overwritten with the REAL
+    price wherever a match is found, in case of a transcription slip;
+    is_real is False when the pick doesn't exist in the real data at
+    all, which is a real problem (Coeus referenced something not
+    actually on the board), not a rounding difference to shrug off."""
+    key = leg_key(pick)
+    real = real_by_key.get(key)
+    if real is None:
+        return pick, False
+    merged = dict(pick)
+    merged["price"] = real.get("price")
+    return merged, True
+
+
+def verify_pick_list(picks, real_by_key):
+    verified, mismatches = [], []
+    for p in picks:
+        vp, is_real = verify_pick(p, real_by_key)
+        verified.append(vp)
+        if not is_real:
+            mismatches.append(p)
+    return verified, mismatches
+
+
+def verify_prop_breakdown(raw, real_by_key):
+    if not raw:
+        return None, ["Could not parse the PROP_BREAKDOWN JSON block."]
+    errors = []
+    per_game = []
+    for game in (raw.get("per_game") or []):
+        picks, mismatches = verify_pick_list(game.get("picks") or [], real_by_key)
+        if mismatches:
+            errors.append(f"{game.get('away')}@{game.get('home')}: {len(mismatches)} pick(s) "
+                           f"don't exist in the real FanDuel data.")
+        per_game.append({"away": game.get("away"), "home": game.get("home"), "picks": picks,
+                          "mismatch_count": len(mismatches)})
+    per_position = {}
+    for pos in SKILL_POSITIONS:
+        pick = (raw.get("per_position") or {}).get(pos)
+        if not pick:
+            continue
+        vp, is_real = verify_pick(pick, real_by_key)
+        if not is_real:
+            errors.append(f"{pos} favorite pick doesn't exist in the real FanDuel data.")
+        per_position[pos] = vp
+    return {"per_game": per_game, "per_position": per_position}, errors
+
+
+def verify_favorite_ou(raw, real_by_key):
+    if not raw:
+        return None, ["Could not parse the FAVORITE_OU JSON block."]
+    errors = []
+    overs, over_mismatches = verify_pick_list(raw.get("overs") or [], real_by_key)
+    unders, under_mismatches = verify_pick_list(raw.get("unders") or [], real_by_key)
+    if over_mismatches:
+        errors.append(f"{len(over_mismatches)} favorite Over(s) don't exist in the real FanDuel data.")
+    if under_mismatches:
+        errors.append(f"{len(under_mismatches)} favorite Under(s) don't exist in the real FanDuel data.")
+    return {"overs": overs, "unders": unders}, errors
 
 
 def main():
@@ -128,29 +317,51 @@ def main():
     fanduel_data = load_json(FANDUEL_DATA_PATH)
     if fanduel_data is None:
         sys.exit(f"FATAL: {FANDUEL_DATA_PATH} not found. Run build_fanduel_props.py first.")
-    if not fanduel_data.get("props"):
-        sys.exit("FATAL: fanduel_props/latest.json has zero FanDuel prop rows. "
-                 "Nothing to build props/parlays from — re-run build_fanduel_props.py "
-                 "closer to kickoff.")
+    coverage = fanduel_data.get("coverage") or {}
+    if not any((coverage.get(s) or {}).get("status") != "unavailable" for s in STAT_LABELS):
+        sys.exit("FATAL: every real stat family is unavailable (no live or stale data at all) — "
+                 "nothing real to build picks from. Re-run build_fanduel_props.py once the "
+                 "provider's coverage recovers.")
 
-    # Real-data-by-key index, for post-generation verification (same principle
-    # as generate_weekly_dfs_report.py trusting the real slate data over
-    # whatever the model wrote).
-    real_by_key = {leg_key(r): r for r in fanduel_data["props"]}
-    for event in fanduel_data.get("odds_events", []):
-        for mkey, outcomes in event.get("markets", {}).items():
-            for outcome in outcomes:
-                row = {"canonical_event_id": event["canonical_event_id"],
-                       "market_key": mkey, "player": outcome.get("name"),
-                       "price": outcome.get("price")}
-                real_by_key[leg_key(row)] = row
+    # REAL BUG FIX (2026-09-12): fanduel_props/latest.json covers the
+    # WHOLE week's slate (14+ games), but this run only has finished
+    # Game Breakdowns for a handful of them. Sending every other game's
+    # full prop data (every player, every real alt-line rung) for no
+    # reason was confirmed directly to balloon a 4-game run to ~308,000
+    # input tokens — real, billed cost for data Coeus was never even
+    # asked about. Filtered down to only the games actually relevant to
+    # this run, before it's built into the prompt OR the verification
+    # index — Coeus can't reference a game it was never shown, so
+    # restricting both consistently loses nothing real.
+    relevant_codes = {(away, home) for _, away, home in games}
+    fanduel_data = dict(fanduel_data)
+    fanduel_data["games"] = [
+        g for g in fanduel_data.get("games", [])
+        if (g.get("away_code"), g.get("home_code")) in relevant_codes
+    ]
+    if len(fanduel_data["games"]) < len(games):
+        missing_fd = relevant_codes - {(g.get("away_code"), g.get("home_code")) for g in fanduel_data["games"]}
+        print(f"  NOTE: {len(missing_fd)} game(s) with a finished breakdown have no real FanDuel "
+              f"data at all right now: {missing_fd}.")
 
-    gb_texts, folders_used = [], set()
+    real_by_key = build_real_index(fanduel_data)
+
+    gb_texts, evidence_texts, folders_used, missing_evidence = [], [], set(), []
     for folder, away, home in games:
         gb_path = os.path.join("game_breakdowns", folder, f"{away}_{home}.md")
         gb_texts.append(f"--- {away} @ {home} ---\n{load_text(gb_path)}")
         folders_used.add(folder)
+        evidence, ev_path = load_evidence_for_game(away, home)
+        if evidence:
+            evidence_texts.append(f"--- {away} @ {home} (from {ev_path}) ---\n" +
+                                    json.dumps(evidence, separators=(",", ":")))
+        else:
+            missing_evidence.append(f"{away}_{home}")
     combined_breakdowns = "\n\n".join(gb_texts)
+    combined_evidence = "\n\n".join(evidence_texts)
+    if missing_evidence:
+        print(f"  NOTE: no evidence package found for {len(missing_evidence)} game(s) — "
+              f"{', '.join(missing_evidence)} — Coeus will rely on their Game Breakdown text alone.")
 
     master_prompt = load_text(MASTER_PROMPT_PATH)
     props_standard = load_text(PROPS_STANDARD_PATH)
@@ -160,9 +371,14 @@ def main():
     ]
 
     fanduel_json = json.dumps(fanduel_data, separators=(",", ":"))
-    user_content = (TASK_INSTRUCTION + combined_breakdowns +
-                     "\n\n=== REAL FANDUEL PROPS + ODDS DATA (this slate only) ===\n" +
-                     fanduel_json)
+    user_content = (
+        TASK_INSTRUCTION + coverage_summary_text(coverage) +
+        "\n\n=== GAME BREAKDOWNS (every finished game on this slate) ===\n" + combined_breakdowns +
+        "\n\n=== REAL EVIDENCE PACKAGES (Contextual Stats, Matchup Intelligence, Threat "
+        "Intelligence — the same underlying data the Game Breakdowns above were built from) ===\n" +
+        combined_evidence +
+        "\n\n=== REAL FANDUEL GAME LINES + PROPS DATA (this slate only) ===\n" + fanduel_json
+    )
 
     out_dir = f"props_reports/{list(folders_used)[0]}" if len(folders_used) == 1 else "props_reports/mixed"
     os.makedirs(out_dir, exist_ok=True)
@@ -173,6 +389,7 @@ def main():
         "model": args.model, "max_tokens": args.max_tokens,
         "games_included": [f"{a}_{h}" for _, a, h in games],
         "fanduel_data_source": FANDUEL_DATA_PATH,
+        "evidence_missing_for": missing_evidence,
         "system_char_count": len(master_prompt) + len(props_standard),
         "user_char_count": len(user_content),
     }
@@ -181,8 +398,7 @@ def main():
 
     approx_input_tokens = (len(master_prompt) + len(props_standard) + len(user_content)) // 4
     print(f"Games included: {len(games)}")
-    print(f"FanDuel data: {len(fanduel_data['props'])} prop rows, "
-          f"{len(fanduel_data.get('odds_events', []))} odds events")
+    print(f"Evidence packages found: {len(evidence_texts)} of {len(games)}")
     print(f"Rough input size: ~{approx_input_tokens:,} tokens (estimate only)")
 
     if args.dry_run:
@@ -226,13 +442,28 @@ def main():
         json.dump(prompt_record, f, indent=2)
     print(f"\nWrote {out_stem}.md — {usage.input_tokens:,} input / {usage.output_tokens:,} output tokens")
 
-    # The real check — independent of whatever Coeus asserted in prose. Also
-    # collected into structured form (not just printed) so the Prop Center
-    # page can render real parlay cards from validated data, rather than
-    # displaying Coeus's raw prose+JSON as-is.
+    print("\n" + "=" * 60)
+
+    prop_breakdown_raw = extract_json_block(report_text, "PROP_BREAKDOWN")
+    prop_breakdown, pb_errors = verify_prop_breakdown(prop_breakdown_raw, real_by_key)
+    print("\nPROP BREAKDOWN VALIDATION:")
+    if pb_errors:
+        for e in pb_errors:
+            print(f"  ISSUE: {e}")
+    else:
+        print("  PASSED — every pick verified against real FanDuel data.")
+
+    favorite_ou_raw = extract_json_block(report_text, "FAVORITE_OU")
+    favorite_ou, fou_errors = verify_favorite_ou(favorite_ou_raw, real_by_key)
+    print("\nFAVORITE OVERS/UNDERS VALIDATION:")
+    if fou_errors:
+        for e in fou_errors:
+            print(f"  ISSUE: {e}")
+    else:
+        print("  PASSED — every pick verified against real FanDuel data.")
+
     parlays = extract_parlay_blocks(report_text)
     parlay_results = {}
-    print("\n" + "=" * 60)
     for size in PARLAY_SIZES:
         legs = parlays[size]
         print(f"\n{size}-TEAM PARLAY VALIDATION:")
@@ -268,15 +499,14 @@ def main():
         }
     print("=" * 60)
 
-    # Structured companion file — this is what the Prop Center page actually
-    # reads. The raw markdown is included too (for a "full report" view) but
-    # the parlay cards render from parlay_results, which is real, validated
-    # data, not text the page would need to re-parse itself.
     report_json = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "games_included": [f"{a}_{h}" for _, a, h in games],
+        "coverage": coverage,
         "stake_used_for_payout_examples": args.stake,
         "markdown": report_text,
+        "prop_breakdown": prop_breakdown, "prop_breakdown_errors": pb_errors,
+        "favorite_ou": favorite_ou, "favorite_ou_errors": fou_errors,
         "parlays": {str(size): parlay_results[size] for size in PARLAY_SIZES},
     }
     with open(f"{out_stem}.json", "w") as f:
