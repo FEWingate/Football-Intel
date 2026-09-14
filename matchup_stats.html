@@ -116,7 +116,7 @@ async function load(week){
   $("grid").innerHTML = `<div class="empty">Loading week ${week}…</div>`;
   fiStatus("Loading","loading");
   try{
-    const res = await fetch(matchupPath(season, week));
+    const res = await fetch(matchupPath(season, week), { cache: 'no-store' });
     if(!res.ok) throw new Error("missing");
     DATA = await res.json();
   }catch(e){

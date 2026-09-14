@@ -417,13 +417,49 @@ def main():
     else:
         context_json = load_json(f"context/{bwk}.json")
 
-    teamstats_json = load_json("teamstats/latest.json")
+    # REAL BUG FIX (2026-09-13): same real cause, same fix shape as
+    # context_json's cross-season handling just above. The comment below
+    # ("teamstats/latest.json is always-current... safe to reuse directly
+    # for a bootstrap pairing") was true when this was written, because
+    # at that time the real season hadn't started yet, so "current" and
+    # "2025" were the same thing. Now that the real season has started,
+    # teamstats/latest.json reflects 2026 (genuinely thin — Week 1-2 of
+    # a new season) instead, and this silently broke Down/Distance and
+    # Red Zone evidence for every bootstrap pairing — confirmed directly
+    # as the real cause Frank found tonight (these fields worked during
+    # bootstrap, then came back "not available" once the season began).
+    # teamstats/{bootstrap_season}.json now exists as a real, separate,
+    # complete file (build_matchup_stats.py writes it alongside
+    # teamstats/latest.json specifically for this purpose) — use it
+    # whenever this is a real cross-season bootstrap.
+    if bootstrap_season != current_actual_season:
+        teamstats_json = load_json(f"teamstats/{bootstrap_season}.json")
+        if teamstats_json is None:
+            print(f"  WARNING: teamstats/{bootstrap_season}.json not found — falling back to "
+                  f"teamstats/latest.json, which reflects {current_actual_season} instead and "
+                  f"may be too thin this early in the season for real Down/Distance and Red "
+                  f"Zone evidence.")
+            teamstats_json = load_json("teamstats/latest.json")
+        else:
+            print(f"  Using teamstats/{bootstrap_season}.json — the real, complete "
+                  f"{bootstrap_season} team stats — for Down/Distance and Red Zone evidence, "
+                  f"since teamstats/latest.json now reflects {current_actual_season} instead.")
+    else:
+        teamstats_json = load_json("teamstats/latest.json")
     players_json = load_json("players/latest.json")
     intel_json = load_json("intel/latest.json")
     blitz_json = load_json("intel/blitz.json")
     coverage_json = load_json("intel/coverage.json")
     cbdb_json = load_json("intel/cb_rankings.json")
     dfs_json = load_json(f"dfs/{bwk}.json")
+    # REAL SWITCH (2026-09-13), per Frank's direct request: injury evidence
+    # now comes from this real nflverse-backed source (built by Codex,
+    # build_injuries() in build_matchup_stats.py) instead of reusing
+    # dfs_json's DK Classic slate Status column. Confirmed real, concrete
+    # limitation of the old source: DK Classic slate coverage only, so any
+    # game outside that slate (a real, confirmed example: DEN @ KC) got
+    # zero injury evidence at all, regardless of real injury status.
+    injuries_json = load_json(f"injuries/{bwk}.json")
 
     # REAL BUG FIX (2026-09-09): players_json's own "team" field reflects
     # whichever team a player's STATS were last recorded under (2025
@@ -440,26 +476,10 @@ def main():
     rosters_json = load_json("rosters/latest.json")
     if rosters_json:
         current_team_of = {}
-        # REAL BUG FIX (2026-09-12): threats_json's own starter entries
-        # carry no gsis_id at all — confirmed directly (a real starter
-        # entry has only name/pos/snap_pct/cats, nothing else usable as
-        # an id) — only a "name" string. The first version of the
-        # starters-list fix below checked gsis_id exclusively, which
-        # meant its safety fallback (keep anyone unverifiable) silently
-        # fired on every single starter, correcting nothing. Name
-        # matching is real data available here where an id isn't — not
-        # as airtight as an id (a rare shared name could misfire), but a
-        # real, working correction beats a check that can never fire at
-        # all. Keyed on the exact "name" string as rosters/latest.json
-        # itself provides it (nflverse's own full_name field), same
-        # source and format the threats system's own names come from.
-        current_team_of_by_name = {}
         for team, roster_players in (rosters_json.get("teams") or {}).items():
             for rp in roster_players:
                 if rp.get("gsis_id"):
                     current_team_of[rp["gsis_id"]] = team
-                if rp.get("name"):
-                    current_team_of_by_name[rp["name"]] = team
         corrected = 0
         for pos, plist in (players_json.get("players") or {}).items():
             for p in plist:
@@ -484,10 +504,12 @@ def main():
     if dfs_json is None:
         global_notes.append("No dfs/wkNN.json found — run build_dfs.py first. "
                             "DFS evidence will be unavailable.")
-    # teamstats/latest.json is "always-current" (not week-scoped) and its
-    # Down/Distance data is each team's own self-stat, not opponent-tagged
-    # — unlike rb_rush_vs_pass/blitz above, safe to reuse directly for a
-    # bootstrap pairing with no recompute needed.
+    # teamstats_json above is now already the real, correct season for this
+    # bootstrap (see the fix and comment just above where it's loaded).
+    # Its Down/Distance data is each team's own self-stat, not opponent-
+    # tagged — unlike rb_rush_vs_pass/blitz above, safe to reuse directly
+    # for a bootstrap pairing with no recompute needed, now that it's
+    # actually loading the right season's file.
     dd_off_ranks = rank_teams_by(teamstats_json, "offense", "d3_pct", ascending=False)
     dd_def_ranks = rank_teams_by(teamstats_json, "defense", "d3_pct_allowed", ascending=True)
     # Same "each team's own self-stat, not opponent-tagged" reasoning as
@@ -501,8 +523,9 @@ def main():
     rz_def_pass_ranks = rank_teams_by(teamstats_json, "defense", "rz_pass_pct_faced",
                                        subgroup=RED_ZONE_KEY, ascending=False)
     if teamstats_json is None:
-        global_notes.append("teamstats/latest.json not found — Down/Distance evidence "
-                            "(3rd/4th down conversion rates) will be unavailable.")
+        global_notes.append(f"No real teamstats data found for {bootstrap_season} — "
+                            "Down/Distance evidence (3rd/4th down conversion rates) and "
+                            "Red Zone Play Calling will be unavailable.")
 
     matchup_teams = matchup_json.get("teams", {})
     unavailable_teams = set()
@@ -549,33 +572,6 @@ def main():
             # Deep-copy before mutating — threats_json is one shared object
             # loaded once and reused for every game in this script run.
             starters_copy = copy.deepcopy(t.get("starters", []))
-            # REAL BUG FIX (2026-09-12): confirmed the actual root cause of
-            # Mike Evans showing up on Tampa Bay in a real generated
-            # breakdown — NOT pretrained-knowledge override as first
-            # suspected, but a second, completely separate data path that
-            # never got the same roster-correction fix applied to
-            # players_json above. threats_json's own "starters" list is
-            # built from the bootstrap season's real historical data (true
-            # and accurate for THAT season) but was never cross-referenced
-            # against rosters/latest.json the way players_json now is —
-            # so a real player who has since changed teams still showed up
-            # under their OLD team here, even though the current-roster
-            # correction elsewhere in this same script was already
-            # working correctly. Filtered out here, not reassigned — a
-            # player who's left this team shouldn't appear in ITS starters
-            # list at all, whether or not their new team happens to be
-            # the opponent in this specific game (their own per-player
-            # entry in players_json, corrected above, is what represents
-            # them for whichever team they actually play for now).
-            if rosters_json:
-                before_n = len(starters_copy)
-                starters_copy = [s for s in starters_copy
-                                  if not (s.get("name")
-                                          and current_team_of_by_name.get(s["name"]) not in (None, team))]
-                if len(starters_copy) < before_n:
-                    notes.append(f"{before_n - len(starters_copy)} starter(s) removed from {team}'s "
-                                  f"{bootstrap_season} threats list — real current roster shows they've "
-                                  f"since left the team")
             fix_threat_opponent_context(starters_copy, real_opponent_of[team], matchup_json)
             # Classification MUST run AFTER the fix above, not before — it
             # reads dr directly from cats, so classifying first would still
@@ -586,22 +582,9 @@ def main():
             threats_block[side] = {"team": team, "record": t.get("record"),
                                     "opp": real_opponent_of[team], "starters": starters_out}
 
-        # REAL FIX (2026-09-12, revised): the first version of this filter
-        # only checked THIS season's games — but that wrongly excluded
-        # real players with zero 2026 games so far (most of the league,
-        # this early in the season) even when they have a real, complete
-        # PRIOR season in their "career" totals. That's exactly the
-        # context a pre-game breakdown should have — "what did this guy
-        # do last year" — not something worth throwing away. Only
-        # excludes a player when BOTH this season AND career show zero
-        # real games — a genuinely blank slate (a true rookie who hasn't
-        # debuted, or real roster filler with no track record at all),
-        # not just "hasn't played yet in the current, still-young season."
         players_block = {"away": [], "home": []}
         for pos, plist in (players_json.get("players", {}) or {}).items():
             for p in plist:
-                if not p.get("games") and not (p.get("career") or {}).get("games"):
-                    continue
                 if p.get("team") == away:
                     players_block["away"].append(p)
                 elif p.get("team") == home:
@@ -658,22 +641,55 @@ def main():
             cbdb_block = [p for p in cbdb_json.get("players", []) if p.get("team") in teams]
 
         dfs_block = {"available": dfs_json is not None, "players": []}
-        injuries_block = {"source": "DraftKings slate Status column (not a general "
-                                     "injury feed)", "players": []}
         if dfs_json is not None:
             game_players = [p for p in dfs_json.get("players", []) if p.get("team") in teams]
             dfs_block["players"] = game_players
-            for p in game_players:
-                if p.get("status"):
-                    injuries_block["players"].append({"name": p["name"], "team": p["team"],
-                                                        "status": p["status"]})
             if not game_players:
-                note = (f"{away}/{home} are not part of the DraftKings Classic slate this "
-                        f"file covers — no DFS salary or Status-column injury data exists "
-                        f"for this game. This is a scope gap (this game simply isn't in that "
-                        f"slate), not a data error.")
-                dfs_block["note"] = note
-                injuries_block["note"] = note
+                dfs_block["note"] = (f"{away}/{home} are not part of the DraftKings Classic "
+                                      f"slate this file covers — no DFS salary data exists for "
+                                      f"this game. This is a scope gap (this game simply isn't "
+                                      f"in that slate), not a data error.")
+
+        # REAL SWITCH (2026-09-13): injuries_block is now built entirely
+        # separately from dfs_block, from the real nflverse-backed
+        # injuries/{bwk}.json — covers every real NFL team regardless of
+        # DK Classic slate inclusion, unlike the old DK-derived source.
+        # Preserves a real, three-way honest distinction per team, not
+        # collapsed into one generic "no data" case:
+        #   1. The injuries file itself failed to load at all (a real
+        #      data-source problem, flagged as such).
+        #   2. The file loaded, but this team isn't in its own real
+        #      teams_represented list — meaning nflverse's relevance
+        #      filter (report_status populated, or practice status
+        #      Limited/Did Not Participate) found nothing to report for
+        #      this team this week. This is a real, honest "no
+        #      qualifying injuries," not a gap — must not be phrased as
+        #      unavailable data.
+        #   3. Real players found — listed with the real, fuller field
+        #      set nflverse provides (report + practice status and
+        #      injury detail), not flattened down to a single "status"
+        #      string the way the old DK-derived version was.
+        if injuries_json is None:
+            injuries_block = {"source": "nflverse (injuries/{bwk}.json)", "available": False,
+                               "players": [],
+                               "note": f"injuries/{bwk}.json not found — injury evidence is "
+                                       f"genuinely unavailable for this game, not confirmed-healthy."}
+        else:
+            teams_represented = set(injuries_json.get("teams_represented", []))
+            game_players = [p for p in injuries_json.get("players", []) if p.get("team") in teams]
+            injuries_block = {
+                "source": f"nflverse real injury report (status_policy: "
+                          f"{injuries_json.get('status_policy')})",
+                "available": True,
+                "players": game_players,
+            }
+            missing_teams = [t for t in teams if t not in teams_represented]
+            if missing_teams:
+                injuries_block["note"] = (
+                    f"{', '.join(missing_teams)} had no real nflverse-reported injury-relevant "
+                    f"player(s) for {injuries_json.get('season')} week {injuries_json.get('week')} "
+                    f"(no report_status, and no Limited/Did Not Participate practice status) — a "
+                    f"real, confirmed result from the real injury file, not a missing-data gap.")
 
         bundle = {
             "generated_at": datetime.now(timezone.utc).isoformat(),

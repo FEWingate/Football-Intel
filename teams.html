@@ -159,7 +159,7 @@ main.innerHTML = `
 
 const $ = id => document.getElementById(id);
 const pad = n => String(n).padStart(2,"0");
-let RECORDS = null, TEAMSTATS = null, COVERAGE = null, CBDB = null, ROSTERS = null, activeTeam = null, activeSec = 'offense', lastFocus = null;
+let RECORDS = null, TEAMSTATS = null, TEAMSTATS_2025 = null, statsYear = 2025, COVERAGE = null, CBDB = null, ROSTERS = null, activeTeam = null, activeSec = 'offense', lastFocus = null;
 
 async function load(){
   fiStatus("Loading","loading");
@@ -204,6 +204,11 @@ async function load(){
     const res = await fetch(`teamstats/latest.json`, { cache: 'no-store' });
     if(res.ok) TEAMSTATS = await res.json();
   }catch(e){ console.error('teamstats/latest.json failed to load or parse:', e); }
+
+  try{
+    const res25 = await fetch(`teamstats/2025.json`, { cache: 'no-store' });
+    if(res25.ok) TEAMSTATS_2025 = await res25.json();
+  }catch(e){ console.error('teamstats/2025.json failed to load or parse:', e); }
 
   try{
     const resC = await fetch(`intel/coverage.json`, { cache: 'no-store' });
@@ -565,10 +570,22 @@ function openTeam(t, source){
 
 function coverageTendencyHTML(team){
   if(!COVERAGE || !COVERAGE.available) return '';
-  const c = COVERAGE.team_coverage_rate ? COVERAGE.team_coverage_rate[team] : null;
+  // REAL BUG FIX (2026-09-13): same real cause as cbDbRankingsHTML's
+  // crash — this used to read a flat COVERAGE.team_coverage_rate, but
+  // the backend's real, current output (confirmed directly against
+  // intel/coverage.json) is by_season[year].team_coverage_rate. This
+  // one didn't crash outright (the ternary below happened to guard
+  // against the undefined access), but it was silently showing nothing
+  // instead of the 32 real teams' worth of coverage data that's
+  // actually there.
+  const seasons = COVERAGE.seasons || [];
+  if(!seasons.length) return '';
+  const season = seasons[0]; // most recent available real season
+  const block = (COVERAGE.by_season || {})[season] || {};
+  const c = block.team_coverage_rate ? block.team_coverage_rate[team] : null;
   if(!c) return '';
   return `
-    <div class="subsect">Coverage Tendency — ${COVERAGE.season} Season</div>
+    <div class="subsect">Coverage Tendency — ${season} Season</div>
     <div style="display:flex;gap:0;border-radius:var(--radius);overflow:hidden;margin-bottom:4px;height:28px">
       <div style="width:${c.zone_pct}%;background:rgba(163,230,53,.18);display:flex;align-items:center;padding:0 10px;
         font-family:var(--font-mono);font-size:11px;white-space:nowrap">Zone ${c.zone_pct}%</div>
@@ -590,10 +607,21 @@ function coverageTendencyHTML(team){
    how good this team's individual defenders have been" list. */
 function cbDbRankingsHTML(team){
   if(!CBDB || !CBDB.available) return '';
-  const rows = CBDB.players.filter(p => p.team === team).sort((a,b) => b.targets - a.targets);
+  // REAL BUG FIX (2026-09-13): this used to read a flat CBDB.players
+  // array, but the backend's real, current output (confirmed directly
+  // against intel/cb_rankings.json) is players_by_season — a real
+  // multi-season refactor that this function was never updated to
+  // match. Confirmed as the actual cause of the Defense tab crashing
+  // outright (CBDB.available was true, so the early guard above never
+  // caught it — CBDB.players itself was simply undefined).
+  const seasons = CBDB.seasons || [];
+  if(!seasons.length) return '';
+  const season = seasons[0]; // most recent available real season
+  const players = (CBDB.players_by_season || {})[season] || [];
+  const rows = players.filter(p => p.team === team).sort((a,b) => b.targets - a.targets);
   if(!rows.length) return '';
   return `
-    <div class="subsect">CB/DB Coverage Rankings — ${CBDB.season} Season</div>
+    <div class="subsect">CB/DB Coverage Rankings — ${season} Season</div>
     <table class="stat-table"><thead><tr>
       <th>Player</th><th class="right">Targets</th><th class="right">Yds/Tgt Allowed</th><th class="right">League Rank</th>
     </tr></thead><tbody>
@@ -601,7 +629,7 @@ function cbDbRankingsHTML(team){
         <td>${esc(p.name)} <span style="color:var(--text-dim);font-size:10px">${esc(p.position)}</span></td>
         <td class="num">${p.targets}</td>
         <td class="num">${p.yds_per_tgt_allowed}</td>
-        <td class="num">#${p.rank_yds_per_tgt_allowed} of ${CBDB.players.length}</td>
+        <td class="num">#${p.rank_yds_per_tgt_allowed} of ${players.length}</td>
       </tr>`).join('')}
     </tbody></table>
     <div class="empty" style="padding:4px 0 12px;text-align:left;font-size:10px">
@@ -762,6 +790,29 @@ function rosterHTML(team){
   return h;
 }
 
+// Which season's team-stats data is currently in play — 2025 (real,
+// complete) by default, since a brand-new season is genuinely too thin
+// in its first couple weeks to be a useful "season averages" view.
+// Applies only to the four stats-driven tabs (Offense/Defense/Special
+// Teams/Penalties) — Roster, ATS Record, and Home/Road each have their
+// own separate data source and season handling already.
+function activeTeamstats(){
+  return statsYear === 2025 ? TEAMSTATS_2025 : TEAMSTATS;
+}
+
+// Same real <select> pattern already used for the Home/Road tab's own
+// season picker, for visual/behavioral consistency across the modal.
+function yearToggleHTML(){
+  return `
+    <div class="travel-controls" style="margin-bottom:12px">
+      <label class="lbl" for="teamStatsYear">Season</label>
+      <select id="teamStatsYear">
+        <option value="2025" ${statsYear===2025?'selected':''}>2025</option>
+        <option value="2026" ${statsYear===2026?'selected':''}>2026</option>
+      </select>
+    </div>`;
+}
+
 function renderStats(){
   $("mToggle").querySelectorAll("button").forEach(b =>
     b.setAttribute("aria-pressed", String(b.dataset.sec === activeSec)));
@@ -783,17 +834,29 @@ function renderStats(){
     return;
   }
 
-  if(!TEAMSTATS){
+  const teamstats = activeTeamstats();
+  if(!teamstats){
     box.innerHTML = `<div class="empty">
-      No team-stats data yet.<br>
+      No ${statsYear} team-stats data yet.<br>
       Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
     return;
   }
-  const teamData = TEAMSTATS.teams[activeTeam];
-  const labels = TEAMSTATS.labels[activeSec];
+  const teamData = teamstats.teams[activeTeam];
+  if(!teamData){
+    box.innerHTML = yearToggleHTML() + `<div class="empty" style="margin-top:8px">
+      No ${statsYear} stats for ${esc(FI_TEAM_NAME[activeTeam] || activeTeam)} — they haven't
+      played a ${statsYear} game yet.</div>`;
+    $("teamStatsYear").addEventListener("change", e => {
+      statsYear = Number(e.target.value);
+      renderStats();
+    });
+    return;
+  }
+  const labels = teamstats.labels[activeSec];
   const data = teamData[activeSec];
-  let h = `<div class="empty" style="padding:8px 0 4px;text-align:left;font-size:10px">
-    ${TEAMSTATS.data_horizon} · ${teamData.games} games played</div>`;
+  let h = yearToggleHTML();
+  h += `<div class="empty" style="padding:8px 0 4px;text-align:left;font-size:10px">
+    ${teamstats.data_horizon} · ${teamData.games} games played</div>`;
 
   if(activeSec === 'defense') h += coverageTendencyHTML(activeTeam);
 
@@ -815,6 +878,10 @@ function renderStats(){
     if(activeSec === 'defense' && subgroup === 'Pass Defense') h += cbDbRankingsHTML(activeTeam);
   }
   box.innerHTML = h;
+  $("teamStatsYear").addEventListener("change", e => {
+    statsYear = Number(e.target.value);
+    renderStats();
+  });
 }
 
 function closeModal(){

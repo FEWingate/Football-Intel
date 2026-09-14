@@ -1,53 +1,56 @@
 """
 BUILD_FANDUEL_PROPS.PY
 ========================
-Fetches real game lines (h2h/spreads/totals + alternates) and player
-props (passing/rushing/receiving yards, receptions, anytime TD — both
-the plain line where FanDuel has one, and every real alt-line/milestone
-rung), filtered to FanDuel specifically, from parlay-api.com. Writes
-one normalized JSON, grouped by real game then by real stat concept,
-that both generate_props_report.py and prop_center.html read from —
-same "one source of truth" pattern as build_dfs.py for DraftKings data.
+Fetches real game lines (h2h/spreads/totals + alternates, via /odds) and
+player props (passing/rushing/receiving yards, receptions, anytime TD —
+both the plain line where FanDuel has one, and every real alt-line/
+milestone rung, via /props), filtered to FanDuel specifically, from
+parlay-api.com. Writes one normalized JSON, grouped by real game then by
+real stat concept, that both generate_props_report.py and
+prop_center.html read from — same "one source of truth" pattern as
+build_dfs.py for DraftKings data.
 
 REQUIRES: export PARLAY_API_KEY=... in ~/.bashrc (never commit it)
 
-REAL BUG FIX (2026-09-12): the original version of this script used
-parlay-api.com's flat /props extension endpoint. Two real, confirmed
-problems with that endpoint, found by testing against real live data,
-not assumed from docs:
-  1. Prices came back in American format (-115, -113, +104...) —
-     inconsistent with every other price in this whole pipeline, which
-     is decimal (confirmed for /odds). A decimal price can never be
-     negative, so this wasn't ambiguous once checked directly.
-  2. A single flat call covered only 3 of 12+ real games in testing —
-     nowhere close to comprehensive weekly coverage. Real FanDuel
-     single-line passing/rushing yards props (confirmed live on
-     FanDuel's own site via screenshot) were WRONGLY concluded to not
-     exist, purely because the incomplete sample didn't happen to
-     include the game being checked.
-This version uses the standard /odds endpoint instead, passing player
-prop market keys directly in the markets param — a real, confirmed-
-working usage pattern for this API (verified via a real SDK's
-documented usage, then independently confirmed with a live test call:
-13 of 14 real events returned real FanDuel player-prop data, all in
-clean decimal, for 28 credits covering 5 markets). Same endpoint
-that already reliably covers every game for h2h/spreads/totals, same
-clean pricing — no separate price-format handling needed anywhere
-downstream.
+REAL HISTORY, for whoever reads this next — two prior approaches were
+tried and replaced, each for a real, confirmed reason, not a guess:
+  1. The original version used the flat /props endpoint with no markets
+     param. Confirmed problems: American-format prices (inconsistent
+     with the rest of this pipeline) and incomplete per-game coverage
+     (a single call covered only 3 of 12+ real games).
+  2. The next version moved player props onto /odds instead, passing
+     prop market keys directly. This worked for a while, but a real
+     support ticket to parlay-api.com (2026-09-13) revealed why passing
+     yards specifically kept going empty: /odds only shows prop lines
+     that moved in the last 10 minutes. A real, unchanged line falls
+     out of that view entirely — it isn't a provider outage, it's the
+     wrong endpoint for this use case.
+  3. THIS version (current): player props are back on /props, but
+     called correctly per parlay-api.com support's direct guidance —
+     explicit markets=, oddsFormat=decimal, and a real limit, with the
+     real market-key list discovered fresh every run via the free (0-
+     credit) /props/markets endpoint rather than trusted from a
+     hardcoded snapshot. Confirmed flat 3 credits per /props call,
+     regardless of market count — cheaper and more reliable than either
+     prior approach. Game lines stay on /odds, unaffected by any of
+     this — that side was never broken.
 
-REAL MARKET-KEY MAPPING (confirmed live 2026-09-12, not assumed):
-FanDuel currently has a real plain Over/Under line for passing yards,
-rushing yards, receiving yards, and receptions — the "no single line,
-only ladders" conclusion in the original OPEN ISSUES was wrong, caused
-by the flat-endpoint's incomplete coverage, not a real gap in what
-FanDuel offers. Every one of the four stats ALSO has a real alt-line
-ladder alongside its plain line. Anytime TD (player_anytime_touchdown_
-scorer) is real but different in shape: a "Yes" side per player with a
-real price, no "Under"/"No" side — you can't bet against a player
-scoring, only for it.
-
-Real credit cost: reported directly from x-requests-used after every
-run, not estimated — do not assume last run's number still holds.
+REAL, CONFIRMED QUIRKS OF /props SPECIFICALLY (2026-09-13, not assumed):
+  - Market-key spellings for the same real stat differ by book (e.g.
+    receiving yards: player_receiving_yards for most books,
+    player_receiving_yds for pick6). Only FanDuel's real spellings
+    matter here, discovered fresh via /props/markets each run.
+  - The key requested and the key a response row is labeled with can
+    differ: requesting player_anytime_touchdown_scorer via /props
+    returns FanDuel rows labeled player_anytime_td — a real, confirmed
+    quirk of this endpoint specifically, not true of /odds, which does
+    use player_anytime_touchdown_scorer for the same real market.
+  - limit=20000 is rejected outright (HTTP 422); 5000 is a real,
+    confirmed-safe value — direct testing showed FanDuel's real
+    coverage was identical at limit=5000 and limit=10000 for a 5-market
+    request, meaning 5000 is enough to avoid other books' volume
+    crowding FanDuel's rows out, at least at the per-stat-family
+    request size this script uses.
 
 USAGE:
     python3 build_fanduel_props.py
@@ -65,7 +68,7 @@ from datetime import datetime, timezone
 import requests
 
 PARLAY_API_KEY = os.environ.get("PARLAY_API_KEY")
-BASE_URL = "https://api.parlay-api.com/v1"
+BASE_URL = "https://parlay-api.com/v1"
 NFL_SPORT_KEY = "americanfootball_nfl"
 AUTH_HEADER = "X-API-Key"
 OUTPUT_PATH = "fanduel_props/latest.json"
@@ -109,51 +112,78 @@ def current_week_game_codes():
 
 GAME_LINE_MARKETS = ["h2h", "spreads", "totals", "alternate_spreads", "alternate_totals"]
 
-# Real, confirmed-existing FanDuel milestone thresholds per stat — read
-# directly off a live /props taxonomy pull (inspect_parlay_props.py),
-# not guessed at a round-number pattern. A book can add/drop a rung at
-# any time; this list reflects what was real as of 2026-09-12.
-PASSING_YARDS_THRESHOLDS = (150, 175, 200, 225, 250, 275, 300, 325, 350, 400)
-RUSHING_YARDS_THRESHOLDS = (10, 15, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90, 100, 110)
-RECEIVING_YARDS_THRESHOLDS = (10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110, 125, 150)
-RECEPTIONS_THRESHOLDS = (2, 3, 4, 5, 6, 7, 8, 9, 10)
+# REAL REWRITE (2026-09-13): per direct guidance from parlay-api.com's own
+# support team (replying to a real support ticket about the passing-yards
+# outage), the player-props side of this script was rebuilt around their
+# actual recommended usage, confirmed against real live tests before
+# shipping:
+#   1. Player props belong on the dedicated /props endpoint, not /odds.
+#      /odds only shows lines that moved in the last 10 minutes — a real,
+#      unchanged line can fall out of that view entirely, which is what
+#      actually caused the passing-yards "outage" this whole pipeline
+#      built a stale-data fallback around. /props looks back 60 minutes
+#      and returns the full real board.
+#   2. /props must be called with an explicit, real markets= list — an
+#      earlier version of this project called it with no markets param
+#      at all, which support confirmed returns "a mixed page across every
+#      prop market", explaining the incomplete per-game coverage found
+#      then.
+#   3. Real cost is a FLAT 3 credits per /props call, confirmed directly —
+#      NOT scaled by market count the way /odds is. The old approach of
+#      combining everything into one /odds call at ~53 credits was
+#      needlessly expensive as well as unreliable.
+#   4. Real market-key spellings are confirmed to DIFFER by book (e.g.
+#      receiving yards: player_receiving_yards for most books,
+#      player_receiving_yds for pick6, player_rec_yds for some others) —
+#      and, confirmed by direct testing, can also differ between what
+#      /props accepts as a request param and what it labels the response
+#      row with (anytime TD: requesting player_anytime_touchdown_scorer
+#      via /props actually returns rows labeled player_anytime_td for
+#      FanDuel — a real, confirmed quirk of this specific endpoint, not
+#      true of /odds, which does use player_anytime_touchdown_scorer).
+#   5. The real, current list of market keys — including which alt-line
+#      milestone rungs actually exist right now — is discovered fresh
+#      every run via the free (0-credit) /props/markets endpoint, rather
+#      than a hardcoded threshold list. Confirmed necessary: rushing
+#      yards' 75-or-more rung was present in one real check and absent
+#      from another the same day — a fixed list would silently go stale.
+STAT_FAMILIES = ["passing_yards", "rushing_yards", "receiving_yards", "receptions"]
+# Confirmed via direct testing against the real /props endpoint — this is
+# the actual key FanDuel's rows come back labeled with there, DIFFERENT
+# from the player_anytime_touchdown_scorer key /odds uses for the same
+# real market. Using the wrong one here silently returns zero rows.
+ANYTIME_TD_KEY = "player_anytime_td"
+# Real cap confirmed by direct testing: limit=20000 is rejected outright
+# (HTTP 422); limit=5000 vs 10000 returned identical real FanDuel coverage
+# for a 5-market combined request, meaning 5000 already captures FanDuel's
+# real data for a single stat family's plain+alt markets without other
+# books' volume crowding it out — confirmed, not assumed.
+PROPS_ROW_LIMIT = 5000
 
-PLAIN_KEY_TO_STAT = {
-    "player_passing_yards": "passing_yards",
-    "player_rushing_yards": "rushing_yards",
-    "player_receiving_yards": "receiving_yards",
-    "player_receptions": "receptions",
-}
-ALT_LISTS = {
-    "passing_yards": [f"player_passing_yards_milestones_{n}_or_more" for n in PASSING_YARDS_THRESHOLDS],
-    "rushing_yards": [f"player_rushing_yards_milestones_{n}_or_more" for n in RUSHING_YARDS_THRESHOLDS],
-    "receiving_yards": [f"player_receiving_yards_milestones_{n}_or_more" for n in RECEIVING_YARDS_THRESHOLDS],
-    "receptions": [f"player_receptions_milestones_{n}_or_more" for n in RECEPTIONS_THRESHOLDS],
-}
-ANYTIME_TD_KEY = "player_anytime_touchdown_scorer"
 
-PLAYER_PROP_MARKETS = (
-    list(PLAIN_KEY_TO_STAT.keys())
-    + [k for alts in ALT_LISTS.values() for k in alts]
-    + [ANYTIME_TD_KEY]
-)
-
-
-def classify_market(key):
-    """Returns (stat, kind, threshold) for a real market_key. kind is
-    'line' (the plain O/U), 'alt' (one rung of the milestone ladder),
-    'anytime_td' (yes-only), or (None, None, None) if this key isn't
-    one this script asked for (shouldn't happen, but never silently
-    misclassify an unexpected key as something it isn't)."""
-    if key == ANYTIME_TD_KEY:
-        return ("anytime_td", "anytime_td", None)
-    if key in PLAIN_KEY_TO_STAT:
-        return (PLAIN_KEY_TO_STAT[key], "line", None)
-    for stat, alts in ALT_LISTS.items():
-        if key in alts:
-            threshold = int(key.split("_")[-3])
-            return (stat, "alt", threshold)
-    return (None, None, None)
+def discover_fanduel_markets():
+    """Real, current FanDuel market keys per stat family, discovered fresh
+    via the free /props/markets endpoint (0 credits) — confirmed real
+    market data, not a hardcoded snapshot that can silently go stale.
+    Returns {stat: {"plain": key_or_None, "alts": [(threshold, key), ...]}}."""
+    data = _get(f"sports/{NFL_SPORT_KEY}/props/markets")
+    result = {stat: {"plain": None, "alts": []} for stat in STAT_FAMILIES}
+    for m in data:
+        if not isinstance(m, dict) or "fanduel" not in (m.get("bookmakers") or []):
+            continue
+        key = m.get("key") or ""
+        for stat in STAT_FAMILIES:
+            if key == f"player_{stat}":
+                result[stat]["plain"] = key
+            elif key.startswith(f"player_{stat}_milestones_") and key.endswith("_or_more"):
+                try:
+                    threshold = int(key.split("_")[-3])
+                except (ValueError, IndexError):
+                    continue
+                result[stat]["alts"].append((threshold, key))
+    for stat in STAT_FAMILIES:
+        result[stat]["alts"].sort()
+    return result
 
 
 def _get(path, params=None):
@@ -213,79 +243,53 @@ def fetch_odds(markets):
     return events
 
 
-def reshape_player_props(prop_events):
-    """Regroups the raw per-market-key event data into one entry per
-    real player per stat, with their plain line (if FanDuel has one)
-    and their full real alt-line ladder together — this is the shape
-    both the report generator and the HTML page actually want, not the
-    raw one-array-per-market-key shape the API returns."""
-    # players[event_id][stat][player_name] = {"line": {...} or None, "alts": [...]}
+def fetch_props(markets):
+    """Real /props call for the given market keys, filtered to FanDuel.
+    Confirmed flat 3-credit cost regardless of how many market keys are
+    requested (per parlay-api.com support, 2026-09-13) — unlike /odds,
+    where cost scales with market count. Returns a flat list of real
+    rows, one per real player per real market — NOT the nested
+    event/outcomes shape /odds uses. Each row already carries its own
+    player, line, over_price, and under_price together, confirmed
+    directly against real data, so no Over/Under pairing is needed here
+    the way it was for the old /odds-based approach."""
+    data = _get(f"sports/{NFL_SPORT_KEY}/props",
+                {"markets": ",".join(markets), "oddsFormat": "decimal", "limit": PROPS_ROW_LIMIT})
+    return [r for r in data if isinstance(r, dict) and r.get("bookmaker") == "fanduel"]
+
+
+def reshape_props_rows(rows, market_to_stat_kind):
+    """Regroups real flat /props rows into one entry per real player per
+    stat, with their plain line (if FanDuel has one) and their full real
+    alt-line ladder together — the same output shape reshape_player_props()
+    used to produce, so nothing downstream (coverage protection, the
+    report generator, prop_center.html) needs to change.
+    market_to_stat_kind: {market_key: (stat, kind, threshold_or_None)},
+    built from discover_fanduel_markets()."""
     players = {}
     anytime_td = {}
+    for row in rows:
+        eid = row.get("canonical_event_id")
+        name = row.get("player")
+        market_key = row.get("market_key")
+        if not eid or not name or not market_key or name == "Defense":
+            continue
+        classification = market_to_stat_kind.get(market_key)
+        if classification is None:
+            continue
+        stat, kind, threshold = classification
+        if kind == "anytime_td":
+            anytime_td.setdefault(eid, []).append({"player": name, "price": row.get("over_price")})
+            continue
+        players.setdefault(eid, {s: {} for s in STAT_FAMILIES})
+        bucket = players[eid][stat].setdefault(name, {"line": None, "alts": []})
+        if kind == "line":
+            bucket["line"] = {"point": row.get("line"), "over_price": row.get("over_price"),
+                               "under_price": row.get("under_price")}
+        elif kind == "alt":
+            bucket["alts"].append({"threshold": threshold, "over_price": row.get("over_price"),
+                                    "under_price": row.get("under_price")})
 
-    for event in prop_events:
-        eid = event["canonical_event_id"]
-        players.setdefault(eid, {stat: {} for stat in PLAIN_KEY_TO_STAT.values()})
-        anytime_td.setdefault(eid, [])
-
-        for market_key, outcomes in event["markets"].items():
-            stat, kind, threshold = classify_market(market_key)
-            if stat is None:
-                continue
-
-            if kind == "anytime_td":
-                for o in outcomes:
-                    name = o.get("description") or o.get("name")
-                    if not name or name == "Defense":
-                        continue
-                    anytime_td[eid].append({"player": name, "price": o.get("price")})
-                continue
-
-            # Outcomes come as separate rows, one per side per player.
-            # Two real, confirmed naming conventions exist in the actual
-            # data (2026-09-12) — most use "Over X"/"Under X", but some
-            # milestone markets use a bare "Yes" (semantically the same
-            # as "Over" — "yes, they hit this threshold or more"), the
-            # same way anytime_touchdown_scorer's "Yes" already works.
-            # REAL BUG FIX: the original version only recognized names
-            # starting with "Over" and silently misfiled every "Yes"
-            # outcome as the Under side, dropping its real price and
-            # leaving Over blank — confirmed directly against real data
-            # (Jayden Daniels' passing_yards 250+ milestone) before
-            # fixing this, not assumed.
-            # REAL BUG FIX (2026-09-12): every player's real line was
-            # being overwritten with outcomes[0]'s point value — the
-            # FIRST row in the whole market's list, regardless of which
-            # player the loop was actually on. Confirmed directly: every
-            # QB in a game showed the identical passing-yards line, and
-            # rushing yards showed QBs and RBs sharing one line, which
-            # is not realistic sportsbook data. Receptions looked fine
-            # by coincidence — 1.5 is naturally a common real threshold
-            # across many real receivers — but the same bug was silently
-            # there too, just masked by real data happening to agree.
-            # Each player's own point value is now captured alongside
-            # their own price in the same pass, not borrowed from
-            # whichever row happened to be first in the list.
-            by_player = {}
-            for o in outcomes:
-                name = o.get("description")
-                if not name:
-                    continue
-                by_player.setdefault(name, {"over": None, "under": None, "point": o.get("point")})
-                label = (o.get("name") or "").lower()
-                side = "over" if label.startswith("over") or label == "yes" else "under"
-                by_player[name][side] = o.get("price")
-
-            for name, sides in by_player.items():
-                bucket = players[eid][stat].setdefault(name, {"line": None, "alts": []})
-                if kind == "line":
-                    bucket["line"] = {"point": sides["point"],
-                                       "over_price": sides["over"], "under_price": sides["under"]}
-                elif kind == "alt":
-                    bucket["alts"].append({"threshold": threshold, "over_price": sides["over"],
-                                            "under_price": sides["under"]})
-
-    # Sort each player's alt ladder by threshold so consumers don't have to.
     for eid, stats in players.items():
         for stat, by_player in stats.items():
             for name, bucket in by_player.items():
@@ -323,7 +327,7 @@ def protect_against_coverage_collapse(games, previous_payload, generated_at):
     explicit freshness metadata, and carried data expires six hours after the
     original successful fetch.
     """
-    families = list(PLAIN_KEY_TO_STAT.values()) + ["anytime_td"]
+    families = list(STAT_FAMILIES) + ["anytime_td"]
     previous_games = {
         game.get("canonical_event_id"): game
         for game in (previous_payload or {}).get("games", [])
@@ -424,34 +428,40 @@ def main():
                   f"unexplained gap for 'spreads' specifically as of 2026-09-05 — if that's "
                   f"still true this close to kickoff, that's now a real, not just early-week, gap.")
 
-    # Passing remains isolated so its coverage and credit cost are observable
-    # independently. A 2026-09-12 investigation disproved the earlier belief
-    # that isolation itself fixes missing data: the isolated call later stayed
-    # empty across both API hostnames, with and without a FanDuel filter, and
-    # for a single event. Coverage protection below is therefore the safeguard;
-    # this split is diagnostic, not a claimed upstream workaround.
-    passing_yards_markets = [k for k in PLAYER_PROP_MARKETS
-                              if k == "player_passing_yards" or k.startswith("player_passing_yards_milestones_")]
-    other_prop_markets = [k for k in PLAYER_PROP_MARKETS if k not in passing_yards_markets]
+    # REAL REWRITE (2026-09-13): player props now use /props (not /odds),
+    # per direct guidance from parlay-api.com support after a real
+    # support ticket about the passing-yards outage — see the module
+    # docstring and the comment above STAT_FAMILIES for the full real
+    # findings behind this. One call per stat family (confirmed flat
+    # 3 credits each) rather than one giant combined call, to keep each
+    # individual call's total row volume well under the real, confirmed
+    # 5000-row cap so other books' data doesn't crowd out FanDuel's.
+    print("Discovering real, current FanDuel prop market keys (free)...")
+    market_map = discover_fanduel_markets()
 
-    print("Fetching passing yards props (isolated — confirmed dropped when combined with other markets)...")
-    passing_events = fetch_odds(passing_yards_markets)
+    market_to_stat_kind = {}
+    for stat, info in market_map.items():
+        if info["plain"]:
+            market_to_stat_kind[info["plain"]] = (stat, "line", None)
+        for threshold, key in info["alts"]:
+            market_to_stat_kind[key] = (stat, "alt", threshold)
+    market_to_stat_kind[ANYTIME_TD_KEY] = ("anytime_td", "anytime_td", None)
 
-    print("Fetching remaining player props (rushing/receiving/receptions/anytime TD + alts)...")
-    other_events = fetch_odds(other_prop_markets)
+    all_rows = []
+    for stat in STAT_FAMILIES:
+        info = market_map[stat]
+        markets_for_stat = ([info["plain"]] if info["plain"] else []) + [key for _, key in info["alts"]]
+        if not markets_for_stat:
+            print(f"  WARNING: no real FanDuel market keys discovered at all for {stat} right now — "
+                  f"skipping this stat family for this run.")
+            continue
+        print(f"Fetching {stat} props ({len(markets_for_stat)} real market key(s), confirmed FanDuel)...")
+        all_rows.extend(fetch_props(markets_for_stat))
 
-    # Merge the two fetches back together by event, since both cover the
-    # same real games — just different market subsets each.
-    merged_by_id = {}
-    for e in passing_events + other_events:
-        eid = e["canonical_event_id"]
-        if eid not in merged_by_id:
-            merged_by_id[eid] = e
-        else:
-            merged_by_id[eid]["markets"].update(e["markets"])
-    prop_events = list(merged_by_id.values())
+    print("Fetching anytime TD props...")
+    all_rows.extend(fetch_props([ANYTIME_TD_KEY]))
 
-    players, anytime_td = reshape_player_props(prop_events)
+    players, anytime_td = reshape_props_rows(all_rows, market_to_stat_kind)
 
     games = []
     week_codes = current_week_game_codes()
@@ -468,7 +478,7 @@ def main():
             "away_code": away_code, "home_code": home_code,
             "commence_time": e["commence_time"],
             "game_lines": {k: e["markets"].get(k, []) for k in GAME_LINE_MARKETS},
-            "player_props": players.get(eid, {stat: {} for stat in PLAIN_KEY_TO_STAT.values()}),
+            "player_props": players.get(eid, {stat: {} for stat in STAT_FAMILIES}),
             "anytime_td": anytime_td.get(eid, []),
         })
     if excluded:

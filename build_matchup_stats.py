@@ -1905,11 +1905,17 @@ def fetch_parquet(url):
     return df.copy()
 
 
-def compute_pbp_stats(games_played):
+def compute_pbp_stats(games_played, pbp_url=None):
     """Offense/defense splits that need play-by-play, not just the season
     team-stats file: Down/Distance and Explosive Plays Allowed. Loaded once
-    and shared so we don't re-download pbp twice."""
-    pbp = fetch_pbp()
+    and shared so we don't re-download pbp twice.
+
+    pbp_url: optional explicit override, defaults to fetch_pbp()'s own
+    default (current SEASON) when not given — added so this can be called
+    for a specific prior season (e.g. 2025) without needing the current
+    SEASON global to change, same principle as fetch_pbp()'s own existing
+    url override was added for build_blitz_report()."""
+    pbp = fetch_pbp(pbp_url)
     reg = pbp[pbp["season_type"] == "REG"]
 
     def pct(n, d):
@@ -3421,17 +3427,32 @@ def build_travel_splits():
     return {team: rows for team, rows in out.items() if rows}
 
 
-def build_team_stats():
+def build_team_stats(yr=None, team_stats_url=None, pbp_url=None, output_path="teamstats/latest.json"):
     """Season-to-date team stats — every offense/defense/special-teams/penalty
     column nflverse's stats_team_week file provides, as both a season total
     and a per-game average. Not week-horizon-gated like the ranking pages;
     this is just 'what's true right now', so it always uses every played
-    week. Writes a single file, overwritten on every build run."""
-    df = fetch_csv(TEAM_STATS_URL)
+    week. Writes a single file, overwritten on every build run.
+
+    PARAMETERIZED (2026-09-13): yr/team_stats_url/pbp_url/output_path all
+    default to the current SEASON's usual values when not given, so every
+    existing call site keeps working unchanged. Added so this same real
+    logic can also be called explicitly for a prior season (e.g. 2025)
+    within the same run, writing to its own separate output file, rather
+    than needing a whole separate script invocation with NFL_SEASON set
+    differently just to get last season's complete stats alongside this
+    season's real-but-thin ones. Real motivation: the Teams page was
+    showing entirely empty stat sections in Week 1/2 of a new season,
+    since 'what's true right now' for a brand-new season is, honestly,
+    almost nothing yet — this lets the page offer a real, complete 2025
+    view alongside the thin-but-live 2026 one instead of just being blank."""
+    yr = yr if yr is not None else SEASON
+    team_stats_url = team_stats_url or f"https://github.com/nflverse/nflverse-data/releases/download/stats_team/stats_team_week_{yr}.csv"
+    df = fetch_csv(team_stats_url)
     df = normalize_team_cols(df, "team")
-    df = df[(df["season"] == SEASON) & (df["season_type"] == "REG")]
+    df = df[(df["season"] == yr) & (df["season_type"] == "REG")]
     if df.empty:
-        raise SystemExit(f"no {SEASON} team stats available yet")
+        raise SystemExit(f"no {yr} team stats available yet")
 
     games_played = df.groupby("team").size().to_dict()
 
@@ -3442,7 +3463,7 @@ def build_team_stats():
     # can see whether this defense's scoring actually tracks with winning.
     games = fetch_csv(GAMES_URL)
     games = normalize_team_cols(games, "home_team", "away_team")
-    reg = games[(games["season"] == SEASON) & (games["game_type"] == "REG") & (games["home_score"].notna())]
+    reg = games[(games["season"] == yr) & (games["game_type"] == "REG") & (games["home_score"].notna())]
     pts_allowed_sum, pts_allowed_gp = {}, {}
     by_result_sum, by_result_gp = {}, {}  # team -> {"W":.., "L":.., "T":..}
     for _, g in reg.iterrows():
@@ -3480,7 +3501,7 @@ def build_team_stats():
             df[c] = 0
     sums = df.groupby("team")[all_cols].sum(numeric_only=True)
     means = df.groupby("team")[all_cols].mean(numeric_only=True)
-    pbp_stats = compute_pbp_stats(games_played)
+    pbp_stats = compute_pbp_stats(games_played, pbp_url)
     pass_run_def = compute_pass_run_defense(df, games_played, pbp_stats)
 
     teams_out = {}
@@ -3519,12 +3540,12 @@ def build_team_stats():
         for section, subgroups in TEAM_STATS_GROUPS.items()
     }
     payload = {
-        "season": SEASON,
+        "season": yr,
         "data_horizon": f"through {max(games_played.values())} games played",
         "labels": labels,
         "teams": teams_out,
     }
-    path = "teamstats/latest.json"
+    path = output_path
     size = write_with_archive(payload, path)
     print(f"Wrote {path} — {len(teams_out)} teams, {size:.0f} KB")
 
@@ -4605,7 +4626,21 @@ def resolve_weeks(arg):
         sys.exit(f"FATAL: no {SEASON} schedule found in nflverse yet.")
     if arg == "auto":
         return [wk]
-    return list(range(1, wk + 1))
+    # REAL BUG FIX (2026-09-13): this used to stop at the real current week
+    # (e.g. just [1] this early in the season), meaning "all" never called
+    # build() for week 2 or 3 at all — not because their data wasn't ready
+    # (build()'s own carryover logic already supports weeks 1-CARRYOVER_WEEKS
+    # regardless of how far the season has actually progressed), but purely
+    # because this range never reached them. Confirmed as the real cause of
+    # matchup/wk02.json and wk03.json sitting stale/untouched, showing
+    # whatever old data was there before, while games/wkNN.json (which
+    # deliberately builds every scheduled week up front, see the games-only
+    # loop above) stayed correctly current. Extending through at least
+    # CARRYOVER_WEEKS costs nothing extra once the season passes that point
+    # (max() just returns the real wk then), and any week genuinely still
+    # unbuildable beyond that already fails gracefully via the existing
+    # SystemExit handling in the caller's loop, not a crash.
+    return list(range(1, max(wk, CARRYOVER_WEEKS) + 1))
 
 
 def archive_current_snapshot():
@@ -4691,6 +4726,25 @@ if __name__ == "__main__":
         build_team_stats()
     except SystemExit as e:
         print(f"  team stats: skipped — {e}")
+
+    # 3a. Prior-season team stats, for the Teams page's 2025/2026 dropdown.
+    # A brand-new season starts genuinely thin (Week 1-2 of 2026 is close
+    # to no real data at all for a "season averages" view), so this gives
+    # the page a real, complete alternative to show instead of leaving
+    # every section blank until enough 2026 games accumulate. Written to
+    # its own separate file — deliberately not touching teamstats/latest.json
+    # or any of its existing readers. Skipped defensively if SEASON is
+    # already 2025 or earlier, to avoid a redundant/confusing same-year call.
+    if SEASON > 2025:
+        try:
+            build_team_stats(
+                yr=2025,
+                team_stats_url="https://github.com/nflverse/nflverse-data/releases/download/stats_team/stats_team_week_2025.csv",
+                pbp_url="https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz",
+                output_path="teamstats/2025.json",
+            )
+        except SystemExit as e:
+            print(f"  2025 team stats: skipped — {e}")
 
     # 3b. Travel splits + ATS records: DELIBERATELY independent of
     # build_team_stats() above (bug fixed 2026-09-06 — travel_splits was
