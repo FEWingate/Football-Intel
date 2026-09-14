@@ -44,6 +44,7 @@ USAGE:
 """
 
 import argparse
+import copy
 import json
 import os
 import re
@@ -136,6 +137,37 @@ def load_evidence_for_game(away, home):
     return None, None
 
 
+def trim_evidence_for_props(evidence):
+    """REAL BUG FIX (2026-09-14): confirmed directly against real evidence
+    files that a single game's full evidence package can run anywhere
+    from ~23K to ~430K real characters — dominated almost entirely by
+    each player's own "log" field: a full, real week-by-week game log
+    (one detailed entry per week already played) sitting alongside that
+    same player's already-aggregated "season" and "career" totals in the
+    same record. For 5 real games this pushed the whole props prompt to
+    ~375,000 tokens — a real, serious cost problem caught before it was
+    ever run for real, not after.
+
+    This trim is props-specific — it does NOT touch the real evidence
+    package on disk, and Game Breakdown generation (which can genuinely
+    use week-by-week trend detail for its own deeper analysis) is
+    completely unaffected. For prop-picking specifically, the real
+    aggregate numbers (season/career/splits/ceiling) are what actually
+    matters — the exact value of one specific week 6 log line is not
+    needed to ground a real prop pick, and confirmed to be the single
+    largest cost driver by a wide margin (up to ~84% of one real game's
+    entire evidence size in the worst case found)."""
+    trimmed = copy.deepcopy(evidence)
+    players = trimmed.get("players")
+    if isinstance(players, dict):
+        for side in players.values():
+            if isinstance(side, list):
+                for p in side:
+                    if isinstance(p, dict):
+                        p.pop("log", None)
+    return trimmed
+
+
 def coverage_summary_text(coverage):
     """Real, human-readable summary of which stat families Coeus can
     actually trust right now — built directly from build_fanduel_props.py's
@@ -191,9 +223,20 @@ def build_real_index(fanduel_data):
                         "player": name, "price": alt.get("over_price") or alt.get("under_price"),
                         "threshold": alt["threshold"],
                     }
+        # REAL BUG FIX (2026-09-14): this was hardcoded to the OLD market
+        # key from before build_fanduel_props.py switched to the /props
+        # endpoint's real, confirmed key for this market. Confirmed
+        # directly as the real cause of every parlay containing an
+        # anytime-TD leg failing validation tonight — Coeus correctly
+        # used "player_anytime_td" (the real key actually present in the
+        # FanDuel data it was shown), but this index was still only
+        # storing entries under the stale "player_anytime_touchdown_scorer"
+        # key, so a completely real, accurate pick looked like a
+        # hallucinated one. The pick was never wrong — this lookup table
+        # was.
         for p in (g.get("anytime_td") or []):
-            index[(eid, "player_anytime_touchdown_scorer", p["player"])] = {
-                "canonical_event_id": eid, "market_key": "player_anytime_touchdown_scorer",
+            index[(eid, "player_anytime_td", p["player"])] = {
+                "canonical_event_id": eid, "market_key": "player_anytime_td",
                 "player": p["player"], "price": p["price"],
             }
     return index
@@ -344,6 +387,29 @@ def main():
         print(f"  NOTE: {len(missing_fd)} game(s) with a finished breakdown have no real FanDuel "
               f"data at all right now: {missing_fd}.")
 
+    # REAL BUG FIX (2026-09-14): confirmed directly that most of a real
+    # 5-game run's cost was evidence/breakdown text for games with ZERO
+    # real FanDuel data — games already played, with no live line left
+    # to bet on. Coeus cannot produce a real prop pick for a game with no
+    # real prop data, no matter how much evidence it's given for that
+    # game — so sending full evidence and breakdown text for those games
+    # was pure cost with no possible benefit. Narrowing `games` itself
+    # here (not just fanduel_data, which was already filtered above)
+    # means this reduction cascades naturally into the evidence loop,
+    # the breakdown-text loop, and games_included below, instead of
+    # needing a separate fix in each place.
+    live_codes = {(g.get("away_code"), g.get("home_code")) for g in fanduel_data["games"]}
+    games_with_no_real_props = [(folder, away, home) for folder, away, home in games
+                                  if (away, home) not in live_codes]
+    games = [(folder, away, home) for folder, away, home in games if (away, home) in live_codes]
+    if games_with_no_real_props:
+        print(f"  Excluding {len(games_with_no_real_props)} game(s) from evidence/breakdown "
+              f"text entirely — no real prop data exists for them right now, so there's "
+              f"nothing a pick could be grounded in regardless of how much evidence is sent.")
+    if not games:
+        sys.exit("FATAL: none of the finished Game Breakdowns have any real, live FanDuel "
+                 "prop data right now — nothing real to build picks from.")
+
     real_by_key = build_real_index(fanduel_data)
 
     gb_texts, evidence_texts, folders_used, missing_evidence = [], [], set(), []
@@ -353,8 +419,10 @@ def main():
         folders_used.add(folder)
         evidence, ev_path = load_evidence_for_game(away, home)
         if evidence:
-            evidence_texts.append(f"--- {away} @ {home} (from {ev_path}) ---\n" +
-                                    json.dumps(evidence, separators=(",", ":")))
+            trimmed_evidence = trim_evidence_for_props(evidence)
+            evidence_texts.append(f"--- {away} @ {home} (from {ev_path}, per-player week-by-week "
+                                    f"logs trimmed — real season/career/splits/ceiling totals kept) ---\n" +
+                                    json.dumps(trimmed_evidence, separators=(",", ":")))
         else:
             missing_evidence.append(f"{away}_{home}")
     combined_breakdowns = "\n\n".join(gb_texts)

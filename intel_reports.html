@@ -227,22 +227,37 @@ async function load(){
   }catch(e){}
 
   // Game Breakdowns: check both the bootstrap folder (upcoming, unplayed
-  // games — currently the only reports that exist) and the current real
-  // week's folder (matchup/current.json), if one exists. A manifest.json
-  // only appears in a folder once generate_game_breakdown.py has actually
-  // written at least one report there — missing is expected, not an error.
-  // {cache:'no-store'} on all three fetches below is deliberate, not
-  // default fetch() behavior: confirmed real bug (2026-09-10) — a new
-  // game (SF_LAR) correctly generated and correctly listed in the real,
+  // games — currently the only reports that exist) and every real week's
+  // folder (wk01 through wk18), not just matchup/current.json's reported
+  // "current" week. A manifest.json only appears in a folder once
+  // generate_game_breakdown.py has actually written at least one report
+  // there — missing is expected, not an error.
+  // REAL BUG FIX (2026-09-14): this used to fetch only the single folder
+  // matchup/current.json's week pointed to. That's a real, different
+  // concept from "which week has real breakdowns" — confirmed directly:
+  // once matchup/current.json's week advanced from 1 to 3 (a real,
+  // separate, correct change from a real schedule-progression fix),
+  // every real breakdown — all of which are filed under wk01, since
+  // that's which NFL week the games belong to, not when they were
+  // generated — became invisible to this page, even though the real,
+  // on-disk manifest.json for wk01 never changed at all. Scanning every
+  // real week folder (same principle already proven in
+  // generate_weekly_dfs_report.py's/generate_props_report.py's
+  // discover_all_games(), which scans every game_breakdowns/*/manifest.json
+  // rather than trusting one specific folder) makes this robust
+  // regardless of which week the schedule says is "current."
+  // {cache:'no-store'} on every fetch below is deliberate, not default
+  // fetch() behavior: confirmed real bug (2026-09-10) — a new game
+  // (SF_LAR) correctly generated and correctly listed in the real,
   // on-disk manifest.json, but didn't show up even after a hard refresh
   // and a brand new tab. The local dev server (python -m http.server)
   // sends no explicit cache-control headers, so the browser was free to
   // heuristically cache the OLDER manifest.json response (from before
   // SF_LAR existed) and keep serving it. no-store means every load of
-  // this page genuinely re-fetches these three files instead of ever
-  // trusting a cached copy — correct here, since all three change
-  // whenever the build pipeline runs, which isn't reflected in any
-  // cache-invalidating URL change.
+  // this page genuinely re-fetches these files instead of ever trusting
+  // a cached copy — correct here, since these change whenever the build
+  // pipeline runs, which isn't reflected in any cache-invalidating URL
+  // change.
   GB_GAMES = [];
   try{
     const rBoot = await fetch(`game_breakdowns/bootstrap/manifest.json`, { cache: 'no-store' });
@@ -251,18 +266,16 @@ async function load(){
       Object.values(mf.games || {}).forEach(g => GB_GAMES.push({ ...g, wk: 'bootstrap' }));
     }
   }catch(e){}
-  try{
-    const rCur = await fetch(`matchup/current.json`, { cache: 'no-store' });
-    if(rCur.ok){
-      const cur = await rCur.json();
-      const wk = `wk${String(cur.week).padStart(2,'0')}`;
+  for(let w = 1; w <= 18; w++){
+    const wk = `wk${String(w).padStart(2,'0')}`;
+    try{
       const rWk = await fetch(`game_breakdowns/${wk}/manifest.json`, { cache: 'no-store' });
       if(rWk.ok){
         const mf = await rWk.json();
         Object.values(mf.games || {}).forEach(g => GB_GAMES.push({ ...g, wk }));
       }
-    }
-  }catch(e){}
+    }catch(e){}
+  }
 
   const hasIntel = INTEL && Object.keys(INTEL.teams||{}).length;
   fiStatus(hasIntel ? "Ready" : "No data", hasIntel ? undefined : "error");
