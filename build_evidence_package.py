@@ -53,6 +53,81 @@ def load_json(path):
         return json.load(f)
 
 
+DOWN_DIST_KEY = "Down/Distance"  # matches DOWN_DIST_SUBGROUP_NAME in build_matchup_stats.py
+RED_ZONE_KEY = "Red Zone Play Calling"  # matches RED_ZONE_SUBGROUP_NAME in build_matchup_stats.py
+
+def rank_teams_by(teamstats_json, side, field, subgroup=DOWN_DIST_KEY, ascending=False):
+    """teamstats/latest.json stores raw {"tot":.., "avg":..} pairs with NO
+    rank included — every other stat category on this site pairs a value
+    with a league rank (matching the Stat-Rank Pairing Rule), so this
+    computes ranks locally rather than handing Coeus an unranked number.
+    ascending=True for defensive "allowed" stats where LOWER is better."""
+    if not teamstats_json:
+        return {}
+    vals = {}
+    for team, t in teamstats_json.get("teams", {}).items():
+        v = t.get(side, {}).get(subgroup, {}).get(field, {}).get("avg")
+        if v is not None:
+            vals[team] = v
+    ordered = sorted(vals, key=lambda t: vals[t], reverse=not ascending)
+    return {team: {"v": vals[team], "r": i + 1} for i, team in enumerate(ordered)}
+
+def down_distance_for_team(teamstats_json, team, off_ranks, def_ranks):
+    """Extract Down/Distance evidence for one team, translating the source
+    file's internal abbreviations (d3_pct, d4_go_pct, etc.) into clear
+    field names — the same kind of abbreviation-leak that caused the
+    r7/dr31 rank-shorthand bug elsewhere in this project, avoided here by
+    not exposing the raw internal keys at all."""
+    if not teamstats_json or team not in teamstats_json.get("teams", {}):
+        return None
+    t = teamstats_json["teams"][team]
+    off_dd = t.get("offense", {}).get(DOWN_DIST_KEY, {})
+    def_dd = t.get("defense", {}).get(DOWN_DIST_KEY, {})
+    def v(d, k): return d.get(k, {}).get("avg")
+    return {
+        "offense": {
+            "third_down_attempts_per_game": v(off_dd, "d3_att"),
+            "third_down_conversion_pct": off_ranks.get(team, {}),
+            "fourth_down_situations_per_game": v(off_dd, "d4_situations"),
+            "fourth_down_go_for_it_pct": v(off_dd, "d4_go_pct"),
+            "fourth_down_conversion_pct": v(off_dd, "d4_conv_pct"),
+        },
+        "defense": {
+            "third_down_attempts_faced_per_game": v(def_dd, "d3_att_faced"),
+            "third_down_pct_allowed": def_ranks.get(team, {}),
+            "third_down_stop_pct": v(def_dd, "d3_stop_pct"),
+            "fourth_down_situations_faced_per_game": v(def_dd, "d4_situations_faced"),
+            "fourth_down_go_for_it_pct_faced": v(def_dd, "d4_go_pct_faced"),
+            "fourth_down_stop_pct": v(def_dd, "d4_stop_pct"),
+        },
+    }
+
+def red_zone_for_team(teamstats_json, team, off_run_ranks, off_pass_ranks, def_run_ranks, def_pass_ranks):
+    """Extract Red Zone Play Calling evidence for one team — same pattern
+    as down_distance_for_team above. Run% and pass% are exact complements
+    (only two play types in the filter), but both get their own explicit
+    rank rather than relying on Coeus to infer one from the other — the
+    Stat-Rank Pairing Rule requires a rank on whichever one gets cited."""
+    if not teamstats_json or team not in teamstats_json.get("teams", {}):
+        return None
+    t = teamstats_json["teams"][team]
+    off_rz = t.get("offense", {}).get(RED_ZONE_KEY, {})
+    def_rz = t.get("defense", {}).get(RED_ZONE_KEY, {})
+    def v(d, k): return d.get(k, {}).get("avg")
+    return {
+        "offense": {
+            "red_zone_plays_per_game": v(off_rz, "rz_plays"),
+            "red_zone_run_pct": off_run_ranks.get(team, {}),
+            "red_zone_pass_pct": off_pass_ranks.get(team, {}),
+        },
+        "defense": {
+            "red_zone_plays_faced_per_game": v(def_rz, "rz_plays_faced"),
+            "red_zone_run_pct_allowed": def_run_ranks.get(team, {}),
+            "red_zone_pass_pct_allowed": def_pass_ranks.get(team, {}),
+        },
+    }
+
+
 # ── Threat System classification, ported EXACTLY from fi-shell.js's
 # FI_TIERS / fiClassify() so Coeus receives the same tier labels the site
 # itself shows — never raw numbers for Coeus to classify on its own. ──────
@@ -125,6 +200,15 @@ def main():
     coverage_json = load_json("intel/coverage.json")
     cbdb_json = load_json("intel/cb_rankings.json")
     dfs_json = load_json(f"dfs/{wk}.json")
+    # REAL SWITCH (2026-09-14), same real fix and reasoning already applied
+    # to build_evidence_package_bootstrap.py: injury evidence now comes
+    # from the real nflverse-backed injuries/{wk}.json instead of reusing
+    # dfs_json's DK Classic slate Status column. Confirmed real, concrete
+    # limitation of the old source: DK Classic slate coverage only, so any
+    # game outside that slate got zero injury data at all, regardless of
+    # real injury status — and Frank's stated goal is covering every real
+    # weekly game, not just the DK slate.
+    injuries_json = load_json(f"injuries/{wk}.json")
 
     required = {"games": games_json, "matchup": matchup_json,
                 "players": players_json}
@@ -140,6 +224,27 @@ def main():
 
     os.makedirs(f"evidence/{wk}", exist_ok=True)
     manifest_games = []
+
+    # Computed once for the whole league, reused for every game below —
+    # ranking is a full-league operation, not something to redo per game.
+    dd_off_ranks = rank_teams_by(teamstats_json, "offense", "d3_pct", ascending=False)
+    dd_def_ranks = rank_teams_by(teamstats_json, "defense", "d3_pct_allowed", ascending=True)
+    # Red zone run/pass % is a TENDENCY stat, not a quality stat — rank 1
+    # means "most run-heavy in the red zone," not "best." Descending order
+    # is just an ordinal convention (highest % first), same as ranking by
+    # attempt volume elsewhere on the site, and should be read that way,
+    # not as a value judgment.
+    rz_off_run_ranks = rank_teams_by(teamstats_json, "offense", "rz_run_pct",
+                                      subgroup=RED_ZONE_KEY, ascending=False)
+    rz_off_pass_ranks = rank_teams_by(teamstats_json, "offense", "rz_pass_pct",
+                                       subgroup=RED_ZONE_KEY, ascending=False)
+    rz_def_run_ranks = rank_teams_by(teamstats_json, "defense", "rz_run_pct_faced",
+                                      subgroup=RED_ZONE_KEY, ascending=False)
+    rz_def_pass_ranks = rank_teams_by(teamstats_json, "defense", "rz_pass_pct_faced",
+                                       subgroup=RED_ZONE_KEY, ascending=False)
+    if teamstats_json is None:
+        global_notes.append("teamstats/latest.json not found — Down/Distance evidence "
+                            "(3rd/4th down conversion rates) will be unavailable.")
 
     for g in games_json.get("games", []):
         away, home = g["away"], g["home"]
@@ -190,16 +295,36 @@ def main():
                 elif p.get("team") == home:
                     players_block["home"].append(p)
 
-        # ── Hidden Intelligence: QB run-vs-pass, RB rush-vs-pass, Blitz,
-        # Coverage — filtered to just the two teams in this game
-        hidden_intel = {
-            "qb_run_vs_pass": filter_intel_by_teams(intel_json, "qb_teams", teams),
+        # ── Raw material for Coeus to find genuine Hidden Intelligence in —
+        # QB run-vs-pass, RB rush-vs-pass, Blitz, Coverage splits, filtered
+        # to just the two teams in this game. Deliberately NOT named
+        # "hidden_intelligence" as a JSON key: an earlier version used that
+        # name, and Coeus treated it as a citable source ("per Hidden
+        # Intelligence...") instead of a standing requirement to actually
+        # produce a Hidden Intelligence finding — this is the raw data the
+        # finding gets built FROM, not the finding itself.
+        matchup_pattern_data = {
+            # NOTE: intel/latest.json stores QB Run-vs-Pass data under the key
+            # "teams" (not "qb_teams") — build_matchup_stats.py's
+            # build_intel_reports() covers QB and RB together in one file and
+            # named the QB half generically. RB Run-vs-Pass correctly uses
+            # "rb_teams". Confirmed against the real source on 2026-08-13
+            # after this exact mismatch silently produced an empty QB
+            # Run-vs-Pass section in every evidence bundle built before this.
+            "qb_run_vs_pass": filter_intel_by_teams(intel_json, "teams", teams),
             "rb_rush_vs_pass": filter_intel_by_teams(intel_json, "rb_teams", teams),
             "blitz_qb": filter_intel_by_teams(blitz_json, "qb_teams", teams),
             "blitz_wr": filter_intel_by_teams(blitz_json, "wr_teams", teams),
             "coverage_qb": filter_intel_by_teams(coverage_json, "qb_teams", teams),
             "coverage_wr": filter_intel_by_teams(coverage_json, "wr_teams", teams),
             "coverage_te": filter_intel_by_teams(coverage_json, "te_teams", teams),
+            # Each defense's OWN season-long man/zone play-calling rate —
+            # different from coverage_qb/wr/te above, which are about how a
+            # specific PLAYER performs when facing man vs. zone. This is
+            # the defense's own scheme tendency, already computed in
+            # build_matchup_stats.py and already shown on the Teams page's
+            # Defense tab, but never wired into evidence before this.
+            "team_coverage_rate": filter_intel_by_teams(coverage_json, "team_coverage_rate", teams),
         }
 
         # ── CB/DB Coverage Rankings for defenders on both teams
@@ -216,16 +341,9 @@ def main():
         # problem is exactly the kind of drift this whole architecture
         # exists to avoid. Run build_dfs.py before this script.
         dfs_block = {"available": dfs_json is not None, "players": []}
-        injuries_block = {"source": "DraftKings slate Status column (not a "
-                                     "general injury feed)", "players": []}
         if dfs_json is not None:
             game_players = [p for p in dfs_json.get("players", []) if p.get("team") in teams]
             dfs_block["players"] = game_players
-            for p in game_players:
-                if p.get("status"):
-                    injuries_block["players"].append({
-                        "name": p["name"], "team": p["team"], "status": p["status"],
-                    })
             unmatched = sum(1 for p in game_players if not p.get("matched") and p.get("pos") != "DST"
                              and (p.get("avg_pts") or 0) >= 5)
             if unmatched:
@@ -234,6 +352,36 @@ def main():
         else:
             notes.append("dfs/wkNN.json not found — run build_dfs.py before this script "
                          "for DFS evidence to be available")
+
+        # REAL SWITCH (2026-09-14): same real fix already applied to
+        # build_evidence_package_bootstrap.py — injuries_block is now
+        # built entirely separately from dfs_block, from the real
+        # nflverse-backed injuries/{wk}.json. Covers every real NFL team
+        # regardless of DK Classic slate inclusion. Preserves the same
+        # real, three-way honest distinction: file genuinely missing
+        # (unavailable) vs. team genuinely has no qualifying injuries
+        # this week (confirmed, not a gap) vs. real players found.
+        if injuries_json is None:
+            injuries_block = {"source": f"nflverse (injuries/{wk}.json)", "available": False,
+                               "players": [],
+                               "note": f"injuries/{wk}.json not found — injury evidence is "
+                                       f"genuinely unavailable for this game, not confirmed-healthy."}
+        else:
+            teams_represented = set(injuries_json.get("teams_represented", []))
+            inj_players = [p for p in injuries_json.get("players", []) if p.get("team") in teams]
+            injuries_block = {
+                "source": f"nflverse real injury report (status_policy: "
+                          f"{injuries_json.get('status_policy')})",
+                "available": True,
+                "players": inj_players,
+            }
+            missing_teams = [t for t in teams if t not in teams_represented]
+            if missing_teams:
+                injuries_block["note"] = (
+                    f"{', '.join(missing_teams)} had no real nflverse-reported injury-relevant "
+                    f"player(s) for {injuries_json.get('season')} week {injuries_json.get('week')} "
+                    f"(no report_status, and no Limited/Did Not Participate practice status) — a "
+                    f"real, confirmed result from the real injury file, not a missing-data gap.")
 
         # ── Game info: schedule, lines, box score (from games/wkNN.json)
         game_info = dict(g)
@@ -244,9 +392,19 @@ def main():
             "game": game_info,
             "matchup": matchup_block,
             "team_context": context_block,
+            "down_distance": {
+                "away": down_distance_for_team(teamstats_json, away, dd_off_ranks, dd_def_ranks),
+                "home": down_distance_for_team(teamstats_json, home, dd_off_ranks, dd_def_ranks),
+            },
+            "red_zone_play_calling": {
+                "away": red_zone_for_team(teamstats_json, away, rz_off_run_ranks, rz_off_pass_ranks,
+                                           rz_def_run_ranks, rz_def_pass_ranks),
+                "home": red_zone_for_team(teamstats_json, home, rz_off_run_ranks, rz_off_pass_ranks,
+                                           rz_def_run_ranks, rz_def_pass_ranks),
+            },
             "threats": threats_block,
             "players": players_block,
-            "hidden_intelligence": hidden_intel,
+            "matchup_pattern_data": matchup_pattern_data,
             "cb_db_rankings": cbdb_block,
             "dfs": dfs_block,
             "injuries": injuries_block,

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-14T12:36:47.963602+00:00",
+  "generated_at": "2026-09-14T21:18:15.616550+00:00",
   "model": "claude-sonnet-5",
   "max_tokens": 48000,
   "games_included": [
@@ -7,10 +7,10 @@
   ],
   "fanduel_data_source": "fanduel_props/latest.json",
   "evidence_missing_for": [],
-  "system_char_count": 40612,
-  "user_char_count": 146457,
+  "system_char_count": 44988,
+  "user_char_count": 149501,
   "usage": {
-    "input_tokens": 82403,
-    "output_tokens": 26158
+    "input_tokens": 83761,
+    "output_tokens": 35926
   }
 }

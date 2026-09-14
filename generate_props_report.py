@@ -177,16 +177,34 @@ def coverage_summary_text(coverage):
     for stat, label in STAT_LABELS.items():
         meta = (coverage or {}).get(stat, {})
         status = meta.get("status", "unavailable")
+        real_key = f"player_{stat}"
         if status == "current":
-            lines.append(f"- {label}: LIVE, current data ({meta.get('current_event_count', 0)} real game(s)).")
+            lines.append(f"- {label} (real market_key: `{real_key}`): LIVE, current data "
+                         f"({meta.get('current_event_count', 0)} real game(s)).")
         elif status == "stale_last_known_good":
             age_min = round((meta.get("source_age_seconds") or 0) / 60)
-            lines.append(f"- {label}: STALE — the live provider feed dropped out; showing the last real "
-                         f"data from about {age_min} minute(s) ago, for {meta.get('carried_event_count', 0)} "
-                         f"game(s). Say so plainly wherever this data is used — do not present it as live.")
+            lines.append(f"- {label} (real market_key: `{real_key}`): STALE — the live provider "
+                         f"feed dropped out; showing the last real data from about {age_min} "
+                         f"minute(s) ago, for {meta.get('carried_event_count', 0)} game(s). Say so "
+                         f"plainly wherever this data is used — do not present it as live.")
         else:
-            lines.append(f"- {label}: UNAVAILABLE — no real data at all right now, live or stale. "
-                         f"Do not produce a pick for this stat; say plainly that none is available.")
+            lines.append(f"- {label} (real market_key: `{real_key}`): UNAVAILABLE — no real data "
+                         f"at all right now, live or stale. Do not produce a pick for this stat; "
+                         f"say plainly that none is available.")
+    # REAL BUG FIX (2026-09-14): confirmed directly that even with the
+    # exact market_key instruction already in the Standard, Coeus
+    # occasionally still wrote a shortened, plausible-sounding but real,
+    # confirmed-wrong key ("player_pass_yards" instead of the real
+    # "player_passing_yards") — a real hallucination the validator
+    # correctly caught, failing every parlay that used it. This explicit,
+    # short, copy-ready list — right where the prompt is read first, not
+    # buried inside a large JSON blob — gives Coeus a real, unambiguous
+    # reference for exactly these five strings, reducing reliance on
+    # recalling them correctly from memory.
+    lines.append("")
+    lines.append("The five real, exact market_key strings this project ever uses (copy exactly, "
+                 "never shorten or paraphrase): " +
+                 ", ".join(f"`player_{stat}`" for stat in STAT_LABELS))
     return "\n".join(lines)
 
 

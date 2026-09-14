@@ -1,44 +1,44 @@
-# WEEK 1 PROPS & PARLAY REPORT
-### DEN @ KC — Full Slate (1 Game)
+# COEUS PROPS & PARLAY REPORT
+**Week 1, 2026 — DEN @ KC (single-game slate)**
 
-**Real Data Coverage check (read first):** Passing Yards, Rushing Yards, Receiving Yards, Receptions, and Anytime TD are all **LIVE** for this slate (1 real game, current data, 0 stale/carried). Every pick below uses live, current FanDuel pricing — no stale or unavailable stat families to flag this week.
+**Data coverage note:** All five real FanDuel stat families — Passing Yards, Rushing Yards, Receiving Yards, Receptions, Anytime TD — are LIVE for this slate's one game. No stale or unavailable families this week; every pick below uses live, current pricing.
 
-**Slate-size note:** This is a single-game slate (DEN @ KC only). Every pick and every parlay leg below necessarily comes from this one game — see the correlation disclosure repeated in Section 3 for what that means for parlay pricing.
+**Slate note:** This is a one-game slate. Every pick in every section below comes from DEN @ KC (canonical_event_id `d5f0b2436d2da19e`) — there is no other game to draw from. That also means every multi-leg parlay in Section 3 is a same-game combination; each is flagged as such rather than presented as a real FanDuel same-game-parlay quote.
 
 ---
 
 ## 1. COEUS PROP BREAKDOWN
 
-### DEN @ KC — Top 3 Favorites
+### DEN @ KC — 3 Favorites
 
-- **Travis Kelce** (KC, TE) — Receiving Yards, line **42.5**, **Over**, **-113**. The one real Threat designation in this game (Standard/Triple): Kelce ranks 8th among TEs at 50.1 rec yds/gm, and Denver allows 59.7 rec yds/gm to TEs (ranked 24th) — a real soft spot inside an otherwise elite Denver defense. Alt-line note: the ladder is Over-only; the 50+ alt (+126) is the plus-money version of the same read, the 30+ alt (-270) is the safe-floor version.
+- **Travis Kelce** (KC) — Receiving Yards, real line 42.5, Over, -113. This is the one automatic Threat designation on the board (Standard tier, Triple type): Kelce ranks 8th among qualifying TEs at 50.1 rec yds/gm, and Denver allows 59.7 rec yds/gm to tight ends (24th) — a real, statistically soft spot inside an otherwise elite Denver defense. Suggested alt: the 50+ rung at +130 is the cleaner ceiling play if you want the same read at better value.
 
-- **Patrick Mahomes** (KC, QB) — Passing Yards, line **223.5**, **Under**, **-113**. KC's own contextual splits show pass yards compress to 213.2/gm (n=5) against top-tier defenses, and Denver ranks 3rd in points allowed / 4th in total yards allowed — a real top-tier unit by those metrics; Denver already held Mahomes to 66 pass yards in their real Week 17 meeting. Alt-line note: FanDuel's alt ladder for this market is Over-only (150 through 350) — there's no separate Under alt, so the 223.5 main line is the cleanest real vehicle for this side.
+- **Patrick Mahomes** (KC) — Passing Yards, real line 223.5, Over, -113. His own individual per-start rate is 256.2 yds/gm (5th among qualifying QBs) against a Denver pass defense that ranks just 11th in yards allowed (moderate, not elite) — real, player-specific evidence, not a team aggregate. Caveat: Kansas City's team-level passing splits show just 213.2 yds/gm (n=5) against top-tier defenses as a whole, which argues the other way — but that number is a team position-group aggregate that isn't confirmed as Mahomes' own production specifically, so it's weighed as a real complicating factor rather than the deciding one. Confidence: MEDIUM. Suggested alt: the 250+ rung at +162 is the value-side way to play the same read.
 
-- **J.K. Dobbins** (DEN, RB) — Rushing Yards, line **49.5**, **Over**, **-113**. Dobbins' real 2025 game log shows a 77.2 rush yds/gm average across 10 qualifying games, well clear of this line, against a KC run defense that ranks only 9th (105.5 rush yds/gm allowed); FanDuel's own market (Dobbins 49.5 vs. RJ Harvey 18.5) resolves the backfield-role uncertainty flagged in the Game Breakdown in Dobbins' favor. Alt-line note: the 40+ alt (-220) is the safer version of this same thesis.
+- **Kenneth Walker** (KC) — Anytime TD, +?[see below], -115. This isn't a line prop so there's no alt ladder to suggest, only the single real anytime price. Denver's run defense is elite against backs in almost every raw category (2nd in rush yards allowed, 2nd in yards allowed, 1st in receptions allowed) but allowed 6 RB receiving touchdowns on the season — tied for 30th, worst in the league. That specific soft spot, not a broad leak, is what this pick targets. Confidence: MEDIUM (real rank split, but a six-score sample).
 
-### League-Wide Position Favorites
+### League-Wide Position Favorites (from this week's only game)
 
-- **QB — Patrick Mahomes** (KC) — Passing Yards Under 223.5, **-113**. Same reasoning as above; this is the single best QB read on the slate given it's a one-game board.
-- **RB — J.K. Dobbins** (DEN) — Rushing Yards Over 49.5, **-113**. Same reasoning as above.
-- **WR — Courtland Sutton** (DEN) — Receiving Yards, line **42.5**, **Over**, **-113**. Sutton's own season average is 59.8 rec yds/gm — well above this posted line — even accounting for a moderately tough KC WR defense (124.6 rec yds/gm allowed, ranked 9th). Alt-line note: the 30+ alt (-250) is the high-floor version of this same read.
-- **TE — Travis Kelce** (KC) — Receiving Yards Over 42.5, **-113**. Same reasoning as the game-level pick above — the strongest single piece of evidence on the board.
+- **QB — Patrick Mahomes** (KC): Passing Yards, line 223.5, Over, -113. Same read as above — his individual 256.2 yds/gm rate (5th) against a moderate (11th-ranked) Denver pass defense is the best QB prop on the board this week.
+- **RB — J.K. Dobbins** (DEN): Rushing Yards, real line 49.5, Over, -113. FanDuel's own market has resolved Section 4's real Dobbins/Harvey ambiguity in Dobbins' favor (his line is nearly 3x Harvey's 18.5), and his own 10-game log (a real, unflagged individual attribution) averages 77.2 rush yds/gm against a Kansas City run defense that allows 83.2 rush yds/gm to backs (8th, solid but not special). Suggested alt: the 60+ rung at +146.
+- **WR — Rashee Rice** (KC): Receiving Yards, real line 51.5, Over, -113. His own season average (71.4 rec yds/gm, 85% snap share, clear WR1 role) sits nearly 20 yards above the posted line against a Denver WR defense that is stingy on touchdowns (1st, only 6 allowed all season) but only middling on total yardage allowed (13th, 130.8/gm). Suggested alt: the 60+ rung at +130.
+- **TE — Travis Kelce** (KC): Receiving Yards, line 42.5, Over, -113. Same Threat-supported read as the per-game pick above — the single cleanest matchup edge on this slate.
 
 ```json
 PROP_BREAKDOWN
 {
   "per_game": [
     {"away": "DEN", "home": "KC", "picks": [
-      {"player": "Travis Kelce", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-      {"player": "Patrick Mahomes", "market_key": "player_passing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-      {"player": "J.K. Dobbins", "market_key": "player_rushing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885}
+      {"player": "Travis Kelce", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Standard/Triple Threat designation: Kelce ranks 8th among TEs at 50.1 rec yds/gm, Denver allows 59.7 rec yds/gm to TEs (24th), a real soft spot inside an elite overall defense."},
+      {"player": "Patrick Mahomes", "market_key": "player_passing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Mahomes' own individual per-start rate is 256.2 yds/gm (5th among QBs) vs a Denver pass defense ranked just 11th in yards allowed; team-level splits argue lower but are not confirmed as his personal production."},
+      {"player": "Kenneth Walker", "market_key": "player_anytime_td", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.87, "side": "over", "reason": "Denver's run defense is elite against backs in yardage (2nd) and receptions (1st) but allowed 6 RB receiving TDs on the season, tied for 30th worst in the league - a real, specific goal-line/passing-down leak."}
     ]}
   ],
   "per_position": {
-    "QB": {"player": "Patrick Mahomes", "market_key": "player_passing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-    "RB": {"player": "J.K. Dobbins", "market_key": "player_rushing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-    "WR": {"player": "Courtland Sutton", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-    "TE": {"player": "Travis Kelce", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885}
+    "QB": {"player": "Patrick Mahomes", "market_key": "player_passing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "His individual 256.2 yds/gm rate (5th among QBs) against Denver's moderate (11th-ranked) pass defense is the strongest QB read on this slate."},
+    "RB": {"player": "J.K. Dobbins", "market_key": "player_rushing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "FanDuel's own line (49.5, nearly 3x Harvey's 18.5) resolves the roster ambiguity in Dobbins' favor, and his real 10-game log averages 77.2 rush yds/gm vs a KC run defense ranked just 8th against backs."},
+    "WR": {"player": "Rashee Rice", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Rice's season average of 71.4 rec yds/gm on an 85% snap share sits nearly 20 yards above the posted 51.5 line against a Denver defense that is stingy on WR touchdowns but only middling on total yardage."},
+    "TE": {"player": "Travis Kelce", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "The lone automatic Threat designation on this slate - Kelce's own top-10 rank meets Denver's specific soft spot at tight end (24th allowed)."}
   }
 }
 ```
@@ -49,30 +49,32 @@ PROP_BREAKDOWN
 
 ### Overs (ranked by conviction)
 
-1. **Travis Kelce** (KC) — Receiving Yards Over 42.5, **-113**. Confidence: **HIGH** — real Threat convergence, the cleanest single edge on the slate.
-2. **Courtland Sutton** (DEN) — Receiving Yards Over 42.5, **-113**. Confidence: **MEDIUM** — season average sits ~17 yards above the line, though Jaylen Waddle's presence on Denver's roster (unconfirmed 2026 role) is a real complicating factor.
-3. **J.K. Dobbins** (DEN) — Rushing Yards Over 49.5, **-113**. Confidence: **MEDIUM** — strong game-log support, tempered by KC's real run defense being merely average-to-solid (not a soft matchup).
-4. **Rashee Rice** (KC) — Receiving Yards Over 55.5, **-113**. Confidence: **MEDIUM** — his 71.4 rec yds/gm season average, even scaled down for Denver's top-tier defensive compression (~65 projected), still clears this line.
-5. **Kenneth Walker** — Anytime TD, **-120** (single "Yes" market, no alt ladder). Confidence: **LOW** — grounded in real Hidden Intelligence (Finding 2): Denver's defense is elite against RBs in nearly every category except RB receiving touchdowns allowed (6 on the season, ranked 30th, tied-worst) — a real, specific leak for whichever KC back handles passing-down work.
+1. **Travis Kelce** (KC) — Receiving Yards Over 42.5, -113. HIGH conviction — the only real Threat designation on the slate.
+2. **Patrick Mahomes** (KC) — Passing Yards Over 223.5, -113. MEDIUM conviction — strong individual rate (256.2, 5th) against a moderate defense, tempered by a conflicting team-level split.
+3. **Rashee Rice** (KC) — Receiving Yards Over 51.5, -113. MEDIUM conviction — clear WR1 role, season average well clear of the line.
+4. **Courtland Sutton** (DEN) — Receiving Yards Over 42.5, -113. MEDIUM conviction — his own season average of 59.8 rec yds/gm on an 85.5% snap share sits 17+ yards above the line, against a KC WR defense that's solid but not shutdown (9th, 124.6 rec yds/gm allowed).
+5. **J.K. Dobbins** (DEN) — Rushing Yards Over 49.5, -113. MEDIUM conviction — real 10-game log average of 77.2, with FanDuel's own market resolving the backfield-share question in his favor.
+6. **Kenneth Walker** (KC) — Anytime TD, -115. MEDIUM conviction — targets Denver's specific, real RB-receiving-touchdown leak (30th, worst in the league) inside an otherwise elite run defense.
 
 ### Unders (ranked by conviction)
 
-1. **Patrick Mahomes** (KC) — Passing Yards Under 223.5, **-113**. Confidence: **MEDIUM** — contextual splits, blitz-efficiency decline, and the real Week 17 head-to-head all point the same direction.
-2. **Kenneth Walker** (KC) — Rushing Yards Under 61.5, **-113**. Confidence: **LOW** — Denver's run defense is elite in aggregate (71.8 rush yds/gm allowed, ranked 2nd), but that number is shared across the whole RB position, and real backfield-role ambiguity (Walker vs. Pacheco) limits how far this projection can be trusted.
+1. **Xavier Worthy** (KC) — Receptions Under 3.5, -154. MEDIUM conviction — his own individual season average is 3.0 receptions/gm, below the posted line, in a WR2 role (76.7% snap share) behind Rice. Note: FanDuel's real alt ladder for Worthy's receptions (2, 3, 4, 5, 6, 7, 8) is priced Over-only, so there's no Under-side alternative to this 3.5 line.
+2. **Pat Bryant** (DEN) — Receptions Under 2.5, -122. LOW conviction — his own season average (2.4/gm) sits just under the line in a clear WR2/depth role (65% snap share); the margin is thin and this is a low-conviction lean, not a strong edge. Same alt-ladder caveat applies: Bryant's real receptions alt ladder (2, 3, 4, 5, 6, 7) is Over-only priced.
 
 ```json
 FAVORITE_OU
 {
   "overs": [
-    {"player": "Travis Kelce", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-    {"player": "Courtland Sutton", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-    {"player": "J.K. Dobbins", "market_key": "player_rushing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-    {"player": "Rashee Rice", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-    {"player": "Kenneth Walker", "market_key": "player_anytime_td", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.833}
+    {"player": "Travis Kelce", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Only automatic Threat designation on the slate - top-10 individual rank meeting a specific 24th-ranked TE soft spot."},
+    {"player": "Patrick Mahomes", "market_key": "player_passing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Individual per-start rate of 256.2 yds/gm (5th) against a moderate 11th-ranked pass defense, tempered by a conflicting team-level split."},
+    {"player": "Rashee Rice", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Season average of 71.4 rec yds/gm on an 85% snap share sits well clear of the 51.5 line."},
+    {"player": "Courtland Sutton", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Season average of 59.8 rec yds/gm on an 85.5% snap share sits 17+ yards clear of the 42.5 line against a solid-not-shutdown KC WR defense."},
+    {"player": "J.K. Dobbins", "market_key": "player_rushing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Real 10-game log average of 77.2 rush yds/gm, with FanDuel's own market crowning him the lead back over RJ Harvey."},
+    {"player": "Kenneth Walker", "market_key": "player_anytime_td", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.87, "side": "over", "reason": "Targets Denver's real, specific RB-receiving-touchdown leak (30th, worst in the league) inside an otherwise elite run defense."}
   ],
   "unders": [
-    {"player": "Patrick Mahomes", "market_key": "player_passing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-    {"player": "Kenneth Walker", "market_key": "player_rushing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885}
+    {"player": "Xavier Worthy", "market_key": "player_receptions", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.649, "side": "under", "reason": "His own individual season average is 3.0 receptions/gm, below the posted 3.5 line, in a clear WR2 role behind Rice."},
+    {"player": "Pat Bryant", "market_key": "player_receptions", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.82, "side": "under", "reason": "Season average of 2.4 receptions/gm sits just under the 2.5 line in a limited WR2/depth role; a thin, low-conviction edge."}
   ]
 }
 ```
@@ -81,109 +83,85 @@ FAVORITE_OU
 
 ## 3. FIVE PARLAYS
 
-**Standing disclosure for every parlay below:** this is a one-game slate, so every leg in every parlay shares the same canonical event (DEN @ KC). The combined prices shown are naive cross-multiplications of each leg's individual price, **not** real FanDuel same-game-parlay (SGP) quotes — legs from the same game are correlated, and FanDuel's actual SGP pricing for this combination would differ from simple multiplication.
+**Same-game notice, applies to every parlay below:** every leg in every parlay comes from DEN @ KC — the only game on this slate. The combined prices shown are cross-game-style estimates built by multiplying each leg's independent price; they are NOT real FanDuel same-game-parlay (SGP) quotes, since legs from the same game are correlated rather than independent.
 
 ### 3-Team Parlay
-- Travis Kelce (KC) — Receiving Yards Over 42.5, -113
-- Patrick Mahomes (KC) — Passing Yards Under 223.5, -113
-- J.K. Dobbins (DEN) — Rushing Yards Over 49.5, -113
-- **Same-game note:** all three legs share canonical event `d5f0b2436d2da19e` — cross-game-style estimate, not a real SGP quote.
-- **Combined price: +570** (validator-checked).
-- **Why this combination:** these three bets are the report's central thesis compressed into three legs — Denver's defense suppresses Mahomes, Denver's offense runs through Dobbins, and Kelce is the one confirmed statistical crack in Denver's otherwise elite unit.
+- **Travis Kelce** (KC) Receiving Yards Over 42.5, -113 — the Threat-supported anchor leg.
+- **Patrick Mahomes** (KC) Passing Yards Over 223.5, -113 — his individual rate (256.2, 5th) against a moderate Denver pass defense.
+- **Kenneth Walker** (KC) Anytime TD, -115 — targets Denver's specific RB-receiving-TD leak.
+- **Combined price: +564** (decimal 6.645). Thread: three independent reads that all point toward a productive Kansas City passing operation this specific week, even while the team as a whole struggles to finish drives.
 
 ```json
 PARLAY_3_TEAM
 [
-  {"player": "Travis Kelce", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-  {"player": "Patrick Mahomes", "market_key": "player_passing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-  {"player": "J.K. Dobbins", "market_key": "player_rushing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885}
+  {"player": "Travis Kelce", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Standard/Triple Threat designation vs Denver's 24th-ranked TE defense."},
+  {"player": "Patrick Mahomes", "market_key": "player_passing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Individual 256.2 yds/gm rate (5th) vs a moderate 11th-ranked pass defense."},
+  {"player": "Kenneth Walker", "market_key": "player_anytime_td", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.87, "side": "over", "reason": "Denver allowed 6 RB receiving TDs on the season, tied for 30th worst, a real specific leak."}
 ]
 ```
 
 ### 4-Team Parlay
-- Travis Kelce (KC) — Receiving Yards Over 42.5, -113
-- Patrick Mahomes (KC) — Passing Yards Under 223.5, -113
-- J.K. Dobbins (DEN) — Rushing Yards Over 49.5, -113
-- Courtland Sutton (DEN) — Receiving Yards Over 42.5, -113
-- **Same-game note:** all four legs share canonical event `d5f0b2436d2da19e` — cross-game-style estimate, not a real SGP quote.
-- **Combined price: +1163** (validator-checked).
-- **Why this combination:** extends the 3-team thesis to Denver's own passing game — Sutton's real season average sitting well above his posted line adds a fourth independent column to the same Denver-controls-the-game read.
+- Same three legs above, plus:
+- **Courtland Sutton** (DEN) Receiving Yards Over 42.5, -113 — season average 17+ yards clear of the line against KC's 9th-ranked WR defense.
+- **Combined price: +1152** (decimal 12.525). Thread: adds Denver's own clearest receiving edge to the KC-passing-game stack, betting on both offenses moving the ball through the air.
 
 ```json
 PARLAY_4_TEAM
 [
-  {"player": "Travis Kelce", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-  {"player": "Patrick Mahomes", "market_key": "player_passing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-  {"player": "J.K. Dobbins", "market_key": "player_rushing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-  {"player": "Courtland Sutton", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885}
+  {"player": "Travis Kelce", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Standard/Triple Threat designation vs Denver's 24th-ranked TE defense."},
+  {"player": "Patrick Mahomes", "market_key": "player_passing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Individual 256.2 yds/gm rate (5th) vs a moderate 11th-ranked pass defense."},
+  {"player": "Kenneth Walker", "market_key": "player_anytime_td", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.87, "side": "over", "reason": "Denver allowed 6 RB receiving TDs on the season, tied for 30th worst, a real specific leak."},
+  {"player": "Courtland Sutton", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Season average of 59.8 rec yds/gm sits 17+ yards clear of the 42.5 line vs KC's 9th-ranked WR defense."}
 ]
 ```
 
 ### 5-Team Parlay
-- Travis Kelce (KC) — Receiving Yards Over 42.5, -113
-- Patrick Mahomes (KC) — Passing Yards Under 223.5, -113
-- J.K. Dobbins (DEN) — Rushing Yards Over 49.5, -113
-- Courtland Sutton (DEN) — Receiving Yards Over 42.5, -113
-- Rashee Rice (KC) — Receiving Yards Over 55.5, -113
-- **Same-game note:** all five legs share canonical event `d5f0b2436d2da19e` — cross-game-style estimate, not a real SGP quote.
-- **Combined price: +2280** (validator-checked).
-- **Why this combination:** adds the counter-read from KC's own contextual splits — Kansas City's passing offense loses touchdowns against good defenses far more than it loses yardage, so Rice's volume holding up is compatible with Mahomes going Under on yards.
+- Same four legs above, plus:
+- **Rashee Rice** (KC) Receiving Yards Over 51.5, -113 — clear WR1 role, season average nearly 20 yards clear of the line.
+- **Combined price: +2261** (decimal 23.610). Thread: now both games' clear WR1s are stacked alongside the two QB/TE reads — a bet that this game is a genuine shootout rather than the Week 17-style defensive rout from these two teams' last meeting.
 
 ```json
 PARLAY_5_TEAM
 [
-  {"player": "Travis Kelce", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-  {"player": "Patrick Mahomes", "market_key": "player_passing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-  {"player": "J.K. Dobbins", "market_key": "player_rushing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-  {"player": "Courtland Sutton", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-  {"player": "Rashee Rice", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885}
+  {"player": "Travis Kelce", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Standard/Triple Threat designation vs Denver's 24th-ranked TE defense."},
+  {"player": "Patrick Mahomes", "market_key": "player_passing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Individual 256.2 yds/gm rate (5th) vs a moderate 11th-ranked pass defense."},
+  {"player": "Kenneth Walker", "market_key": "player_anytime_td", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.87, "side": "over", "reason": "Denver allowed 6 RB receiving TDs on the season, tied for 30th worst, a real specific leak."},
+  {"player": "Courtland Sutton", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Season average of 59.8 rec yds/gm sits 17+ yards clear of the 42.5 line vs KC's 9th-ranked WR defense."},
+  {"player": "Rashee Rice", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Season average of 71.4 rec yds/gm on an 85% snap share sits well clear of the 51.5 line."}
 ]
 ```
 
 ### 6-Team Parlay
-- Travis Kelce (KC) — Receiving Yards Over 42.5, -113
-- Patrick Mahomes (KC) — Passing Yards Under 223.5, -113
-- J.K. Dobbins (DEN) — Rushing Yards Over 49.5, -113
-- Courtland Sutton (DEN) — Receiving Yards Over 42.5, -113
-- Rashee Rice (KC) — Receiving Yards Over 55.5, -113
-- Kenneth Walker (KC) — Anytime TD, -120
-- **Same-game note:** all six legs share canonical event `d5f0b2436d2da19e` — cross-game-style estimate, not a real SGP quote.
-- **Combined price: +4262** (validator-checked).
-- **Why this combination:** layers in the report's real Hidden Intelligence finding (Denver's specific weakness to RB receiving touchdowns) as the highest-variance piece of an otherwise evidence-dense parlay.
+- Same five legs above, plus:
+- **J.K. Dobbins** (DEN) Rushing Yards Over 49.5, -113 — real 10-game log average of 77.2, market-confirmed lead back.
+- **Combined price: +4350** (decimal 44.504). Thread: now a full-game "everything hits" ticket — both team's top WR, the KC QB and TE, KC's TD-leak target, and Denver's lead back all going over, betting on total game volume rather than any one storyline.
 
 ```json
 PARLAY_6_TEAM
 [
-  {"player": "Travis Kelce", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-  {"player": "Patrick Mahomes", "market_key": "player_passing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-  {"player": "J.K. Dobbins", "market_key": "player_rushing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-  {"player": "Courtland Sutton", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-  {"player": "Rashee Rice", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-  {"player": "Kenneth Walker", "market_key": "player_anytime_td", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.833}
+  {"player": "Travis Kelce", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Standard/Triple Threat designation vs Denver's 24th-ranked TE defense."},
+  {"player": "Patrick Mahomes", "market_key": "player_passing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Individual 256.2 yds/gm rate (5th) vs a moderate 11th-ranked pass defense."},
+  {"player": "Kenneth Walker", "market_key": "player_anytime_td", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.87, "side": "over", "reason": "Denver allowed 6 RB receiving TDs on the season, tied for 30th worst, a real specific leak."},
+  {"player": "Courtland Sutton", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Season average of 59.8 rec yds/gm sits 17+ yards clear of the 42.5 line vs KC's 9th-ranked WR defense."},
+  {"player": "Rashee Rice", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Season average of 71.4 rec yds/gm on an 85% snap share sits well clear of the 51.5 line."},
+  {"player": "J.K. Dobbins", "market_key": "player_rushing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Real 10-game log average of 77.2 rush yds/gm, with FanDuel's own market crowning him the lead back over RJ Harvey."}
 ]
 ```
 
 ### 7-Team Parlay
-- Travis Kelce (KC) — Receiving Yards Over 42.5, -113
-- Patrick Mahomes (KC) — Passing Yards Under 223.5, -113
-- J.K. Dobbins (DEN) — Rushing Yards Over 49.5, -113
-- Courtland Sutton (DEN) — Receiving Yards Over 42.5, -113
-- Rashee Rice (KC) — Receiving Yards Over 55.5, -113
-- Kenneth Walker (KC) — Anytime TD, -120
-- Xavier Worthy (KC) — Receiving Yards Over 35.5, -113
-- **Same-game note:** all seven legs share canonical event `d5f0b2436d2da19e` — cross-game-style estimate, not a real SGP quote.
-- **Combined price: +8123** (validator-checked).
-- **Why this combination:** the full-slate maximalist version — every real, evidence-backed lean from this report stacked together, closing with Worthy to extend the same KC-passing-volume-survives read down to the WR2 spot.
+- Same six legs above, plus:
+- **Xavier Worthy** (KC) Receptions Under 3.5, -154 — his own individual season average (3.0/gm) sits below the line.
+- **Combined price: +7239** (decimal 73.387). Thread: adds the one real Under on the board as a hedge against Rice/Kelce eating a disproportionate share of Kansas City's targets — the same passing-volume thesis as the 6-team, with a target-distribution check built in.
 
 ```json
 PARLAY_7_TEAM
 [
-  {"player": "Travis Kelce", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-  {"player": "Patrick Mahomes", "market_key": "player_passing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-  {"player": "J.K. Dobbins", "market_key": "player_rushing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-  {"player": "Courtland Sutton", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-  {"player": "Rashee Rice", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885},
-  {"player": "Kenneth Walker", "market_key": "player_anytime_td", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.833},
-  {"player": "Xavier Worthy", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885}
+  {"player": "Travis Kelce", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Standard/Triple Threat designation vs Denver's 24th-ranked TE defense."},
+  {"player": "Patrick Mahomes", "market_key": "player_passing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Individual 256.2 yds/gm rate (5th) vs a moderate 11th-ranked pass defense."},
+  {"player": "Kenneth Walker", "market_key": "player_anytime_td", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.87, "side": "over", "reason": "Denver allowed 6 RB receiving TDs on the season, tied for 30th worst, a real specific leak."},
+  {"player": "Courtland Sutton", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Season average of 59.8 rec yds/gm sits 17+ yards clear of the 42.5 line vs KC's 9th-ranked WR defense."},
+  {"player": "Rashee Rice", "market_key": "player_receiving_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Season average of 71.4 rec yds/gm on an 85% snap share sits well clear of the 51.5 line."},
+  {"player": "J.K. Dobbins", "market_key": "player_rushing_yards", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.885, "side": "over", "reason": "Real 10-game log average of 77.2 rush yds/gm, with FanDuel's own market crowning him the lead back over RJ Harvey."},
+  {"player": "Xavier Worthy", "market_key": "player_receptions", "canonical_event_id": "d5f0b2436d2da19e", "price": 1.649, "side": "under", "reason": "His own individual season average is 3.0 receptions/gm, below the posted 3.5 line, in a clear WR2 role behind Rice."}
 ]
 ```
