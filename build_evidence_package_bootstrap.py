@@ -282,7 +282,15 @@ def extract_real_schedule(dk_df):
     """Pull the REAL upcoming schedule straight from the DK file's own Game
     Info column — 'AWAY@HOME MM/DD/YYYY HH:MMAM/PM ET'. This is genuine
     schedule data DK only publishes for real, confirmed games; nothing here
-    is inferred or guessed."""
+    is inferred or guessed.
+
+    REAL CHANGE (2026-09-16): no longer called by main() — see
+    extract_real_schedule_from_games_json() below, which replaced this as
+    the real schedule source per Frank's direct question about why a
+    manually-downloaded, main-slate-only DK file should matter for
+    schedule discovery at all when a more complete source already exists.
+    Left defined, unused, rather than deleted outright, in case DK's raw
+    schedule text is ever needed again for some other real reason."""
     games = {}
     for info in dk_df["Game Info"].dropna().unique():
         m = re.match(r"^([A-Z]+)@([A-Z]+)\s+(\S+)\s+(\S+\s*[AP]M)\s*(\S*)", str(info))
@@ -292,6 +300,73 @@ def extract_real_schedule(dk_df):
         games[(away, home)] = {"away": away, "home": home, "date": date,
                                 "time": time, "timezone": tz or "ET"}
     return games
+
+
+def extract_real_schedule_from_games_json(games_json):
+    """REAL CHANGE (2026-09-16), replacing DK-based schedule discovery
+    entirely, per Frank's direct question: why should a DK salary file
+    matter for finding out which teams are playing, now that DK is no
+    longer this project's injury source? It shouldn't, and confirmed
+    directly it was actively causing real problems beyond that — DK's
+    file only ever covers its own main Sunday slate (Thursday/Monday
+    games like DET@BUF were never in it at all, requiring the
+    --extra-away/--extra-home workaround every single week just to
+    include them), and it depends on someone remembering to
+    re-download it fresh — confirmed directly as the real cause of a
+    stale September 5th file silently causing real Week 1 matchups
+    (TB_CIN, GB_MIN) to be misidentified as Week 2's upcoming games.
+
+    games/wkNN.json has neither problem: it's nflverse's own real,
+    complete schedule (via build_matchup_stats.py), covering every real
+    game for the week regardless of time slot, and it's already
+    rebuilt as part of the normal pipeline Frank runs regularly — not a
+    separate, easy-to-forget manual download. This is also the exact
+    same file already loaded elsewhere in this script for the
+    div_game lookup; the caller reuses that one load for both purposes
+    rather than loading it twice."""
+    games = {}
+    for g in games_json.get("games", []) if games_json else []:
+        away, home = g.get("away"), g.get("home")
+        gameday, gametime = g.get("gameday"), g.get("gametime")
+        if not (away and home and gameday and gametime):
+            continue
+        real_dt = datetime.strptime(f"{gameday} {gametime}", "%Y-%m-%d %H:%M")
+        games[(away, home)] = {
+            "away": away, "home": home,
+            "date": real_dt.strftime("%m/%d/%Y"),
+            "time": real_dt.strftime("%I:%M%p"),
+            "timezone": "ET",
+        }
+    return games
+
+
+def determine_real_bootstrap_week():
+    """REAL BUG FIX (2026-09-16): bootstrap_week previously came straight
+    from matchup/current.json's own "week" field. Confirmed directly this
+    is unreliable for the same real reason already found and fixed in
+    games.html's week selector the night before: that field doesn't track
+    "the real current NFL week" — it tracks "the highest week number
+    build_matchup_stats.py has ever built." A real, separate fix from two
+    nights ago deliberately makes that script build ahead through the
+    carryover window (week 3) early in the season, which wrote week: 3
+    into that file while the real season was still in week 1 or 2 — long
+    before week 3 actually started. Confirmed directly: this caused a
+    real Week 2 bootstrap run to use week 3 as its target, pulling the
+    wrong week's team data and evidence entirely.
+
+    Computed independently here instead, the same real principle as the
+    games.html fix: scan games/wkNN.json in order and return the first
+    real week that has at least one game not yet marked played. This
+    reflects the real, actual state of the season as of the last real
+    data rebuild, not a stale build-time label."""
+    for week in range(1, 19):
+        wk_data = load_json(f"games/wk{week:02d}.json")
+        if not wk_data:
+            break  # that week isn't built yet — nothing further to check
+        games = wk_data.get("games", [])
+        if any(not g.get("played") for g in games):
+            return week
+    return 1  # real fallback: no games/wkNN.json exists at all yet
 
 
 def main():
@@ -311,32 +386,44 @@ def main():
     ap.add_argument("--extra-time", default="TBD", help="e.g. 08:20PM")
     args = ap.parse_args()
 
-    if not os.path.exists(DK_SALARY_PATH):
-        sys.exit(f"FATAL: no DraftKings salary file at {DK_SALARY_PATH}.")
-    dk_df = pd.read_csv(DK_SALARY_PATH)
-    real_games = extract_real_schedule(dk_df)
+    if args.bootstrap_week is None:
+        current = load_json("matchup/current.json")
+        if not current:
+            sys.exit("FATAL: matchup/current.json not found and no --bootstrap-week given.")
+        # REAL BUG FIX (2026-09-16): current["week"] is a stale, build-time
+        # label (see determine_real_bootstrap_week()'s own docstring for
+        # the confirmed real cause) — the real, current week is computed
+        # independently instead. current["season"] is untouched by this
+        # fix; that field isn't the part that was wrong.
+        bootstrap_season = current["season"]
+        bootstrap_week = determine_real_bootstrap_week()
+    else:
+        current = load_json("matchup/current.json")
+        bootstrap_season = current["season"] if current else None
+        bootstrap_week = args.bootstrap_week
+    bwk = f"wk{bootstrap_week:02d}"
+
+    # REAL CHANGE (2026-09-16): real_games — the actual schedule
+    # discovery this whole script depends on — now comes from
+    # games/{bwk}.json instead of a raw DK CSV read. This is the same
+    # real week's games file bootstrap_week above just resolved, and
+    # the same one reused below for the div_game lookup — one real
+    # load, two real uses, not two separate loads of the same data.
+    games_json = load_json(f"games/{bwk}.json")
+    real_games = extract_real_schedule_from_games_json(games_json)
     if not real_games:
-        sys.exit("FATAL: couldn't parse any real games from the DK file's Game Info column.")
+        sys.exit(f"FATAL: no real games found in games/{bwk}.json — run "
+                 f"build_matchup_stats.py to build it first.")
 
     if args.extra_away and args.extra_home:
         real_games[(args.extra_away, args.extra_home)] = {
             "away": args.extra_away, "home": args.extra_home,
             "date": args.extra_date, "time": args.extra_time, "timezone": "ET",
         }
-        print(f"Added extra game not in the DK file: {args.extra_away} @ {args.extra_home}")
+        print(f"Added extra game not in games/{bwk}.json: {args.extra_away} @ {args.extra_home}")
     elif args.extra_away or args.extra_home:
         sys.exit("FATAL: --extra-away and --extra-home must both be given together.")
 
-    if args.bootstrap_week is None:
-        current = load_json("matchup/current.json")
-        if not current:
-            sys.exit("FATAL: matchup/current.json not found and no --bootstrap-week given.")
-        bootstrap_season, bootstrap_week = current["season"], current["week"]
-    else:
-        current = load_json("matchup/current.json")
-        bootstrap_season = current["season"] if current else None
-        bootstrap_week = args.bootstrap_week
-    bwk = f"wk{bootstrap_week:02d}"
 
     matchup_json = load_json(f"matchup/{bwk}.json")
 
@@ -470,10 +557,10 @@ def main():
     # A real division rival, playing this same opponent twice a real
     # season, is exactly the case where a player's specific head-to-head
     # history against THIS opponent is real, relevant evidence — not
-    # just their general recent form. Loaded here, keyed by (away, home),
-    # so every real game's bundle below can carry its own real, correct
-    # div_game value.
-    games_json = load_json(f"games/{bwk}.json")
+    # just their general recent form.
+    # REAL CHANGE (2026-09-16): games_json is no longer re-loaded here —
+    # it's the same real file already loaded above for real_games'
+    # schedule discovery, reused here rather than fetched a second time.
     div_game_by_matchup = {
         (g.get("away"), g.get("home")): g.get("div_game")
         for g in (games_json.get("games", []) if games_json else [])
