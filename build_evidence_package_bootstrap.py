@@ -461,6 +461,24 @@ def main():
     # zero injury evidence at all, regardless of real injury status.
     injuries_json = load_json(f"injuries/{bwk}.json")
 
+    # REAL BUG FIX (2026-09-15), per Frank's direct request: div_game is
+    # a real field on games/{bwk}.json's own rows (confirmed directly —
+    # DEN @ KC, a real AFC West matchup, carries div_game: true there),
+    # but this bootstrap script never loaded that file at all — its own
+    # "game" block below was hand-built from DK's separate schedule text
+    # (extract_real_schedule), which never had this field to begin with.
+    # A real division rival, playing this same opponent twice a real
+    # season, is exactly the case where a player's specific head-to-head
+    # history against THIS opponent is real, relevant evidence — not
+    # just their general recent form. Loaded here, keyed by (away, home),
+    # so every real game's bundle below can carry its own real, correct
+    # div_game value.
+    games_json = load_json(f"games/{bwk}.json")
+    div_game_by_matchup = {
+        (g.get("away"), g.get("home")): g.get("div_game")
+        for g in (games_json.get("games", []) if games_json else [])
+    }
+
     # REAL BUG FIX (2026-09-09): players_json's own "team" field reflects
     # whichever team a player's STATS were last recorded under (2025
     # season, since 2026 has none yet) — NOT their real current roster.
@@ -698,6 +716,7 @@ def main():
                 "away": away, "home": home,
                 "scheduled_date": sched["date"], "scheduled_time": sched["time"],
                 "timezone": sched["timezone"], "played": False,
+                "div_game": div_game_by_matchup.get((away, home)),
                 "note": ("This game has NOT been played. There is no box score, result, "
                          "or current-season line/spread available. All team-level analytics "
                          f"below are {bootstrap_season} season-FINAL data, used as the best "

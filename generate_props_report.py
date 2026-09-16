@@ -148,23 +148,84 @@ def trim_evidence_for_props(evidence):
     ~375,000 tokens — a real, serious cost problem caught before it was
     ever run for real, not after.
 
+    UPDATED (2026-09-15), per Frank's direct pushback: the original fix
+    dropped "log" entirely. That went too far — a player's own recent
+    games (who they actually played, what they actually did, and that
+    opponent's real defensive tier/rank that week) is real, correctly-
+    attributed evidence a season average can't give: whether they're
+    actually hitting today's real posted line over their last 3/5/10
+    games, against what caliber of defense. So "log" is now trimmed to
+    the most recent 10 real entries per player, not removed — keeping
+    that real recency and opponent-quality evidence while still
+    avoiding the original cost problem (confirmed up to ~84% of one
+    real game's entire evidence size in the worst case, from keeping
+    all 17 weeks for every player on both rosters).
+
     This trim is props-specific — it does NOT touch the real evidence
     package on disk, and Game Breakdown generation (which can genuinely
-    use week-by-week trend detail for its own deeper analysis) is
-    completely unaffected. For prop-picking specifically, the real
-    aggregate numbers (season/career/splits/ceiling) are what actually
-    matters — the exact value of one specific week 6 log line is not
-    needed to ground a real prop pick, and confirmed to be the single
-    largest cost driver by a wide margin (up to ~84% of one real game's
-    entire evidence size in the worst case found)."""
+    use the full week-by-week trend detail for its own deeper analysis)
+    is completely unaffected.
+
+    REAL CHANGE (2026-09-15), per Frank's direct request, for a
+    different reason than cost — data correctness. A prop is a bet on
+    one specific player producing one specific stat; it has nothing to
+    do with which team wins or by how much. Several evidence blocks
+    exist specifically to support real GAME-outcome narrative (Game
+    Breakdown's whole purpose), not player-specific prop reasoning, and
+    keeping them in the props prompt risks exactly what happened with
+    the real, confirmed Mahomes Week 17 misattribution: team-level or
+    schematic data getting reasoned into a specific player's stat line
+    it was never actually about. Removed entirely for props:
+      - team_context: both its per-game "log" and its "splits" are
+        team-level, QB/RB/WR/TE POSITION-GROUP aggregates, never an
+        individual player's own real production — the same real
+        category of data that caused the Mahomes misattribution.
+      - dfs: DraftKings salary/ownership data has zero real bearing on
+        whether a FanDuel yardage or reception prop hits.
+      - down_distance, red_zone_play_calling: real, but these describe
+        team-level play-calling tendency and game script, not whether
+        a specific named player reaches a specific number — the kind
+        of evidence that supports a Game Breakdown's account of how a
+        game is likely to unfold, not a prop pick's reasoning.
+    Real, individual player evidence (threats, players.season/career/
+    splits/ceiling, matchup's team_off/team_def category rankings —
+    the actual opponent-side half of a real Threat-style convergence —
+    and the player-specific slices of matchup_pattern_data) is
+    untouched by this trim."""
     trimmed = copy.deepcopy(evidence)
+    game_info = trimmed.get("game") or {}
+    away_team, home_team = game_info.get("away"), game_info.get("home")
     players = trimmed.get("players")
     if isinstance(players, dict):
-        for side in players.values():
+        for side_name, side in players.items():
+            # REAL BUG FIX (2026-09-15), per Frank's direct request: a
+            # division rival plays this same real opponent twice a real
+            # season, and how a player has actually performed in those
+            # specific past meetings is real, directly relevant
+            # evidence — not just general recent form. A pure "last 10
+            # games" trim could accidentally cut a real division
+            # meeting that happened earlier in a season. This player's
+            # real opponent TODAY (the other team in this game — away
+            # players face home, home players face away) is checked
+            # explicitly, and any of their real past log entries
+            # against that same opponent are kept regardless of
+            # whether they'd otherwise fall outside the most recent 10
+            # — capped at the 3 most recent such meetings, since that's
+            # the real, relevant window for head-to-head history, not
+            # every meeting a multi-season log might ever contain.
+            todays_opponent = home_team if side_name == "away" else away_team
             if isinstance(side, list):
                 for p in side:
-                    if isinstance(p, dict):
-                        p.pop("log", None)
+                    if isinstance(p, dict) and isinstance(p.get("log"), list):
+                        sorted_log = sorted(p["log"], key=lambda e: e.get("week", 0))
+                        recent10 = sorted_log[-10:]
+                        vs_opponent = [e for e in sorted_log if e.get("opp") == todays_opponent][-3:]
+                        merged = {id(e): e for e in recent10}
+                        for e in vs_opponent:
+                            merged.setdefault(id(e), e)
+                        p["log"] = sorted(merged.values(), key=lambda e: e.get("week", 0))
+    for key in ("team_context", "dfs", "down_distance", "red_zone_play_calling"):
+        trimmed.pop(key, None)
     return trimmed
 
 

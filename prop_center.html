@@ -401,11 +401,28 @@ function gameForEventId(eid){
   return (FDPROPS && FDPROPS.games || []).find(g => g.canonical_event_id === eid);
 }
 
+// REAL CHANGE (2026-09-15), per Frank's direct request: every card
+// must show the real posted line alongside Over/Under, and Anytime TD
+// — which has no line or Over/Under side at all, just a single real
+// "Yes" price — must not show a fabricated Over/Under badge. Shared by
+// every card type below (Prop Breakdown, Favorite O/U, and every
+// parlay leg) so this rule is consistent everywhere, not just one
+// section.
+function isAnytimeTdMarket(marketKey){
+  return String(marketKey || '').includes('anytime_td');
+}
+function sideLineLabel(pick){
+  if (isAnytimeTdMarket(pick.market_key)) return ''; // no Over/Under, no line — real single "Yes" price only
+  if (pick.side !== 'over' && pick.side !== 'under') return '';
+  const sideText = pick.side === 'over' ? 'Over' : 'Under';
+  const lineText = (pick.line !== undefined && pick.line !== null) ? ` ${pick.line}` : '';
+  return `<span class="pc-pick-side ${pick.side}">${sideText}${lineText}</span>`;
+}
+
 function pickCardHTML(pick, badge){
   const game = gameForEventId(pick.canonical_event_id);
   const gameLabel = game ? `${game.away_code} @ ${game.home_code}` : '';
-  const sideLabel = (pick.side === 'over' || pick.side === 'under')
-    ? `<span class="pc-pick-side ${pick.side}">${pick.side === 'over' ? 'Over' : 'Under'}</span>` : '';
+  const sideLabel = sideLineLabel(pick);
   return `<div class="pc-pick-card">
     ${badge ? `<span class="pc-pick-badge">${esc(badge)}</span>` : ''}
     <div class="pc-pick-player">${esc(pick.player)}</div>
@@ -486,12 +503,16 @@ function renderFavoriteOU(){
 function parlayCard(size, p){
   const invalid = !p.valid;
   const legsHTML = (p.legs || []).map(leg => {
-    const legSideLabel = (leg.side === 'over' || leg.side === 'under')
-      ? `<span class="pc-pick-side ${leg.side}">${leg.side === 'over' ? 'Over' : 'Under'}</span>` : '';
+    const legSideLabel = sideLineLabel(leg);
+    const gameLabel = (() => {
+      const game = gameForEventId(leg.canonical_event_id);
+      return game ? `${game.away_code} @ ${game.home_code}` : '';
+    })();
     return `
     <div class="parlay-leg">
       <div><div class="who">${esc(leg.player || leg.side || '—')}</div>
-        <div class="mkt">${esc(leg.market_key || '')}</div>
+        <div class="mkt">${esc(marketKeyLabel(leg.market_key || ''))}${gameLabel ? ' · ' + esc(gameLabel) : ''}</div>
+        ${legSideLabel}
         ${leg.reason ? `<div class="pc-pick-reason">${esc(leg.reason)}</div>` : ''}</div>
       <div class="px">${legSideLabel}${leg.price != null ? priceLine(leg.price) : '—'}</div>
     </div>`;

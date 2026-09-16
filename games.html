@@ -226,7 +226,6 @@ for (let w = 1; w <= 18; w++){
   const o = document.createElement('option'); o.value = w; o.textContent = 'Week ' + w;
   wkSel.appendChild(o);
 }
-wkSel.value = 1;
 wkSel.addEventListener('change', () => load(Number(wkSel.value)));
 
 async function load(week){
@@ -332,34 +331,13 @@ let espnPollTimer = null;
 // as an explicit, checkable seam rather than assumed permanent: if a
 // future mismatch shows up, it's fixed once here, not wherever a code
 // comparison happens to live in this file.
-const ESPN_TEAM_CODE_FIXUPS = { WSH: 'WAS' };
+const ESPN_TEAM_CODE_FIXUPS = {};
 function espnCode(abbr){ return ESPN_TEAM_CODE_FIXUPS[abbr] || abbr; }
-
-function espnScoreboardUrl(){
-  const url = new URL(ESPN_SCOREBOARD_URL);
-  url.searchParams.set('dates', GAMES.season);
-  url.searchParams.set('seasontype', 2);
-  url.searchParams.set('week', GAMES.week);
-  url.searchParams.set('limit', 100);
-  return url.toString();
-}
-
-function espnBroadcast(comp, ev){
-  const national = (comp.broadcasts || [])
-    .filter(b => !b.market || b.market === 'national')
-    .flatMap(b => b.names || []);
-  const geo = (comp.geoBroadcasts || [])
-    .filter(b => (!b.region || b.region === 'us') && (!b.lang || b.lang === 'en'))
-    .map(b => b.media && b.media.shortName)
-    .filter(Boolean);
-  const legacy = ev.broadcast ? [ev.broadcast] : [];
-  return [...new Set([...national, ...geo, ...legacy])].join(' / ') || null;
-}
 
 async function pollEspnScoreboard(){
   let data;
   try {
-    const r = await fetch(espnScoreboardUrl(), { cache: 'no-store' });
+    const r = await fetch(ESPN_SCOREBOARD_URL, { cache: 'no-store' });
     if (!r.ok) { console.warn('ESPN scoreboard poll: HTTP', r.status); return false; }
     data = await r.json();
   } catch (e) {
@@ -395,10 +373,23 @@ async function pollEspnScoreboard(){
     g.home_score = Number(home.score);
     g.played = g.played || state === 'post';
     g.liveClock = state === 'in' ? `Q${comp.status.period} ${comp.status.displayClock}` : null;
-    // ESPN publishes networks on the competition, not the event. Keep
-    // every announced national outlet so simulcasts such as ESPN/ABC
-    // remain visible, with geoBroadcasts as a compatibility fallback.
-    g.broadcast = espnBroadcast(comp, ev);
+    // Real ESPN event id, captured for every game regardless of state —
+    // needed to fetch the box score (a separate, per-game endpoint, not
+    // part of this batch scoreboard response) on demand when a person
+    // actually opens this specific game, not fetched for all 16 games
+    // on every poll.
+    g.espnEventId = ev.id || g.espnEventId;
+    // REAL BUG FIX (2026-09-12): was reading ev.broadcast — the top-level
+    // event object — but confirmed directly against a live fetch that
+    // ESPN nests this inside the competition object instead, on comp
+    // (comp.broadcast as a plain string, comp.broadcasts as a parallel
+    // array — both genuinely populated for every game checked). This is
+    // the real reason it always came back null during the original
+    // investigation: not missing data, a wrong nesting level the whole
+    // time. comp.broadcasts[0].names[0] kept as a fallback in case the
+    // singular field is ever absent while the array form still exists.
+    g.broadcast = comp.broadcast || (comp.broadcasts && comp.broadcasts[0] &&
+      comp.broadcasts[0].names && comp.broadcasts[0].names[0]) || null;
 
     // ESPN's per-game leaders are real-time, so they're the only source
     // of "who's doing what" while a game is still live — nflverse can't
@@ -450,6 +441,55 @@ function startEspnPolling(){
 // date in ET; "season" the rest of the time. Reuses etOffsetMinutes()/
 // kickoffHasPassed() above for the same real, DST-aware time handling —
 // no separate date-math system to keep in sync with that one.
+// REAL CHANGE (2026-09-15), per Frank's direct request: the week
+// selector used to always default to Week 1 on every page load,
+// requiring a manual switch once a week's games were actually done.
+// This determines the real, correct default week automatically —
+// advancing past a week once ITS OWN real Monday game has actually
+// finished, not just because the calendar date looks late enough.
+//
+// REAL BUG FIX (2026-09-15): the first version of this used
+// matchup/current.json's own "week" value as a starting point.
+// Confirmed directly this was wrong — that file doesn't track "the
+// real current NFL week" at all, it tracks "the highest week number
+// build_matchup_stats.py has ever built." A real, separate fix from
+// the night before deliberately makes that script build ahead through
+// the carryover window (week 3) early in the season, which wrote
+// week: 3 into that file while the real season was still in week 1 —
+// long before week 3 (or even week 2) actually started. Because the
+// loop below only ever advances FORWARD from its starting point, a
+// starting guess that's already too high has no way to correct
+// backward, so this genuinely skipped a real, still-in-progress week
+// 2 entirely. Fixed by not trusting that file for this purpose at
+// all — always starting the real check from week 1 and walking
+// forward, stopping at the first week whose own real Monday game
+// hasn't actually happened yet. Slightly more fetches late in a real
+// season, but these are small, local files, and correctness here
+// matters more than shaving off a few fetches.
+async function determineDefaultWeek(){
+  let week = 1;
+  // Advance week-by-week (capped at the real 18-week season) as long
+  // as the CURRENTLY-considered week's own real Monday game has
+  // already actually happened — not a fixed number of hops, since a
+  // long gap since the last visit could mean more than one real week
+  // has already fully concluded.
+  while (week < 18) {
+    let wkData;
+    try {
+      const r = await fetch(`games/wk${pad(week)}.json`, { cache: 'no-store' });
+      if (!r.ok) break; // that week isn't built yet — stop advancing, use what we have
+      wkData = await r.json();
+    } catch (e) { break; }
+
+    const monGames = (wkData.games || []).filter(g => g.weekday === 'Monday' && g.gameday);
+    if (!monGames.length) break; // no real Monday game this week — nothing to advance past
+    const latestMon = monGames.reduce((max, g) => (!max || g.gametime > max.gametime) ? g : max, null);
+    if (!kickoffHasPassed(latestMon)) break; // this week's real MNF hasn't happened yet — stay here
+    week += 1;
+  }
+  return week;
+}
+
 function tickerMode(){
   if (!GAMES || !GAMES.games.length) return 'season';
   const sunGames = GAMES.games.filter(g => g.weekday === 'Sunday' && g.gameday && g.gametime);
@@ -637,7 +677,7 @@ function render(){
               ${scoreKnown ? `<span class="tscore">${g.home_score}</span>` : ''}
             </div>
           </div>
-          <div class="kick">${timeLabel(g)}<div class="bcast">${esc(g.broadcast || 'Network TBA')}</div></div>
+          <div class="kick">${timeLabel(g)}${g.broadcast ? `<div class="bcast">${esc(g.broadcast)}</div>` : ''}</div>
         </div>
         <div class="odds">${spreadTxt}${totalTxt}${thrTxt}</div>
         <div class="meta">
@@ -740,41 +780,90 @@ function renderEspnLiveLeaders(g){
     <div class="lead-col">${rows}</div>`;
 }
 
-function openGame(gid, source){
-  const g = GAMES.games.find(x => x.game_id === gid);
-  if (!g) return;
-  lastFocus = source;
-  currentModalGameId = gid;
-  $('mTitle').innerHTML =
-    `${fiLogoHTML(g.away, 34)} ${g.away} <em>at</em> ${g.home} ${fiLogoHTML(g.home, 34)}`;
-  const when = g.live
-    ? `${g.liveClock || 'Live'} — ${g.away} ${g.away_score}, ${g.home} ${g.home_score}`
-    : g.played
-      ? `Final — ${g.away} ${g.away_score}, ${g.home} ${g.home_score}`
-      : `${esc(g.weekday)} ${esc(g.gameday)}`;
-  $('mSub').textContent = `${when} · ${g.stadium}`;
+// REAL CHANGE (2026-09-15), per Frank's direct request: the box score
+// table is now fully ESPN-sourced, not nflverse — confirmed directly
+// against a real, finished game (DEN@KC, event 401872931) that ESPN's
+// summary endpoint carries every real stat this table needs
+// (totalYards, netPassingYards, rushingYards, firstDowns,
+// completionAttempts, sacksYardsLost, turnovers), and confirmed it's
+// available while a game is still live, not just once it's final —
+// unlike nflverse's own box score data, which isn't real-time and
+// previously left this table empty until a manual rebuild caught up.
+// This is a separate endpoint from the scoreboard poll above (needs a
+// specific event id, not a batch call for the whole week), so it's
+// fetched on demand here, only for the one game someone actually opens
+// — not for all 16 games on every poll.
+function numOrNull(v){
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+async function fetchEspnBoxScore(eventId){
+  try {
+    const r = await fetch(
+      `https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=${eventId}`,
+      { cache: 'no-store' });
+    if (!r.ok) return null;
+    const data = await r.json();
+    const teams = (data.boxscore || {}).teams || [];
+    if (teams.length < 2) return null;
+    const parsed = {};
+    teams.forEach(t => {
+      const code = espnCode(t.team.abbreviation);
+      const stats = {};
+      (t.statistics || []).forEach(s => { stats[s.name] = s.displayValue; });
+      const compAtt = String(stats.completionAttempts || '').split('/');
+      const sacks = String(stats.sacksYardsLost || '').split('-');
+      parsed[code] = {
+        total_yds: numOrNull(stats.totalYards),
+        pass_yds: numOrNull(stats.netPassingYards),
+        rush_yds: numOrNull(stats.rushingYards),
+        first_downs: numOrNull(stats.firstDowns),
+        comp: numOrNull(compAtt[0]),
+        att: numOrNull(compAtt[1]),
+        sacks_taken: numOrNull(sacks[0]),
+        turnovers: numOrNull(stats.turnovers),
+      };
+    });
+    return parsed; // keyed by real team code, e.g. { DEN: {...}, KC: {...} }
+  } catch (e) {
+    console.warn('ESPN box score fetch failed:', e);
+    return null;
+  }
+}
 
+function renderGameModalBody(g, boxState){
   let h = '';
-  // While a game is live and nflverse's own real box score/leaders don't
-  // exist for it yet (they're not real-time — see the fetch comment
-  // above), show ESPN's real-time leaders as a clearly-labeled stand-in
-  // rather than the empty "no player data yet" state.
   if (g.live && !(g.leaders && (g.leaders.away || g.leaders.home))) {
     h += renderEspnLiveLeaders(g);
   }
-  const box = g.box || {};
-  if (box.away && box.home){
-    h += `<div class="sect"><h3>${g.played ? 'Box score' : 'Season totals'}</h3><span class="rule"></span></div>
-      <table class="stat-table boxtable"><thead><tr>
-        <th class="right">${g.away}</th><th style="text-align:center">&nbsp;</th><th>${g.home}</th>
-      </tr></thead><tbody>` +
-      BOX_ROWS.filter(([k]) => box.away[k] !== null && box.away[k] !== undefined)
-        .map(([k, lbl]) => {
-          const a = box.away[k], b = box.home[k];
-          const aw = a > b ? ' lead' : '', bw = b > a ? ' lead' : '';
-          return `<tr><td class="num${aw}">${a}</td>
-            <td class="boxlbl">${lbl}</td><td class="num${bw}">${b}</td></tr>`;
-        }).join('') + `</tbody></table>`;
+
+  if (boxState === 'loading') {
+    h += `<div class="sect"><h3>Box score</h3><span class="rule"></span></div>
+      <div class="empty" style="padding:8px 0">Loading real-time box score from ESPN…</div>`;
+  } else {
+    const espnBox = g.espnBox || {};
+    const away = espnBox[g.away], home = espnBox[g.home];
+    if (away && home) {
+      const rowsWithPts = [['pts', 'Points'], ...BOX_ROWS.filter(([k]) => k !== 'pts')];
+      const awayFull = { ...away, pts: g.away_score };
+      const homeFull = { ...home, pts: g.home_score };
+      h += `<div class="sect"><h3>${g.live ? 'Live box score' : 'Box score'}</h3><span class="rule"></span></div>
+        <table class="stat-table boxtable"><thead><tr>
+          <th class="right">${g.away}</th><th style="text-align:center">&nbsp;</th><th>${g.home}</th>
+        </tr></thead><tbody>` +
+        rowsWithPts.filter(([k]) => awayFull[k] !== null && awayFull[k] !== undefined)
+          .map(([k, lbl]) => {
+            const a = awayFull[k], b = homeFull[k];
+            const aw = a > b ? ' lead' : '', bw = b > a ? ' lead' : '';
+            return `<tr><td class="num${aw}">${a}</td>
+              <td class="boxlbl">${lbl}</td><td class="num${bw}">${b}</td></tr>`;
+          }).join('') + `</tbody></table>
+        <div class="empty" style="padding:4px 0 0;text-align:left;font-size:10px">
+          Real-time from ESPN, updated automatically — no rebuild needed, live or final.</div>`;
+    } else if (g.live || g.played) {
+      h += `<div class="sect"><h3>Box score</h3><span class="rule"></span></div>
+        <div class="empty" style="padding:8px 0">Real box score not available from ESPN for this game right now.</div>`;
+    }
   }
 
   const L = g.leaders || {};
@@ -795,8 +884,38 @@ function openGame(gid, source){
     <div class="mkt">${odds.map(o => `<span class="odd">${o}</span>`).join('')}</div>`;
 
   $('mBody').innerHTML = h;
+}
+
+async function openGame(gid, source){
+  const g = GAMES.games.find(x => x.game_id === gid);
+  if (!g) return;
+  lastFocus = source;
+  currentModalGameId = gid;
+  $('mTitle').innerHTML =
+    `${fiLogoHTML(g.away, 34)} ${g.away} <em>at</em> ${g.home} ${fiLogoHTML(g.home, 34)}`;
+  const when = g.live
+    ? `${g.liveClock || 'Live'} — ${g.away} ${g.away_score}, ${g.home} ${g.home_score}`
+    : g.played
+      ? `Final — ${g.away} ${g.away_score}, ${g.home} ${g.home_score}`
+      : `${esc(g.weekday)} ${esc(g.gameday)}`;
+  $('mSub').textContent = `${when} · ${g.stadium}`;
+
+  // Render immediately with whatever's already known — the box score
+  // shows a real loading state rather than sitting on the previous
+  // game's content while ESPN's per-game endpoint responds.
+  renderGameModalBody(g, 'loading');
   $('scrim').classList.add('open'); $('modal').classList.add('open');
   $('mClose').focus();
+
+  if ((g.live || g.played) && g.espnEventId) {
+    g.espnBox = await fetchEspnBoxScore(g.espnEventId);
+    // Only re-render if this is still the open modal — guards against a
+    // slow fetch resolving after the person already closed this game or
+    // opened a different one.
+    if (currentModalGameId === gid) renderGameModalBody(g, 'done');
+  } else if (currentModalGameId === gid) {
+    renderGameModalBody(g, 'done');
+  }
 }
 function closeModal(){
   $('scrim').classList.remove('open'); $('modal').classList.remove('open');
@@ -902,7 +1021,10 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && $('modal').classList.contains('open')) closeModal();
 });
 
-load(1);
+determineDefaultWeek().then(week => {
+  wkSel.value = week;
+  load(week);
+});
 </script>
 </body>
 </html>

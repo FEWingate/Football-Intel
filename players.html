@@ -144,10 +144,21 @@ let windowSize = 5; // 5 | 10
 let chartStat = 'dk'; // which stat drives the L5/L10 bar chart
 let profileTierSelected = 'top'; // which defense tier the Defense Tier tab is filtered to
 let committeeTeam = null;
+// 2026 is always the canonical, unprefixed path (whatever a normal
+// rebuild last produced); 2025 is preserved under archive/, matching
+// the same real pattern already used on Teams, Matchup Stats, and
+// Stats Hub — a snapshot of 2025's complete season was saved there
+// before the live players/latest.json got overwritten with 2026 data.
+let season = 2026;
+const seasonPath = (season, relPath) => season === 2026
+  ? relPath
+  : `archive/${season}/${relPath}`;
 
 main.innerHTML = `
   <div class="bar">
     <span class="lbl">Players</span>
+    <label class="lbl" for="szn">Season</label>
+    <select id="szn"><option value="2025">2025</option><option value="2026">2026</option></select>
     <div class="legend"><span>Season totals so far · click a player to see the full profile</span></div>
   </div>
   <div class="tabs" id="viewTabs" role="tablist">
@@ -165,29 +176,38 @@ main.innerHTML = `
 
 const $ = id => document.getElementById(id);
 
+$("szn").value = String(season);
+$("szn").addEventListener("change", () => { season = Number($("szn").value); load(); });
+
 async function load(){
   fiStatus("Loading","loading");
+  // Real reset needed since load() is now re-callable on a season
+  // toggle — without this, a stale PLAYERSTATS from the previous
+  // season would keep rendering if the new fetch ever failed, and
+  // ADV_CACHE's entries are keyed by week number alone (not season +
+  // week), so a cached "week 5" from 2026 would otherwise get wrongly
+  // reused for a completely different real week 5 game in 2025.
+  PLAYERSTATS = null;
+  ADV_CACHE = { ngs_passing: {}, ngs_rushing: {}, ff_opportunity: {}, espn_qbr: {}, rosters: null };
   try{
-    const [statsRes, rosterRes] = await Promise.all([
-      fetch(`players/latest.json`),
-      fetch(`rosters/latest.json`).catch(() => null),
-    ]);
-    if(statsRes.ok) PLAYERSTATS = await statsRes.json();
-    if(PLAYERSTATS && rosterRes && rosterRes.ok){
-      mergeActiveRoster(await rosterRes.json());
-    }
+    const res = await fetch(seasonPath(season, `players/latest.json`));
+    if(res.ok) PLAYERSTATS = await res.json();
   }catch(e){}
 
   if(!PLAYERSTATS){
     fiStatus("No data","error"); fiUpdated("");
-    $("profileView").innerHTML = `<div class="empty">
+    $("profileView").innerHTML = season === 2026
+      ? `<div class="empty">
       No player data found.<br>
-      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`
+      : `<div class="empty">2025 isn't archived yet.<br>
+      Run <b>python3 build_matchup_stats.py --archive-current</b> in your lab folder
+      (with NFL_SEASON=2025), then reload.</div>`;
     return;
   }
 
   fiStatus("Ready");
-  fiUpdated(`season · ${PLAYERSTATS.data_horizon}`);
+  fiUpdated(`${season} season · ${PLAYERSTATS.data_horizon}`);
 
   $("viewTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
     $("viewTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
@@ -204,33 +224,6 @@ async function load(){
   });
 
   renderProfileView();
-}
-
-function mergeActiveRoster(rosters){
-  const posMap = {QB:'QB', RB:'RB', FB:'RB', WR:'WR', TE:'TE'};
-  const ids = new Set();
-  const keys = new Set();
-  for(const [pos, rows] of Object.entries(PLAYERSTATS.players || {})){
-    for(const p of rows){
-      if(p.gsis_id) ids.add(p.gsis_id);
-      keys.add(`${p.team}|${p.name}|${pos}`);
-    }
-  }
-  for(const [team, roster] of Object.entries(rosters.teams || {})){
-    for(const rp of roster){
-      const pos = posMap[rp.position];
-      const key = `${team}|${rp.name}|${pos}`;
-      if(!pos || !rp.name || (rp.gsis_id && ids.has(rp.gsis_id)) || keys.has(key)) continue;
-      PLAYERSTATS.players[pos].push({
-        gsis_id: rp.gsis_id || null, name: rp.name, team, games: 0, headshot: '',
-        season: {games: 0, m: {}},
-        career: {games: 0, through: PLAYERSTATS.season - 1, m: {}},
-        log: [], splits: {}, ceiling: null, roster_only: true,
-      });
-      if(rp.gsis_id) ids.add(rp.gsis_id);
-      keys.add(key);
-    }
-  }
 }
 
 /* ── PLAYER PROFILE VIEW ─────────────────────────────────────────── */
@@ -286,6 +279,8 @@ function renderBrowseList(){
   let list = PLAYERSTATS.players[browsePos].slice();
   if(term) list = list.filter(p => p.name.toLowerCase().includes(term));
   else list.sort((a,b) => (b.season.m[key]||0) - (a.season.m[key]||0));
+  list = list.slice(0, 60);
+
   $("browseList").innerHTML = list.map(p => `
     <div class="browse-row${activePlayer && activePlayer.name===p.name && activePlayer.pos===browsePos ? ' active':''}"
          data-name="${esc(p.name)}">
@@ -664,6 +659,18 @@ async function getEspnId(p){
 }
 
 async function renderAdvanced(box, p){
+  // Confirmed directly: archive/2025/ has no ngs_passing, ngs_rushing,
+  // ff_opportunity, espn_qbr, or rosters data — only context, intel,
+  // matchup, players, and teamstats were preserved. Rather than fire
+  // fetches at week-by-week paths that genuinely don't exist for a
+  // past season, say so honestly and stop — an empty or broken-looking
+  // table would read as a real bug instead of a real, current data gap.
+  if(season !== 2026){
+    box.innerHTML = `<div class="empty">Advanced stats (NGS, QBR, FF opportunity) aren't
+      archived for past seasons — only real, current-season 2026 data is available here.
+      Switch the season selector back to 2026 to see this player's advanced stats.</div>`;
+    return;
+  }
   const sources = ADV_SOURCES[p.pos] || ['ff_opportunity'];
   const weeks = p.log.map(g => g.week).sort((a, b) => a - b);
 
