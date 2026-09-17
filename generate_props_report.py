@@ -429,12 +429,35 @@ def main():
                           "payout figure in the validator output. Default $100.")
     ap.add_argument("--dry-run", action="store_true",
                      help="Build and save the exact prompt without calling the API.")
+    ap.add_argument("--away", default=None,
+                     help="Restrict this run to a single game (requires --home too) — e.g. "
+                          "for a real, time-sensitive slate like tonight's TNF game alone, "
+                          "rather than paying for and waiting on the whole week's props.")
+    ap.add_argument("--home", default=None,
+                     help="Paired with --away — see above.")
     args = ap.parse_args()
+    if (args.away is None) != (args.home is None):
+        sys.exit("FATAL: --away and --home must be given together, or not at all.")
 
     games = discover_all_games()
     if not games:
         sys.exit("FATAL: no finished Game Breakdowns found — nothing to build "
                  "a props report from yet.")
+
+    # REAL ADDITION (2026-09-17), per Frank's direct request for a
+    # single-game run on a real, time-sensitive night (tonight's TNF):
+    # restricts the full, multi-game slate down to exactly one real
+    # matchup, before any FanDuel matching, evidence loading, or prompt
+    # assembly happens below — everything downstream already treats
+    # "games" as the full source of truth for what this run covers, so
+    # narrowing it here is sufficient and touches nothing else.
+    if args.away and args.home:
+        away, home = args.away.strip().upper(), args.home.strip().upper()
+        games = [g for g in games if g[1] == away and g[2] == home]
+        if not games:
+            sys.exit(f"FATAL: no finished Game Breakdown found for {away}@{home} — "
+                      f"run generate_game_breakdown.py for that game first.")
+        print(f"Restricting this run to {away} @ {home} only, per --away/--home.")
 
     fanduel_data = load_json(FANDUEL_DATA_PATH)
     if fanduel_data is None:

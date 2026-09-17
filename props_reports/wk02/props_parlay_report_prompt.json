@@ -1,0 +1,16 @@
+{
+  "generated_at": "2026-09-17T19:49:36.594408+00:00",
+  "model": "claude-sonnet-5",
+  "max_tokens": 48000,
+  "games_included": [
+    "DET_BUF"
+  ],
+  "fanduel_data_source": "fanduel_props/latest.json",
+  "evidence_missing_for": [],
+  "system_char_count": 54464,
+  "user_char_count": 168727,
+  "usage": {
+    "input_tokens": 96342,
+    "output_tokens": 35037
+  }
+}

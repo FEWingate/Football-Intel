@@ -125,6 +125,9 @@ const main = fiShell({ page:'props', pageLabel:'Prop Center', status:'loading' }
 const $ = id => document.getElementById(id);
 
 main.innerHTML = `
+  <div class="bar" id="pcWeekBar" style="display:none">
+    <label class="lbl" for="pcWeek">Week</label><select id="pcWeek"></select>
+  </div>
   <div class="pc-topnav" id="pcTopNav">
     <button data-s="lines" aria-selected="true">Game Lines / Totals / ML</button>
     <button data-s="props">Player Props</button>
@@ -147,6 +150,8 @@ let FDPROPS = null;   // fanduel_props/latest.json — real, live data, no LLM
 let REPORT = null;    // props_reports — Coeus's picks + parlays
 let activeSection = 'lines';
 let activeStat = 'passing_yards';
+let PROPS_WEEKS = [];      // real week folders (plus 'mixed', if present) that actually have a report
+let propsWeekFilter = null;
 
 async function load(){
   fiStatus('Loading','loading');
@@ -156,14 +161,52 @@ async function load(){
     if(res.ok) FDPROPS = await res.json();
   }catch(e){ /* Game Lines / Player Props just won't have data yet */ }
 
+  // REAL CHANGE (2026-09-17), per Frank's direct request: a real week
+  // selector for Coeus's own props picks/parlays, mirroring the one
+  // already built for Game Breakdowns. Confirmed directly before
+  // building this that no backend change was needed at all —
+  // generate_props_report.py already writes the real, structured
+  // report to a real per-week folder (props_reports/{week}/
+  // props_parlay_report.json); props_reports/latest.json was always
+  // just a small pointer to whichever run happened most recently, and
+  // this page only ever followed that pointer. Scans for every real
+  // week folder that actually has a report, same real "don't offer an
+  // empty option" principle as the Game Breakdowns dropdown, plus
+  // "mixed" (the real folder name generate_props_report.py uses on the
+  // rare run where included games span more than one week folder).
+  PROPS_WEEKS = [];
+  for(let w = 1; w <= 18; w++){
+    const wk = `wk${String(w).padStart(2,'0')}`;
+    try{
+      const r = await fetch(`props_reports/${wk}/props_parlay_report.json`, { method: 'HEAD', cache: 'no-store' });
+      if(r.ok) PROPS_WEEKS.push(wk);
+    }catch(e){}
+  }
   try{
-    const res = await fetch('props_reports/latest.json', { cache: 'no-store' });
-    if(res.ok){
-      const pointer = await res.json();
-      const res2 = await fetch(pointer.report_path, { cache: 'no-store' });
-      if(res2.ok) REPORT = await res2.json();
-    }
-  }catch(e){ /* Coeus Prop Breakdown / Favorite O/U / Parlays just won't have data yet */ }
+    const r = await fetch(`props_reports/mixed/props_parlay_report.json`, { method: 'HEAD', cache: 'no-store' });
+    if(r.ok) PROPS_WEEKS.push('mixed');
+  }catch(e){}
+
+  if(PROPS_WEEKS.length){
+    // Default to the most recent real week's report — mirrors the same
+    // real "most recent week that actually has content" default used
+    // for Game Breakdowns, for the same real reason: a report sitting
+    // in the list is not automatically the one just generated.
+    propsWeekFilter = PROPS_WEEKS.filter(w => w !== 'mixed').sort().pop() || PROPS_WEEKS[PROPS_WEEKS.length - 1];
+    await loadReportForWeek(propsWeekFilter);
+
+    const wkLabel = wk => wk === 'mixed' ? 'Mixed / partial slate' : `Week ${Number(wk.slice(2))}`;
+    $('pcWeek').innerHTML = PROPS_WEEKS
+      .map(wk => `<option value="${wk}"${wk===propsWeekFilter?' selected':''}>${wkLabel(wk)}</option>`).join('');
+    $('pcWeekBar').style.display = '';
+    $('pcWeek').addEventListener('change', async (e) => {
+      propsWeekFilter = e.target.value;
+      fiStatus('Loading','loading');
+      await loadReportForWeek(propsWeekFilter);
+      fiStatus('Ready');
+      render();
+    });
+  }
 
   fiStatus('Ready');
   fiUpdated(FDPROPS ? `Lines updated ${new Date(FDPROPS.generated_at).toLocaleString()}` : '');
@@ -181,6 +224,14 @@ async function load(){
   });
 
   render();
+}
+
+async function loadReportForWeek(wk){
+  REPORT = null;
+  try{
+    const res = await fetch(`props_reports/${wk}/props_parlay_report.json`, { cache: 'no-store' });
+    if(res.ok) REPORT = await res.json();
+  }catch(e){ /* Coeus Prop Breakdown / Favorite O/U / Parlays just won't have data for this week */ }
 }
 
 /* ── decimal -> American only, per Frank's real preference — decimal is
