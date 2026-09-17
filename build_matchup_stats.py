@@ -813,7 +813,26 @@ def build(week):
 
     carryover = None
     prior_stats = real_prior_stats
-    if real_prior_stats.empty and week <= CARRYOVER_WEEKS:
+    # REAL BUG FIX (2026-09-16), per Frank's direct observation that the
+    # site's own gold/blue carryover convention had gone missing on
+    # Threats and Matchup Stats: confirmed directly that carryover_season
+    # was already None for the real week 2 files, even though real 2026
+    # data at that point was a single game per team — the same "n=1"
+    # sample-size problem Game Breakdowns has to caveat explicitly.
+    # Traced the real cause here: this condition required
+    # real_prior_stats to be COMPLETELY EMPTY to enter carryover mode at
+    # all, so the moment even one real week of 2026 data existed, this
+    # branch — and the "real_stats"/"real_gp" display-only logic several
+    # hundred lines below, already fully written and explicitly commented
+    # "week 2+, once real games exist" — became unreachable. That
+    # unreachable code is real, working evidence the original design
+    # intended carryover to persist through the whole real
+    # CARRYOVER_WEEKS window regardless of whether some real, thin data
+    # already exists — not just in the narrow case of zero real data.
+    # Dropping the "real_prior_stats.empty" requirement here lets that
+    # already-built logic run for the first time, restoring the real
+    # gold/blue display for weeks 2 and 3, not just week 1.
+    if week <= CARRYOVER_WEEKS:
         print(f"  No {SEASON} data yet for week {week} — ranking off "
               f"{CARRYOVER_SEASON}'s complete season instead.")
         carry_stats = fetch_carryover_stats(CARRYOVER_SEASON)
@@ -1610,6 +1629,31 @@ def build_threats(week, all_teams, records, prior_stats, week_games, gp, carryov
         lo = max(1, week - SNAP_LOOKBACK)
         snaps = snaps[snaps["week"] >= lo]
     snaps = snaps[snaps["position"].isin(THREAT_POS)]
+
+    # REAL BUG FIX (2026-09-16), per Frank's direct catch (confirmed:
+    # Mitchell Trubisky, real 2025 Buffalo, real 2026 Tennessee, still
+    # showing as Buffalo's evaluated starter): this raw snap-count feed's
+    # own "team" column reflects whichever team a player's snaps were
+    # recorded under in the SOURCE season — 2025 during carryover, or an
+    # early, still-thin 2026 during the current-season branch — never
+    # corrected to that player's real, current roster team before now.
+    # Same real bug class already found and fixed in Intel Reports and
+    # Blitz Impact (see apply_current_rosters()'s own docstring, which
+    # explicitly warns this must run before any starter-selection
+    # groupby/idxmax logic) — build_threats() was simply missing the
+    # same call. The raw feed only has "pfr_player_id" natively, not the
+    # "gsis_id" apply_current_rosters() matches against, so the same
+    # real crosswalk already used elsewhere (load_pfr_to_gsis()) runs
+    # first to bridge the two ID systems.
+    xwalk = load_pfr_to_gsis()
+    if xwalk:
+        snaps = snaps.copy()
+        snaps["gsis_id"] = snaps["pfr_player_id"].map(xwalk)
+        snaps = snaps.dropna(subset=["gsis_id"])
+        snaps = apply_current_rosters(snaps, id_col="gsis_id")
+    else:
+        print("  WARNING: no real pfr->gsis crosswalk available — Threat starters may "
+              "still reflect a stale team for any player who's since changed teams.")
 
     # ---- who starts: highest mean offensive snap share in the lookback ----
     share = (snaps.groupby(["team", "player", "position"])["offense_pct"]

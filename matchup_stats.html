@@ -103,11 +103,58 @@ const matchupPath = (season, week) => season === 2026
   ? `matchup/wk${pad(week)}.json`
   : `archive/${season}/matchup/wk${pad(week)}.json`;
 
+// REAL CHANGE (2026-09-16), same real feature already built and tested
+// on games.html: the week selector used to always default to Week 1 on
+// every page load. This determines the real, correct default week
+// automatically — advancing past a week once ITS OWN real Monday game
+// has actually finished — ported over unchanged rather than
+// reimplemented, since it's fully self-contained (reads games/wkNN.json
+// directly, nothing specific to this page). Only used for the 2026
+// default; the season selector's own 2025 archive path is a fixed,
+// historical view where "auto-advance" doesn't apply.
+//
+// Deliberately does NOT trust matchup/current.json's own "week" value —
+// confirmed directly on games.html the night before that this field
+// tracks "the highest week build_matchup_stats.py has ever built," not
+// "the real current NFL week," which caused a real, still-in-progress
+// week to get skipped entirely when trusted as a starting point. Always
+// starts the real check from week 1 and walks forward instead.
+function etOffsetMinutes(dateStr){
+  const d = new Date(`${dateStr}T12:00:00Z`);
+  const utcStr = d.toLocaleString('en-US', { timeZone: 'UTC', hour12: false });
+  const etStr = d.toLocaleString('en-US', { timeZone: 'America/New_York', hour12: false });
+  return (new Date(utcStr) - new Date(etStr)) / 60000;
+}
+function kickoffHasPassed(g){
+  if(!g.gameday || !g.gametime) return false;
+  const [h, m] = g.gametime.split(':').map(Number);
+  const kickoffUTC = new Date(`${g.gameday}T00:00:00Z`);
+  kickoffUTC.setUTCMinutes(kickoffUTC.getUTCMinutes() + h * 60 + m + etOffsetMinutes(g.gameday));
+  return new Date() >= kickoffUTC;
+}
+async function determineDefaultWeek(){
+  let week = 1;
+  while (week < 18) {
+    let wkData;
+    try {
+      const r = await fetch(`games/wk${pad(week)}.json`, { cache: 'no-store' });
+      if (!r.ok) break; // that week isn't built yet — stop advancing, use what we have
+      wkData = await r.json();
+    } catch (e) { break; }
+
+    const monGames = (wkData.games || []).filter(g => g.weekday === 'Monday' && g.gameday);
+    if (!monGames.length) break; // no real Monday game this week — nothing to advance past
+    const latestMon = monGames.reduce((max, g) => (!max || g.gametime > max.gametime) ? g : max, null);
+    if (!kickoffHasPassed(latestMon)) break; // this week's real MNF hasn't happened yet — stay here
+    week += 1;
+  }
+  return week;
+}
+
 const wkSel = $("wk");
 for (let w=1; w<=18; w++){
   const o=document.createElement("option"); o.value=w; o.textContent="Week "+w; wkSel.appendChild(o);
 }
-wkSel.value = 1;
 wkSel.addEventListener("change", () => load(Number(wkSel.value)));
 $("szn").value = String(season);
 $("szn").addEventListener("change", () => { season = Number($("szn").value); load(Number(wkSel.value)); });
@@ -239,7 +286,10 @@ function renderMatchup(){
   $("modal").scrollTop = 0;
 }
 
-load(1);
+determineDefaultWeek().then(week => {
+  wkSel.value = week;
+  load(week);
+});
 </script>
 </body>
 </html>

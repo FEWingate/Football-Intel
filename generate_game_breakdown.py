@@ -177,16 +177,21 @@ def main():
         # already-tested page. Falls back to "bootstrap" if no real
         # schedule match is found.
         #
-        # MUST check the season field, not just the team pairing — the
-        # bootstrap evidence's own season (e.g. 2025) is the FOUNDATION
-        # data, one season behind the actual target game (e.g. 2026).
-        # Confirmed by testing: without this check, a real, ALREADY-PLAYED
-        # prior-season game between the same two teams (e.g. the actual
-        # 2025 GB@MIN game this evidence was bootstrapped from) can match
-        # by team pairing alone, incorrectly filing a real upcoming
-        # preview under a week folder that actually belongs to a
-        # completed, unrelated game.
-        target_season = evidence["bootstrap_source"]["season"] + 1
+        # REAL BUG FIX (2026-09-16): the old "+1" assumption only held
+        # while bootstrap always meant "carrying over from last season's
+        # complete data" (e.g. 2025 -> 2026). Confirmed directly this
+        # broke the moment the bootstrap foundation itself transitioned
+        # to real, current-season data (e.g. 2026 week 1 being complete
+        # enough to bootstrap 2026 week 2 off of) — bootstrap_source's
+        # season was then ALREADY the real target season, and adding 1
+        # searched a season that doesn't exist yet, silently falling
+        # back to the "bootstrap" folder for a real, correctly-scheduled
+        # Week 2 game. The evidence package's own "game.scheduled_date"
+        # (from build_evidence_package_bootstrap.py's real schedule
+        # discovery) is the real, direct source of truth for this
+        # instead — no assumption about how many years ahead of the
+        # foundation season the target game actually is.
+        target_season = int(evidence["game"]["scheduled_date"].split("/")[-1])
         real_week = None
         for wk_num in range(1, 23):
             g = load_json(f"games/wk{wk_num:02d}.json")

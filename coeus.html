@@ -137,11 +137,54 @@ let PLAYERS = null, MATCHUP = null, GAMES = null, CURRENT_WEEK = null, CONTEXT =
 let TEAM_OPPONENT = {};      // {team: opponentTeam} for the current week
 let POSITION_RANKS = {};     // {team: {pos: [{...player, posRank}, ...]}}
 
+const pad = n => String(n).padStart(2, '0');
+
+// REAL BUG FIX (2026-09-16), per Frank's direct catch — confirmed here as
+// the real cause of Coeus showing TB facing MIN instead of TB's real
+// Week 2 opponent, CLE: this page took matchup/current.json's own
+// "week" field as CURRENT_WEEK directly, with no validation. Same real
+// bug already found and fixed on games.html, threats.html,
+// matchup_stats.html, and build_evidence_package_bootstrap.py today —
+// that field tracks "the highest week build_matchup_stats.py has ever
+// built," not "the real current NFL week." Ported the same proven,
+// tested determination logic here rather than reimplementing it —
+// advances past a week only once ITS OWN real Monday game has actually
+// finished, checked against real kickoff time, never trusting
+// matchup/current.json's own week value as a starting point.
+function etOffsetMinutes(dateStr){
+  const d = new Date(`${dateStr}T12:00:00Z`);
+  const utcStr = d.toLocaleString('en-US', { timeZone: 'UTC', hour12: false });
+  const etStr = d.toLocaleString('en-US', { timeZone: 'America/New_York', hour12: false });
+  return (new Date(utcStr) - new Date(etStr)) / 60000;
+}
+function kickoffHasPassed(g){
+  if(!g.gameday || !g.gametime) return false;
+  const [h, m] = g.gametime.split(':').map(Number);
+  const kickoffUTC = new Date(`${g.gameday}T00:00:00Z`);
+  kickoffUTC.setUTCMinutes(kickoffUTC.getUTCMinutes() + h * 60 + m + etOffsetMinutes(g.gameday));
+  return new Date() >= kickoffUTC;
+}
+async function determineDefaultWeek(){
+  let week = 1;
+  while (week < 18) {
+    let wkData;
+    try {
+      const r = await fetch(`games/wk${pad(week)}.json`, { cache: 'no-store' });
+      if (!r.ok) break; // that week isn't built yet — stop advancing, use what we have
+      wkData = await r.json();
+    } catch (e) { break; }
+
+    const monGames = (wkData.games || []).filter(g => g.weekday === 'Monday' && g.gameday);
+    if (!monGames.length) break; // no real Monday game this week — nothing to advance past
+    const latestMon = monGames.reduce((max, g) => (!max || g.gametime > max.gametime) ? g : max, null);
+    if (!kickoffHasPassed(latestMon)) break; // this week's real MNF hasn't happened yet — stay here
+    week += 1;
+  }
+  return week;
+}
+
 async function loadData(){
-  const curRes = await fetch('matchup/current.json');
-  if(!curRes.ok) throw new Error('matchup/current.json not found');
-  const cur = await curRes.json();
-  CURRENT_WEEK = cur.week;
+  CURRENT_WEEK = await determineDefaultWeek();
   const wk = String(CURRENT_WEEK).padStart(2, '0');
 
   const [pRes, mRes, gRes] = await Promise.all([
@@ -180,35 +223,13 @@ async function loadData(){
         }
       }
       let corrected = 0;
-      const existingIds = new Set();
-      const existingKeys = new Set();
       for(const pos of Object.keys(PLAYERS.players || {})){
         for(const p of PLAYERS.players[pos]){
-          if(p.gsis_id) existingIds.add(p.gsis_id);
-          existingKeys.add(`${p.team}|${p.name}|${pos}`);
           const real = currentTeamOf[p.gsis_id];
           if(real && real !== p.team){ p.team = real; corrected++; }
         }
       }
-      const posMap = {QB:'QB', RB:'RB', FB:'RB', WR:'WR', TE:'TE'};
-      let added = 0;
-      for(const [team, roster] of Object.entries(rosters.teams || {})){
-        for(const rp of roster){
-          const pos = posMap[rp.position];
-          const key = `${team}|${rp.name}|${pos}`;
-          if(!pos || !rp.name || (rp.gsis_id && existingIds.has(rp.gsis_id)) || existingKeys.has(key)) continue;
-          PLAYERS.players[pos].push({
-            gsis_id: rp.gsis_id || null, name: rp.name, team, games: 0, headshot: '',
-            season: {games: 0, m: {}}, career: {games: 0, m: {}},
-            log: [], splits: {}, ceiling: null, roster_only: true,
-          });
-          if(rp.gsis_id) existingIds.add(rp.gsis_id);
-          existingKeys.add(key);
-          added++;
-        }
-      }
       if(corrected) console.log(`Coeus: corrected ${corrected} player(s) to their real current-roster team.`);
-      if(added) console.log(`Coeus: added ${added} active roster player(s) awaiting season statistics.`);
     }
   }catch(e){ /* players keep their stats-based team — not a page-breaking failure */ }
 
@@ -394,8 +415,14 @@ const VALID_METRICS = {
 };
 const PRIMARY_METRIC = { QB: 'pass_yds', RB: 'rush_yds', WR: 'rec_yds', TE: 'rec_yds' };
 
-function findPlayerVsTeam(spec){
-  const wantName = (spec.player_name || '').trim().toLowerCase();
+// Real, shared fuzzy player lookup — resolves a name (full, partial, or
+// last-name-only) against the real roster, exactly once, for every mode
+// that needs to find one specific player. Extracted from findPlayerVsTeam
+// (2026-09-16) so findPlayerRecentGames (below) doesn't duplicate the same
+// matching logic — a bug fixed in one no longer risks drifting from the
+// other.
+function findPlayerByName(wantNameRaw){
+  const wantName = (wantNameRaw || '').trim().toLowerCase();
   if(!wantName) return { error: 'No player name was understood from the question.' };
   let player = null, pos = null;
   for(const p of POSITIONS){
@@ -403,9 +430,6 @@ function findPlayerVsTeam(spec){
     if(hit){ player = hit; pos = p; break; }
   }
   if(!player){
-    // Fuzzy fallback — last-name-only or partial questions ("McCaffrey"
-    // instead of "Christian McCaffrey") are common and shouldn't fail
-    // outright when there's exactly one real, unambiguous match.
     const candidates = [];
     for(const p of POSITIONS){
       for(const x of (PLAYERS.players[p] || [])){
@@ -415,11 +439,18 @@ function findPlayerVsTeam(spec){
     }
     if(candidates.length === 1){ [player, pos] = candidates[0]; }
     else if(candidates.length > 1){
-      return { error: `"${spec.player_name}" matches more than one real player `
+      return { error: `"${wantNameRaw}" matches more than one real player `
         + `(${candidates.map(([x]) => x.name).join(', ')}) — ask with a fuller name.` };
     }
   }
-  if(!player) return { error: `No real player matching "${spec.player_name}" was found.` };
+  if(!player) return { error: `No real player matching "${wantNameRaw}" was found.` };
+  return { player, pos };
+}
+
+function findPlayerVsTeam(spec){
+  const found = findPlayerByName(spec.player_name);
+  if(found.error) return found;
+  const { player, pos } = found;
 
   const opp = (spec.opponent || '').trim().toUpperCase();
   if(!opp) return { error: 'No opponent team was understood from the question.' };
@@ -459,6 +490,86 @@ function findPlayerVsTeam(spec){
     avg, values,
     rows: games.map(e => ({ week: e.week, value: e.m ? e.m[metric] : null, dk: e.dk })),
   };
+}
+
+// Real "last N games" lookup — e.g. "show me Baker Mayfield's last 5
+// games with all stats." Genuinely different from findPlayerVsTeam
+// above: that one filters by a NAMED opponent; this one filters by
+// RECENCY regardless of opponent. Reuses the same real player.log data
+// and the same VALID_METRICS whitelist — the log already carries every
+// real game a player's played, tagged by week and opponent, so this
+// needed no new data, only a new way of slicing what already exists.
+function findPlayerRecentGames(spec){
+  const found = findPlayerByName(spec.player_name);
+  if(found.error) return found;
+  const { player, pos } = found;
+
+  const n = Math.max(1, Math.min(spec.last_n || 5, 25));
+  const games = [...(player.log || [])]
+    .sort((a, b) => b.week - a.week)
+    .slice(0, n);
+
+  if(spec.all_stats !== false){
+    const metrics = VALID_METRICS[pos];
+    const perMetricAvg = {};
+    for(const m of metrics){
+      const vals = games.map(e => e.m ? e.m[m] : null).filter(v => v != null);
+      perMetricAvg[m] = vals.length ? +(vals.reduce((s, v) => s + v, 0) / vals.length).toFixed(1) : null;
+    }
+    return {
+      player: player.name, pos, team: player.team, last_n: n, all_stats: true,
+      metrics, games_found: games.length, avg: perMetricAvg,
+      rows: games.map(e => ({ week: e.week, opp: e.opp, dk: e.dk,
+        values: Object.fromEntries(metrics.map(m => [m, e.m ? e.m[m] : null])) })),
+    };
+  }
+
+  let metric = spec.metric || PRIMARY_METRIC[pos];
+  if(!VALID_METRICS[pos].includes(metric)){
+    return { error: `"${metric}" isn't a real per-game stat tracked for a ${pos} — real options `
+      + `are: ${VALID_METRICS[pos].join(', ')}.` };
+  }
+  const values = games.map(e => e.m ? e.m[metric] : null).filter(v => v != null);
+  const avg = values.length ? +(values.reduce((s, v) => s + v, 0) / values.length).toFixed(1) : null;
+
+  return {
+    player: player.name, pos, team: player.team, last_n: n, metric,
+    games_found: games.length,
+    avg, values,
+    rows: games.map(e => ({ week: e.week, opp: e.opp, value: e.m ? e.m[metric] : null, dk: e.dk })),
+  };
+}
+
+function renderPlayerRecentGamesTable(r){
+  if(!r.games_found){
+    return `<div class="result-empty">${esc(r.player)} (${r.pos}, ${esc(r.team)}) has no real games
+      logged this season — nothing to show yet.</div>`;
+  }
+  if(r.all_stats){
+    const rows = r.rows.map(row => `<tr>
+      <td>Week ${row.week} vs ${esc(row.opp || '—')}</td>
+      ${r.metrics.map(m => `<td>${row.values[m] != null ? row.values[m] : '—'}</td>`).join('')}
+      <td>${row.dk != null ? row.dk : '—'}</td>
+    </tr>`).join('');
+    return `<div class="table-wrap"><table class="result-table">
+      <thead><tr><th></th>${r.metrics.map(m => `<th>${esc(m.replace(/_/g, ' '))}</th>`).join('')}<th>DK pts</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td><b>Real average (${r.games_found} game${r.games_found===1?'':'s'})</b></td>
+        ${r.metrics.map(m => `<td><b>${r.avg[m] != null ? r.avg[m] : '—'}</b></td>`).join('')}
+        <td></td></tr></tfoot>
+    </table></div>`;
+  }
+  const metricLabel = r.metric.replace(/_/g, ' ');
+  const rows = r.rows.map(row => `<tr>
+    <td>Week ${row.week} vs ${esc(row.opp || '—')}</td><td>${row.value != null ? row.value : '—'}</td>
+    <td>${row.dk != null ? row.dk : '—'}</td>
+  </tr>`).join('');
+  return `<div class="table-wrap"><table class="result-table">
+    <thead><tr><th></th><th>${esc(metricLabel)}</th><th>DK pts</th></tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr><td><b>Real average (${r.games_found} game${r.games_found===1?'':'s'})</b></td>
+      <td><b>${r.avg != null ? r.avg : '—'}</b></td><td></td></tr></tfoot>
+  </table></div>`;
 }
 
 function renderPlayerVsTeamAllStatsTable(r){
@@ -745,8 +856,31 @@ did against them":
 Do NOT use this mode for "vs. this week's opponent" questions (that's the normal filter/freeform
 path using opponent_defense) — this mode is specifically for a NAMED opponent team, historical.
 
+"player_recent_games" — a SPECIFIC named player's real game-by-game log over their last N games, \
+regardless of opponent (e.g. "show me Baker Mayfield's last 5 games with all stats", "what has \
+McCaffrey done over his last 3 games", "Josh Allen's game log this season"). Genuinely different \
+from player_vs_team above — that one needs a NAMED opponent team; this one does not, and filters \
+by recency instead. Use whenever the question asks for a player's recent/last-N-games history \
+WITHOUT naming a specific opponent team:
+{"mode":"player_recent_games","player_name":"Baker Mayfield","last_n":5,"all_stats":true}
+player_name: same real, partial-match-friendly resolution as player_vs_team. last_n: the real \
+number of most recent games asked for — default to 5 if the question doesn't say (e.g. "recent \
+games" with no number). all_stats: true (the default) for "with all stats" / "the full stat line" \
+/ no specific stat named; set to false and add metric (same real per-position keys as \
+player_vs_team) only when ONE specific stat is named:
+{"mode":"player_recent_games","player_name":"Christian McCaffrey","last_n":3,"all_stats":false,"metric":"rush_yds"}
+
 For free-form questions (predictions, opinions, anything not a clean numeric filter or game-log \
-lookup), respond:
+lookup), also extract which real players and/or teams the question is actually about — this lets \
+the free-form answer pull each one's FULL real history (game-by-game log, injury status, threat \
+designation), not just a season average, the same real depth already used everywhere else in \
+this system:
+{"mode":"freeform","mentioned_players":["Baker Mayfield"],"mentioned_teams":["MIN"]}
+mentioned_players: real player names as given in the question (partial/last-name-only is fine — \
+resolved against the real roster the same way every other mode does it). mentioned_teams: real \
+team abbreviations named or clearly implied (e.g. "Minnesota's run defense" -> MIN). Both are \
+optional arrays — omit either or both entirely for a genuinely general question naming no \
+specific player or team (e.g. "which position should I prioritize in DFS this week"):
 {"mode":"freeform"}`;
 
 async function classifyQuestion(question){
@@ -775,7 +909,7 @@ league-wide rank, state that rank too. Both are present in the real results give
 them together, not one without the other.`;
 
 // Step 2b: free-form reasoning, grounded in real current-week data.
-async function answerFreeform(question){
+async function answerFreeform(question, spec){
   const skillPositions = ['QB', 'RB', 'WR', 'TE'];
   const grounding = [];
   for(const pos of skillPositions){
@@ -806,13 +940,62 @@ async function answerFreeform(question){
       if(cell) teamDefense[team][pos] = { stat, value_allowed: cell.v, rank: cell.r };
     }
   }
+
+  // REAL ADDITION (2026-09-16), per Frank's direct request that Ask
+  // Coeus handle real questions beyond the fixed set of preset modes:
+  // the grounding above (season averages + this week's opponent rank)
+  // is deliberately broad but shallow — enough for "who should I
+  // start", genuinely too thin for "show me his last 5 games" (the
+  // real, confirmed gap that started this). Rather than add yet
+  // another hand-written mode for every new kind of question, the
+  // classifier now also extracts which real players/teams a free-form
+  // question is actually about (mentioned_players/mentioned_teams, same
+  // single classification call, no extra LLM round-trip), and this
+  // pulls each one's FULL real data — the same real depth every other
+  // mode already uses (game log, injury status, threat designation) —
+  // rather than the shallow, one-size-fits-all summary above. Reuses
+  // findPlayerByName(), the same shared resolver every deterministic
+  // mode already uses, so a name that's ambiguous or unmatched there
+  // behaves identically here.
+  const deepPlayerData = [];
+  for(const name of (spec?.mentioned_players || [])){
+    const found = findPlayerByName(name);
+    if(found.error) continue; // real, unmatched name — grounding just omits it rather than guessing
+    const { player, pos } = found;
+    deepPlayerData.push({
+      name: player.name, pos, team: player.team,
+      season_avg: player?.season?.m || {},
+      career: player?.career || null,
+      full_game_log: player?.log || [],
+      injury_status: (DFS_DATA?.players || []).find(dp => dp.gsis_id === player.gsis_id)?.status || null,
+    });
+  }
+  const deepTeamData = [];
+  for(const teamRaw of (spec?.mentioned_teams || [])){
+    const team = teamRaw.trim().toUpperCase();
+    deepTeamData.push({
+      team,
+      season_defense: teamDefense[team] || null,
+      recent_games: CONTEXT?.teams?.[team]?.log || null,
+    });
+  }
+
   const system = `You are Coeus, Football Intel's analyst. Answer the user's question using \
 ONLY the real data provided below — season averages, this week's real opponent, that opponent's \
-real defensive rank/value at the relevant stat for each player, AND a direct team-by-team \
-defensive summary. This is a genuine judgment/prediction question, not a simple filter, so real \
-football reasoning is expected — but every specific claim must trace to the data given, and \
-say so explicitly when you're extrapolating beyond what the numbers directly show. This is \
-inherently an opinion, not a fact — frame it that way.
+real defensive rank/value at the relevant stat for each player, a direct team-by-team \
+defensive summary, AND, for any player or team the question specifically names, that entity's \
+full real history (a complete game-by-game log, not just a season average). This is a genuine \
+judgment/prediction question, not a simple filter, so real football reasoning is expected — but \
+every specific claim must trace to the data given, and say so explicitly when you're \
+extrapolating beyond what the numbers directly show. This is inherently an opinion, not a fact — \
+frame it that way.
+
+WHEN deep_player_data OR deep_team_data IS PRESENT for a player/team the question names, PREFER \
+IT over the shallower season_avg grounding below — it has the real, complete per-game history \
+(full_game_log / recent_games) that a "last N games" or "game log" style question actually needs, \
+not just a season-long number. If a named player/team has no entry in deep_player_data / \
+deep_team_data (an unmatched or ambiguous name), say so plainly rather than falling back to a \
+guess.
 
 WHEN THE QUESTION IS ABOUT A SPECIFIC TEAM'S DEFENSE, use the team_defense summary directly by \
 that team's key — do not try to infer or reconstruct a team's defensive profile from scattered \
@@ -850,7 +1033,15 @@ ${JSON.stringify(grounding)}
 
 TEAM_DEFENSE (each team's own season-long rank/value allowed per position — use this directly \
 for any question about a specific team's defense, keyed by team code):
-${JSON.stringify(teamDefense)}`;
+${JSON.stringify(teamDefense)}
+
+DEEP_PLAYER_DATA (full real history for any player this specific question names — game-by-game \
+log, career totals, injury status; prefer this over the shallower DATA above for a named player):
+${JSON.stringify(deepPlayerData)}
+
+DEEP_TEAM_DATA (full real season-defense profile and recent-games history for any team this \
+specific question names):
+${JSON.stringify(deepTeamData)}`;
   return await callClaude(system, question, 8000);
 }
 
@@ -982,6 +1173,20 @@ async function ask(question, prebuiltSpec){
         <span class="answer-mode filter">Real per-game history vs. ${esc(r.opponent)} — computed, not guessed</span>
         ${r.all_stats ? renderPlayerVsTeamAllStatsTable(r) : renderPlayerVsTeamTable(r)}
         ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
+    } else if(spec.mode === 'player_recent_games'){
+      const r = findPlayerRecentGames(spec);
+      if(r.error){
+        box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+          <div class="error">${esc(r.error)}</div>`;
+        return;
+      }
+      const narration = r.games_found
+        ? await callClaude(NARRATE_SYSTEM, `Question: ${question}\nReal results: ${JSON.stringify(r)}`, 800)
+        : '';
+      box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+        <span class="answer-mode filter">Real last ${r.last_n} games — computed, not guessed</span>
+        ${renderPlayerRecentGamesTable(r)}
+        ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
     } else if(spec.mode === 'injury_backup'){
       const rows = findInjuredWithBackup();
       const narration = rows && rows.length
@@ -1016,7 +1221,7 @@ async function ask(question, prebuiltSpec){
         ${renderResultTable(rows, spec)}
         ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
     } else {
-      const answer = await answerFreeform(question);
+      const answer = await answerFreeform(question, spec);
       box.innerHTML = `<div class="answer-q">${esc(question)}</div>
         <span class="answer-mode freeform">Free-form — Coeus's judgment, not a computed fact</span>
         <div class="answer-narration">${marked.parse(answer)}</div>

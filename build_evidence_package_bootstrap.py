@@ -534,6 +534,23 @@ def main():
     else:
         teamstats_json = load_json("teamstats/latest.json")
     players_json = load_json("players/latest.json")
+    # REAL ADDITION (2026-09-16), per Frank's direct request: real,
+    # complete 2025 season-final stats for each player, genuinely
+    # distinct from both the thin current-2026 "season" field and the
+    # multi-season "career" field already on each player record.
+    # Confirmed directly this gap was real — career is a blend across a
+    # player's whole career (e.g. 83 games "through 2025" for a
+    # established starter), not a clean single-season 2025 number, and
+    # would be actively misleading if labeled "2025" in a report. This
+    # reuses the same real, complete 2025 snapshot already proven out
+    # for the Players page season dropdown — a real archived copy from
+    # before the 2026 season started, not a new build step.
+    players_2025_json = load_json("archive/2025/players/latest.json")
+    players_2025_by_id = {}
+    for pos_list in (players_2025_json.get("players", {}) or {}).values():
+        for p25 in pos_list:
+            if p25.get("gsis_id"):
+                players_2025_by_id[p25["gsis_id"]] = p25.get("season")
     intel_json = load_json("intel/latest.json")
     blitz_json = load_json("intel/blitz.json")
     coverage_json = load_json("intel/coverage.json")
@@ -690,10 +707,17 @@ def main():
         players_block = {"away": [], "home": []}
         for pos, plist in (players_json.get("players", {}) or {}).items():
             for p in plist:
+                # REAL ADDITION (2026-09-16): a new dict, not a mutation
+                # of p itself — players_json is one shared object loaded
+                # once and reused for every game in this script run
+                # (same real reason threats_json gets deep-copied above),
+                # so mutating it here would leak season_2025 onto every
+                # later game's use of the same player record.
+                p_out = {**p, "season_2025": players_2025_by_id.get(p.get("gsis_id"))}
                 if p.get("team") == away:
-                    players_block["away"].append(p)
+                    players_block["away"].append(p_out)
                 elif p.get("team") == home:
-                    players_block["home"].append(p)
+                    players_block["home"].append(p_out)
 
         real_opponent_of = {away: home, home: away}
 
@@ -779,6 +803,31 @@ def main():
                                "players": [],
                                "note": f"injuries/{bwk}.json not found — injury evidence is "
                                        f"genuinely unavailable for this game, not confirmed-healthy."}
+        elif not injuries_json.get("teams_represented"):
+            # REAL BUG FIX (2026-09-16), per Frank's direct question:
+            # confirmed directly this real gap exists — a file can be
+            # present but genuinely empty (teams_represented: [],
+            # team_count: 0), which happens when nflverse's real
+            # practice-week injury reports simply haven't been
+            # published yet for a future week (confirmed as the real
+            # cause here — the file existed, dated the night before,
+            # with zero teams represented league-wide). Zero teams
+            # represented across the entire league is not a real,
+            # confirmed "everyone is healthy" result the way one or two
+            # missing teams can honestly be — no NFL week has zero
+            # reportable injuries across all 32 teams. This is
+            # indistinguishable from a failed or premature fetch and
+            # must be reported as genuinely unavailable, not silently
+            # folded into the same "confirmed healthy" branch below
+            # that's correct only when SOME real teams are present.
+            injuries_block = {"source": "nflverse (injuries/{bwk}.json)", "available": False,
+                               "players": [],
+                               "note": f"injuries/{bwk}.json exists but reports zero teams "
+                                       f"league-wide — the real practice-week injury data for "
+                                       f"this week likely hadn't been published yet when this "
+                                       f"file was built. Genuinely unavailable, not confirmed-"
+                                       f"healthy; re-run build_matchup_stats.py closer to "
+                                       f"kickoff for a real pull."}
         else:
             teams_represented = set(injuries_json.get("teams_represented", []))
             game_players = [p for p in injuries_json.get("players", []) if p.get("team") in teams]

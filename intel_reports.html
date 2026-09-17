@@ -158,7 +158,8 @@ const main = fiShell({ page:'reports', pageLabel:'Intel Reports', status:'loadin
 let INTEL = null;
 let BLITZ = null;
 let COVERAGE = null;
-let activeReport = 'qb'; // 'qb' | 'rb' | 'blitz' | 'coverage' | 'cbdb'
+let activeReport = 'gb'; // 'gb' | 'qb' | 'rb' | 'blitz' | 'coverage' | 'cbdb'
+let gbWeekFilter = 'all'; // set to the most recent real week once GB_GAMES loads
 let sortKey = 'watch';
 let searchTerm = '';
 let rbSortKey = 'watch';
@@ -187,12 +188,12 @@ main.innerHTML = `
     <div class="legend"><span>Hidden Intelligence — patterns most sites don't show you</span></div>
   </div>
   <div class="tabs" id="reportTabs" role="tablist">
-    <button role="tab" data-r="qb" aria-selected="true">QB Passing vs. Run Game</button>
+    <button role="tab" data-r="gb" aria-selected="true">Coeus Game Breakdowns</button>
+    <button role="tab" data-r="qb" aria-selected="false">QB Passing vs. Run Game</button>
     <button role="tab" data-r="rb" aria-selected="false">RB Rushing vs. Passing Game</button>
     <button role="tab" data-r="blitz" aria-selected="false">Blitz Impact</button>
     <button role="tab" data-r="coverage" aria-selected="false">Coverage Breakdown</button>
     <button role="tab" data-r="cbdb" aria-selected="false">CB/DB Coverage Rankings</button>
-    <button role="tab" data-r="gb" aria-selected="false">Coeus Game Breakdowns</button>
   </div>
   <div id="body"></div>
   <div class="modal-overlay" id="scrim"></div>
@@ -276,6 +277,16 @@ async function load(){
       }
     }catch(e){}
   }
+
+  // REAL CHANGE (2026-09-16), per Frank's direct request: default the
+  // Game Breakdowns week filter to the most recent real week that
+  // actually has breakdowns, not "show everything at once" — the exact
+  // complaint that prompted this was a genuinely new breakdown reading
+  // as "bunched in with last week's" once more than one week had real
+  // data. Falls back to "all" only if GB_GAMES is completely empty.
+  const realWeekNums = GB_GAMES.filter(g => g.wk !== 'bootstrap')
+    .map(g => Number(g.wk.slice(2)));
+  gbWeekFilter = realWeekNums.length ? `wk${String(Math.max(...realWeekNums)).padStart(2,'0')}` : 'all';
 
   const hasIntel = INTEL && Object.keys(INTEL.teams||{}).length;
   fiStatus(hasIntel ? "Ready" : "No data", hasIntel ? undefined : "error");
@@ -1299,17 +1310,47 @@ function renderGbGrid(){
         for a game, then reload.</div>`;
     return;
   }
+
+  // REAL CHANGE (2026-09-16), per Frank's direct request: a real week
+  // filter for this tab, since GB_GAMES now legitimately spans more
+  // than one real week (breakdowns are correctly discovered everywhere
+  // per the 2026-09-14 fix above) — without this, a genuinely new
+  // breakdown just reads as "bunched in" with older weeks' games in one
+  // long, undifferentiated list. Options are built from whichever real
+  // weeks GB_GAMES actually has, not a fixed 1-18 range, so an empty
+  // week never shows up as a selectable option with nothing behind it.
+  const realWks = [...new Set(GB_GAMES.map(g => g.wk))]
+    .sort((a, b) => a === 'bootstrap' ? 1 : b === 'bootstrap' ? -1 : a.localeCompare(b));
+  const wkLabel = wk => wk === 'bootstrap' ? 'Upcoming (bootstrap)' : `Week ${Number(wk.slice(2))}`;
+  const filterOptions = [`<option value="all"${gbWeekFilter==='all'?' selected':''}>All weeks</option>`]
+    .concat(realWks.map(wk =>
+      `<option value="${wk}"${gbWeekFilter===wk?' selected':''}>${wkLabel(wk)}</option>`)).join('');
+
   $("body").innerHTML = `
     <div class="sect"><h3>Coeus Game Breakdowns</h3><span class="rule"></span></div>
     <div class="report-intro">
       Full, market-neutral, both-teams analysis — one per game, engineered by Coeus. Click a
       game to read its complete breakdown.
     </div>
+    <div class="bar" style="margin-bottom:14px">
+      <label class="lbl" for="gbWk">Week</label>
+      <select id="gbWk">${filterOptions}</select>
+    </div>
     <div class="intel-grid" id="gbGrid"></div>`;
 
+  $("gbWk").addEventListener("change", (e) => {
+    gbWeekFilter = e.target.value;
+    renderGbGrid();
+  });
+
+  const shown = gbWeekFilter === 'all' ? GB_GAMES : GB_GAMES.filter(g => g.wk === gbWeekFilter);
   const grid = $("gbGrid");
-  grid.innerHTML = GB_GAMES.map((g, i) => `
-    <button class="gb-card" data-i="${i}">
+  if(!shown.length){
+    grid.innerHTML = `<div class="empty">No breakdowns for ${esc2(wkLabel(gbWeekFilter))} yet.</div>`;
+    return;
+  }
+  grid.innerHTML = shown.map((g) => `
+    <button class="gb-card" data-i="${GB_GAMES.indexOf(g)}">
       <div class="gb-card-teams">
         ${fiLogoHTML(g.away,26)}<span>${esc2(g.away)}</span>
         <span class="vs">@</span>
