@@ -321,7 +321,27 @@ function kickoffHasPassed(g){
 // "live" UI to maintain, per Frank's explicit call (2026-09-11): overlay
 // onto the working cards, not a parallel live view, because nflverse
 // isn't automatic and this needs to be.
-const ESPN_SCOREBOARD_URL = 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard';
+const ESPN_SCOREBOARD_BASE = 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard';
+// REAL BUG FIX (2026-09-18), per Frank's direct catch (a Week 1 game's
+// real box score reading "not available" while its Game leaders, built
+// from nflverse at rebuild time, displayed fine): confirmed directly
+// that the base scoreboard URL with no query params defaults to
+// ESPN's "today" — so once the current week moves past Week 1, polling
+// it while VIEWING Week 1 was fetching a scoreboard that could never
+// contain a Week 1 event, meaning espnEventId (only ever set from a
+// real match in this response) never got set for that week's games,
+// and fetchEspnBoxScore() — which requires a real espnEventId — never
+// even ran. Confirmed via a real, corroborated (if unofficial)
+// parameter set for NFL specifically that this endpoint supports
+// season/week scoping directly; building the URL from the CURRENTLY
+// LOADED week's own real season/week (already present on GAMES) fixes
+// this for any week, not just the current one. Falls back to the base,
+// unparameterized URL only if GAMES isn't loaded yet (shouldn't happen
+// in practice, since polling never starts before load() finishes).
+function espnScoreboardUrl(){
+  if (!GAMES || !GAMES.season || !GAMES.week) return ESPN_SCOREBOARD_BASE;
+  return `${ESPN_SCOREBOARD_BASE}?seasontype=2&dates=${GAMES.season}&week=${GAMES.week}`;
+}
 const ESPN_POLL_MS = 30000;
 let espnPollTimer = null;
 
@@ -337,7 +357,7 @@ function espnCode(abbr){ return ESPN_TEAM_CODE_FIXUPS[abbr] || abbr; }
 async function pollEspnScoreboard(){
   let data;
   try {
-    const r = await fetch(ESPN_SCOREBOARD_URL, { cache: 'no-store' });
+    const r = await fetch(espnScoreboardUrl(), { cache: 'no-store' });
     if (!r.ok) { console.warn('ESPN scoreboard poll: HTTP', r.status); return false; }
     data = await r.json();
   } catch (e) {

@@ -40,6 +40,7 @@
 .lead-table tbody tr:hover td.team-col{background:var(--surface2)}
 .rank-num{font-family:var(--font-mono);font-size:10px;color:var(--text-dim);width:20px;display:inline-block}
 .cell-val{font-family:var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text-mid);font-size:12px}
+.cell-val.carryover-val{color:var(--accent-gold)}
 @media(max-width:640px){
   .lead-table td, .lead-table thead th{padding:7px 9px}
 }
@@ -133,6 +134,41 @@ const seasonPath = (season, relPath) => season === 2026
   ? relPath
   : `archive/${season}/${relPath}`;
 
+// REAL ADDITION (2026-09-18), per Frank's direct catch: matchup/wkNN.json
+// gets built a few weeks ahead of the real, current week on purpose — it's
+// the foundation Game Breakdowns bootstrap off of for upcoming games — so
+// its mere existence on disk does NOT mean that week has any real games
+// played yet (confirmed directly: matchup/wk03.json existed with zero
+// real Week 3 games played, just the same carryover data as weeks 1-2).
+// Offering an unplayed week as a selectable "Week N" option here is
+// genuinely misleading, since this page's own label promises "cumulative
+// through the selected week." Same real, proven kickoff-time check
+// already used on games.html/threats.html/matchup_stats.html — checked
+// here against games/wkNN.json (which has real kickoff times), not
+// matchup/, and used as a FILTER on which weeks even appear as options,
+// not just which one defaults.
+function etOffsetMinutes(dateStr){
+  const d = new Date(`${dateStr}T12:00:00Z`);
+  const utcStr = d.toLocaleString('en-US', { timeZone: 'UTC', hour12: false });
+  const etStr = d.toLocaleString('en-US', { timeZone: 'America/New_York', hour12: false });
+  return (new Date(utcStr) - new Date(etStr)) / 60000;
+}
+function kickoffHasPassed(g){
+  if(!g.gameday || !g.gametime) return false;
+  const [h, m] = g.gametime.split(':').map(Number);
+  const kickoffUTC = new Date(`${g.gameday}T00:00:00Z`);
+  kickoffUTC.setUTCMinutes(kickoffUTC.getUTCMinutes() + h * 60 + m + etOffsetMinutes(g.gameday));
+  return new Date() >= kickoffUTC;
+}
+async function weekHasRealGameStarted(season, week){
+  try{
+    const r = await fetch(seasonPath(season, `games/wk${pad(week)}.json`), { cache: 'no-store' });
+    if(!r.ok) return false;
+    const data = await r.json();
+    return (data.games || []).some(kickoffHasPassed);
+  }catch(e){ return false; }
+}
+
 $("viewSwitch").querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
   $("viewSwitch").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
   currentView = b.dataset.view;
@@ -147,6 +183,20 @@ async function load(){
     // Real reset needed since load() is now re-callable on season toggle —
     // without this, switching seasons would silently accumulate the
     // previous season's weeks alongside the new one instead of replacing them.
+  // REAL BUG FIX (2026-09-18), per Frank's direct catch (switching to
+  // 2026 left the displayed numbers unchanged): currentWeek was missing
+  // from this reset block — every other per-season state here gets
+  // cleared, but currentWeek stayed whatever it was from the PREVIOUS
+  // season (e.g. 18, from 2025's "Season" view). setupDvpControls()
+  // below only assigns a fresh currentWeek when the existing one is
+  // falsy, so a real value surviving the season switch skipped that
+  // reassignment entirely — and renderDvpTable() then read
+  // WEEKS[currentWeek] against the NEWLY loaded, much shorter 2026
+  // WEEKS object, where week 18 doesn't exist yet. That throws
+  // mid-render, part-way through building the new table — which halts
+  // execution before the DOM update happens, leaving the OLD season's
+  // numbers sitting on screen exactly as if nothing had changed at all.
+  currentWeek = null;
   for(let w=1; w<=22; w++){
     try{
       const res = await fetch(seasonPath(season, `matchup/wk${pad(w)}.json`));
@@ -156,6 +206,23 @@ async function load(){
     }catch(e){ /* week not built yet */ }
   }
   weekList.sort((a,b)=>a-b);
+
+  // REAL BUG FIX (2026-09-18), per Frank's direct catch (this filter
+  // wiped out ALL of 2025, not just the unplayed 2026 week it was meant
+  // to catch): confirmed directly that archive/2025/games/ doesn't
+  // exist at all — this project never archived a games/ folder for any
+  // past season, so every 2025 week failed this check and got filtered
+  // out entirely. Only 2026 (the current, in-progress season) can ever
+  // have this "built ahead of a week that hasn't started" problem in
+  // the first place — the carryover system that does this only ever
+  // runs for the live season. A past, ARCHIVED season is already fully
+  // complete by definition; every week that has a real archived
+  // matchup/ file genuinely was played, no kickoff check needed or
+  // even possible without a games/ archive to check against.
+  if (season === 2026) {
+    const startedChecks = await Promise.all(weekList.map(w => weekHasRealGameStarted(season, w)));
+    weekList = weekList.filter((w, i) => startedChecks[i]);
+  }
 
   try{
     const res = await fetch(seasonPath(season, `teamstats/latest.json`));
@@ -263,12 +330,28 @@ function renderDvpTable(){
   const keys = Object.keys(labels);
   if(!sortKey) sortKey = keys[0];
 
+  // REAL BUG FIX (2026-09-18), per Frank's direct catch (2025 started
+  // showing what looked like real 2026 numbers): confirmed directly
+  // that archive/2025/matchup/wk18.json's cells ALSO carry a v26 field
+  // — traced to yesterday's fix_2025_archive.py, which replaced each
+  // archived file's whole "teams" object with the correct one from
+  // matchup/wk02.json to fix a real staleness bug, but that object
+  // also happens to carry v26 (the real, live 2026 sample) as part of
+  // the same structure — a field that never conceptually belongs in a
+  // historical archive record regardless of what value it holds. The
+  // real, safe fix belongs here rather than touching the data files
+  // again: v26 must only ever be trusted while genuinely viewing the
+  // live 2026 season, never for an archived one, no matter what a
+  // given file happens to contain.
+  const getVal = cell => (season === 2026 && cell.v26 !== undefined) ? cell.v26 : cell.v;
+
   const rows = Object.entries(wk.teams)
     .filter(([,t]) => t.def && t.def[currentPos])
     .map(([abbr,t]) => ({ abbr, def: t.def[currentPos] }));
 
   rows.sort((a,b) => {
-    const av = a.def[sortKey]?.v ?? -Infinity, bv = b.def[sortKey]?.v ?? -Infinity;
+    const av = a.def[sortKey] ? getVal(a.def[sortKey]) : -Infinity;
+    const bv = b.def[sortKey] ? getVal(b.def[sortKey]) : -Infinity;
     return sortDir === 'desc' ? bv - av : av - bv;
   });
 
@@ -283,7 +366,10 @@ function renderDvpTable(){
     const cells = keys.map(k => {
       const cell = row.def[k];
       if(!cell) return `<td>—</td>`;
-      return `<td><span class="cell-val">${fmtVal(cell.v)}</span><span class="rk ${rkClass(cell.r)}">#${cell.r}</span></td>`;
+      if(season === 2026 && cell.v26 !== undefined){
+        return `<td><span class="cell-val">${fmtVal(cell.v26)}</span></td>`;
+      }
+      return `<td><span class="cell-val carryover-val">${fmtVal(cell.v)}</span><span class="rk ${rkClass(cell.r)}">#${cell.r}</span></td>`;
     }).join('');
     return `<tr>
       <td class="team-col"><span class="rank-num">${i+1}</span>${fiLogoHTML(row.abbr,22)}${esc(FI_TEAM_NAME[row.abbr]||row.abbr)}</td>

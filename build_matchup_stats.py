@@ -833,8 +833,24 @@ def build(week):
     # already-built logic run for the first time, restoring the real
     # gold/blue display for weeks 2 and 3, not just week 1.
     if week <= CARRYOVER_WEEKS:
-        print(f"  No {SEASON} data yet for week {week} — ranking off "
-              f"{CARRYOVER_SEASON}'s complete season instead.")
+        # REAL BUG FIX (2026-09-18), per Frank's direct question about
+        # this exact message: it always said "no data yet" unconditionally
+        # whenever week <= CARRYOVER_WEEKS, which was accurate back when
+        # that was the ONLY way into this branch — but the real fix above
+        # (dropping the real_prior_stats.empty requirement from the outer
+        # condition) means this branch now also runs when real 2026 games
+        # genuinely have been played, just still within the real
+        # CARRYOVER_WEEKS window. Printing "no data yet" for a week whose
+        # real games have already happened is a real, confirmed
+        # inaccuracy — the message now reflects which of the two real
+        # cases is actually true.
+        if real_prior_stats.empty:
+            print(f"  No {SEASON} data yet for week {week} — ranking off "
+                  f"{CARRYOVER_SEASON}'s complete season instead.")
+        else:
+            print(f"  Real {SEASON} data exists for week {week}, but the sample is still too thin "
+                  f"to rank on its own (week {week} of {CARRYOVER_WEEKS} carryover weeks) — "
+                  f"ranking off {CARRYOVER_SEASON}'s complete season instead.")
         carry_stats = fetch_carryover_stats(CARRYOVER_SEASON)
         carry_games = fetch_csv(GAMES_URL)
         carry_games = normalize_team_cols(carry_games, "home_team", "away_team")

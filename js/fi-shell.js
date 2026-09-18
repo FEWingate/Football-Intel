@@ -17,7 +17,7 @@ const NAV = [
   { key: 'injuries', label: 'Injuries',     ico: '🩹', href: 'injuries.html' },
   { key: 'stats',    label: 'Stats Hub',    ico: '📈', href: 'stats_hub.html' },
   { key: 'reports',  label: 'Intel Reports',ico: '📄', href: 'intel_reports.html' },
-  { key: 'coeus',    label: 'Coeus',        ico: '◉', href: 'coeus.html' },
+  { key: 'coeus',    label: 'Ask Coeus',    ico: '◉', href: 'coeus.html' },
 ];
 
 const MOBILE_NAV = ['games', 'threats', 'matchup', 'context', 'teams', 'dfs', 'stats'];

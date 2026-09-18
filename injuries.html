@@ -46,9 +46,60 @@
 <script src="js/fi-shell.js"></script>
 <script>
 const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2, '0');
 function esc(s){ const d = document.createElement('div'); d.textContent = s ?? ''; return d.innerHTML; }
 
 let INJURIES = null, CURRENT_WEEK = null;
+
+// REAL BUG FIX (2026-09-18), per Frank's direct catch ("No players match
+// these filters" even right after a rebuild that wrote 160 real injury
+// players to injuries/wk02.json): confirmed directly this page took
+// matchup/current.json's own "week" field as CURRENT_WEEK with no
+// validation. Same real bug already found and fixed on games.html,
+// threats.html, matchup_stats.html, the evidence builder, and Ask
+// Coeus today — that field tracks "the highest week
+// build_matchup_stats.py has ever built," not "the real current NFL
+// week," and today's rebuild log confirms the real, concrete
+// consequence here: matchup/current.json said week 3, but
+// injuries/wk03.json was written with 0 players across 0 teams (no
+// real Week 3 practice reports exist yet), while the real, current
+// data (160 players, all 32 teams) sat unused in injuries/wk02.json.
+// Ported the same proven, tested determination logic here rather than
+// reimplementing it — advances past a week only once ITS OWN real
+// Monday game has actually finished, checked against real kickoff
+// time, never trusting matchup/current.json's own week value as a
+// starting point.
+function etOffsetMinutes(dateStr){
+  const d = new Date(`${dateStr}T12:00:00Z`);
+  const utcStr = d.toLocaleString('en-US', { timeZone: 'UTC', hour12: false });
+  const etStr = d.toLocaleString('en-US', { timeZone: 'America/New_York', hour12: false });
+  return (new Date(utcStr) - new Date(etStr)) / 60000;
+}
+function kickoffHasPassed(g){
+  if(!g.gameday || !g.gametime) return false;
+  const [h, m] = g.gametime.split(':').map(Number);
+  const kickoffUTC = new Date(`${g.gameday}T00:00:00Z`);
+  kickoffUTC.setUTCMinutes(kickoffUTC.getUTCMinutes() + h * 60 + m + etOffsetMinutes(g.gameday));
+  return new Date() >= kickoffUTC;
+}
+async function determineDefaultWeek(){
+  let week = 1;
+  while (week < 18) {
+    let wkData;
+    try {
+      const r = await fetch(`games/wk${pad(week)}.json`, { cache: 'no-store' });
+      if (!r.ok) break; // that week isn't built yet — stop advancing, use what we have
+      wkData = await r.json();
+    } catch (e) { break; }
+
+    const monGames = (wkData.games || []).filter(g => g.weekday === 'Monday' && g.gameday);
+    if (!monGames.length) break; // no real Monday game this week — nothing to advance past
+    const latestMon = monGames.reduce((max, g) => (!max || g.gametime > max.gametime) ? g : max, null);
+    if (!kickoffHasPassed(latestMon)) break; // this week's real MNF hasn't happened yet — stay here
+    week += 1;
+  }
+  return week;
+}
 
 function statusClass(status){
   const s = (status || '').toLowerCase();
@@ -86,11 +137,7 @@ function renderTable(){
 async function init(){
   const main = fiShell({ page: 'injuries', pageLabel: 'INJURIES', status: 'ready' });
 
-  const curRes = await fetch('matchup/current.json').catch(() => null);
-  if(curRes && curRes.ok){
-    const cur = await curRes.json();
-    CURRENT_WEEK = cur.week;
-  }
+  CURRENT_WEEK = await determineDefaultWeek();
 
   const teamOptions = Object.keys(FI_TEAM_NAME).sort()
     .map(t => `<option value="${t}">${esc(FI_TEAM_NAME[t])}</option>`).join('');
@@ -109,7 +156,6 @@ async function init(){
         <option value="Out">Out</option>
         <option value="Doubtful">Doubtful</option>
         <option value="Questionable">Questionable</option>
-        <option value="Pending">Pending Final Status</option>
       </select>
       <span class="qa-count" id="count"></span>
     </div>

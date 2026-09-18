@@ -134,6 +134,8 @@ const MODEL = 'claude-sonnet-5';
 // to do precise filtering or ranking math itself.
 
 let PLAYERS = null, MATCHUP = null, GAMES = null, CURRENT_WEEK = null, CONTEXT = null, DFS_DATA = null;
+let PLAYERS_2025 = null, CONTEXT_2025 = null;
+let PLAYERS_2025_BY_ID = {};   // gsis_id -> real 2025 player record (for log lookups)
 let TEAM_OPPONENT = {};      // {team: opponentTeam} for the current week
 let POSITION_RANKS = {};     // {team: {pos: [{...player, posRank}, ...]}}
 
@@ -240,6 +242,37 @@ async function loadData(){
     const cRes = await fetch(`context/wk${wk}.json`);
     if(cRes.ok) CONTEXT = await cRes.json();
   }catch(e){ /* CONTEXT stays null — handled explicitly wherever it's used */ }
+
+  // REAL ADDITION (2026-09-19), per Frank's direct request: real 2025
+  // season data for both player and team game-log lookups — the real,
+  // complete archived season, same source already proven out for the
+  // Players page season dropdown and the Game Breakdown Standard's
+  // season_2025 rule. Two real reasons this matters here specifically:
+  // early in a new season, "last N games" for a player genuinely has
+  // too few real current-season games to be useful on its own (a real,
+  // confirmed case — Lamar Jackson's real log had exactly one entry
+  // this week), and a division game's real value is seeing how a
+  // player or team did against THIS SAME real opponent last season,
+  // which a current-season-only log can't show until the two teams
+  // have actually met again this year. Optional, same as CONTEXT above
+  // — an unbuilt or missing archive just means these real cross-season
+  // lookups fall back to current-season-only, not a page failure.
+  try{
+    const p25Res = await fetch('archive/2025/players/latest.json');
+    if(p25Res.ok){
+      PLAYERS_2025 = await p25Res.json();
+      for(const posList of Object.values(PLAYERS_2025.players || {})){
+        for(const p of posList){
+          if(p.gsis_id) PLAYERS_2025_BY_ID[p.gsis_id] = p;
+        }
+      }
+    }
+  }catch(e){ /* PLAYERS_2025 stays null — real cross-season lookups just won't have it */ }
+
+  try{
+    const c25Res = await fetch(`archive/2025/context/wk18.json`);
+    if(c25Res.ok) CONTEXT_2025 = await c25Res.json();
+  }catch(e){ /* CONTEXT_2025 stays null — same real fallback as above */ }
 
   // Also optional — dfs/wkNN.json is the only file with real injury
   // status (players/latest.json has none). Only relevant once a DK slate
@@ -371,7 +404,7 @@ const DK_SCORING = {
   TE: s => (s.rec_yds?.v || 0) * 0.1 + (s.rec?.v || 0) * 1 + (s.td?.v || 0) * 6,
   QB: s => (s.pass_yds?.v || 0) * 0.04 + (s.pass_td?.v || 0) * 4,
 };
-function rankDefensesByFantasyPointsAllowed(pos, lastN, limit){
+function rankDefensesByFantasyPointsAllowed(pos, lastN, limit, worstFirst){
   if(!CONTEXT) return null;
   const scorer = DK_SCORING[pos];
   const rows = [];
@@ -382,7 +415,13 @@ function rankDefensesByFantasyPointsAllowed(pos, lastN, limit){
     rows.push({ team, games_counted: games.length, total_fantasy_pts: Math.round(total * 10) / 10,
                 avg_fantasy_pts: Math.round((total / games.length) * 10) / 10 });
   }
-  rows.sort((a, b) => b.avg_fantasy_pts - a.avg_fantasy_pts);
+  // REAL ADDITION (2026-09-19), per Frank's direct request for a
+  // "hardest to score against" preset — the real mirror of the existing
+  // "allowing the most" one. Defaults to worst_first (matching the
+  // existing preset's behavior exactly, so that one's output is
+  // unchanged), same real default pattern already used by
+  // rankTeamDefenses() above.
+  rows.sort((a, b) => worstFirst === false ? a.avg_fantasy_pts - b.avg_fantasy_pts : b.avg_fantasy_pts - a.avg_fantasy_pts);
   return rows.slice(0, limit || 10);
 }
 
@@ -454,7 +493,21 @@ function findPlayerVsTeam(spec){
 
   const opp = (spec.opponent || '').trim().toUpperCase();
   if(!opp) return { error: 'No opponent team was understood from the question.' };
-  const games = (player.log || []).filter(e => e.opp === opp);
+
+  // REAL ADDITION (2026-09-19), per Frank's direct request: division
+  // rivals meet twice a year, so a real division-game question ("how's
+  // he done against them") is often really asking about last season's
+  // meetings too, not just however many times these two teams have
+  // played so far in the still-young current season. Combines both real
+  // seasons' logs, each tagged with its real season, most recent
+  // meeting first.
+  const games2026 = (player.log || [])
+    .filter(e => e.opp === opp)
+    .map(e => ({ ...e, season: 2026 }));
+  const games2025 = ((PLAYERS_2025_BY_ID[player.gsis_id] || {}).log || [])
+    .filter(e => e.opp === opp)
+    .map(e => ({ ...e, season: 2025 }));
+  const games = games2026.concat(games2025).sort((a, b) => b.season - a.season || b.week - a.week);
 
   if(spec.all_stats){
     // Every real per-game metric this position tracks, not just one —
@@ -470,7 +523,7 @@ function findPlayerVsTeam(spec){
     return {
       player: player.name, pos, team: player.team, opponent: opp, all_stats: true,
       metrics, games_found: games.length, avg: perMetricAvg,
-      rows: games.map(e => ({ week: e.week, dk: e.dk,
+      rows: games.map(e => ({ week: e.week, season: e.season, dk: e.dk,
         values: Object.fromEntries(metrics.map(m => [m, e.m ? e.m[m] : null])) })),
     };
   }
@@ -488,7 +541,7 @@ function findPlayerVsTeam(spec){
     player: player.name, pos, team: player.team, opponent: opp, metric,
     games_found: games.length,
     avg, values,
-    rows: games.map(e => ({ week: e.week, value: e.m ? e.m[metric] : null, dk: e.dk })),
+    rows: games.map(e => ({ week: e.week, season: e.season, value: e.m ? e.m[metric] : null, dk: e.dk })),
   };
 }
 
@@ -505,9 +558,25 @@ function findPlayerRecentGames(spec){
   const { player, pos } = found;
 
   const n = Math.max(1, Math.min(spec.last_n || 5, 25));
-  const games = [...(player.log || [])]
+  const games2026 = [...(player.log || [])]
     .sort((a, b) => b.week - a.week)
-    .slice(0, n);
+    .map(e => ({ ...e, season: 2026 }));
+
+  // REAL ADDITION (2026-09-19), per Frank's direct request: when the
+  // real current season doesn't have N games yet (confirmed real case:
+  // Lamar Jackson had exactly one real 2026 game logged this week),
+  // top up with the player's real, most recent 2025 games rather than
+  // silently capping at whatever 2026 has so far. Each row is tagged
+  // with its real season so the output/narration never blurs which
+  // year a given line actually happened in.
+  let games = games2026;
+  if(games.length < n && PLAYERS_2025_BY_ID[player.gsis_id]){
+    const games2025 = [...(PLAYERS_2025_BY_ID[player.gsis_id].log || [])]
+      .sort((a, b) => b.week - a.week)
+      .map(e => ({ ...e, season: 2025 }));
+    games = games.concat(games2025);
+  }
+  games = games.slice(0, n);
 
   if(spec.all_stats !== false){
     const metrics = VALID_METRICS[pos];
@@ -519,7 +588,7 @@ function findPlayerRecentGames(spec){
     return {
       player: player.name, pos, team: player.team, last_n: n, all_stats: true,
       metrics, games_found: games.length, avg: perMetricAvg,
-      rows: games.map(e => ({ week: e.week, opp: e.opp, dk: e.dk,
+      rows: games.map(e => ({ week: e.week, season: e.season, opp: e.opp, dk: e.dk,
         values: Object.fromEntries(metrics.map(m => [m, e.m ? e.m[m] : null])) })),
     };
   }
@@ -536,7 +605,7 @@ function findPlayerRecentGames(spec){
     player: player.name, pos, team: player.team, last_n: n, metric,
     games_found: games.length,
     avg, values,
-    rows: games.map(e => ({ week: e.week, opp: e.opp, value: e.m ? e.m[metric] : null, dk: e.dk })),
+    rows: games.map(e => ({ week: e.week, season: e.season, opp: e.opp, value: e.m ? e.m[metric] : null, dk: e.dk })),
   };
 }
 
@@ -547,7 +616,7 @@ function renderPlayerRecentGamesTable(r){
   }
   if(r.all_stats){
     const rows = r.rows.map(row => `<tr>
-      <td>Week ${row.week} vs ${esc(row.opp || '—')}</td>
+      <td>${row.season} Week ${row.week} vs ${esc(row.opp || '—')}</td>
       ${r.metrics.map(m => `<td>${row.values[m] != null ? row.values[m] : '—'}</td>`).join('')}
       <td>${row.dk != null ? row.dk : '—'}</td>
     </tr>`).join('');
@@ -561,7 +630,7 @@ function renderPlayerRecentGamesTable(r){
   }
   const metricLabel = r.metric.replace(/_/g, ' ');
   const rows = r.rows.map(row => `<tr>
-    <td>Week ${row.week} vs ${esc(row.opp || '—')}</td><td>${row.value != null ? row.value : '—'}</td>
+    <td>${row.season} Week ${row.week} vs ${esc(row.opp || '—')}</td><td>${row.value != null ? row.value : '—'}</td>
     <td>${row.dk != null ? row.dk : '—'}</td>
   </tr>`).join('');
   return `<div class="table-wrap"><table class="result-table">
@@ -575,11 +644,11 @@ function renderPlayerRecentGamesTable(r){
 function renderPlayerVsTeamAllStatsTable(r){
   if(!r.games_found){
     return `<div class="result-empty">${esc(r.player)} (${r.pos}, ${esc(r.team)}) has no real games
-      logged against ${esc(r.opponent)} this season — 0 real meetings, not something to estimate
-      around.</div>`;
+      logged against ${esc(r.opponent)} across the 2025-2026 seasons — 0 real meetings, not
+      something to estimate around.</div>`;
   }
   const rows = r.rows.map(row => `<tr>
-    <td>Week ${row.week}</td>
+    <td>${row.season} Week ${row.week}</td>
     ${r.metrics.map(m => `<td>${row.values[m] != null ? row.values[m] : '—'}</td>`).join('')}
     <td>${row.dk != null ? row.dk : '—'}</td>
   </tr>`).join('');
@@ -596,11 +665,11 @@ function renderPlayerVsTeamTable(r){
   const metricLabel = r.metric.replace(/_/g, ' ');
   if(!r.games_found){
     return `<div class="result-empty">${esc(r.player)} (${r.pos}, ${esc(r.team)}) has no real games
-      logged against ${esc(r.opponent)} this season — 0 real meetings, not something to estimate
-      around.</div>`;
+      logged against ${esc(r.opponent)} across the 2025-2026 seasons — 0 real meetings, not
+      something to estimate around.</div>`;
   }
   const rows = r.rows.map(row => `<tr>
-    <td>Week ${row.week}</td><td>${row.value != null ? row.value : '—'}</td>
+    <td>${row.season} Week ${row.week}</td><td>${row.value != null ? row.value : '—'}</td>
     <td>${row.dk != null ? row.dk : '—'}</td>
   </tr>`).join('');
   return `<div class="table-wrap"><table class="result-table">
@@ -608,6 +677,164 @@ function renderPlayerVsTeamTable(r){
     <tbody>${rows}</tbody>
     <tfoot><tr><td><b>Real average (${r.games_found} game${r.games_found===1?'':'s'})</b></td>
       <td><b>${r.avg}</b></td><td></td></tr></tfoot>
+  </table></div>`;
+}
+
+const TEAM_VALID_METRICS = ['pts', 'total_yds', 'pass_yds', 'rush_yds'];
+
+// Real team-level analogs to findPlayerRecentGames/findPlayerVsTeam above
+// — per Frank's direct request to add the same real game-log search for
+// teams, not just players (e.g. "how has Buffalo's offense looked over
+// its last 5 games", "how did Miami do against New England last
+// season"). Reuses the exact same real per-game data already used by
+// getDefenseGameLog() above — context/wkNN.json's own team log, each
+// entry real week/opp/result/score plus that team's own real team-level
+// stats (pts, total_yds, pass_yds, rush_yds) — combined across both real
+// seasons (CONTEXT / CONTEXT_2025) the same way the player functions
+// above do, each row tagged with its real season.
+function findTeamRecentGames(spec){
+  const team = (spec.team || '').trim().toUpperCase();
+  if(!team) return { error: 'No team was understood from the question.' };
+  if(!FI_TEAM_NAME[team]) return { error: `"${spec.team}" isn't a real NFL team code.` };
+
+  const n = Math.max(1, Math.min(spec.last_n || 5, 25));
+  const games2026 = ((CONTEXT?.teams?.[team]?.log) || [])
+    .slice().sort((a, b) => b.week - a.week).map(e => ({ ...e, season: 2026 }));
+  let games = games2026;
+  if(games.length < n){
+    const games2025 = ((CONTEXT_2025?.teams?.[team]?.log) || [])
+      .slice().sort((a, b) => b.week - a.week).map(e => ({ ...e, season: 2025 }));
+    games = games.concat(games2025);
+  }
+  games = games.slice(0, n);
+
+  if(spec.all_stats !== false){
+    const perMetricAvg = {};
+    for(const m of TEAM_VALID_METRICS){
+      const vals = games.map(e => e.team ? e.team[m]?.v : null).filter(v => v != null);
+      perMetricAvg[m] = vals.length ? +(vals.reduce((s, v) => s + v, 0) / vals.length).toFixed(1) : null;
+    }
+    return {
+      team, last_n: n, all_stats: true, metrics: TEAM_VALID_METRICS,
+      games_found: games.length, avg: perMetricAvg,
+      rows: games.map(e => ({ week: e.week, season: e.season, opp: e.opp, result: e.result, score: e.score,
+        values: Object.fromEntries(TEAM_VALID_METRICS.map(m => [m, e.team ? e.team[m]?.v : null])) })),
+    };
+  }
+
+  const metric = spec.metric || 'pts';
+  if(!TEAM_VALID_METRICS.includes(metric)){
+    return { error: `"${metric}" isn't a real team-level stat tracked here — real options are: `
+      + `${TEAM_VALID_METRICS.join(', ')}.` };
+  }
+  const values = games.map(e => e.team ? e.team[metric]?.v : null).filter(v => v != null);
+  const avg = values.length ? +(values.reduce((s, v) => s + v, 0) / values.length).toFixed(1) : null;
+  return {
+    team, last_n: n, metric, games_found: games.length, avg, values,
+    rows: games.map(e => ({ week: e.week, season: e.season, opp: e.opp, result: e.result, score: e.score,
+      value: e.team ? e.team[metric]?.v : null })),
+  };
+}
+
+function findTeamVsTeam(spec){
+  const team = (spec.team || '').trim().toUpperCase();
+  const opp = (spec.opponent || '').trim().toUpperCase();
+  if(!team) return { error: 'No team was understood from the question.' };
+  if(!FI_TEAM_NAME[team]) return { error: `"${spec.team}" isn't a real NFL team code.` };
+  if(!opp) return { error: 'No opponent team was understood from the question.' };
+
+  const games2026 = ((CONTEXT?.teams?.[team]?.log) || [])
+    .filter(e => e.opp === opp).map(e => ({ ...e, season: 2026 }));
+  const games2025 = ((CONTEXT_2025?.teams?.[team]?.log) || [])
+    .filter(e => e.opp === opp).map(e => ({ ...e, season: 2025 }));
+  const games = games2026.concat(games2025).sort((a, b) => b.season - a.season || b.week - a.week);
+
+  if(spec.all_stats !== false){
+    const perMetricAvg = {};
+    for(const m of TEAM_VALID_METRICS){
+      const vals = games.map(e => e.team ? e.team[m]?.v : null).filter(v => v != null);
+      perMetricAvg[m] = vals.length ? +(vals.reduce((s, v) => s + v, 0) / vals.length).toFixed(1) : null;
+    }
+    return {
+      team, opponent: opp, all_stats: true, metrics: TEAM_VALID_METRICS,
+      games_found: games.length, avg: perMetricAvg,
+      rows: games.map(e => ({ week: e.week, season: e.season, result: e.result, score: e.score,
+        values: Object.fromEntries(TEAM_VALID_METRICS.map(m => [m, e.team ? e.team[m]?.v : null])) })),
+    };
+  }
+
+  const metric = spec.metric || 'pts';
+  if(!TEAM_VALID_METRICS.includes(metric)){
+    return { error: `"${metric}" isn't a real team-level stat tracked here — real options are: `
+      + `${TEAM_VALID_METRICS.join(', ')}.` };
+  }
+  const values = games.map(e => e.team ? e.team[metric]?.v : null).filter(v => v != null);
+  const avg = values.length ? +(values.reduce((s, v) => s + v, 0) / values.length).toFixed(1) : null;
+  return {
+    team, opponent: opp, metric, games_found: games.length, avg, values,
+    rows: games.map(e => ({ week: e.week, season: e.season, result: e.result, score: e.score,
+      value: e.team ? e.team[metric]?.v : null })),
+  };
+}
+
+function renderTeamRecentGamesTable(r){
+  if(!r.games_found){
+    return `<div class="result-empty">${esc(FI_TEAM_NAME[r.team] || r.team)} has no real games
+      logged yet.</div>`;
+  }
+  if(r.all_stats){
+    const rows = r.rows.map(row => `<tr>
+      <td>${row.season} Week ${row.week} ${row.result ? `(${esc(row.result)} ${esc(row.score||'')} vs ${esc(row.opp)})` : ''}</td>
+      ${r.metrics.map(m => `<td>${row.values[m] != null ? row.values[m] : '—'}</td>`).join('')}
+    </tr>`).join('');
+    return `<div class="table-wrap"><table class="result-table">
+      <thead><tr><th></th>${r.metrics.map(m => `<th>${esc(m.replace(/_/g, ' '))}</th>`).join('')}</tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td><b>Real average (${r.games_found} game${r.games_found===1?'':'s'})</b></td>
+        ${r.metrics.map(m => `<td><b>${r.avg[m] != null ? r.avg[m] : '—'}</b></td>`).join('')}</tr></tfoot>
+    </table></div>`;
+  }
+  const metricLabel = r.metric.replace(/_/g, ' ');
+  const rows = r.rows.map(row => `<tr>
+    <td>${row.season} Week ${row.week} ${row.result ? `(${esc(row.result)} ${esc(row.score||'')} vs ${esc(row.opp)})` : ''}</td>
+    <td>${row.value != null ? row.value : '—'}</td>
+  </tr>`).join('');
+  return `<div class="table-wrap"><table class="result-table">
+    <thead><tr><th></th><th>${esc(metricLabel)}</th></tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr><td><b>Real average (${r.games_found} game${r.games_found===1?'':'s'})</b></td>
+      <td><b>${r.avg != null ? r.avg : '—'}</b></td></tr></tfoot>
+  </table></div>`;
+}
+
+function renderTeamVsTeamTable(r){
+  if(!r.games_found){
+    return `<div class="result-empty">${esc(FI_TEAM_NAME[r.team] || r.team)} has no real games
+      logged against ${esc(FI_TEAM_NAME[r.opponent] || r.opponent)} across the 2025-2026
+      seasons — 0 real meetings, not something to estimate around.</div>`;
+  }
+  if(r.all_stats){
+    const rows = r.rows.map(row => `<tr>
+      <td>${row.season} Week ${row.week} (${esc(row.result || '—')} ${esc(row.score||'')})</td>
+      ${r.metrics.map(m => `<td>${row.values[m] != null ? row.values[m] : '—'}</td>`).join('')}
+    </tr>`).join('');
+    return `<div class="table-wrap"><table class="result-table">
+      <thead><tr><th></th>${r.metrics.map(m => `<th>${esc(m.replace(/_/g, ' '))}</th>`).join('')}</tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td><b>Real average (${r.games_found} game${r.games_found===1?'':'s'})</b></td>
+        ${r.metrics.map(m => `<td><b>${r.avg[m] != null ? r.avg[m] : '—'}</b></td>`).join('')}</tr></tfoot>
+    </table></div>`;
+  }
+  const metricLabel = r.metric.replace(/_/g, ' ');
+  const rows = r.rows.map(row => `<tr>
+    <td>${row.season} Week ${row.week} (${esc(row.result || '—')} ${esc(row.score||'')})</td>
+    <td>${row.value != null ? row.value : '—'}</td>
+  </tr>`).join('');
+  return `<div class="table-wrap"><table class="result-table">
+    <thead><tr><th></th><th>${esc(metricLabel)}</th></tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr><td><b>Real average (${r.games_found} game${r.games_found===1?'':'s'})</b></td>
+      <td><b>${r.avg != null ? r.avg : '—'}</b></td></tr></tfoot>
   </table></div>`;
 }
 
@@ -869,6 +1096,23 @@ games" with no number). all_stats: true (the default) for "with all stats" / "th
 / no specific stat named; set to false and add metric (same real per-position keys as \
 player_vs_team) only when ONE specific stat is named:
 {"mode":"player_recent_games","player_name":"Christian McCaffrey","last_n":3,"all_stats":false,"metric":"rush_yds"}
+
+"team_recent_games" — a SPECIFIC named team's real game-by-game log over its last N games, \
+regardless of opponent (e.g. "how has Buffalo's offense looked over its last 5 games", "Dallas's \
+team stats the last 3 weeks"). Real team-level analog to player_recent_games — team-level stats \
+only (points, total yards, pass yards, rush yards), not individual player numbers:
+{"mode":"team_recent_games","team":"BUF","last_n":5,"all_stats":true}
+team: the real team code (resolve a full name like "Buffalo Bills" or "the Bills" to its real \
+abbreviation, e.g. BUF). last_n / all_stats work exactly like player_recent_games. metric (only \
+when all_stats is false) is one of: pts, total_yds, pass_yds, rush_yds:
+{"mode":"team_recent_games","team":"DAL","last_n":3,"all_stats":false,"metric":"pts"}
+
+"team_vs_team" — a SPECIFIC named team's real history against a SPECIFIC named opponent (e.g. \
+"how has Miami done against New England", "Eagles vs Cowboys last time they played"). Real \
+team-level analog to player_vs_team — genuinely different from team_recent_games above, which \
+takes no named opponent:
+{"mode":"team_vs_team","team":"MIA","opponent":"NE","all_stats":true}
+Same real team-code resolution and metric options as team_recent_games above.
 
 For free-form questions (predictions, opinions, anything not a clean numeric filter or game-log \
 lookup), also extract which real players and/or teams the question is actually about — this lets \
@@ -1187,6 +1431,34 @@ async function ask(question, prebuiltSpec){
         <span class="answer-mode filter">Real last ${r.last_n} games — computed, not guessed</span>
         ${renderPlayerRecentGamesTable(r)}
         ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
+    } else if(spec.mode === 'team_recent_games'){
+      const r = findTeamRecentGames(spec);
+      if(r.error){
+        box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+          <div class="error">${esc(r.error)}</div>`;
+        return;
+      }
+      const narration = r.games_found
+        ? await callClaude(NARRATE_SYSTEM, `Question: ${question}\nReal results: ${JSON.stringify(r)}`, 800)
+        : '';
+      box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+        <span class="answer-mode filter">Real last ${r.last_n} games for ${esc(FI_TEAM_NAME[r.team] || r.team)} — computed, not guessed</span>
+        ${renderTeamRecentGamesTable(r)}
+        ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
+    } else if(spec.mode === 'team_vs_team'){
+      const r = findTeamVsTeam(spec);
+      if(r.error){
+        box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+          <div class="error">${esc(r.error)}</div>`;
+        return;
+      }
+      const narration = r.games_found
+        ? await callClaude(NARRATE_SYSTEM, `Question: ${question}\nReal results: ${JSON.stringify(r)}`, 800)
+        : '';
+      box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+        <span class="answer-mode filter">Real history vs. ${esc(FI_TEAM_NAME[r.opponent] || r.opponent)} — computed, not guessed</span>
+        ${renderTeamVsTeamTable(r)}
+        ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
     } else if(spec.mode === 'injury_backup'){
       const rows = findInjuredWithBackup();
       const narration = rows && rows.length
@@ -1203,7 +1475,7 @@ async function ask(question, prebuiltSpec){
           yet, so I don't have real game-by-game history to compute this from.</div>`;
         return;
       }
-      const rows = rankDefensesByFantasyPointsAllowed(spec.position, spec.last_n, spec.limit);
+      const rows = rankDefensesByFantasyPointsAllowed(spec.position, spec.last_n, spec.limit, spec.worst_first !== false);
       const narration = rows && rows.length
         ? await callClaude(NARRATE_SYSTEM, `Question: ${question}\nReal results: ${JSON.stringify(rows)}`, 800)
         : '';
@@ -1242,14 +1514,19 @@ const FEATURED_EXAMPLES = [
   { label: "Show me RB's averaging 60 ypg facing bottom 5 defenses",
     spec: { position: 'RB', metric_field: 'rush_ypg', min_metric_value: 60, opponent_rank_min: 28 } },
   { label: "Which players do you think will go under their season average this week", spec: null },
+  { label: "Which players do you think will go over their season average this week", spec: null },
   { label: "Worst run defenses this season",
     spec: { mode: 'teamrank', position: 'RB', limit: 10, worst_first: true } },
+  { label: "Worst pass defenses this season",
+    spec: { mode: 'teamrank', position: 'QB', limit: 10, worst_first: true } },
   { label: "Which QB-WR pairs both have a favorable matchup this week",
     spec: { mode: 'correlation', favorable_rank_min: 23 } },
   { label: "Injured players with a real backup ready to step in",
     spec: { mode: 'injury_backup' } },
   { label: "Defenses allowing the most fantasy points to RBs (last 5 games)",
-    spec: { mode: 'fantasy_allowed', position: 'RB', last_n: 5, limit: 10 } },
+    spec: { mode: 'fantasy_allowed', position: 'RB', last_n: 5, limit: 10, worst_first: true } },
+  { label: "Hardest defenses to score fantasy points against at RB (last 5 games)",
+    spec: { mode: 'fantasy_allowed', position: 'RB', last_n: 5, limit: 10, worst_first: false } },
 ];
 
 async function init(){

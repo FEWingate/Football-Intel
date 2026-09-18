@@ -1,1 +1,1 @@
-{"season": 2026, "week": 2, "players": []}
+{"season": 2026, "week": 2, "players": [{"player_id": 3918298, "name": "Josh Allen", "team": "BUF", "qbr_total": 91.2, "pts_added": 9.1, "epa_total": 12.2, "pass_epa": 6.6, "run_epa": 5.1, "rank": 1.0, "qualified": true}, {"player_id": 3046779, "name": "Jared Goff", "team": "DET", "qbr_total": 71.3, "pts_added": 3.4, "epa_total": 6.9, "pass_epa": 5.8, "run_epa": 0.0, "rank": 2.0, "qualified": true}]}

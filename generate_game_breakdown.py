@@ -355,8 +355,24 @@ def main():
     # Read-modify-write since multiple separate script runs share one file.
     manifest_path = f"{out_dir}/manifest.json"
     manifest = load_json(manifest_path) or {"games": {}}
+    # REAL BUG FIX (2026-09-18), per Frank's direct catch (confirmed:
+    # the manifest recorded "season": 2025 for a real 2026 Week 2 game):
+    # this manifest entry must record the REAL season/week of the game
+    # actually being previewed — the same real distinction the out_dir
+    # fix above already draws — never the bootstrap foundation's own
+    # season/week (bootstrap_source), which is what the season/week
+    # variables above hold for bootstrap mode and can legitimately
+    # differ from the real target game (e.g. a Week 3 game bootstrapped
+    # off Week 2's foundation data). Uses the same real, already-computed
+    # target_season/real_week from the out_dir logic when available;
+    # falls back to the existing season/week only for the rare case
+    # real_week wasn't found at all (the "bootstrap" folder fallback,
+    # where there's no better real answer) or for non-bootstrap runs,
+    # which were never affected by this bug in the first place.
+    manifest_season = target_season if (args.bootstrap and real_week) else season
+    manifest_week = real_week if (args.bootstrap and real_week) else week
     manifest["games"][f"{args.away}_{args.home}"] = {
-        "away": args.away, "home": args.home, "season": season, "week": week,
+        "away": args.away, "home": args.home, "season": manifest_season, "week": manifest_week,
         "generated_at": prompt_record["generated_at"],
     }
     with open(manifest_path, "w") as f:
