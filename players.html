@@ -326,11 +326,14 @@ function openProfile(p, pos){
 function renderProfilePanel(){
   const p = activePlayer, pos = p.pos;
   const hrSeasons = (PLAYERSTATS.home_road_splits_seasons || []);
-  const hasHomeRoad = pos === 'QB' && PLAYERSTATS.all_qb_home_road_by_season &&
-    hrSeasons.some(y => {
-      const yearData = PLAYERSTATS.all_qb_home_road_by_season[y] || {};
-      return yearData[p.team] && yearData[p.team].gsis_id === p.gsis_id;
-    });
+  // REAL CHANGE (2026-09-19), per Frank's direct request: RB/WR/TE now
+  // have real home/road data too (build_matchup_stats.py, same real
+  // per-game source as QB's), just keyed by real player id rather than
+  // by team — RB/WR/TE routinely have more than one real fantasy-
+  // relevant player per team, unlike QB1. hasHomeRoadData() below is
+  // the one real place that understands both real shapes, so nothing
+  // else here needs to branch on position beyond calling it.
+  const hasHomeRoad = hasHomeRoadData(p, hrSeasons);
   $("profilePanel").innerHTML = `
     <div class="profile-head">
       <img class="profile-headshot" src="${esc(p.headshot||'')}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
@@ -376,16 +379,60 @@ function renderProfileBody(){
   else renderGameLogFull(box, p);
 }
 
-// Home/Road — every team's real QB1. If this QB's team is ALSO one of
-// the 11 dome/retractable-roof teams, the more detailed dataset (with
-// the Road-Outdoor breakdown) already exists — merged in below rather
-// than making the reader check two different tabs for the same player.
+// REAL CHANGE (2026-09-19): the home/road field name AND the real data
+// shape both differ by position — QB's real data is keyed by TEAM (one
+// real QB1 per team, since that's a real, well-defined role every team
+// has exactly one of) and needs a genuine QB1-identity check; RB/WR/TE
+// are keyed by real player id directly (these positions routinely have
+// more than one real fantasy-relevant player per team, so "one entry
+// per team" was never the right shape for them). This is the one real
+// place that understands both shapes.
+const HOME_ROAD_FIELD_BY_POS = {
+  QB: 'all_qb_home_road_by_season', RB: 'all_rb_home_road_by_season',
+  WR: 'all_wr_home_road_by_season', TE: 'all_te_home_road_by_season',
+};
+function homeRoadEntryFor(p, year){
+  const field = HOME_ROAD_FIELD_BY_POS[p.pos];
+  if(!field) return null;
+  const yearData = (PLAYERSTATS[field] || {})[year] || {};
+  if(p.pos === 'QB'){
+    const entry = yearData[p.team];
+    return (entry && entry.gsis_id === p.gsis_id) ? entry : null;
+  }
+  return yearData[p.gsis_id] || null;
+}
+function hasHomeRoadData(p, hrSeasons){
+  if(!HOME_ROAD_FIELD_BY_POS[p.pos] || !PLAYERSTATS[HOME_ROAD_FIELD_BY_POS[p.pos]]) return false;
+  return hrSeasons.some(y => homeRoadEntryFor(p, y));
+}
+
+// Real per-position stat columns for the Home/Road table — QB's own
+// real passing fields, unchanged; RB/WR/TE use the real fields their
+// own build_all_skill_home_road() side_stats() actually computes (see
+// build_matchup_stats.py) — never the QB fields, which don't exist on
+// a real RB/WR/TE record at all.
+const SPLITS_COLS_BY_POS = {
+  QB: [['games','G',0], ['comp','Cmp',0], ['att','Att',0], ['comp_pct','Cmp%',1],
+       ['pass_yds','Yds',0], ['pass_ypg','Yds/G',1], ['ypa','Y/A',1], ['pass_td','TD',0], ['int','INT',0],
+       ['rating','Rate',1], ['sacks','Sk',0], ['dk_pts_pg','DK/G',1]],
+  RB: [['games','G',0], ['carries','Car',0], ['carries_pg','Car/G',1], ['rush_yds','Rush Yds',0],
+       ['rush_ypg','Yds/G',1], ['ypc','Y/C',1], ['rush_td','TD',0], ['rec','Rec',0], ['targets','Tgt',0],
+       ['rec_yds','Rec Yds',0], ['rec_td','Rec TD',0], ['dk_pts_pg','DK/G',1]],
+  WR: [['games','G',0], ['rec','Rec',0], ['rec_pg','Rec/G',1], ['targets','Tgt',0], ['tgt_pg','Tgt/G',1],
+       ['catch_pct','Ctch%',1], ['rec_yds','Yds',0], ['rec_ypg','Yds/G',1], ['ypr','Y/R',1], ['rec_td','TD',0],
+       ['dk_pts_pg','DK/G',1]],
+};
+SPLITS_COLS_BY_POS.TE = SPLITS_COLS_BY_POS.WR; // same real fields the backend computes for both
+
 // Home/Road — every team's real QB1, with a season dropdown (current +
 // last season, whichever have real data). If this QB's team is ALSO one
 // of the 11 dome/retractable-roof teams for the selected season, the
 // more detailed dataset (with the Road-Outdoor breakdown) already
 // exists — merged in below rather than making the reader check two
-// different tabs for the same player.
+// different tabs for the same player. RB/WR/TE show the same real
+// season-dropdown shape, using their own real per-player data and stat
+// columns — no dome breakdown for these positions (not computed on the
+// backend), so that row is simply omitted rather than shown empty.
 function renderHomeRoadTab(box, p){
   const seasons = PLAYERSTATS.home_road_splits_seasons || [];
   if(!seasons.length){
@@ -393,26 +440,30 @@ function renderHomeRoadTab(box, p){
       Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
     return;
   }
+  const cols = SPLITS_COLS_BY_POS[p.pos] || SPLITS_COLS_BY_POS.QB;
   let selected = seasons[0];
 
   const row = (label, s) => {
     if(!s) return `<tr><td class="name-col">${label}</td>
-      <td colspan="${SPLITS_COLS.length}" style="color:var(--text-dim);text-align:center">No games</td></tr>`;
+      <td colspan="${cols.length}" style="color:var(--text-dim);text-align:center">No games</td></tr>`;
     return `<tr><td class="name-col">${label}</td>` +
-      SPLITS_COLS.map(([k,,dec]) => {
+      cols.map(([k,,dec]) => {
         const v = s[k];
         return `<td>${v==null ? '—' : (dec ? v.toFixed(dec) : v)}</td>`;
       }).join('') + `</tr>`;
   };
 
   const draw = () => {
-    const q = ((PLAYERSTATS.all_qb_home_road_by_season || {})[selected] || {})[p.team];
-    const domeQ = ((PLAYERSTATS.qb_dome_splits_by_season || {})[selected] || {})[p.team];
+    const q = homeRoadEntryFor(p, selected);
+    const domeQ = p.pos === 'QB' ? ((PLAYERSTATS.qb_dome_splits_by_season || {})[selected] || {})[p.team] : null;
 
     let bodyHTML;
-    if(!q || q.gsis_id !== p.gsis_id){
-      bodyHTML = `<div class="empty">${esc(p.name)} wasn't this team's identified QB1 in
-        ${selected} — no real home/road split to show for that season.</div>`;
+    if(!q){
+      bodyHTML = p.pos === 'QB'
+        ? `<div class="empty">${esc(p.name)} wasn't this team's identified QB1 in
+           ${selected} — no real home/road split to show for that season.</div>`
+        : `<div class="empty">No real ${selected} games logged for ${esc(p.name)} — nothing to
+           split by home/road for that season.</div>`;
     } else {
       const diff = (q.home && q.road) ? +(q.home.dk_pts_pg - q.road.dk_pts_pg).toFixed(1) : null;
       bodyHTML = `
@@ -422,7 +473,7 @@ function renderHomeRoadTab(box, p){
             excludes road trips to other dome/retractable-roof teams` : ''}
         </div>
         <div class="table-wrap"><table class="splits-table">
-          <thead><tr><th></th>${SPLITS_COLS.map(([,l])=>`<th>${l}</th>`).join('')}</tr></thead>
+          <thead><tr><th></th>${cols.map(([,l])=>`<th>${l}</th>`).join('')}</tr></thead>
           <tbody>${row('Home', q.home)}${row('Road', q.road)}${domeQ ? row('Road (Outdoor)', domeQ.road_outdoor) : ''}</tbody>
         </table></div>`;
     }

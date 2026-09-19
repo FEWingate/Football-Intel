@@ -551,6 +551,47 @@ def main():
         for p25 in pos_list:
             if p25.get("gsis_id"):
                 players_2025_by_id[p25["gsis_id"]] = p25.get("season")
+
+    # REAL ADDITION (2026-09-20), per Frank's direct request: real
+    # home/road splits AND real opponent-tier x home/road cross-tabs for
+    # each player, so Coeus can cite the real, correct side (home or
+    # road, whichever this player's real team actually is this week) the
+    # first time each player is mentioned in a breakdown. Both fields
+    # already live as top-level keys on players_json itself (written by
+    # build_matchup_stats.py) — QB is keyed by TEAM (one real identified
+    # QB1 per team); RB/WR/TE are keyed by real player id directly,
+    # since those positions routinely have more than one real
+    # fantasy-relevant player per team. Uses whichever real season is
+    # most recent (home_road_splits_seasons is already sorted newest
+    # first) — the one most relevant to "this week's game," not every
+    # season this data happens to cover.
+    _HR_FIELD_BY_POS = {"QB": "all_qb_home_road_by_season", "RB": "all_rb_home_road_by_season",
+                         "WR": "all_wr_home_road_by_season", "TE": "all_te_home_road_by_season"}
+    _TIER_HR_FIELD_BY_POS = {"QB": "qb_tier_home_road_by_season", "RB": "rb_tier_home_road_by_season",
+                              "WR": "wr_tier_home_road_by_season", "TE": "te_tier_home_road_by_season"}
+    _hr_seasons = players_json.get("home_road_splits_seasons") or []
+    _hr_latest_season = _hr_seasons[0] if _hr_seasons else None
+
+    def home_road_for_player(pos, team, gsis_id):
+        """Returns (home_road_split, tier_home_road_buckets) for the most
+        recent real season this data covers — either can be None if this
+        specific real player/team has no real entry there."""
+        if _hr_latest_season is None:
+            return None, None
+        hr_field = _HR_FIELD_BY_POS.get(pos)
+        tier_field = _TIER_HR_FIELD_BY_POS.get(pos)
+        hr_year_data = (players_json.get(hr_field) or {}).get(str(_hr_latest_season), {}) if hr_field else {}
+        tier_year_data = (players_json.get(tier_field) or {}).get(str(_hr_latest_season), {}) if tier_field else {}
+        if pos == "QB":
+            hr_entry = hr_year_data.get(team)
+            hr_entry = hr_entry if (hr_entry and hr_entry.get("gsis_id") == gsis_id) else None
+            tier_entry = tier_year_data.get(team)
+            tier_entry = tier_entry if (tier_entry and tier_entry.get("gsis_id") == gsis_id) else None
+        else:
+            hr_entry = hr_year_data.get(gsis_id)
+            tier_entry = tier_year_data.get(gsis_id)
+        return hr_entry, (tier_entry.get("buckets") if tier_entry else None)
+
     intel_json = load_json("intel/latest.json")
     blitz_json = load_json("intel/blitz.json")
     coverage_json = load_json("intel/coverage.json")
@@ -714,6 +755,27 @@ def main():
                 # so mutating it here would leak season_2025 onto every
                 # later game's use of the same player record.
                 p_out = {**p, "season_2025": players_2025_by_id.get(p.get("gsis_id"))}
+                if p.get("team") == away:
+                    side = "road"
+                elif p.get("team") == home:
+                    side = "home"
+                else:
+                    side = None
+                if side:
+                    # REAL ADDITION (2026-09-20): only the side that's
+                    # actually true for this player THIS WEEK — an away-
+                    # team player gets their real road split/tier
+                    # buckets, a home-team player gets their real home
+                    # ones, never both, since only one is a real fact
+                    # about this specific game.
+                    hr_entry, tier_buckets = home_road_for_player(pos, p.get("team"), p.get("gsis_id"))
+                    p_out["home_road_split"] = (hr_entry or {}).get(side)
+                    p_out["home_road_side"] = side
+                    if tier_buckets:
+                        p_out["tier_home_road_split"] = {
+                            tier: tier_buckets.get(f"{tier}_{side}")
+                            for tier in ("top", "mid", "bot") if tier_buckets.get(f"{tier}_{side}")
+                        }
                 if p.get("team") == away:
                     players_block["away"].append(p_out)
                 elif p.get("team") == home:

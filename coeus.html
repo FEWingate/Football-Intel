@@ -136,6 +136,7 @@ const MODEL = 'claude-sonnet-5';
 let PLAYERS = null, MATCHUP = null, GAMES = null, CURRENT_WEEK = null, CONTEXT = null, DFS_DATA = null;
 let PLAYERS_2025 = null, CONTEXT_2025 = null;
 let PLAYERS_2025_BY_ID = {};   // gsis_id -> real 2025 player record (for log lookups)
+let GB_GAMES = [];             // real Game Breakdowns discovered across every real week folder
 let TEAM_OPPONENT = {};      // {team: opponentTeam} for the current week
 let POSITION_RANKS = {};     // {team: {pos: [{...player, posRank}, ...]}}
 
@@ -273,6 +274,28 @@ async function loadData(){
     const c25Res = await fetch(`archive/2025/context/wk18.json`);
     if(c25Res.ok) CONTEXT_2025 = await c25Res.json();
   }catch(e){ /* CONTEXT_2025 stays null — same real fallback as above */ }
+
+  // REAL ADDITION (2026-09-19), per Frank's direct request: real access
+  // to Coeus's own full Game Breakdowns — the long-form written analysis
+  // (Hidden Intelligence findings, Threat designations, real injury
+  // context) that nothing else here could previously draw on at all.
+  // Same real discovery pattern already proven on intel_reports.html —
+  // scans every real week folder's manifest.json rather than assuming
+  // which weeks exist, since a breakdown can legitimately be filed
+  // under any week 1-18.
+  GB_GAMES = [];
+  for(let w = 1; w <= 18; w++){
+    const wk = `wk${String(w).padStart(2,'0')}`;
+    try{
+      const mfRes = await fetch(`game_breakdowns/${wk}/manifest.json`, { cache: 'no-store' });
+      if(mfRes.ok){
+        const mf = await mfRes.json();
+        for(const g of Object.values(mf.games || {})){
+          GB_GAMES.push({ ...g, wk, path: `game_breakdowns/${wk}/${g.away}_${g.home}.md` });
+        }
+      }
+    }catch(e){}
+  }
 
   // Also optional — dfs/wkNN.json is the only file with real injury
   // status (players/latest.json has none). Only relevant once a DK slate
@@ -454,6 +477,26 @@ const VALID_METRICS = {
 };
 const PRIMARY_METRIC = { QB: 'pass_yds', RB: 'rush_yds', WR: 'rec_yds', TE: 'rec_yds' };
 
+// Real, shared Game Breakdown lookup — resolves one or two real team
+// codes against GB_GAMES (discovered at load time above) to the single
+// most relevant real breakdown. team2 is optional: with only one real
+// team given, returns that team's most recent real breakdown (any
+// opponent); with both, returns the real breakdown for that SPECIFIC
+// matchup if one exists. Returns null rather than guessing when nothing
+// real matches — used by both the explicit lookup mode and the
+// freeform path below, so a name that doesn't resolve here behaves
+// identically in both.
+function findGameBreakdown(team1Raw, team2Raw){
+  const t1 = (team1Raw || '').trim().toUpperCase();
+  const t2 = (team2Raw || '').trim().toUpperCase();
+  if(!t1) return null;
+  let matches = GB_GAMES.filter(g => g.away === t1 || g.home === t1);
+  if(t2) matches = matches.filter(g => g.away === t2 || g.home === t2);
+  if(!matches.length) return null;
+  matches = matches.slice().sort((a, b) => Number(b.wk.slice(2)) - Number(a.wk.slice(2)));
+  return matches[0];
+}
+
 // Real, shared fuzzy player lookup — resolves a name (full, partial, or
 // last-name-only) against the real roster, exactly once, for every mode
 // that needs to find one specific player. Extracted from findPlayerVsTeam
@@ -607,6 +650,84 @@ function findPlayerRecentGames(spec){
     avg, values,
     rows: games.map(e => ({ week: e.week, season: e.season, opp: e.opp, value: e.m ? e.m[metric] : null, dk: e.dk })),
   };
+}
+
+// REAL ADDITION (2026-09-19), per Frank's direct request to add today's
+// new home/road split data ("Show me Josh Allen's home/road splits",
+// "how does Gibbs do at home vs on the road"). Real per-position data
+// shape mirrors the exact same real distinction already built for
+// players.html's Home/Road tab: QB is keyed by TEAM (one real,
+// identified QB1 per team) with a genuine identity check; RB/WR/TE are
+// keyed by real player id directly, since those positions routinely
+// have more than one real fantasy-relevant player per team. Shows every
+// real season this data exists for, not just one, since a question
+// with no season named shouldn't have to guess which year the asker
+// meant.
+const HOME_ROAD_FIELD_BY_POS = {
+  QB: 'all_qb_home_road_by_season', RB: 'all_rb_home_road_by_season',
+  WR: 'all_wr_home_road_by_season', TE: 'all_te_home_road_by_season',
+};
+function findPlayerHomeRoad(spec){
+  const found = findPlayerByName(spec.player_name);
+  if(found.error) return found;
+  const { player, pos } = found;
+
+  const field = HOME_ROAD_FIELD_BY_POS[pos];
+  if(!field || !PLAYERS[field]){
+    return { error: `No real home/road split data is available for ${pos}s yet — `
+      + `run build_matchup_stats.py to generate it.` };
+  }
+  const seasons = PLAYERS.home_road_splits_seasons || Object.keys(PLAYERS[field] || {}).map(Number);
+  const bySeason = {};
+  for(const yr of seasons){
+    const yearData = (PLAYERS[field] || {})[yr] || {};
+    let entry;
+    if(pos === 'QB'){
+      const teamEntry = yearData[player.team];
+      entry = (teamEntry && teamEntry.gsis_id === player.gsis_id) ? teamEntry : null;
+    } else {
+      entry = yearData[player.gsis_id] || null;
+    }
+    if(entry) bySeason[yr] = entry;
+  }
+
+  return {
+    player: player.name, pos, team: player.team,
+    seasons_found: Object.keys(bySeason).map(Number).sort((a,b) => b-a),
+    by_season: bySeason,
+  };
+}
+
+function renderPlayerHomeRoadTable(r){
+  if(!r.seasons_found.length){
+    return `<div class="result-empty">${esc(r.player)} (${r.pos}, ${esc(r.team)}) has no real
+      home/road split logged for any real season yet.</div>`;
+  }
+  const cols = r.pos === 'QB'
+    ? [['games','G',0],['comp_pct','Cmp%',1],['pass_ypg','Yds/G',1],['pass_td','TD',0],['int','INT',0],['dk_pts_pg','DK/G',1]]
+    : r.pos === 'RB'
+    ? [['games','G',0],['rush_ypg','Rush Yds/G',1],['ypc','Y/C',1],['rush_td','TD',0],['rec','Rec',0],['rec_yds','Rec Yds',0],['rec_td','Rec TD',0],['dk_pts_pg','DK/G',1]]
+    : [['games','G',0],['rec_pg','Rec/G',1],['tgt_pg','Tgt/G',1],['rec_ypg','Yds/G',1],['rec_td','TD',0],['dk_pts_pg','DK/G',1]];
+  const row = (label, s) => {
+    if(!s) return `<tr><td>${label}</td><td colspan="${cols.length}">No real games</td></tr>`;
+    return `<tr><td>${label}</td>` + cols.map(([k,,dec]) => {
+      const v = s[k];
+      return `<td>${v==null ? '—' : (dec ? v.toFixed(dec) : v)}</td>`;
+    }).join('') + `</tr>`;
+  };
+  const tables = r.seasons_found.map(yr => {
+    const q = r.by_season[yr];
+    const diff = (q.home && q.road) ? +(q.home.dk_pts_pg - q.road.dk_pts_pg).toFixed(1) : null;
+    return `<div style="margin-bottom:14px">
+      <div class="result-empty" style="padding:4px 0;text-align:left">
+        ${yr} — real season games${diff!==null ? ` · ${diff>=0?'+':''}${diff} DK/G at home` : ''}</div>
+      <div class="table-wrap"><table class="result-table">
+        <thead><tr><th></th>${cols.map(([,l])=>`<th>${l}</th>`).join('')}</tr></thead>
+        <tbody>${row('Home', q.home)}${row('Road', q.road)}</tbody>
+      </table></div>
+    </div>`;
+  }).join('');
+  return `<div>${tables}</div>`;
 }
 
 function renderPlayerRecentGamesTable(r){
@@ -1097,6 +1218,24 @@ games" with no number). all_stats: true (the default) for "with all stats" / "th
 player_vs_team) only when ONE specific stat is named:
 {"mode":"player_recent_games","player_name":"Christian McCaffrey","last_n":3,"all_stats":false,"metric":"rush_yds"}
 
+"player_home_road" — a SPECIFIC named player's real home vs road performance split (e.g. "show \
+me Josh Allen's home/road splits", "how does Jahmyr Gibbs do at home vs on the road"). Real \
+skill-position analog to the existing QB home/road data — every real season this data exists \
+for is shown, not just one:
+{"mode":"player_home_road","player_name":"Josh Allen"}
+player_name: same real, partial-match-friendly resolution as every other player mode above.
+
+"game_breakdown_lookup" — a question asking specifically about Coeus's own already-written Game \
+Breakdown for a real matchup (e.g. "summarize this week's DET@BUF breakdown", "what does the \
+Buffalo breakdown say about the run defense", "recap the Lions/Bills preview"). Genuinely \
+different from a normal filter/freeform question — this reads Coeus's own real, complete prior \
+long-form write-up for that matchup directly, not structured data:
+{"mode":"game_breakdown_lookup","away":"DET","home":"BUF"}
+away/home: real team codes if both are named. If the question only names ONE real team (e.g. \
+"what does the Bills breakdown say"), use "team" instead and omit home/away — the most recent \
+real breakdown involving that team is used:
+{"mode":"game_breakdown_lookup","team":"BUF"}
+
 "team_recent_games" — a SPECIFIC named team's real game-by-game log over its last N games, \
 regardless of opponent (e.g. "how has Buffalo's offense looked over its last 5 games", "Dallas's \
 team stats the last 3 weeks"). Real team-level analog to player_recent_games — team-level stats \
@@ -1224,6 +1363,29 @@ async function answerFreeform(question, spec){
     });
   }
 
+  // REAL ADDITION (2026-09-19), per Frank's direct request: fold
+  // Coeus's own real Game Breakdowns into general free-form questions
+  // too, not just the explicit lookup mode above — a question that
+  // names one or two real teams may well be asking about a matchup
+  // that already has a full real breakdown written for it, and that
+  // document is real, richer analysis than the shallow team-defense
+  // summary above can offer alone. Deliberately caps at ONE real
+  // breakdown (the most specific real match available) rather than
+  // fetching one per mentioned team — these are long documents, and a
+  // question naming two teams is almost always asking about the one
+  // real matchup between them, not two unrelated games.
+  let deepGameBreakdown = null;
+  const mt = (spec?.mentioned_teams || []).map(t => t.trim().toUpperCase());
+  const gbMatch = mt.length >= 2 ? findGameBreakdown(mt[0], mt[1]) : (mt.length === 1 ? findGameBreakdown(mt[0]) : null);
+  if(gbMatch){
+    try{
+      const gbRes = await fetch(gbMatch.path, { cache: 'no-store' });
+      if(gbRes.ok){
+        deepGameBreakdown = { away: gbMatch.away, home: gbMatch.home, week: gbMatch.wk, text: await gbRes.text() };
+      }
+    }catch(e){ /* deepGameBreakdown stays null — real fetch failure, not silently guessed around */ }
+  }
+
   const system = `You are Coeus, Football Intel's analyst. Answer the user's question using \
 ONLY the real data provided below — season averages, this week's real opponent, that opponent's \
 real defensive rank/value at the relevant stat for each player, a direct team-by-team \
@@ -1272,6 +1434,11 @@ one team at a time), lead each section header with the TEAM first, then the matc
 whose players you're about to list is the subject of that section; the opponent is context, not \
 the headline.
 
+WHEN DEEP_GAME_BREAKDOWN IS PRESENT, it's your own real, complete prior written analysis for that \
+specific matchup — Hidden Intelligence findings, Threat designations, real injury context, all \
+already worked out. Prefer it over re-deriving anything from the shallower data above when it's \
+directly relevant to the question, and never contradict what it already concluded.
+
 DATA (current week, real players, real opponents, real opponent defensive strength):
 ${JSON.stringify(grounding)}
 
@@ -1285,7 +1452,53 @@ ${JSON.stringify(deepPlayerData)}
 
 DEEP_TEAM_DATA (full real season-defense profile and recent-games history for any team this \
 specific question names):
-${JSON.stringify(deepTeamData)}`;
+${JSON.stringify(deepTeamData)}
+
+DEEP_GAME_BREAKDOWN (your own real, complete prior write-up for the specific matchup this \
+question's mentioned teams point to, if one exists — null if no real breakdown has been \
+generated for that matchup yet):
+${deepGameBreakdown ? `${deepGameBreakdown.away} @ ${deepGameBreakdown.home}, ${deepGameBreakdown.week}:\n${deepGameBreakdown.text}` : 'null'}`;
+  return await callClaude(system, question, 8000);
+}
+
+// REAL ADDITION (2026-09-19), per Frank's direct request: real access
+// to Coeus's own full Game Breakdowns for a specific, named matchup —
+// e.g. "summarize this week's DET@BUF breakdown", "what does the
+// Buffalo breakdown say about Josh Allen". Fetches the real breakdown's
+// full markdown text (fetched here, not pre-loaded for every game at
+// startup — these are long documents, and only fetching the one a
+// question actually names avoids paying that real cost for every game
+// on every page load) and answers the real question directly from it,
+// rather than the shallow team-level grounding the general freeform
+// path uses — this is deliberately the one path in this whole system
+// that reads Coeus's own prior long-form analysis as real source
+// material, not structured JSON.
+async function answerGameBreakdownLookup(question, spec){
+  const gb = findGameBreakdown(spec.away || spec.team, spec.home);
+  if(!gb){
+    const named = [spec.away || spec.team, spec.home].filter(Boolean).join(' / ');
+    return `No real Game Breakdown has been generated yet for ${esc(named) || 'that matchup'} — `
+      + `run generate_game_breakdown.py for it first, then ask again.`;
+  }
+  let breakdownText;
+  try{
+    const res = await fetch(gb.path, { cache: 'no-store' });
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    breakdownText = await res.text();
+  }catch(e){
+    return `Found a real manifest entry for ${gb.away} @ ${gb.home} (${gb.wk}), but couldn't `
+      + `actually load ${gb.path} — real error: ${esc(e.message)}.`;
+  }
+
+  const system = `You are Coeus, Football Intel's analyst. Answer the user's question using ONLY \
+the real Game Breakdown text provided below — your own prior, real written analysis for ${gb.away} \
+@ ${gb.home} (${gb.wk}). This document already contains real matchup stats, injury context, Threat \
+Intelligence designations, and Hidden Intelligence findings — pull from it directly rather than \
+re-deriving anything, and never contradict what it already concluded. If the user's question asks \
+about something this specific document doesn't cover, say so plainly rather than guessing beyond it.
+
+GAME BREAKDOWN — ${gb.away} @ ${gb.home}, ${gb.wk}:
+${breakdownText}`;
   return await callClaude(system, question, 8000);
 }
 
@@ -1431,6 +1644,25 @@ async function ask(question, prebuiltSpec){
         <span class="answer-mode filter">Real last ${r.last_n} games — computed, not guessed</span>
         ${renderPlayerRecentGamesTable(r)}
         ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
+    } else if(spec.mode === 'player_home_road'){
+      const r = findPlayerHomeRoad(spec);
+      if(r.error){
+        box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+          <div class="error">${esc(r.error)}</div>`;
+        return;
+      }
+      const narration = r.seasons_found.length
+        ? await callClaude(NARRATE_SYSTEM, `Question: ${question}\nReal results: ${JSON.stringify(r)}`, 800)
+        : '';
+      box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+        <span class="answer-mode filter">Real home vs road splits — computed, not guessed</span>
+        ${renderPlayerHomeRoadTable(r)}
+        ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
+    } else if(spec.mode === 'game_breakdown_lookup'){
+      const answer = await answerGameBreakdownLookup(question, spec);
+      box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+        <span class="answer-mode filter">Real Game Breakdown lookup — from Coeus's own prior analysis</span>
+        <div class="answer-narration">${marked.parse(answer)}</div>`;
     } else if(spec.mode === 'team_recent_games'){
       const r = findTeamRecentGames(spec);
       if(r.error){

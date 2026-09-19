@@ -2813,6 +2813,246 @@ def build_all_qb_home_road(stats, season=None):
     return out
 
 
+# REAL ADDITION (2026-09-19), per Frank's direct request ("build home/
+# road splits for each skill position player for 2025/26"): the exact
+# same real home/away cross-reference and per-game DK-scoring approach
+# as build_all_qb_home_road() above, generalized to work for any skill
+# position — but deliberately NOT the same "one player per team" shape.
+# QB1 is a real, well-defined role every team has exactly one of; RB/WR/
+# TE routinely have several real, fantasy-relevant players on the same
+# team (a committee backfield, WR2/WR3), so this keys by gsis_id (one
+# entry per REAL player) rather than by team. Position-specific stat
+# fields, real DK scoring either way (dk_points_for_game() already
+# works unchanged for any position — see its own docstring). Same real
+# minimal-inclusion rule as the QB version: a player is included once
+# they have a real game logged in EITHER split, not filtered out for
+# having a thin sample in one of them — that judgment belongs to
+# whatever reads this data, not silently decided here.
+def build_all_skill_home_road(stats, pos, season=None):
+    """Home vs Road splits, full real stat set for the given skill
+    position (RB, WR, or TE), for EVERY real player at that position
+    with at least one real game logged — not just one per team, since
+    these positions often have multiple real fantasy-relevant players
+    per team. Same real season-mismatch care as build_all_qb_home_road()
+    — season must be passed explicitly when stats came from a resolved
+    fallback season, for the identical real reason documented there."""
+    season = SEASON if season is None else season
+    pdf_pos = stats[stats["pos"] == pos]
+    if pdf_pos.empty:
+        print(f"  WARNING: no {pos} stats yet — skipping all_{pos.lower()}_home_road.")
+        return {}
+
+    games = fetch_csv(GAMES_URL)
+    games = normalize_team_cols(games, "home_team", "away_team")
+    games = games[(games["season"] == season) & (games["game_type"] == "REG")
+                  & games["home_score"].notna()]
+    home_of = {}
+    for _, g in games.iterrows():
+        wk = int(g["week"])
+        home_of[(g["home_team"], wk)] = True
+        home_of[(g["away_team"], wk)] = False
+
+    def side_stats(sub):
+        n = len(sub)
+        if n == 0:
+            return None
+        dk = sum(dk_points_for_game(row) for _, row in sub.iterrows())
+        out_stats = {"games": n, "dk_pts_pg": round(dk / n, 1)}
+        if pos == "RB":
+            carries, rush_yds, rush_td = sub["carries"].sum(), sub["rushing_yards"].sum(), sub["rushing_tds"].sum()
+            rec, rec_yds, rec_td, tgt = sub["receptions"].sum(), sub["receiving_yards"].sum(), sub["receiving_tds"].sum(), sub["targets"].sum()
+            out_stats.update({
+                "carries": int(carries), "carries_pg": round(carries / n, 1),
+                "rush_yds": int(rush_yds), "rush_ypg": round(rush_yds / n, 1),
+                "ypc": round(rush_yds / carries, 1) if carries else None,
+                "rush_td": int(rush_td), "rush_td_pg": round(rush_td / n, 1),
+                "rec": int(rec), "rec_pg": round(rec / n, 1),
+                "targets": int(tgt), "tgt_pg": round(tgt / n, 1),
+                "rec_yds": int(rec_yds), "rec_ypg": round(rec_yds / n, 1),
+                "rec_td": int(rec_td),
+            })
+        else:  # WR, TE
+            rec, rec_yds, rec_td, tgt = sub["receptions"].sum(), sub["receiving_yards"].sum(), sub["receiving_tds"].sum(), sub["targets"].sum()
+            out_stats.update({
+                "rec": int(rec), "rec_pg": round(rec / n, 1),
+                "targets": int(tgt), "tgt_pg": round(tgt / n, 1),
+                "catch_pct": round(100 * rec / tgt, 1) if tgt else None,
+                "rec_yds": int(rec_yds), "rec_ypg": round(rec_yds / n, 1),
+                "ypr": round(rec_yds / rec, 1) if rec else None,
+                "rec_td": int(rec_td), "rec_td_pg": round(rec_td / n, 1),
+            })
+        return out_stats
+
+    out = {}
+    for pid, g in pdf_pos.groupby("player_id"):
+        pdf = g.sort_values("week")
+        if pdf.empty:
+            continue
+        name = pdf["name"].iloc[-1]
+        team = pdf["team"].iloc[-1]
+        headshot = pdf["headshot_url"].iloc[-1] if "headshot_url" in pdf.columns else ""
+        if pd.isna(headshot):
+            headshot = ""
+
+        is_home = pdf.apply(lambda r: home_of.get((r["team"], int(r["week"])), None), axis=1)
+        home_split = side_stats(pdf[is_home == True])
+        road_split = side_stats(pdf[is_home == False])
+        if home_split is None and road_split is None:
+            continue
+
+        out[pid] = {
+            "gsis_id": pid, "name": name, "team": team, "headshot": headshot,
+            "home": home_split, "road": road_split,
+        }
+    return out
+
+
+def _load_latest_matchup_for_tiers():
+    """Same real 'highest built week on disk' lookup build_player_stats()
+    already uses for its own tier tags, reused here so the tier a game
+    gets bucketed into always matches the tier a reader sees anywhere
+    else on the site — never a second, independently-computed rank that
+    could quietly drift from the real one everything else shows."""
+    if not os.path.isdir("matchup"):
+        return None
+    wk_files = sorted(int(f[2:4]) for f in os.listdir("matchup")
+                       if f.startswith("wk") and f.endswith(".json"))
+    if not wk_files:
+        return None
+    with open(f"matchup/wk{wk_files[-1]:02d}.json") as f:
+        return json.load(f)
+
+
+# REAL ADDITION (2026-09-20), per Frank's direct request, with his own
+# real Derrick Henry example as the reasoning: a player's home/road
+# average alone can hide a lot — a road game against a bottom-10 run
+# defense and a road game against a top-10 one are genuinely different
+# situations averaged into one number. This is the real, new fourth
+# level of his stated progression (season avg -> home/road avg -> vs
+# tier avg -> vs tier, home/road specifically) — levels 1-3 already
+# exist (season.m, build_all_skill_home_road() above, and the existing
+# per-player "splits" field build_player_log() already computes) — this
+# is the one genuinely new cross-tabulation needed. Real, deliberate
+# simplification matching the existing tier system's own approach (see
+# build_player_log() above): a game's opponent tier is read from the
+# CURRENT, latest real matchup snapshot's rank for that opponent, same
+# as every other tier tag on the site — not a true historical
+# reconstruction of what that opponent's rank was on that specific
+# week, which nothing else here does either. RB's own primary matchup
+# key (rush_yds) is used for bucketing, matching the existing "tier"/
+# "rank" backward-compatible alias fields' own choice of primary
+# category over the dual rush/rec split — Frank's own example was
+# specifically about rushing production.
+_TIER_PRIMARY_STAT = {"QB": "pass_yds", "RB": "rush_yds", "WR": "rec_yds", "TE": "rec_yds"}
+
+
+def _tier_home_road_side_stats(sub, pos):
+    n = len(sub)
+    if n == 0:
+        return None
+    dk = sum(dk_points_for_game(row) for _, row in sub.iterrows())
+    out_stats = {"games": n, "dk_pts_pg": round(dk / n, 1)}
+    if pos == "QB":
+        att, comp = sub["attempts"].sum(), sub["completions"].sum()
+        yds, td = sub["passing_yards"].sum(), sub["passing_tds"].sum()
+        out_stats.update({
+            "att_pg": round(att / n, 1), "comp_pct": round(100 * comp / att, 1) if att else None,
+            "pass_ypg": round(yds / n, 1), "pass_td": int(td),
+        })
+    elif pos == "RB":
+        carries, rush_yds, rush_td = sub["carries"].sum(), sub["rushing_yards"].sum(), sub["rushing_tds"].sum()
+        rec, rec_yds, rec_td = sub["receptions"].sum(), sub["receiving_yards"].sum(), sub["receiving_tds"].sum()
+        out_stats.update({
+            "carries_pg": round(carries / n, 1), "rush_ypg": round(rush_yds / n, 1),
+            "ypc": round(rush_yds / carries, 1) if carries else None, "rush_td": int(rush_td),
+            "rec_pg": round(rec / n, 1), "rec_ypg": round(rec_yds / n, 1), "rec_td": int(rec_td),
+        })
+    else:  # WR, TE
+        rec, rec_yds, rec_td, tgt = sub["receptions"].sum(), sub["receiving_yards"].sum(), sub["receiving_tds"].sum(), sub["targets"].sum()
+        out_stats.update({
+            "rec_pg": round(rec / n, 1), "tgt_pg": round(tgt / n, 1),
+            "rec_ypg": round(rec_yds / n, 1), "rec_td": int(rec_td),
+        })
+    return out_stats
+
+
+def _build_tier_home_road_for(pdf_pos, pos, season):
+    """Shared real core for both the QB (team-keyed) and skill-position
+    (player-keyed) variants below — everything except the final grouping
+    key is identical, so this is the one place the real tier + home/road
+    cross-tabulation logic lives."""
+    games = fetch_csv(GAMES_URL)
+    games = normalize_team_cols(games, "home_team", "away_team")
+    games = games[(games["season"] == season) & (games["game_type"] == "REG")
+                  & games["home_score"].notna()]
+    home_of = {}
+    for _, g in games.iterrows():
+        wk = int(g["week"])
+        home_of[(g["home_team"], wk)] = True
+        home_of[(g["away_team"], wk)] = False
+
+    latest_matchup = _load_latest_matchup_for_tiers()
+    stat_key = _TIER_PRIMARY_STAT[pos]
+
+    def tier_for_opp(opp):
+        if not latest_matchup or opp not in latest_matchup.get("teams", {}):
+            return None
+        r = latest_matchup["teams"][opp].get("def", {}).get(pos, {}).get(stat_key, {}).get("r")
+        return tier_of(r) if r is not None else None
+
+    results = {}
+    for pid, g in pdf_pos.groupby("player_id"):
+        pdf = g.sort_values("week").copy()
+        if pdf.empty:
+            continue
+        pdf["_tier"] = pdf["opponent_team"].apply(tier_for_opp)
+        pdf["_is_home"] = pdf.apply(lambda r: home_of.get((r["team"], int(r["week"])), None), axis=1)
+
+        buckets = {}
+        for tier in ("top", "mid", "bot"):
+            for side, is_home in (("home", True), ("road", False)):
+                sub = pdf[(pdf["_tier"] == tier) & (pdf["_is_home"] == is_home)]
+                stats_for_bucket = _tier_home_road_side_stats(sub, pos)
+                if stats_for_bucket is not None:
+                    buckets[f"{tier}_{side}"] = stats_for_bucket
+        if not buckets:
+            continue
+        results[pid] = {"gsis_id": pid, "name": pdf["name"].iloc[-1], "team": pdf["team"].iloc[-1],
+                         "buckets": buckets}
+    return results
+
+
+def build_qb_tier_home_road(stats, season=None):
+    """QB variant — real QB1 (most starts) per team only, matching the
+    existing QB home/road data's own team-keyed shape, so this can be
+    looked up the identical way (team -> real identified starter)."""
+    season = SEASON if season is None else season
+    qb = stats[stats["pos"] == "QB"]
+    if qb.empty:
+        return {}
+    per_player = _build_tier_home_road_for(qb, "QB", season)
+    out = {}
+    for team, g in qb.groupby("team"):
+        weekly_starters = g.loc[g.groupby("week")["attempts"].idxmax()]
+        if weekly_starters.empty:
+            continue
+        primary_pid = weekly_starters.groupby("player_id").size().idxmax()
+        if primary_pid in per_player:
+            out[team] = per_player[primary_pid]
+    return out
+
+
+def build_all_skill_tier_home_road(stats, pos, season=None):
+    """RB/WR/TE variant — real player-keyed (one entry per real player
+    with real games in at least one bucket), matching
+    build_all_skill_home_road()'s own real-player-not-real-team shape."""
+    season = SEASON if season is None else season
+    pdf_pos = stats[stats["pos"] == pos]
+    if pdf_pos.empty:
+        return {}
+    return _build_tier_home_road_for(pdf_pos, pos, season)
+
+
 def build_qb_dome_splits(stats, season=None):
     """Home vs Road splits, full QB stat set, for the current-season QB1
     of every team in DOME_TEAMS. QB1 = whoever started the most games
@@ -4874,32 +5114,64 @@ if __name__ == "__main__":
     except SystemExit as e:
         print(f"  player stats: skipped — {e}")
 
-    # 4a. QB Home/Road splits (dome-specific AND general, EVERY team's
-    # QB1) — DELIBERATELY independent of build_player_stats(), same
-    # reasoning and multi-season approach as step 3c above.
+    # 4a. QB / RB / WR / TE Home/Road splits — QB gets its own dome-
+    # specific variant (every team's real QB1); RB/WR/TE use the new,
+    # generalized per-player version above, since those positions
+    # routinely have more than one real fantasy-relevant player per
+    # team. DELIBERATELY independent of build_player_stats(), same
+    # reasoning and multi-season approach as step 3c above. Reuses the
+    # same real by_season fetch for all four positions rather than
+    # re-fetching the same real CSV three more times.
     try:
         by_season = resolve_splits_player_data_all()
         if not by_season:
-            print("  QB home/road splits: skipped — no real season data found "
+            print("  QB/RB/WR/TE home/road splits: skipped — no real season data found "
                   f"for {SEASON} or {SEASON - 1}.")
         else:
             qb_dome_by_season, all_qb_by_season = {}, {}
+            all_rb_by_season, all_wr_by_season, all_te_by_season = {}, {}, {}
+            qb_tier_hr_by_season, rb_tier_hr_by_season = {}, {}
+            wr_tier_hr_by_season, te_tier_hr_by_season = {}, {}
             for yr, stats in by_season.items():
                 qb_dome_by_season[yr] = build_qb_dome_splits(stats, season=yr)
                 all_qb_by_season[yr] = build_all_qb_home_road(stats, season=yr)
+                all_rb_by_season[yr] = build_all_skill_home_road(stats, "RB", season=yr)
+                all_wr_by_season[yr] = build_all_skill_home_road(stats, "WR", season=yr)
+                all_te_by_season[yr] = build_all_skill_home_road(stats, "TE", season=yr)
+                # Real, new addition (2026-09-20), per Frank's direct
+                # request: the fourth level of his stated progression —
+                # a player's real average against a specific opponent
+                # tier, further split by home vs road, since a road
+                # game against a bottom-10 defense and a road game
+                # against a top-10 one are genuinely different situations.
+                qb_tier_hr_by_season[yr] = build_qb_tier_home_road(stats, season=yr)
+                rb_tier_hr_by_season[yr] = build_all_skill_tier_home_road(stats, "RB", season=yr)
+                wr_tier_hr_by_season[yr] = build_all_skill_tier_home_road(stats, "WR", season=yr)
+                te_tier_hr_by_season[yr] = build_all_skill_tier_home_road(stats, "TE", season=yr)
             existing = {}
             if os.path.exists("players/latest.json"):
                 with open("players/latest.json") as f:
                     existing = json.load(f)
             existing["qb_dome_splits_by_season"] = {str(y): v for y, v in qb_dome_by_season.items()}
             existing["all_qb_home_road_by_season"] = {str(y): v for y, v in all_qb_by_season.items()}
+            existing["all_rb_home_road_by_season"] = {str(y): v for y, v in all_rb_by_season.items()}
+            existing["all_wr_home_road_by_season"] = {str(y): v for y, v in all_wr_by_season.items()}
+            existing["all_te_home_road_by_season"] = {str(y): v for y, v in all_te_by_season.items()}
+            existing["qb_tier_home_road_by_season"] = {str(y): v for y, v in qb_tier_hr_by_season.items()}
+            existing["rb_tier_home_road_by_season"] = {str(y): v for y, v in rb_tier_hr_by_season.items()}
+            existing["wr_tier_home_road_by_season"] = {str(y): v for y, v in wr_tier_hr_by_season.items()}
+            existing["te_tier_home_road_by_season"] = {str(y): v for y, v in te_tier_hr_by_season.items()}
             existing["home_road_splits_seasons"] = sorted(by_season.keys(), reverse=True)
             existing.setdefault("season", SEASON)
             size = write_with_archive(existing, "players/latest.json")
-            print(f"  Merged QB home/road splits into players/latest.json — "
-                  f"seasons {sorted(by_season.keys(), reverse=True)}, {size:.0f} KB")
+            rb_n = sum(len(v) for v in all_rb_by_season.values())
+            wr_n = sum(len(v) for v in all_wr_by_season.values())
+            te_n = sum(len(v) for v in all_te_by_season.values())
+            print(f"  Merged QB/RB/WR/TE home/road splits into players/latest.json — "
+                  f"seasons {sorted(by_season.keys(), reverse=True)}, "
+                  f"{rb_n} real RB / {wr_n} real WR / {te_n} real TE entries, {size:.0f} KB")
     except SystemExit as e:
-        print(f"  QB home/road splits: skipped — {e}")
+        print(f"  QB/RB/WR/TE home/road splits: skipped — {e}")
 
     # 4b. Rosters and depth charts: always-current snapshots, same pattern
     # as team/player stats above. Built specifically to be re-run after

@@ -41,6 +41,76 @@
       "season": 2026,
       "week": 2,
       "generated_at": "2026-09-18T20:23:46.716461+00:00"
+    },
+    "GB_NYJ": {
+      "away": "GB",
+      "home": "NYJ",
+      "season": 2026,
+      "week": 2,
+      "generated_at": "2026-09-18T22:21:08.872593+00:00"
+    },
+    "CLE_TB": {
+      "away": "CLE",
+      "home": "TB",
+      "season": 2026,
+      "week": 2,
+      "generated_at": "2026-09-18T22:36:50.109108+00:00"
+    },
+    "PHI_TEN": {
+      "away": "PHI",
+      "home": "TEN",
+      "season": 2026,
+      "week": 2,
+      "generated_at": "2026-09-18T22:48:32.844862+00:00"
+    },
+    "JAX_DEN": {
+      "away": "JAX",
+      "home": "DEN",
+      "season": 2026,
+      "week": 2,
+      "generated_at": "2026-09-18T23:06:54.245005+00:00"
+    },
+    "LV_LAC": {
+      "away": "LV",
+      "home": "LAC",
+      "season": 2026,
+      "week": 2,
+      "generated_at": "2026-09-18T23:32:49.734071+00:00"
+    },
+    "SEA_ARI": {
+      "away": "SEA",
+      "home": "ARI",
+      "season": 2026,
+      "week": 2,
+      "generated_at": "2026-09-18T23:46:47.670275+00:00"
+    },
+    "WAS_DAL": {
+      "away": "WAS",
+      "home": "DAL",
+      "season": 2026,
+      "week": 2,
+      "generated_at": "2026-09-18T23:58:34.800424+00:00"
+    },
+    "MIA_SF": {
+      "away": "MIA",
+      "home": "SF",
+      "season": 2026,
+      "week": 2,
+      "generated_at": "2026-09-19T00:12:05.131144+00:00"
+    },
+    "IND_KC": {
+      "away": "IND",
+      "home": "KC",
+      "season": 2026,
+      "week": 2,
+      "generated_at": "2026-09-19T00:24:58.372320+00:00"
+    },
+    "NYG_LAR": {
+      "away": "NYG",
+      "home": "LAR",
+      "season": 2026,
+      "week": 2,
+      "generated_at": "2026-09-19T00:32:36.203536+00:00"
     }
   }
 }
