@@ -1,0 +1,8 @@
+{
+  "batches": {
+    "props_parlay_report_batch8_DET.json": {
+      "games": ["DET_BUF", "CAR_ATL", "NO_BAL", "CIN_HOU", "PIT_NE", "GB_NYJ", "CLE_TB", "PHI_TEN"],
+      "generated_at": "2026-09-21T20:51:03+00:00"
+    }
+  }
+}

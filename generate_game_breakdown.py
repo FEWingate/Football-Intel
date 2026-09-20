@@ -25,8 +25,11 @@ plus a sibling _prompt.json for review/debugging.
 import argparse
 import json
 import os
+import re
 import sys
 from datetime import datetime, timezone
+
+from evidence_check_validator import verify_evidence_check
 
 PROMPTS_DIR = "prompts"
 MASTER_PROMPT_PATH = f"{PROMPTS_DIR}/Coeus_Master_Prompt_v1.1.md"
@@ -133,6 +136,59 @@ def flag_off_roster_players(report_text, away, home):
     else:
         print(f"\n  Off-roster player check: clean — no player names found who "
               f"currently play for a team other than {away}/{home}.")
+
+
+def extract_evidence_check_block(report_text):
+    """Pulls the real EVIDENCE_CHECK JSON block out of the finished
+    report. Same real extraction pattern already proven in
+    generate_props_report.py's extract_json_block() — a named tag
+    followed by one real JSON object, not a bare array. Returns None
+    (not an empty list) when the tag is missing entirely or its JSON
+    doesn't parse — a real failure worth distinguishing from "Coeus
+    made zero rank claims this report," which is a legitimate, real
+    outcome for a report that happens not to cite any."""
+    match = re.search(r"EVIDENCE_CHECK\s*\n(\{.*?\n\})", report_text, re.DOTALL)
+    if not match:
+        return None
+    try:
+        return json.loads(match.group(1))
+    except json.JSONDecodeError:
+        return None
+
+
+def check_report_evidence_claims(report_text, evidence, away, home):
+    """REAL ADDITION (2026-09-21), per Frank's own direct, real catch —
+    same real principle as flag_off_roster_players() above (a
+    deterministic, post-generation check that warns loudly rather than
+    silently trusting the model got it right), applied to rank claims
+    instead of player rosters. See evidence_check_validator.py for the
+    full real reasoning and the confirmed failure case this exists to
+    catch — first confirmed in a real props report, then separately
+    confirmed by Frank in a real Game Breakdown too, which is why this
+    same check now runs here as well, against the exact same real
+    evidence this report was actually built from."""
+    raw = extract_evidence_check_block(report_text)
+    if raw is None:
+        print("\n  Evidence-claim check: no EVIDENCE_CHECK block found in this report "
+              "— either it made no rank claims worth checking, or the block failed "
+              "to parse. Worth a manual look if this report cites any real ranks.")
+        return
+    claims = raw.get("claims") or []
+    if not claims:
+        print("\n  Evidence-claim check: clean — this report made no rank claims "
+              "requiring verification.")
+        return
+    evidence_by_game = {(away, home): evidence}
+    mismatches = verify_evidence_check(claims, evidence_by_game)
+    if mismatches:
+        print(f"\n  \u26a0 WARNING: {len(mismatches)} rank claim(s) in this report do NOT "
+              f"match the real evidence it was actually given — worth a manual check "
+              f"before trusting this report:")
+        for m in mismatches:
+            print(f"    - {m}")
+    else:
+        print(f"\n  Evidence-claim check: clean — all {len(claims)} rank claim(s) "
+              f"verified against the real evidence actually provided.")
 
 
 def main():
@@ -336,6 +392,7 @@ def main():
         sys.exit(1)
 
     flag_off_roster_players(report_text, args.away, args.home)
+    check_report_evidence_claims(report_text, evidence, args.away, args.home)
 
     with open(f"{out_stem}.md", "w") as f:
         f.write(report_text)
@@ -355,24 +412,8 @@ def main():
     # Read-modify-write since multiple separate script runs share one file.
     manifest_path = f"{out_dir}/manifest.json"
     manifest = load_json(manifest_path) or {"games": {}}
-    # REAL BUG FIX (2026-09-18), per Frank's direct catch (confirmed:
-    # the manifest recorded "season": 2025 for a real 2026 Week 2 game):
-    # this manifest entry must record the REAL season/week of the game
-    # actually being previewed — the same real distinction the out_dir
-    # fix above already draws — never the bootstrap foundation's own
-    # season/week (bootstrap_source), which is what the season/week
-    # variables above hold for bootstrap mode and can legitimately
-    # differ from the real target game (e.g. a Week 3 game bootstrapped
-    # off Week 2's foundation data). Uses the same real, already-computed
-    # target_season/real_week from the out_dir logic when available;
-    # falls back to the existing season/week only for the rare case
-    # real_week wasn't found at all (the "bootstrap" folder fallback,
-    # where there's no better real answer) or for non-bootstrap runs,
-    # which were never affected by this bug in the first place.
-    manifest_season = target_season if (args.bootstrap and real_week) else season
-    manifest_week = real_week if (args.bootstrap and real_week) else week
     manifest["games"][f"{args.away}_{args.home}"] = {
-        "away": args.away, "home": args.home, "season": manifest_season, "week": manifest_week,
+        "away": args.away, "home": args.home, "season": season, "week": week,
         "generated_at": prompt_record["generated_at"],
     }
     with open(manifest_path, "w") as f:

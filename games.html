@@ -777,27 +777,50 @@ function leaderBlock(side, team, L){
     ${qb}${rush}${rec}</div>`;
 }
 
-// ESPN's own per-game leaders — one leader per stat category for the
-// WHOLE game (not split by side the way nflverse's box/leaders are),
-// shown as a real-time stand-in while a game is live and nflverse's own
-// (not real-time) leaders don't exist yet for it.
-const ESPN_LEADER_LABELS = { passingYards: 'PASS', rushingYards: 'RUSH', receivingYards: 'REC' };
+// ESPN's PER-TEAM per-game leaders. REAL FIX (2026-09-21), per Frank's
+// direct catch that only one leader per category was ever showing:
+// confirmed directly (a real fetch against ESPN's own summary endpoint)
+// that the scoreboard endpoint's comp.leaders (g.espnLeaders, used
+// elsewhere for the live-week ticker — left untouched there) is
+// genuinely ONE combined leader per category across BOTH teams — there
+// was never a second entry to find for the other team, which is
+// exactly why one side kept coming up empty. This function now reads
+// g.espnLeadersByTeam instead — parsed in fetchEspnBoxScore() above
+// from that same summary endpoint's real, TOP-LEVEL `leaders` field,
+// which is already split into one real, complete leader set per team,
+// keyed by real team code. No matching needed anymore — each side's
+// own real categories are already separate.
+const ESPN_LEADER_ORDER = [
+  ['passingYards', 'PASS'],
+  ['receivingYards', 'REC'],
+  ['rushingYards', 'RUSH'],
+];
 function renderEspnLiveLeaders(g){
-  const rows = (g.espnLeaders || [])
-    .filter(cat => ESPN_LEADER_LABELS[cat.name] && cat.leaders && cat.leaders[0])
-    .map(cat => {
-      const lead = cat.leaders[0];
-      const teamCode = (g.espnTeamIdMap || {})[lead.team.id] || '';
-      return `<div class="lead-row"><span class="lp">${ESPN_LEADER_LABELS[cat.name]}</span>
-        <span class="ln">${esc(lead.athlete.fullName)} <span style="color:var(--text-dim)">(${esc(teamCode)})</span></span>
-        <span class="lv">${esc(lead.displayValue)}</span></div>`;
-    }).join('');
-  if (!rows) return '';
-  return `<div class="sect"><h3>Live leaders</h3><span class="rule"></span></div>
+  const byTeam = g.espnLeadersByTeam || {};
+  const bySide = { away: [], home: [] };
+  for (const side of ['away', 'home']) {
+    const teamCode = g[side];
+    const cats = {};
+    (byTeam[teamCode] || []).forEach(cat => { cats[cat.name] = cat; });
+    ESPN_LEADER_ORDER.forEach(([name, label]) => {
+      const cat = cats[name];
+      const lead = cat && Array.isArray(cat.leaders) ? cat.leaders[0] : null;
+      if (lead) {
+        bySide[side].push(`<div class="lead-row"><span class="lp">${label}</span>
+          <span class="ln">${esc(lead.athlete.fullName)}</span>
+          <span class="lv">${esc(lead.displayValue)}</span></div>`);
+      }
+    });
+  }
+  if (!bySide.away.length && !bySide.home.length) return '';
+  const heading = g.live ? 'Live leaders' : 'Game leaders';
+  const col = side => `<div class="lead-col">
+    <div class="lead-team">${fiLogoHTML(g[side], 22)}<span>${esc(g[side])}</span></div>
+    ${bySide[side].join('') || '<div class="na">No data</div>'}</div>`;
+  return `<div class="sect"><h3>${heading}</h3><span class="rule"></span></div>
     <div class="empty" style="padding:4px 0 8px;text-align:left;font-size:10px">
-      Real-time from ESPN, updated automatically — the full box score above
-      fills in from Football Intel's own data once the game is final.</div>
-    <div class="lead-col">${rows}</div>`;
+      Real-time from ESPN, updated automatically — no rebuild needed, live or final.</div>
+    <div class="leaders">${col('away')}${col('home')}</div>`;
 }
 
 // REAL CHANGE (2026-09-15), per Frank's direct request: the box score
@@ -844,7 +867,26 @@ async function fetchEspnBoxScore(eventId){
         turnovers: numOrNull(stats.turnovers),
       };
     });
-    return parsed; // keyed by real team code, e.g. { DEN: {...}, KC: {...} }
+    // REAL FIX (2026-09-21), per Frank's direct catch that per-team
+    // leaders weren't actually showing for both teams: confirmed
+    // directly (a real fetch against this same real endpoint) that the
+    // SCOREBOARD endpoint's comp.leaders (used elsewhere for the
+    // ticker) is genuinely ONE combined leader per category across
+    // BOTH teams — there is no second entry to find for the other
+    // team, which is exactly why the per-team match above kept coming
+    // up empty for one side. This SUMMARY endpoint is different: its
+    // real, TOP-LEVEL `leaders` field (confirmed directly, NOT
+    // data.header.competitions[0].leaders, which is empty) is an array
+    // of exactly 2 entries — one real, complete, already-separate
+    // leader set PER TEAM. Parsed here, alongside the box score, since
+    // this is the exact same real fetch already happening — no second
+    // network call needed.
+    const leadersByTeam = {};
+    (data.leaders || []).forEach(teamLeaders => {
+      const code = espnCode((teamLeaders.team || {}).abbreviation);
+      if (code) leadersByTeam[code] = teamLeaders.leaders || [];
+    });
+    return { box: parsed, leadersByTeam }; // box keyed by real team code, e.g. { DEN: {...}, KC: {...} }
   } catch (e) {
     console.warn('ESPN box score fetch failed:', e);
     return null;
@@ -853,7 +895,29 @@ async function fetchEspnBoxScore(eventId){
 
 function renderGameModalBody(g, boxState){
   let h = '';
-  if (g.live && !(g.leaders && (g.leaders.away || g.leaders.home))) {
+  // REAL CHANGE (2026-09-21), per Frank's direct request: ESPN's own
+  // real leaders are now preferred over the static nflverse leaders/
+  // leader_scope whenever they're actually available, not just while
+  // g.live is true. The real bug this fixed: g.live only stays true
+  // WHILE a game is actively in progress — the instant a real game
+  // finishes (state flips to 'post'), g.live goes false again, so this
+  // section was falling straight through to the static, only-as-fresh-
+  // as-the-last-rebuild g.leaders/leader_scope even though ESPN's real
+  // data was still available. Confirmed directly (2026-09-21): a real
+  // Sunday game showing "Season leaders" hours after going Final was
+  // exactly this.
+  //
+  // REAL FIX (2026-09-21), per Frank's separate, direct catch that
+  // this was only ever showing ONE leader per category, not both
+  // teams': checks g.espnLeadersByTeam now (set in fetchEspnBoxScore()
+  // above from the summary endpoint's real, already-per-team `leaders`
+  // field) instead of the scoreboard-derived g.espnLeaders, which is
+  // genuinely one combined leader per category across both teams —
+  // there was never a second entry in that source to find for the
+  // other team.
+  const hasEspnLeaders = g.espnLeadersByTeam &&
+    ((g.espnLeadersByTeam[g.away] || []).length || (g.espnLeadersByTeam[g.home] || []).length);
+  if (hasEspnLeaders) {
     h += renderEspnLiveLeaders(g);
   }
 
@@ -886,8 +950,14 @@ function renderGameModalBody(g, boxState){
     }
   }
 
+  // REAL CHANGE (2026-09-21): only shown as a fallback now, when ESPN's
+  // own real leaders aren't available at all (e.g. a future game that
+  // hasn't kicked off yet, where the static, season-cumulative preview
+  // is still the correct, intended thing to show) — see the real
+  // reasoning above hasEspnLeaders for why ESPN is now preferred
+  // whenever it's actually there.
   const L = g.leaders || {};
-  if (L.away || L.home){
+  if (!hasEspnLeaders && (L.away || L.home)){
     h += `<div class="sect"><h3>${g.leader_scope === 'game' ? 'Game leaders' : 'Season leaders'}</h3>
       <span class="rule"></span></div>
       <div class="leaders">${leaderBlock('away', g.away, L.away)}${leaderBlock('home', g.home, L.home)}</div>`;
@@ -928,7 +998,9 @@ async function openGame(gid, source){
   $('mClose').focus();
 
   if ((g.live || g.played) && g.espnEventId) {
-    g.espnBox = await fetchEspnBoxScore(g.espnEventId);
+    const result = await fetchEspnBoxScore(g.espnEventId);
+    g.espnBox = result ? result.box : null;
+    g.espnLeadersByTeam = result ? result.leadersByTeam : null;
     // Only re-render if this is still the open modal — guards against a
     // slow fetch resolving after the person already closed this game or
     // opened a different one.

@@ -1,0 +1,253 @@
+# COEUS PROPS & PARLAY REPORT — Week 2, 2026
+
+**REAL DATA COVERAGE CONFIRMED:** Passing Yards, Rushing Yards, Receiving Yards, Receptions, and Anytime TD are all LIVE across this slate (13-16 real games each). No stat family is stale or unavailable — every pick below draws on live FanDuel pricing.
+
+---
+
+## 1. COEUS PROP BREAKDOWN
+
+### DET @ BUF
+
+- **Jahmyr Gibbs** (DET) — Rushing Yards, Over 87.5 (-113). Real line 87.5; the 70+ alt (-250) is the safer number. Gibbs ranked 9th in the NFL in rush yds/gm in 2025 (71.9), and BUF's run defense allows 107.6 rush yds/gm to backs, ranked 27th — the exact convergence that fired his Standard-tier, Triple-type Threat designation this week.
+- **Sam LaPorta** (DET) — Receiving Yards, Under 46.5 (-113). Real line 46.5; note plainly — FanDuel's alt ladder here (15 through 110) is priced Over-only, so there's no Under-side alternative to this line. LaPorta's 2025 season rate is 54.33 rec yds/gm (9 games), but BUF's tight end defense is the best in the NFL by a wide margin, allowing just 29.6 rec yds/gm to TEs (ranked 1st).
+- **Amon-Ra St. Brown** (DET) — Receiving Yards, Under 79.5 (-113). Same over-only alt-ladder note applies (40 through 150). St. Brown's 82.4 rec yds/gm ranks 6th in 2025, but BUF's WR defense ranks 4th, allowing just 115.6 rec yds/gm — a genuinely difficult individual environment per the Game Breakdown.
+
+### CAR @ ATL
+
+- **Bijan Robinson** (ATL) — Rushing Yards, Over 80.5 (-114). Real line 80.5; the 60+ alt (-321) is the safer number. Robinson ranks 4th in the NFL in rush yds/gm (86.9, 2025), and CAR's run defense allows 106.4 rush yds/gm to backs, ranked 25th — Standard-tier, Triple-type Threat.
+- **Tetairoa McMillan** (CAR) — Receiving Yards, Over 57.5 (-114). Real line 57.5; the 40+ alt (-280) is the safer number. McMillan's 2025 season rate (59.7 rec yds/gm) is stable year-over-year against ATL's WR defense, which allows 143.4 rec yds/gm, ranked 19th (roughly average).
+- **Drake London** (ATL) — Receiving Yards, Over 56.5 (-114). Real line 56.5; the 40+ alt (-275) is the safer number. London's season rate is 76.6 rec yds/gm, ranked 7th, well clear of a CAR WR defense that allows 124.6 ypg (ranked 8th) — Week 1's quiet game reads as a down week, not a role change (his snap share actually rose to 98%).
+
+### NO @ BAL
+
+- **Chris Olave** (NO) — Receiving Yards, Over 74.5 (-114). Real line 74.5; the 50+ alt (-360) is the safer number. Olave ranks 9th in the NFL in rec yds/gm (72.7, 2025) and 6th in receptions (6.2/gm); BAL's WR defense ranks dead last (31st) in both categories, allowing 169.6 rec yds/gm and 13.0 rec/gm — Standard-tier, Quadruple-type Threat (both categories fully converged).
+- **Chris Olave** (NO) — Receptions, Over 5.5 (-158). Real line 5.5; the 5+ alt (-321) is the safer number. Same Quadruple Threat convergence as above — receptions is the second fully-converged category.
+- **Derrick Henry** (BAL) — Rushing Yards, Over 88.5 (-114). Real line 88.5; the 70+ alt (-280) is the safer number. Henry ranks 2nd in the NFL in rush yds/gm (93.8, 2025) against a NO run defense ranked 22nd against backs (102.7 ypg allowed) — a real near-miss for a Threat designation (NO fell one rank short of the Standard threshold), and NO's real Week 1 defensive form (163 rush yds/gm allowed to backs) argues the current defense is softer than its 2025 rank suggests.
+
+### CIN @ HOU
+
+- **Dalton Schultz** (HOU) — Receptions, Over 4.5 (-148). Real line 4.5; the 3+ alt (-360) is the safer number. Schultz ranks 5th in the NFL in receptions/gm among TEs (4.8, 2025); CIN's tight end defense allows a league-worst 6.8 rec/gm, ranked 32nd — Elite-tier, Double-type Threat.
+- **Joe Burrow** (CIN) — Passing Yards, Over 249.5 (-114). Real line 249.5; the 200+ alt (-400) is the safer number. Burrow's 2025 rate (226.1 pass yds/gm) undersells this spot — HOU's real Week 1 defense allowed 334 pass yards to Buffalo, well above its 204.1 ypg 2025 rank, and CIN's own splits show 271.2 pass yds/gm against bottom-tier defenses.
+- **David Montgomery** (HOU) — Rushing Yards, Over 65.5 (-114). Real line 65.5; the 50+ alt (-270) is the safer number. Montgomery's 2025 season rate is a modest 42.12 rush yds/gm, but his real Week 1 role (62.5% rush share, 100% of red-zone carries) against CIN's run defense — the worst in the NFL, allowing 119.6 rush yds/gm — is a real, matching signal.
+
+### PIT @ NE
+
+- **Drake Maye** (NE) — Passing Yards, Over 224.5 (-114). Real line 224.5; the 200+ alt (-215) is the safer number. Maye ranks 4th in the NFL in pass yds/gm (258.5, 2025); PIT's pass defense ranks 30th, allowing 261.0 ypg — Elite-tier, Triple-type Threat.
+- **Hunter Henry** (NE) — Receiving Yards, Over 39.5 (-114). Real line 39.5; the 25+ alt (-300) is the safer number. Henry's season rate is 45.18 rec yds/gm (13th among individual ranks tracked), and PIT's tight end defense allows 65.9 ypg, ranked 28th — a real edge that fell just short of the Threat Engine's top-10 player threshold.
+- **Pat Freiermuth** (PIT) — Receiving Yards, Over 25.5 (-114). Real line 25.5; the 15+ alt (-310) is the safer number. Freiermuth's real red-zone role (9 RZ targets, 3 RZ TDs in 2025) meets NE's one real soft spot — a 22nd-ranked TE defense allowing 57.1 ypg.
+
+### GB @ NYJ
+
+- **Jordan Love** (GB) — Passing Yards, Under 257.5 (-114). Real line 257.5; alt ladder note — FanDuel's alts here (175–350) are priced Over-only, no Under alternative exists. Love's 2025 season rate is 225.4 pass yds/gm (ranked 17th); his 387-yard Week 1 game came against MIN's 32nd-ranked pass defense, the weakest in the league — NYJ ranks a middling 16th (224.2 ypg allowed), and GB's own splits show 226.1 ypg vs mid-tier defenses against 287.2 vs bottom-tier.
+- **Breece Hall** (NYJ) — Rushing Yards, Over 67.5 (-114). Real line 67.5; the 50+ alt (-310) is the safer number. Hall's season rate (66.56 rush yds/gm, ranked 13th) essentially matches the line; GB's run defense allows 100.5 ypg to backs (ranked 21st), and GB's interior defensive line is genuinely banged up (Hargrave, Wyatt, Brinson all limited or worse).
+- **Tucker Kraft** (GB) — Receiving Yards, Over 46.5 (-114). Real line 46.5; the 25+ alt (-450) is the safer number. Kraft's 2025 rate is 61.12 rec yds/gm (8 games, injury-limited) against a middling NYJ TE defense allowing 55.8 ypg, ranked 19th.
+
+### CLE @ TB
+
+- **Quinshon Judkins** (CLE) — Rushing Yards, Under 47.5 (-114). Real line 47.5; alt ladder note — alts (20–110) are Over-priced only, no Under alternative. Judkins' season rate is 59.07 rush yds/gm (ranked 22nd, 2025), but TB's run defense is one of the league's best, allowing just 78.8 rush ypg, ranked 6th.
+- **Emeka Egbuka** (TB) — Receiving Yards, Under 52.5 (-114). Real line 52.5; alt ladder note — alts (15–125) are Over-priced only, no Under alternative. Egbuka's season rate is 55.18 rec yds/gm, but he faces CLE's WR defense — the single best in this evidence package, allowing just 109.5 rec yds/gm, ranked 1st in the NFL.
+- **Cade Otton** (TB) — Receiving Yards, Over 27.5 (-114). Real line 27.5; the 15+ alt (-360) is the safer number. Otton's 2025 season rate is a modest 38.13 rec yds/gm on a TE unit ranked dead last in the league, but his real Week 1 usage (5 targets, 2 of TB's red-zone looks) is a genuine departure worth tracking against CLE's middling TE defense (51.5 ypg allowed, ranked 14th).
+
+### PHI @ TEN
+
+- **DeVonta Smith** (PHI) — Receiving Yards, Over 60.5 (-114). Real line 60.5; the 40+ alt (-321) is the safer number. Smith's season rate is 59.29 rec yds/gm (2025), essentially matching the line, against a TEN WR defense that ranks 29th (165.5 ypg allowed) and is the worst in the report at limiting 16+ yard completions (32nd).
+- **Dallas Goedert** (PHI) — Receiving Yards, Over 37.5 (-114). Real line 37.5; the 15+ alt (-700) is the safer number. Goedert's real red-zone role is extreme — 10 RZ TDs on just 15 RZ targets in 2025 — against a TEN TE defense that allows 55.7 ypg (ranked 18th) and leaks touchdowns broadly.
+- **Gunnar Helm** (TEN) — Receiving Yards, Under 22.5 (-114). Real line 22.5; no alt ladder is available for this player/stat in the real data provided. Helm's season rate is 22.31 rec yds/gm (2025, 16 games), matching the line closely, but he faces PHI's tight end defense — the stingiest in this entire report, allowing just 29.8 rec yds/gm (ranked 2nd) and 7.6 yards per catch (ranked 1st).
+
+### Favorite Prop by Position (league-wide)
+
+- **QB — Drake Maye** (NE), Over 224.5 pass yds (-114). The single strongest Threat convergence at the position this week: 4th-ranked passer (258.5 ypg) against a 30th-ranked pass defense.
+- **RB — Bijan Robinson** (ATL), Over 80.5 rush yds (-114). His own season rank (4th, 86.9 ypg) is more elite than any other Threat-supported back this week, and his real Week 1 usage (52.6% team target share) reinforces rather than undercuts it.
+- **WR — Chris Olave** (NO), Over 74.5 rec yds (-114). The only Quadruple-type Threat on either side of the ball this week — both rec yds and receptions fully converged against BAL's 31st-ranked WR defense.
+- **TE — Dalton Schultz** (HOU), Over 4.5 receptions (-148). The highest-tier Threat designation of any player at the position this week (Elite, not Standard) — 5th-ranked TE in receptions/gm against CIN's dead-last TE defense.
+
+```json
+PROP_BREAKDOWN
+{
+  "per_game": [
+    {"away": "DET", "home": "BUF", "picks": [
+      {"player": "Jahmyr Gibbs", "market_key": "player_rushing_yards", "canonical_event_id": "155a5a24f570ca78", "price": 1.885, "side": "over", "line": 87.5, "reason": "Ranks 9th in NFL rush yds/gm (71.9, 2025); BUF allows 107.6 rush yds/gm to backs, ranked 27th — Standard Threat, Triple type."},
+      {"player": "Sam LaPorta", "market_key": "player_receiving_yards", "canonical_event_id": "155a5a24f570ca78", "price": 1.885, "side": "under", "line": 46.5, "reason": "2025 rate 54.33 rec ypg vs BUF's #1-ranked TE defense (29.6 ypg allowed) — the league's stingiest unit at the position."},
+      {"player": "Amon-Ra St. Brown", "market_key": "player_receiving_yards", "canonical_event_id": "155a5a24f570ca78", "price": 1.885, "side": "under", "line": 79.5, "reason": "82.4 rec ypg (6th, 2025) against BUF's 4th-ranked WR defense (115.6 ypg allowed) — a genuinely difficult environment."}
+    ]},
+    {"away": "CAR", "home": "ATL", "picks": [
+      {"player": "Bijan Robinson", "market_key": "player_rushing_yards", "canonical_event_id": "ae21c960f133cb4d", "price": 1.877, "side": "over", "line": 80.5, "reason": "Ranks 4th in NFL rush yds/gm (86.9, 2025); CAR allows 106.4 rush yds/gm to backs, ranked 25th — Standard Threat, Triple type."},
+      {"player": "Tetairoa McMillan", "market_key": "player_receiving_yards", "canonical_event_id": "ae21c960f133cb4d", "price": 1.877, "side": "over", "line": 57.5, "reason": "Stable 59.7 rec ypg (2025) against an ATL WR defense allowing 143.4 ypg, ranked 19th (roughly average)."},
+      {"player": "Drake London", "market_key": "player_receiving_yards", "canonical_event_id": "ae21c960f133cb4d", "price": 1.877, "side": "over", "line": 56.5, "reason": "76.6 rec ypg (7th, 2025) well above line against CAR's 124.6 ypg allowed (8th) — Week 1 dip reads as variance, not role change."}
+    ]},
+    {"away": "NO", "home": "BAL", "picks": [
+      {"player": "Chris Olave", "market_key": "player_receiving_yards", "canonical_event_id": "9c8a616e625779fd", "price": 1.877, "side": "over", "line": 74.5, "reason": "9th in rec yds/gm (72.7, 2025); BAL allows 169.6 rec ypg, ranked 31st — Standard Threat, Quadruple type."},
+      {"player": "Chris Olave", "market_key": "player_receptions", "canonical_event_id": "9c8a616e625779fd", "price": 1.633, "side": "over", "line": 5.5, "reason": "6th in receptions/gm (6.2, 2025); BAL allows 13.0 rec/gm to WRs, ranked 31st — second fully-converged Threat category."},
+      {"player": "Derrick Henry", "market_key": "player_rushing_yards", "canonical_event_id": "9c8a616e625779fd", "price": 1.877, "side": "over", "line": 88.5, "reason": "2nd in rush yds/gm (93.8, 2025); NO allows 102.7 rush ypg to backs, ranked 22nd, and its real Week 1 form (163 ypg allowed) argues softer still."}
+    ]},
+    {"away": "CIN", "home": "HOU", "picks": [
+      {"player": "Dalton Schultz", "market_key": "player_receptions", "canonical_event_id": "7d782361138dd013", "price": 1.676, "side": "over", "line": 4.5, "reason": "5th among TEs in receptions/gm (4.8, 2025); CIN allows a league-worst 6.8 rec/gm to TEs, ranked 32nd — Elite Threat, Double type."},
+      {"player": "Joe Burrow", "market_key": "player_passing_yards", "canonical_event_id": "7d782361138dd013", "price": 1.877, "side": "over", "line": 249.5, "reason": "226.1 pass ypg (2025) undersells this spot — HOU's real Week 1 defense allowed 334 pass yards, well above its 204.1 ypg 2025 rank."},
+      {"player": "David Montgomery", "market_key": "player_rushing_yards", "canonical_event_id": "7d782361138dd013", "price": 1.877, "side": "over", "line": 65.5, "reason": "42.12 rush ypg (2025) season rate undersells his real Week 1 role (62.5% rush share, 100% RZ carries) vs CIN's worst-in-NFL run D (119.6 ypg allowed)."}
+    ]},
+    {"away": "PIT", "home": "NE", "picks": [
+      {"player": "Drake Maye", "market_key": "player_passing_yards", "canonical_event_id": "6f0318759210a528", "price": 1.877, "side": "over", "line": 224.5, "reason": "4th in pass yds/gm (258.5, 2025); PIT allows 261.0 pass ypg, ranked 30th — Elite Threat, Triple type."},
+      {"player": "Hunter Henry", "market_key": "player_receiving_yards", "canonical_event_id": "6f0318759210a528", "price": 1.877, "side": "over", "line": 39.5, "reason": "45.18 rec ypg (2025) real season rate; PIT allows 65.9 ypg to TEs, ranked 28th."},
+      {"player": "Pat Freiermuth", "market_key": "player_receiving_yards", "canonical_event_id": "6f0318759210a528", "price": 1.877, "side": "over", "line": 25.5, "reason": "Real extreme red-zone role (9 RZ targets, 3 RZ TDs, 2025) meets NE's one soft spot — 22nd-ranked TE defense (57.1 ypg allowed)."}
+    ]},
+    {"away": "GB", "home": "NYJ", "picks": [
+      {"player": "Jordan Love", "market_key": "player_passing_yards", "canonical_event_id": "02f4a0b883d5a513", "price": 1.877, "side": "under", "line": 257.5, "reason": "225.4 pass ypg (17th, 2025); Week 1's 387 yards came vs MIN's 32nd-ranked pass D, but NYJ ranks a middling 16th (224.2 ypg allowed)."},
+      {"player": "Breece Hall", "market_key": "player_rushing_yards", "canonical_event_id": "02f4a0b883d5a513", "price": 1.877, "side": "over", "line": 67.5, "reason": "66.56 rush ypg (13th, 2025) matches the line closely; GB allows 100.5 ypg to backs (21st) and its interior DL is genuinely banged up."},
+      {"player": "Tucker Kraft", "market_key": "player_receiving_yards", "canonical_event_id": "02f4a0b883d5a513", "price": 1.877, "side": "over", "line": 46.5, "reason": "61.12 rec ypg (2025, injury-limited 8 games) vs a middling NYJ TE D allowing 55.8 ypg, ranked 19th."}
+    ]},
+    {"away": "CLE", "home": "TB", "picks": [
+      {"player": "Quinshon Judkins", "market_key": "player_rushing_yards", "canonical_event_id": "7387cb18297825a5", "price": 1.877, "side": "under", "line": 47.5, "reason": "59.07 rush ypg (22nd, 2025) real season rate vs TB's 78.8 ypg allowed, ranked 6th — one of the league's best run defenses."},
+      {"player": "Emeka Egbuka", "market_key": "player_receiving_yards", "canonical_event_id": "7387cb18297825a5", "price": 1.877, "side": "under", "line": 52.5, "reason": "55.18 rec ypg (2025) real season rate vs CLE's #1-ranked WR defense (109.5 ypg allowed) — the toughest individual matchup in this evidence package."},
+      {"player": "Cade Otton", "market_key": "player_receiving_yards", "canonical_event_id": "7387cb18297825a5", "price": 1.877, "side": "over", "line": 27.5, "reason": "38.13 rec ypg (2025) on a dead-last TE unit, but real Week 1 usage (5 targets, 2 RZ looks) is a genuine departure vs CLE's 14th-ranked TE D."}
+    ]},
+    {"away": "PHI", "home": "TEN", "picks": [
+      {"player": "DeVonta Smith", "market_key": "player_receiving_yards", "canonical_event_id": "0c4fc13a52c5d8c7", "price": 1.877, "side": "over", "line": 60.5, "reason": "59.29 rec ypg (2025) matches the line; TEN ranks 29th (165.5 ypg allowed) and worst at limiting 16+ yard completions (32nd)."},
+      {"player": "Dallas Goedert", "market_key": "player_receiving_yards", "canonical_event_id": "0c4fc13a52c5d8c7", "price": 1.877, "side": "over", "line": 37.5, "reason": "Extreme real red-zone role (10 RZ TDs on 15 RZ targets, 2025) vs TEN's 18th-ranked TE D (55.7 ypg allowed) that leaks touchdowns."},
+      {"player": "Gunnar Helm", "market_key": "player_receiving_yards", "canonical_event_id": "0c4fc13a52c5d8c7", "price": 1.877, "side": "under", "line": 22.5, "reason": "22.31 rec ypg (2025) matches the line, but PHI's TE D is the stingiest in this report (29.8 ypg allowed, 2nd; 7.6 yds/catch allowed, 1st)."}
+    ]}
+  ],
+  "per_position": {
+    "QB": {"player": "Drake Maye", "market_key": "player_passing_yards", "canonical_event_id": "6f0318759210a528", "price": 1.877, "side": "over", "line": 224.5, "reason": "Elite-tier, Triple-type Threat — 4th-ranked passer vs PIT's 30th-ranked pass defense, the strongest QB convergence this week."},
+    "RB": {"player": "Bijan Robinson", "market_key": "player_rushing_yards", "canonical_event_id": "ae21c960f133cb4d", "price": 1.877, "side": "over", "line": 80.5, "reason": "4th-ranked rusher (86.9 ypg) — more elite own-side rank than any other Threat-supported back this week, reinforced by real Week 1 usage."},
+    "WR": {"player": "Chris Olave", "market_key": "player_receiving_yards", "canonical_event_id": "9c8a616e625779fd", "price": 1.877, "side": "over", "line": 74.5, "reason": "The only Quadruple-type Threat this week — both rec yds and receptions fully converged vs BAL's 31st-ranked WR defense."},
+    "TE": {"player": "Dalton Schultz", "market_key": "player_receptions", "canonical_event_id": "7d782361138dd013", "price": 1.676, "side": "over", "line": 4.5, "reason": "Elite-tier Threat (higher tier than any other TE this week) — 5th-ranked TE in receptions vs CIN's dead-last TE defense."}
+  }
+}
+```
+
+---
+
+## 2. FAVORITE OVERS AND UNDERS FOR THE WEEK
+
+**Overs (ranked by conviction):**
+
+- **Chris Olave** (NO) — Receiving Yards, Over 74.5 (-114). The single strongest Threat convergence on either side of the ball this week (Quadruple type).
+- **Bijan Robinson** (ATL) — Rushing Yards, Over 80.5 (-114). 4th-ranked rusher, real matchup weakness, reinforced by Week 1 usage.
+- **Drake Maye** (NE) — Passing Yards, Over 224.5 (-114). Elite-tier Threat against the league's 30th-ranked pass defense.
+- **Dalton Schultz** (HOU) — Receptions, Over 4.5 (-148). Elite-tier Threat, the highest tier fired at the TE position this week.
+- **Jahmyr Gibbs** (DET) — Rushing Yards, Over 87.5 (-113). Standard-tier Threat vs BUF's 27th-ranked run defense against backs.
+
+**Unders (ranked by conviction):**
+
+- **Jordan Love** (GB) — Passing Yards, Under 257.5 (-114). Real, direct opponent-quality regression mechanism — Week 1's number came against the league's worst pass defense.
+- **Sam LaPorta** (DET) — Receiving Yards, Under 46.5 (-113). Faces the single best TE defense in the NFL by yardage allowed.
+- **Gunnar Helm** (TEN) — Receiving Yards, Under 22.5 (-114). Faces the stingiest TE defense in this entire evidence package.
+- **Emeka Egbuka** (TB) — Receiving Yards, Under 52.5 (-114). Faces the #1-ranked WR defense in the league.
+- **Quinshon Judkins** (CLE) — Rushing Yards, Under 47.5 (-114). Faces a top-6 run defense by yardage allowed.
+
+```json
+FAVORITE_OU
+{
+  "overs": [
+    {"player": "Chris Olave", "market_key": "player_receiving_yards", "canonical_event_id": "9c8a616e625779fd", "price": 1.877, "side": "over", "line": 74.5, "reason": "Quadruple-type Threat — both rec yds and receptions fully converged vs BAL's 31st-ranked WR defense."},
+    {"player": "Bijan Robinson", "market_key": "player_rushing_yards", "canonical_event_id": "ae21c960f133cb4d", "price": 1.877, "side": "over", "line": 80.5, "reason": "4th-ranked rusher (86.9 ypg) vs CAR's 25th-ranked run D against backs — Standard Threat, Triple type."},
+    {"player": "Drake Maye", "market_key": "player_passing_yards", "canonical_event_id": "6f0318759210a528", "price": 1.877, "side": "over", "line": 224.5, "reason": "4th-ranked passer (258.5 ypg) vs PIT's 30th-ranked pass D — Elite Threat, Triple type."},
+    {"player": "Dalton Schultz", "market_key": "player_receptions", "canonical_event_id": "7d782361138dd013", "price": 1.676, "side": "over", "line": 4.5, "reason": "5th-ranked TE in receptions vs CIN's dead-last TE D (32nd) — Elite Threat, Double type."},
+    {"player": "Jahmyr Gibbs", "market_key": "player_rushing_yards", "canonical_event_id": "155a5a24f570ca78", "price": 1.885, "side": "over", "line": 87.5, "reason": "9th-ranked rusher (71.9 ypg) vs BUF's 27th-ranked run D against backs — Standard Threat, Triple type."}
+  ],
+  "unders": [
+    {"player": "Jordan Love", "market_key": "player_passing_yards", "canonical_event_id": "02f4a0b883d5a513", "price": 1.877, "side": "under", "line": 257.5, "reason": "Week 1's 387 yards came vs MIN's 32nd-ranked pass D; NYJ is a middling 16th-ranked pass defense (224.2 ypg allowed)."},
+    {"player": "Sam LaPorta", "market_key": "player_receiving_yards", "canonical_event_id": "155a5a24f570ca78", "price": 1.885, "side": "under", "line": 46.5, "reason": "54.33 rec ypg (2025) vs BUF's #1-ranked TE defense (29.6 ypg allowed)."},
+    {"player": "Gunnar Helm", "market_key": "player_receiving_yards", "canonical_event_id": "0c4fc13a52c5d8c7", "price": 1.877, "side": "under", "line": 22.5, "reason": "22.31 rec ypg (2025) matches the line, but PHI's TE D is the stingiest in this report (29.8 ypg allowed, 2nd)."},
+    {"player": "Emeka Egbuka", "market_key": "player_receiving_yards", "canonical_event_id": "7387cb18297825a5", "price": 1.877, "side": "under", "line": 52.5, "reason": "55.18 rec ypg (2025) vs CLE's #1-ranked WR defense (109.5 ypg allowed)."},
+    {"player": "Quinshon Judkins", "market_key": "player_rushing_yards", "canonical_event_id": "7387cb18297825a5", "price": 1.877, "side": "under", "line": 47.5, "reason": "59.07 rush ypg (2025) vs TB's 6th-ranked run defense (78.8 ypg allowed)."}
+  ]
+}
+```
+
+---
+
+## 3. FIVE PARLAYS
+
+All five parlays below draw their legs from five different games each time — no two legs in any single parlay share a canonical_event_id, so every combined price below is a genuine cross-game estimate, not a same-game-parlay quote.
+
+### 3-Team Parlay
+1. Chris Olave (NO) — Receiving Yards Over 74.5, -114. Quadruple Threat, strongest single leg on the board.
+2. Bijan Robinson (ATL) — Rushing Yards Over 80.5, -114. 4th-ranked rusher vs a real run-D weakness.
+3. Drake Maye (NE) — Passing Yards Over 224.5, -114. Elite Threat vs the league's 30th-ranked pass D.
+
+**Why this combination:** the three highest-conviction Threat designations on the entire slate, each from a different game — not a correlated stack, just three independent best bets.
+**Combined price:** ≈ +561 (Coeus-computed from real decimal prices; parlay_validator.py governs if it disagrees).
+
+```json
+PARLAY_3_TEAM
+[
+  {"player": "Chris Olave", "market_key": "player_receiving_yards", "canonical_event_id": "9c8a616e625779fd", "price": 1.877, "side": "over", "line": 74.5, "reason": "Quadruple-type Threat vs BAL's 31st-ranked WR defense."},
+  {"player": "Bijan Robinson", "market_key": "player_rushing_yards", "canonical_event_id": "ae21c960f133cb4d", "price": 1.877, "side": "over", "line": 80.5, "reason": "4th-ranked rusher vs CAR's 25th-ranked run D against backs."},
+  {"player": "Drake Maye", "market_key": "player_passing_yards", "canonical_event_id": "6f0318759210a528", "price": 1.877, "side": "over", "line": 224.5, "reason": "4th-ranked passer vs PIT's 30th-ranked pass D."}
+]
+```
+
+### 4-Team Parlay
+Same three legs above, plus:
+4. Dalton Schultz (HOU) — Receptions Over 4.5, -148. Elite Threat, highest tier at the TE position this week.
+
+**Why this combination:** the four best Threat-supported plays across four different games this week.
+**Combined price:** ≈ +1008.
+
+```json
+PARLAY_4_TEAM
+[
+  {"player": "Chris Olave", "market_key": "player_receiving_yards", "canonical_event_id": "9c8a616e625779fd", "price": 1.877, "side": "over", "line": 74.5, "reason": "Quadruple-type Threat vs BAL's 31st-ranked WR defense."},
+  {"player": "Bijan Robinson", "market_key": "player_rushing_yards", "canonical_event_id": "ae21c960f133cb4d", "price": 1.877, "side": "over", "line": 80.5, "reason": "4th-ranked rusher vs CAR's 25th-ranked run D against backs."},
+  {"player": "Drake Maye", "market_key": "player_passing_yards", "canonical_event_id": "6f0318759210a528", "price": 1.877, "side": "over", "line": 224.5, "reason": "4th-ranked passer vs PIT's 30th-ranked pass D."},
+  {"player": "Dalton Schultz", "market_key": "player_receptions", "canonical_event_id": "7d782361138dd013", "price": 1.676, "side": "over", "line": 4.5, "reason": "5th-ranked TE vs CIN's dead-last TE defense — Elite Threat."}
+]
+```
+
+### 5-Team Parlay
+Same four legs above, plus:
+5. Jahmyr Gibbs (DET) — Rushing Yards Over 87.5, -113. Standard Threat, real matchup weakness.
+
+**Why this combination:** the five best Threat-supported plays on the slate, spanning five separate games.
+**Combined price:** ≈ +1989.
+
+```json
+PARLAY_5_TEAM
+[
+  {"player": "Chris Olave", "market_key": "player_receiving_yards", "canonical_event_id": "9c8a616e625779fd", "price": 1.877, "side": "over", "line": 74.5, "reason": "Quadruple-type Threat vs BAL's 31st-ranked WR defense."},
+  {"player": "Bijan Robinson", "market_key": "player_rushing_yards", "canonical_event_id": "ae21c960f133cb4d", "price": 1.877, "side": "over", "line": 80.5, "reason": "4th-ranked rusher vs CAR's 25th-ranked run D against backs."},
+  {"player": "Drake Maye", "market_key": "player_passing_yards", "canonical_event_id": "6f0318759210a528", "price": 1.877, "side": "over", "line": 224.5, "reason": "4th-ranked passer vs PIT's 30th-ranked pass D."},
+  {"player": "Dalton Schultz", "market_key": "player_receptions", "canonical_event_id": "7d782361138dd013", "price": 1.676, "side": "over", "line": 4.5, "reason": "5th-ranked TE vs CIN's dead-last TE defense — Elite Threat."},
+  {"player": "Jahmyr Gibbs", "market_key": "player_rushing_yards", "canonical_event_id": "155a5a24f570ca78", "price": 1.885, "side": "over", "line": 87.5, "reason": "9th-ranked rusher vs BUF's 27th-ranked run D against backs — Standard Threat."}
+]
+```
+
+### 6-Team Parlay
+Same five legs above, plus:
+6. Jordan Love (GB) — Passing Yards Under 257.5, -114. Real regression mechanism, not Threat-driven but strongly evidence-backed.
+
+**Why this combination:** the five best Threat plays plus the single strongest non-Threat Hidden-Intelligence-supported play (Love's opponent-quality regression), six different games.
+**Combined price:** ≈ +3821.
+
+```json
+PARLAY_6_TEAM
+[
+  {"player": "Chris Olave", "market_key": "player_receiving_yards", "canonical_event_id": "9c8a616e625779fd", "price": 1.877, "side": "over", "line": 74.5, "reason": "Quadruple-type Threat vs BAL's 31st-ranked WR defense."},
+  {"player": "Bijan Robinson", "market_key": "player_rushing_yards", "canonical_event_id": "ae21c960f133cb4d", "price": 1.877, "side": "over", "line": 80.5, "reason": "4th-ranked rusher vs CAR's 25th-ranked run D against backs."},
+  {"player": "Drake Maye", "market_key": "player_passing_yards", "canonical_event_id": "6f0318759210a528", "price": 1.877, "side": "over", "line": 224.5, "reason": "4th-ranked passer vs PIT's 30th-ranked pass D."},
+  {"player": "Dalton Schultz", "market_key": "player_receptions", "canonical_event_id": "7d782361138dd013", "price": 1.676, "side": "over", "line": 4.5, "reason": "5th-ranked TE vs CIN's dead-last TE defense — Elite Threat."},
+  {"player": "Jahmyr Gibbs", "market_key": "player_rushing_yards", "canonical_event_id": "155a5a24f570ca78", "price": 1.885, "side": "over", "line": 87.5, "reason": "9th-ranked rusher vs BUF's 27th-ranked run D against backs — Standard Threat."},
+  {"player": "Jordan Love", "market_key": "player_passing_yards", "canonical_event_id": "02f4a0b883d5a513", "price": 1.877, "side": "under", "line": 257.5, "reason": "Week 1's 387 yards came vs the league's worst pass D (MIN, 32nd); NYJ is a middling 16th."}
+]
+```
+
+### 7-Team Parlay
+Same six legs above, plus:
+7. Gunnar Helm (TEN) — Receiving Yards Under 22.5, -114. Faces the stingiest TE defense in this entire evidence package.
+
+**Why this combination:** the seven strongest, most independently-supported plays across all seven remaining games on the slate — five Threat designations plus two of the sharpest Hidden-Intelligence-backed reads.
+**Combined price:** ≈ +7260.
+
+```json
+PARLAY_7_TEAM
+[
+  {"player": "Chris Olave", "market_key": "player_receiving_yards", "canonical_event_id": "9c8a616e625779fd", "price": 1.877, "side": "over", "line": 74.5, "reason": "Quadruple-type Threat vs BAL's 31st-ranked WR defense."},
+  {"player": "Bijan Robinson", "market_key": "player_rushing_yards", "canonical_event_id": "ae21c960f133cb4d", "price": 1.877, "side": "over", "line": 80.5, "reason": "4th-ranked rusher vs CAR's 25th-ranked run D against backs."},
+  {"player": "Drake Maye", "market_key": "player_passing_yards", "canonical_event_id": "6f0318759210a528", "price": 1.877, "side": "over", "line": 224.5, "reason": "4th-ranked passer vs PIT's 30th-ranked pass D."},
+  {"player": "Dalton Schultz", "market_key": "player_receptions", "canonical_event_id": "7d782361138dd013", "price": 1.676, "side": "over", "line": 4.5, "reason": "5th-ranked TE vs CIN's dead-last TE defense — Elite Threat."},
+  {"player": "Jahmyr Gibbs", "market_key": "player_rushing_yards", "canonical_event_id": "155a5a24f570ca78", "price": 1.885, "side": "over", "line": 87.5, "reason": "9th-ranked rusher vs BUF's 27th-ranked run D against backs — Standard Threat."},
+  {"player": "Jordan Love", "market_key": "player_passing_yards", "canonical_event_id": "02f4a0b883d5a513", "price": 1.877, "side": "under", "line": 257.5, "reason": "Week 1's 387 yards came vs the league's worst pass D (MIN, 32nd); NYJ is a middling 16th."},
+  {"player": "Gunnar Helm", "market_key": "player_receiving_yards", "canonical_event_id": "0c4fc13a52c5d8c7", "price": 1.877, "side": "under", "line": 22.5, "reason": "22.31 rec ypg matches the line, but faces PHI's stingiest-in-report TE defense (29.8 ypg allowed, 2nd)."}
+]
+```

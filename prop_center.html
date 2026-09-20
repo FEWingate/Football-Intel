@@ -128,6 +128,9 @@ main.innerHTML = `
   <div class="bar" id="pcWeekBar" style="display:none">
     <label class="lbl" for="pcWeek">Week</label><select id="pcWeek"></select>
   </div>
+  <div class="bar" id="pcBatchBar" style="display:none">
+    <label class="lbl" for="pcBatch">Batch</label><select id="pcBatch"></select>
+  </div>
   <div class="pc-topnav" id="pcTopNav">
     <button data-s="lines" aria-selected="true">Game Lines / Totals / ML</button>
     <button data-s="props">Player Props</button>
@@ -152,6 +155,8 @@ let activeSection = 'lines';
 let activeStat = 'passing_yards';
 let PROPS_WEEKS = [];      // real week folders (plus 'mixed', if present) that actually have a report
 let propsWeekFilter = null;
+let PROPS_BATCHES = {};    // real batch filename -> {games, generated_at} for the selected week
+let propsBatchFilter = null;
 
 async function load(){
   fiStatus('Loading','loading');
@@ -161,29 +166,26 @@ async function load(){
     if(res.ok) FDPROPS = await res.json();
   }catch(e){ /* Game Lines / Player Props just won't have data yet */ }
 
-  // REAL CHANGE (2026-09-17), per Frank's direct request: a real week
-  // selector for Coeus's own props picks/parlays, mirroring the one
-  // already built for Game Breakdowns. Confirmed directly before
-  // building this that no backend change was needed at all —
-  // generate_props_report.py already writes the real, structured
-  // report to a real per-week folder (props_reports/{week}/
-  // props_parlay_report.json); props_reports/latest.json was always
-  // just a small pointer to whichever run happened most recently, and
-  // this page only ever followed that pointer. Scans for every real
-  // week folder that actually has a report, same real "don't offer an
-  // empty option" principle as the Game Breakdowns dropdown, plus
-  // "mixed" (the real folder name generate_props_report.py uses on the
-  // rare run where included games span more than one week folder).
+  // REAL CHANGE (2026-09-21), per Frank's direct request: a full slate
+  // can now be split into several real, separate batches (--games,
+  // built to keep each run comfortably under the API's real token
+  // ceiling) — each one writes its own real, distinctly-named file
+  // rather than the single "props_parlay_report.json" this page
+  // originally only ever looked for. A browser's fetch() can only
+  // check one already-known filename at a time — it can't list a
+  // folder's real contents — so this now checks for the real, per-week
+  // manifest.json generate_props_report.py writes (same real pattern
+  // Game Breakdowns already uses) instead of guessing filenames.
   PROPS_WEEKS = [];
   for(let w = 1; w <= 18; w++){
     const wk = `wk${String(w).padStart(2,'0')}`;
     try{
-      const r = await fetch(`props_reports/${wk}/props_parlay_report.json`, { method: 'HEAD', cache: 'no-store' });
+      const r = await fetch(`props_reports/${wk}/manifest.json`, { method: 'HEAD', cache: 'no-store' });
       if(r.ok) PROPS_WEEKS.push(wk);
     }catch(e){}
   }
   try{
-    const r = await fetch(`props_reports/mixed/props_parlay_report.json`, { method: 'HEAD', cache: 'no-store' });
+    const r = await fetch(`props_reports/mixed/manifest.json`, { method: 'HEAD', cache: 'no-store' });
     if(r.ok) PROPS_WEEKS.push('mixed');
   }catch(e){}
 
@@ -193,7 +195,7 @@ async function load(){
     // for Game Breakdowns, for the same real reason: a report sitting
     // in the list is not automatically the one just generated.
     propsWeekFilter = PROPS_WEEKS.filter(w => w !== 'mixed').sort().pop() || PROPS_WEEKS[PROPS_WEEKS.length - 1];
-    await loadReportForWeek(propsWeekFilter);
+    await loadManifestForWeek(propsWeekFilter);
 
     const wkLabel = wk => wk === 'mixed' ? 'Mixed / partial slate' : `Week ${Number(wk.slice(2))}`;
     $('pcWeek').innerHTML = PROPS_WEEKS
@@ -202,7 +204,7 @@ async function load(){
     $('pcWeek').addEventListener('change', async (e) => {
       propsWeekFilter = e.target.value;
       fiStatus('Loading','loading');
-      await loadReportForWeek(propsWeekFilter);
+      await loadManifestForWeek(propsWeekFilter);
       fiStatus('Ready');
       render();
     });
@@ -226,12 +228,62 @@ async function load(){
   render();
 }
 
-async function loadReportForWeek(wk){
+// REAL CHANGE (2026-09-21): loads the real, per-week manifest, builds
+// (or hides, when there's genuinely only one real batch) a Batch
+// selector, and loads whichever real batch is currently selected.
+// Defaults to the most recently-generated real batch for this week,
+// same real "most recent, not just first" principle used for the week
+// selector itself above.
+async function loadManifestForWeek(wk){
+  PROPS_BATCHES = {};
+  try{
+    const res = await fetch(`props_reports/${wk}/manifest.json`, { cache: 'no-store' });
+    if(res.ok){
+      const mf = await res.json();
+      PROPS_BATCHES = mf.batches || {};
+    }
+  }catch(e){ /* PROPS_BATCHES stays empty — handled below */ }
+
+  const filenames = Object.keys(PROPS_BATCHES);
+  if(!filenames.length){
+    propsBatchFilter = null;
+    REPORT = null;
+    $('pcBatchBar').style.display = 'none';
+    return;
+  }
+
+  propsBatchFilter = filenames.slice()
+    .sort((a, b) => new Date(PROPS_BATCHES[b].generated_at) - new Date(PROPS_BATCHES[a].generated_at))[0];
+
+  if(filenames.length > 1){
+    const batchLabel = fn => {
+      const b = PROPS_BATCHES[fn];
+      const games = (b.games || []).map(g => g.replace('_', '@'));
+      return games.length ? `${games.length} games: ${games.join(', ')}` : fn;
+    };
+    $('pcBatch').innerHTML = filenames
+      .map(fn => `<option value="${esc(fn)}"${fn===propsBatchFilter?' selected':''}>${esc(batchLabel(fn))}</option>`).join('');
+    $('pcBatchBar').style.display = '';
+    $('pcBatch').onchange = async (e) => {
+      propsBatchFilter = e.target.value;
+      fiStatus('Loading','loading');
+      await loadReportForBatch(wk, propsBatchFilter);
+      fiStatus('Ready');
+      render();
+    };
+  } else {
+    $('pcBatchBar').style.display = 'none';
+  }
+
+  await loadReportForBatch(wk, propsBatchFilter);
+}
+
+async function loadReportForBatch(wk, filename){
   REPORT = null;
   try{
-    const res = await fetch(`props_reports/${wk}/props_parlay_report.json`, { cache: 'no-store' });
+    const res = await fetch(`props_reports/${wk}/${filename}`, { cache: 'no-store' });
     if(res.ok) REPORT = await res.json();
-  }catch(e){ /* Coeus Prop Breakdown / Favorite O/U / Parlays just won't have data for this week */ }
+  }catch(e){ /* Coeus Prop Breakdown / Favorite O/U / Parlays just won't have data for this batch */ }
 }
 
 /* ── decimal -> American only, per Frank's real preference — decimal is

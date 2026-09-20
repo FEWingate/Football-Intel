@@ -1,27 +1,23 @@
 {
-  "generated_at": "2026-09-19T20:56:44.873115+00:00",
+  "generated_at": "2026-09-19T21:08:36.271764+00:00",
   "model": "claude-sonnet-5",
   "max_tokens": 48000,
   "games_included": [
     "DET_BUF",
     "CAR_ATL",
     "NO_BAL",
-    "MIN_CHI",
     "CIN_HOU",
     "PIT_NE",
     "GB_NYJ",
     "CLE_TB",
-    "PHI_TEN",
-    "JAX_DEN",
-    "LV_LAC",
-    "SEA_ARI",
-    "WAS_DAL",
-    "MIA_SF",
-    "IND_KC",
-    "NYG_LAR"
+    "PHI_TEN"
   ],
   "fanduel_data_source": "fanduel_props/latest.json",
   "evidence_missing_for": [],
   "system_char_count": 54464,
-  "user_char_count": 2570222
+  "user_char_count": 1165320,
+  "usage": {
+    "input_tokens": 656586,
+    "output_tokens": 34242
+  }
 }
