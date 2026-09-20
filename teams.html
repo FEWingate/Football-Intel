@@ -159,7 +159,7 @@ main.innerHTML = `
 
 const $ = id => document.getElementById(id);
 const pad = n => String(n).padStart(2,"0");
-let RECORDS = null, TEAMSTATS = null, TEAMSTATS_2025 = null, statsYear = 2025, COVERAGE = null, CBDB = null, ROSTERS = null, activeTeam = null, activeSec = 'offense', lastFocus = null;
+let RECORDS = null, RECORDS_2025 = null, TEAMSTATS = null, TEAMSTATS_2025 = null, statsYear = 2025, COVERAGE = null, CBDB = null, ROSTERS = null, activeTeam = null, activeSec = 'offense', lastFocus = null;
 
 async function load(){
   fiStatus("Loading","loading");
@@ -199,6 +199,43 @@ async function load(){
     return;
   }
   RECORDS = records;
+
+  // REAL BUG FIX (2026-09-21), per Frank's direct catch: the modal's
+  // top-level Overall/Home/Road record cards were ALWAYS this same
+  // RECORDS global above — built purely from the current season's real
+  // games/wkNN.json files — regardless of which season was selected
+  // elsewhere in the modal. There was no real 2025 record computation
+  // anywhere in this file at all. Confirmed directly that no real
+  // archive/2025/games/ folder exists (2025's real schedule/results
+  // live in archive/2025/context/wk18.json instead, the full, complete
+  // real season, one entry per real team per real game already played —
+  // each log entry already carries its own real result/home/score, the
+  // same real fields games/wkNN.json's games use, just organized
+  // per-team instead of per-week). Computes a real, separate RECORDS_2025
+  // from that same real source.
+  try{
+    const res25c = await fetch(`archive/2025/context/wk18.json`, { cache: 'no-store' });
+    if(res25c.ok){
+      const ctx2025 = await res25c.json();
+      const records2025 = {};
+      Object.keys(FI_TEAM_NAME).forEach(t => records2025[t] = {
+        overall:{w:0,l:0,t:0,pf:0,pa:0}, home:{w:0,l:0,t:0}, away:{w:0,l:0,t:0}
+      });
+      for(const [team, teamData] of Object.entries(ctx2025.teams || {})){
+        const r = records2025[team];
+        if(!r) continue;
+        for(const g of (teamData.log || [])){
+          const res = (g.result || '').toLowerCase();
+          if(!['w', 'l', 't'].includes(res)) continue;
+          r.overall[res]++;
+          (g.home ? r.home : r.away)[res]++;
+          const [pf, pa] = (g.score || '').split('-').map(Number);
+          if(!isNaN(pf) && !isNaN(pa)){ r.overall.pf += pf; r.overall.pa += pa; }
+        }
+      }
+      RECORDS_2025 = records2025;
+    }
+  }catch(e){ console.error('archive/2025/context/wk18.json failed to load or parse:', e); }
 
   try{
     const res = await fetch(`teamstats/latest.json`, { cache: 'no-store' });
@@ -542,22 +579,40 @@ function miniRec(r){
   return r.t > 0 ? `${r.w}-${r.l}-${r.t}` : `${r.w}-${r.l}`;
 }
 
+// REAL BUG FIX (2026-09-21): extracted from openTeam() below so it can
+// be re-rendered whenever statsYear changes, not just once when the
+// modal first opens — same real activeTeamstats() pattern already used
+// for the stat tables, applied to the record cards for the first time.
+function activeRecords(){
+  return statsYear === 2025 ? RECORDS_2025 : RECORDS;
+}
+function renderRecordCards(t){
+  const info = FI_TEAM_INFO[t];
+  const recSet = activeRecords();
+  const rec = recSet ? recSet[t] : null;
+  const noDataNote = !rec ? `<div class="empty" style="grid-column:1/-1;padding:4px 0 0;
+    text-align:left;font-size:10px">No real ${statsYear} record available yet.</div>` : '';
+  return `
+    <div class="info-cards">
+      <div class="info-card"><div class="ic-label">Stadium</div><div class="ic-value">${esc(info.stadium)}</div></div>
+      <div class="info-card"><div class="ic-label">Capacity</div><div class="ic-value mono">${info.capacity.toLocaleString()}</div></div>
+      <div class="info-card"><div class="ic-label">Overall</div><div class="ic-value mono">${rec ? miniRec(rec.overall) : '—'}</div></div>
+      <div class="info-card"><div class="ic-label">Home</div><div class="ic-value mono">${rec ? miniRec(rec.home) : '—'}</div></div>
+      <div class="info-card"><div class="ic-label">Road</div><div class="ic-value mono">${rec ? miniRec(rec.away) : '—'}</div></div>
+      ${noDataNote}
+    </div>`;
+}
+
 function openTeam(t, source){
   activeTeam = t; activeSec = 'offense'; lastFocus = source;
   const info = FI_TEAM_INFO[t];
-  const rec = RECORDS[t];
   $("mTitle").innerHTML = `${fiLogoHTML(t,32)}${esc(FI_TEAM_NAME[t])}`;
   $("mSub").textContent = `${info.city}, ${info.state}`;
 
   $("mBody").innerHTML = `
-    <div class="info-cards">
-      <div class="info-card"><div class="ic-label">Stadium</div><div class="ic-value">${esc(info.stadium)}</div></div>
-      <div class="info-card"><div class="ic-label">Capacity</div><div class="ic-value mono">${info.capacity.toLocaleString()}</div></div>
-      <div class="info-card"><div class="ic-label">Overall</div><div class="ic-value mono">${miniRec(rec.overall)}</div></div>
-      <div class="info-card"><div class="ic-label">Home</div><div class="ic-value mono">${miniRec(rec.home)}</div></div>
-      <div class="info-card"><div class="ic-label">Road</div><div class="ic-value mono">${miniRec(rec.away)}</div></div>
-    </div>
+    <div id="recordCards"></div>
     <div id="statBody"></div>`;
+  $("recordCards").innerHTML = renderRecordCards(t);
 
   $("mToggle").querySelectorAll("button").forEach(b => {
     b.setAttribute("aria-pressed", String(b.dataset.sec === activeSec));
@@ -848,6 +903,7 @@ function renderStats(){
       played a ${statsYear} game yet.</div>`;
     $("teamStatsYear").addEventListener("change", e => {
       statsYear = Number(e.target.value);
+      $("recordCards").innerHTML = renderRecordCards(activeTeam);
       renderStats();
     });
     return;
@@ -880,6 +936,7 @@ function renderStats(){
   box.innerHTML = h;
   $("teamStatsYear").addEventListener("change", e => {
     statsYear = Number(e.target.value);
+    $("recordCards").innerHTML = renderRecordCards(activeTeam);
     renderStats();
   });
 }

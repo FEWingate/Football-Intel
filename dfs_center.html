@@ -540,6 +540,9 @@ function renderShell(){
         <label class="bringback-toggle">
           <input type="checkbox" id="bringBackChk"> Bring-back (add 1+ opponent player)
         </label>
+        <label class="bringback-toggle">
+          <input type="checkbox" id="excludeTeFlexChk"> Exclude TE from FLEX
+        </label>
       </div>
       <div id="lineupResults"></div>
     </div>
@@ -563,6 +566,7 @@ function renderShell(){
   buildCountTabs();
   buildStackModeTabs();
   buildSlateTabs();
+  $("excludeTeFlexChk").addEventListener("change", updateExposureNote);
   $("searchBox").oninput = e => { searchTerm = e.target.value.toLowerCase(); renderSlate(); };
   renderBestPlays();
   if(bestView === 'stacks') renderStacks();
@@ -1043,7 +1047,19 @@ function buildLineupModel(players, priorPidSets, minDiff, mode, bringBack, score
   pinnedPids = pinnedPids || new Set();
   const variables = {}, binaries = {};
   const constraints = {
-    salary: { max: 50000 }, total: { equal: 9 },
+    // REAL ADDITION (2026-09-21), per Frank's direct, real root-cause
+    // catch, confirmed by the same real EdgeLine article (80 real
+    // Millionaire Maker winners): median winning real lineup left only
+    // $100 of the real $50,000 cap unused. The OLD constraint set had NO
+    // real minimum at all — the optimizer had zero real incentive to
+    // spend the full cap, so a cheap, decent-quality TE could look
+    // "efficient" in FLEX purely because it freed up real salary the
+    // model was never required to actually use anywhere. $48,500
+    // (97% of cap) is deliberately a little looser than the real $49,900
+    // median, to leave real feasibility margin once stacking/bring-back
+    // constraints are layered on too — still meaningfully closes the
+    // real gap that let a cheap FLEX TE go unpunished before.
+    salary: { min: 48500, max: 50000 }, total: { equal: 9 },
     isQB: { equal: 1 }, isDST: { equal: 1 },
     isRB: { min: 2, max: 3 }, isWR: { min: 3, max: 4 },
     isTE: forceSingleTE ? { equal: 1 } : { min: 1, max: 2 },
@@ -1150,9 +1166,15 @@ function buildCountTabs(){
 
 function updateExposureNote(){
   const cap = EXPOSURE_CAPS[generatorCount];
+  const teCap = TE_FLEX_CAPS[generatorCount];
+  const excludeTeFlex = $("excludeTeFlexChk") && $("excludeTeFlexChk").checked;
+  const teFlexText = excludeTeFlex
+    ? `TE is excluded from FLEX entirely — none of these ${generatorCount} lineups will use a 2nd TE`
+    : `at most ${teCap} of ${generatorCount} lineups may use a 2nd TE in FLEX (real winning-lineup data ` +
+      `puts TE-FLEX at just 10% of Millionaire Maker winners — RB and WR split nearly everything else)`;
   $("exposureNote").textContent =
     `Exposure rules: any player (including DST) appears in at most ${cap} of ${generatorCount} lineups; ` +
-    `at most ${cap} of ${generatorCount} lineups may use a 2nd TE in FLEX.`;
+    `${teFlexText}, and every lineup uses at least $48,500 of the $50,000 cap.`;
 }
 
 function buildScoringModeTabs(){
@@ -1196,6 +1218,23 @@ const SCORE_FIELDS = { composite: 'quality', matchup_history: 'matchupHistorySco
 // batch. Rule 3: max number of lineups in the batch allowed to use TE in
 // FLEX (2 total TE). Same numbers, different mechanism — see note above.
 const EXPOSURE_CAPS = { 5: 2, 10: 4, 15: 6, 25: 8 };
+// REAL ADDITION (2026-09-21), per Frank's direct, real catch, backed by a
+// real, sourced article (EdgeLine, 80 real DraftKings Millionaire Maker
+// winning lineups, 2021-2025): TE won the real FLEX spot in only 10.0% of
+// real winning lineups (8 of 80) — RB (43.8%) and WR (46.3%) split
+// essentially everything else. The OLD exposure cap for TE-in-FLEX reused
+// the SAME number as general player exposure (2/5, 4/10, 6/15, 8/25 — all
+// exactly 40%), which is 4x the real rate TE-FLEX actually wins at. Worse,
+// since teLineupCount always starts at 0 for a fresh batch, the OLD logic
+// (forceSingleTE = teLineupCount >= cap) never actually restricted the
+// real FIRST lineup of any batch — confirmed as the exact real mechanism
+// behind Frank's exact real complaint: removing one TE and regenerating a
+// fresh batch just let the optimizer pick a DIFFERENT TE for FLEX #1
+// every single time, since the cap had no teeth until AFTER a TE-FLEX
+// lineup had already happened once. Real, separate cap here, roughly 10%
+// of each real batch size, rounded up to at least 1 (the real article
+// data says TE-FLEX does still win sometimes — just rarely, not never).
+const TE_FLEX_CAPS = { 5: 1, 10: 1, 15: 2, 25: 3 };
 
 function generateLineups(){
   if(typeof solver === 'undefined'){
@@ -1205,9 +1244,16 @@ function generateLineups(){
   const btn = $("genBtn");
   btn.disabled = true; btn.textContent = 'Generating…';
   const bringBack = $("bringBackChk").checked;
+  // REAL ADDITION (2026-09-21), per Frank's direct request: a real,
+  // explicit opt-out alongside the real bring-back toggle — same real
+  // control shape, opposite real intent. When checked, this always wins
+  // over the real ~10% random allowance below; a person explicitly
+  // asking to never see a 2nd TE in FLEX means never, not "usually not."
+  const excludeTeFlex = $("excludeTeFlexChk").checked;
   const scoreField = SCORE_FIELDS[scoringMode];
   const numLineups = generatorCount;
   const exposureCap = EXPOSURE_CAPS[numLineups];
+  const teFlexCap = TE_FLEX_CAPS[numLineups];
 
   const pool = CSV_PLAYERS.filter(p => p.status !== 'OUT' && p.status !== 'IR');
   pool.forEach((p, i) => { p.__pid = i; }); // stable id, survives per-iteration filtering
@@ -1219,7 +1265,20 @@ function generateLineups(){
 
   for(let n = 0; n < numLineups; n++){
     const eligible = pool.filter(p => (exposureCount[p.__pid] || 0) < exposureCap);
-    const forceSingleTE = teLineupCount >= exposureCap;
+    // REAL BUG FIX (2026-09-21): was `teLineupCount >= exposureCap` — since
+    // teLineupCount always starts at 0, this real condition was ALWAYS
+    // false for lineup #1 of every real batch, letting the very first
+    // lineup ignore the cap entirely every single time — confirmed as the
+    // exact real mechanism behind Frank's exact real, repeated complaint
+    // (remove the TE, regenerate, get a different TE in FLEX anyway,
+    // every time). A lower deterministic threshold alone doesn't fix
+    // this either — lineup #1 is STILL always the first chance, so it's
+    // still always allowed. The real fix needs real randomness: each
+    // lineup independently gets only a real ~10% chance (matching the
+    // real article rate) of being ALLOWED to even consider a 2nd TE this
+    // iteration, with teFlexCap still enforced as a hard ceiling for the
+    // whole real batch regardless of how the random draws land.
+    const forceSingleTE = excludeTeFlex || teLineupCount >= teFlexCap || Math.random() > 0.10;
     const model = buildLineupModel(eligible, priorPidSets, 3, stackMode, bringBack, scoreField, forceSingleTE);
     const result = solver.Solve(model);
     if(!result.feasible) break;

@@ -341,6 +341,21 @@ function opponentDefRank(team, pos, statKey){
   return cell ? { opponent: opp, ...cell } : null; // {opponent, v, r}
 }
 
+// REAL ADDITION (2026-09-21), per Frank's direct, real catch: the
+// existing topNOnly param below only ever expressed "top N" (rank <=
+// N) — genuinely no way to ask for "bottom 10" or "middle 12" at all,
+// even though every other real tier system on this whole site (player
+// log tiers, splits, etc.) already supports exactly those three real
+// buckets. Same real definition as tier_of() in build_matchup_stats.py
+// (kept in sync deliberately — this bucketing must match everywhere a
+// rank gets classified, not drift into a second, different real
+// definition): 1-10 top, 11-22 mid, 23-32 bot.
+function tierOfRank(rank){
+  if(rank <= 10) return 'top';
+  if(rank <= 22) return 'mid';
+  return 'bot';
+}
+
 // Answers "what has TEAM's defense actually allowed to POSITION in recent
 // games" — genuinely different from opponentDefRank() above, which only
 // gives a season-long aggregate for the CURRENT week's single opponent.
@@ -353,22 +368,47 @@ function opponentDefRank(team, pos, statKey){
 // since that's who they were playing. Returns null (not empty) when
 // context/wkNN.json isn't loaded at all, so the caller can tell "no
 // data available" apart from "checked, found nothing."
-function getDefenseGameLog(team, pos, limit, topNOnly){
-  if(!CONTEXT) return null;
-  const teamLog = CONTEXT?.teams?.[team]?.log;
+//
+// REAL BUG FIX (2026-09-21), per Frank's direct catch: this only ever
+// read CONTEXT (the current, 2026 season) — a real "vs top-10 RBs in
+// 2025" question always came back with zero real matches, not because
+// no such game existed, but because this function had no way to reach
+// CONTEXT_2025 at all. Added a real season param — 2025 now reads
+// CONTEXT_2025's own team logs (both this team's own log AND the real
+// opponent cross-reference lookup, so a mixed 2026-team-log-with-2025-
+// opponent-data bug can't happen), defaulting to the current season
+// (CONTEXT) exactly as before when no season is named, so every
+// existing real caller keeps working unchanged.
+//
+// REAL ADDITION (2026-09-21), same real turn: a new, optional tier
+// param (top/mid/bot) alongside the existing topNOnly, using
+// tierOfRank() above instead of a numeric threshold — this is what
+// actually makes "any real tier," not just "top N," genuinely true.
+// topNOnly stays exactly as it worked before when tier isn't given, so
+// every existing real caller (including the presets already wired to
+// it) keeps working unchanged; tier takes priority when both are given,
+// since a caller specifying a real tier clearly means the more precise
+// real filter.
+function getDefenseGameLog(team, pos, limit, topNOnly, season, tier){
+  const ctx = season === 2025 ? CONTEXT_2025 : CONTEXT;
+  if(!ctx) return null;
+  const teamLog = ctx?.teams?.[team]?.log;
   if(!teamLog) return null;
   const headlineStat = OWN_STAT_FIELD[pos];
   const results = [];
   for(const game of [...teamLog].reverse()){ // most recent first
     const opp = game.opp;
-    if(topNOnly){
-      const seasonRank = MATCHUP?.teams?.[opp]?.off?.[pos]?.[headlineStat]?.r;
+    const seasonRank = MATCHUP?.teams?.[opp]?.off?.[pos]?.[headlineStat]?.r;
+    if(tier){
+      if(!seasonRank || tierOfRank(seasonRank) !== tier) continue;
+    } else if(topNOnly){
       if(!seasonRank || seasonRank > topNOnly) continue;
     }
-    const oppEntry = CONTEXT?.teams?.[opp]?.log?.find(g => g.week === game.week);
+    const oppEntry = ctx?.teams?.[opp]?.log?.find(g => g.week === game.week);
     const posStats = oppEntry?.off?.[pos];
     if(!posStats) continue;
-    results.push({ week: game.week, opponent: opp, result: game.result, score: game.score, stats: posStats });
+    results.push({ week: game.week, opponent: opp, opponent_rank: seasonRank ?? null,
+      result: game.result, score: game.score, stats: posStats });
     if(results.length >= limit) break;
   }
   return results;
@@ -528,6 +568,198 @@ function findPlayerByName(wantNameRaw){
   if(!player) return { error: `No real player matching "${wantNameRaw}" was found.` };
   return { player, pos };
 }
+
+// REAL ADDITION (2026-09-21), per Frank's direct request (preset #6):
+// a real, slate-wide scan for players whose real target share and/or
+// real snap share has genuinely climbed recently — not a season-long
+// average, which would hide exactly this kind of real, recent shift.
+// Compares each real player's most recent 2 real games against
+// whatever real games came before that (at least 2 needed for a real
+// "before" baseline, so a player with only 2-3 total games doesn't
+// get flagged off noise). Real per-game snap_pct now exists on every
+// log entry (added 2026-09-21, same real PFR Snap Count source the
+// season average always came from, just not collapsed to one number
+// anymore) — target_share/rush_share were already real, per-game
+// fields. QB is excluded: target_share/rush_share are always null for
+// QB, and a QB's real snap_pct is close to 100% by the nature of the
+// position, so "trending up" isn't a meaningful real signal there.
+const TRENDING_SHARE_FIELDS = { RB: ['target_share', 'rush_share', 'snap_pct'],
+                                 WR: ['target_share', 'snap_pct'], TE: ['target_share', 'snap_pct'] };
+const TRENDING_SHARE_MIN_INCREASE = 5; // real percentage points — a genuine, meaningful jump
+function findTrendingShare(){
+  const results = [];
+  for(const pos of ['RB', 'WR', 'TE']){
+    for(const p of (PLAYERS.players[pos] || [])){
+      const opp = TEAM_OPPONENT[p.team];
+      if(!opp) continue;
+      const log = (p.log || []).slice().sort((a, b) => a.week - b.week);
+      if(log.length < 4) continue; // needs a real 2-game "recent" window plus a real 2-game "earlier" baseline
+      const recent = log.slice(-2), earlier = log.slice(0, -2);
+      for(const field of TRENDING_SHARE_FIELDS[pos]){
+        const recentVals = recent.map(e => e[field]).filter(v => v != null);
+        const earlierVals = earlier.map(e => e[field]).filter(v => v != null);
+        if(recentVals.length < 2 || !earlierVals.length) continue;
+        const recentAvg = recentVals.reduce((s, v) => s + v, 0) / recentVals.length;
+        const earlierAvg = earlierVals.reduce((s, v) => s + v, 0) / earlierVals.length;
+        const change = recentAvg - earlierAvg;
+        if(change >= TRENDING_SHARE_MIN_INCREASE){
+          results.push({
+            player: p.name, pos, team: p.team, opponent: opp, field,
+            recent_avg: +recentAvg.toFixed(1), earlier_avg: +earlierAvg.toFixed(1),
+            change: +change.toFixed(1), games_recent: recentVals.length, games_earlier: earlierVals.length,
+          });
+        }
+      }
+    }
+  }
+  results.sort((a, b) => b.change - a.change);
+  return results;
+}
+
+// REAL ADDITION (2026-09-21), per Frank's direct request (preset #4):
+// a real, slate-wide scan for players facing a real opponent they've
+// genuinely struggled against or dominated in real past meetings —
+// same real "combine 2026 + 2025 logs, filter by opponent" approach
+// findPlayerVsTeam() already uses for one NAMED player, applied across
+// every real player on this week's real slate instead. "Struggled" /
+// "dominated" is judged against that SAME player's own real season
+// average for their own primary metric — a genuinely different bar
+// per player, not one fixed number for everyone, since a good game for
+// a low-volume player and a good game for a star are different real
+// numbers.
+//
+// REAL TIGHTENING (2026-09-21), per Frank's own direct, real review of
+// the first real output — four real problems he found, all fixed here
+// together rather than one at a time:
+//   1. Threshold raised 25% -> 50%, since 25% was catching too many
+//      genuinely unremarkable swings, not real standout matchups.
+//   2. A real, per-position season-average floor now excludes deep
+//      bench/practice-squad-level players entirely — a 1-yard real
+//      season average (or, confirmed in the real output, an actual
+//      NEGATIVE real average) makes any percentage swing meaningless
+//      noise, not a real signal.
+//   3. Requires 2+ real meetings now, not 1 — a single real game is
+//      variance, not a real pattern. Frank confirmed he wants this
+//      even knowing it removes most of the real "dominated" side,
+//      since those were almost entirely single-game results.
+//   4. Capped to the 20 most extreme real results (by absolute real
+//      percent swing) after every other filter, so what's left is a
+//      genuinely notable list, not everyone who barely cleared a bar.
+//   5. Real, injured/unavailable players are now excluded outright —
+//      confirmed directly (Sam Darnold, flagged as "dominated" while
+//      real-OUT for 3 games) that an unavailable player has no real
+//      relevance to "who should I watch this week," however extreme
+//      their historical split. Uses the same real DFS_DATA status
+//      lookup already proven for injury_backup mode above — gracefully
+//      skips this check (rather than failing) when no real DK slate is
+//      loaded yet, same as that mode's own real fallback.
+const H2H_MIN_PCT_DIFF = 50;
+const H2H_MIN_SEASON_AVG = { QB: 100, RB: 20, WR: 20, TE: 15 };
+const H2H_MIN_MEETINGS = 2;
+const H2H_MAX_RESULTS = 20;
+const H2H_EXCLUDED_STATUSES = ['out'];
+function findHistoricalH2H(){
+  const results = [];
+  for(const pos of ['QB', 'RB', 'WR', 'TE']){
+    for(const p of (PLAYERS.players[pos] || [])){
+      const opp = TEAM_OPPONENT[p.team];
+      if(!opp) continue;
+      const status = (DFS_DATA?.players || []).find(dp => dp.gsis_id === p.gsis_id)?.status;
+      if(status && H2H_EXCLUDED_STATUSES.includes(status.toLowerCase())) continue;
+      const metric = PRIMARY_METRIC[pos];
+      const seasonAvg = p?.season?.m?.[metric];
+      if(seasonAvg == null || seasonAvg < H2H_MIN_SEASON_AVG[pos]) continue;
+      const games2026 = (p.log || []).filter(e => e.opp === opp);
+      const games2025 = ((PLAYERS_2025_BY_ID[p.gsis_id] || {}).log || []).filter(e => e.opp === opp);
+      const meetings = games2026.concat(games2025);
+      if(meetings.length < H2H_MIN_MEETINGS) continue;
+      const vals = meetings.map(e => e.m ? e.m[metric] : null).filter(v => v != null);
+      if(vals.length < H2H_MIN_MEETINGS) continue;
+      const meetingAvg = vals.reduce((s, v) => s + v, 0) / vals.length;
+      const pctDiff = 100 * (meetingAvg - seasonAvg) / seasonAvg;
+      if(Math.abs(pctDiff) >= H2H_MIN_PCT_DIFF){
+        results.push({
+          player: p.name, pos, team: p.team, opponent: opp, metric,
+          season_avg: +seasonAvg.toFixed(1), meeting_avg: +meetingAvg.toFixed(1),
+          pct_diff: +pctDiff.toFixed(1), meetings_found: meetings.length,
+          direction: pctDiff > 0 ? 'dominated' : 'struggled',
+        });
+      }
+    }
+  }
+  results.sort((a, b) => Math.abs(b.pct_diff) - Math.abs(a.pct_diff));
+  return results.slice(0, H2H_MAX_RESULTS);
+}
+
+
+// REAL ADDITION (2026-09-21), per Frank's direct request: a real,
+// contextual game log for one named player, filtered to games where
+// their opponent fell in a specific real tier (top/mid/bot — the same
+// real tag already on every log entry, tier_of()'s exact real
+// definition: "bot" is real ranks 23-32, i.e. genuinely bottom-10 by
+// rank), within a specific real season if one is named, or combining
+// both real 2026 and 2025 logs (same real default as findPlayerVsTeam
+// above) when no season is specified. Deliberately a real, deterministic
+// filter over data already tagged at build time — not a fresh LLM
+// judgment call about which defenses count as "bottom 10," since that's
+// exactly the kind of rank claim the evidence_check work this same day
+// was built to stop trusting blindly.
+const TIER_ALIASES = {
+  bot: 'bot', bottom: 'bot', bottom10: 'bot', 'bottom 10': 'bot',
+  mid: 'mid', middle: 'mid', mid12: 'mid', 'middle 12': 'mid',
+  top: 'top', top10: 'top', 'top 10': 'top',
+};
+function findPlayerVsTier(spec){
+  const found = findPlayerByName(spec.player_name);
+  if(found.error) return found;
+  const { player, pos } = found;
+
+  const tierRaw = (spec.tier || '').toString().trim().toLowerCase().replace(/\s+/g, '');
+  const tier = TIER_ALIASES[tierRaw] || TIER_ALIASES[(spec.tier || '').toString().trim().toLowerCase()];
+  if(!tier) return { error: `"${spec.tier}" isn't a real tier — use "top" (top 10), `
+    + `"mid" (middle 12), or "bot" (bottom 10).` };
+
+  const matchupKey = pos === 'RB' ? null : PRIMARY_METRIC[pos]; // RB has two real categories, handled below
+  const season = spec.season ? Number(spec.season) : null;
+  if(season && season !== 2025 && season !== 2026){
+    return { error: `Only real 2025 and 2026 data exists — "${spec.season}" isn't a real season here.` };
+  }
+
+  const games2026 = season === 2025 ? [] : (player.log || []).map(e => ({ ...e, season: 2026 }));
+  const games2025 = season === 2026 ? [] :
+    ((PLAYERS_2025_BY_ID[player.gsis_id] || {}).log || []).map(e => ({ ...e, season: 2025 }));
+  const allGames = games2026.concat(games2025).sort((a, b) => b.season - a.season || b.week - a.week);
+
+  // RB's real "tiers" carries BOTH rush_yds and rec_yds tags on the same
+  // entry — matches if EITHER real category was tagged with the
+  // requested tier, since a reader asking "vs bottom 10 defenses" for a
+  // back means bottom 10 against the run OR the pass, not one specific
+  // category picked for them.
+  const games = allGames.filter(e => {
+    const tiers = e.tiers || {};
+    if(matchupKey) return tiers[matchupKey] === tier;
+    return Object.values(tiers).includes(tier);
+  });
+
+  const metric = spec.metric && VALID_METRICS[pos].includes(spec.metric) ? spec.metric : PRIMARY_METRIC[pos];
+  const values = games.map(e => e.m ? e.m[metric] : null).filter(v => v != null);
+  const avg = values.length ? +(values.reduce((s, v) => s + v, 0) / values.length).toFixed(1) : null;
+
+  return {
+    player: player.name, pos, team: player.team, tier, season: season || 'both', metric,
+    games_found: games.length, avg, values,
+    // REAL ADDITION (2026-09-21), per Frank's direct request: each
+    // real opponent's actual real rank in this same metric's category
+    // (already sitting on the log entry as "ranks", the exact real
+    // source the "bot"/"mid"/"top" tier label itself is derived from)
+    // — so "bottom 10" isn't just a label, the real number behind it
+    // is right there next to each game.
+    rows: games.map(e => ({ week: e.week, season: e.season, opponent: e.opp,
+      opponent_rank: (e.ranks || {})[metric] ?? null,
+      value: e.m ? e.m[metric] : null, dk: e.dk })),
+  };
+}
+
 
 function findPlayerVsTeam(spec){
   const found = findPlayerByName(spec.player_name);
@@ -798,6 +1030,28 @@ function renderPlayerVsTeamTable(r){
     <tbody>${rows}</tbody>
     <tfoot><tr><td><b>Real average (${r.games_found} game${r.games_found===1?'':'s'})</b></td>
       <td><b>${r.avg}</b></td><td></td></tr></tfoot>
+  </table></div>`;
+}
+
+const TIER_DISPLAY_LABEL = { top: 'top 10', mid: 'middle 12', bot: 'bottom 10' };
+function renderPlayerVsTierTable(r){
+  const metricLabel = r.metric.replace(/_/g, ' ');
+  const seasonLabel = r.season === 'both' ? '2025-2026' : r.season;
+  if(!r.games_found){
+    return `<div class="result-empty">${esc(r.player)} (${r.pos}, ${esc(r.team)}) has no real games
+      logged against a ${esc(TIER_DISPLAY_LABEL[r.tier] || r.tier)} defense in ${seasonLabel} —
+      0 real meetings, not something to estimate around.</div>`;
+  }
+  const rows = r.rows.map(row => `<tr>
+    <td>${row.season} Week ${row.week}</td>
+    <td>${esc(row.opponent)}${row.opponent_rank != null ? ` (#${row.opponent_rank})` : ''}</td>
+    <td>${row.value != null ? row.value : '—'}</td>
+  </tr>`).join('');
+  return `<div class="table-wrap"><table class="result-table">
+    <thead><tr><th></th><th>Opponent</th><th>${esc(metricLabel)}</th></tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr><td colspan="2"><b>Real average (${r.games_found} game${r.games_found===1?'':'s'})</b></td>
+      <td><b>${r.avg}</b></td></tr></tfoot>
   </table></div>`;
 }
 
@@ -1119,16 +1373,27 @@ include (not exhaustive): "last N games", "recent games", "has faced", "results 
 "history vs", "the last 5 top-10 RBs [team] has faced". If the question names a specific team \
 and asks about real past games against that team's defense or offense, it is gamelog even if it \
 also mentions a quality filter like "top 10" — that becomes top_n_only, not a reason to call it \
-freeform. Two examples, deliberately different positions so this isn't read as RB-only:
+freeform. Three examples, deliberately different positions AND tier shapes so this isn't read as \
+RB-only or top-N-only:
 {"mode":"gamelog","team":"SEA","position":"RB","limit":5,"top_n_only":10}
 answers "show me the results of the last 5 top-10 RBs the Seattle defense has faced".
 {"mode":"gamelog","team":"BUF","position":"QB","limit":5}
 answers "what have the last 5 quarterbacks Buffalo's defense faced actually done against them" \
 — same mode, same shape, just a different position value and no quality filter this time.
-team is the defense being asked about (3-letter code). top_n_only is optional — \
-include it only when the question specifically asks about facing strong/top-tier units at that \
-position; omit it for a plain "last 5 games" question with no quality filter. limit is how many \
-games, default 5 if the question doesn't say.
+{"mode":"gamelog","team":"NYJ","position":"RB","limit":10,"tier":"bot","season":2025}
+answers "show me the contextual stats for the Jets defense vs bottom 10 RBs in 2025" — tier is \
+the real, correct field for "bottom 10" or "middle 12" specifically; top_n_only can only ever \
+express "top N," it has no way to mean "bottom" or "middle" at all.
+team is the defense being asked about (3-letter code). Use EITHER top_n_only OR tier, never both \
+— tier is the general, correct choice for "top 10"/"middle 12"/"bottom 10" (use exactly "top", \
+"mid", or "bot" as the value); top_n_only remains for a specific, non-standard cutoff a real \
+question might ask for (e.g. "top 3", "top 15") that doesn't match one of those three real \
+buckets. Omit both for a plain "last 5 games" question with no quality filter at all. limit is \
+how many games, default 5 if the question doesn't say. season: 2025 or 2026 if the question names a \
+specific real season (e.g. "in 2025", "last year", "this year") — real 2025 defensive game logs \
+ARE available here the same way real 2025 player logs already are, so never claim otherwise. \
+OMIT this field entirely (not null, not "current") when no season is named, which correctly uses \
+whichever season is currently loaded.
 
 For a structured filter, respond exactly in this shape (omit fields that don't apply):
 {"mode":"filter","position":"WR","pos_rank_max":1,"opponent_rank_min":23,"opponent_def_stat":"rec_ypg","metric_field":"rush_ypg","min_metric_value":60}
@@ -1168,6 +1433,19 @@ FIVE MORE REAL MODES — check for these too before defaulting to freeform:
 {"mode":"teamrank","position":"RB","limit":10,"worst_first":true}
 worst_first=true for "worst defenses" (highest rank numbers first), false for "best defenses".
 
+"trending_share" — a real, slate-wide scan for players whose real target share, rush share, or \
+snap share has genuinely climbed over their most recent 2 real games compared to their earlier \
+real games this season (e.g. "which players have a target share trending up", "who's seeing more \
+snaps lately"). No player_name or other fields needed — this always scans the whole real slate:
+{"mode":"trending_share"}
+
+"historical_h2h" — a real, slate-wide scan for players facing a real opponent they've genuinely \
+struggled against or dominated in real past meetings (both 2026 and 2025), judged against that \
+SAME player's own real season average (e.g. "which players are facing a team they've struggled \
+against", "who's had big games against their opponent before"). No player_name needed — this \
+always scans the whole real slate against each player's own real week's opponent:
+{"mode":"historical_h2h"}
+
 "correlation" — same-team QB+WR pairs who both have a favorable matchup this week (they share \
 an opponent by definition). Use for "which QB-WR pairs both have good matchups" questions:
 {"mode":"correlation","favorable_rank_min":23}
@@ -1203,6 +1481,19 @@ did against them":
 {"mode":"player_vs_team","player_name":"Kyren Williams","opponent":"SF","all_stats":true}
 Do NOT use this mode for "vs. this week's opponent" questions (that's the normal filter/freeform
 path using opponent_defense) — this mode is specifically for a NAMED opponent team, historical.
+
+"player_vs_tier" — a SPECIFIC named player's real, contextual game log filtered to games against \
+a specific REAL DEFENSIVE TIER (top 10 / middle 12 / bottom 10), in a specific real season if \
+named (e.g. "show me the contextual game log for Derrick Henry vs bottom 10 defenses in 2025", \
+"how did Josh Allen do against top 10 pass defenses last year"). Use whenever the question names a \
+player AND a defensive tier — never guess this from the player's own log yourself in prose, always \
+route to this real, computed mode:
+{"mode":"player_vs_tier","player_name":"Derrick Henry","tier":"bottom 10","season":2025}
+player_name: same real, partial-match-friendly resolution as every other player mode above. tier: \
+"top" (or "top 10"), "mid" (or "middle 12"), "bot" (or "bottom 10", "bottom"). season: 2025 or \
+2026 if the question names one; OMIT this field entirely (not null, not "both") if the question \
+doesn't specify a season — that combines both real seasons, the same real default \
+player_vs_team above uses. metric: optional, same real rules as player_vs_team above.
 
 "player_recent_games" — a SPECIFIC named player's real game-by-game log over their last N games, \
 regardless of opponent (e.g. "show me Baker Mayfield's last 5 games with all stats", "what has \
@@ -1513,10 +1804,13 @@ function renderResultTable(rows, spec){
     </tbody></table>`;
 }
 
+const TIER_DISPLAY_LABEL_GL = { top: 'top 10', mid: 'middle 12', bot: 'bottom 10' };
 function renderGameLogTable(games, spec){
   if(!games || !games.length){
+    const qualityLabel = spec.tier ? `${TIER_DISPLAY_LABEL_GL[spec.tier] || spec.tier} `
+      : spec.top_n_only ? `top-${spec.top_n_only} ` : '';
     return `<div class="result-empty">No real games matched — ${esc(spec.team)} may not have played
-      a ${spec.top_n_only ? `top-${spec.top_n_only} ` : ''}${esc(spec.position)} unit recently, or
+      a ${qualityLabel}${esc(spec.position)} unit recently, or
       not enough of the season has been played yet.</div>`;
   }
   const statKeys = Object.keys(games[0].stats);
@@ -1524,7 +1818,9 @@ function renderGameLogTable(games, spec){
     <th>Week</th><th>Opponent</th><th>Result</th>
     ${statKeys.map(k => `<th>${esc(k)}</th>`).join('')}
     </tr></thead><tbody>
-    ${games.map(g => `<tr><td>${g.week}</td><td>${esc(g.opponent)}</td><td>${esc(g.result)} ${esc(g.score)}</td>
+    ${games.map(g => `<tr><td>${g.week}</td>
+      <td>${esc(g.opponent)}${g.opponent_rank != null ? ` (#${g.opponent_rank})` : ''}</td>
+      <td>${esc(g.result)} ${esc(g.score)}</td>
       ${statKeys.map(k => `<td>${g.stats[k]?.v ?? '—'}</td>`).join('')}</tr>`).join('')}
     </tbody></table>`;
 }
@@ -1535,6 +1831,36 @@ function renderTeamRankTable(rows, spec){
     <th>Team</th><th>Rank vs. ${esc(spec.position)}</th><th>Value Allowed</th>
     </tr></thead><tbody>
     ${rows.map(r => `<tr><td>${esc(r.team)}</td><td>#${r.rank}</td><td>${r.value_allowed}</td></tr>`).join('')}
+    </tbody></table>`;
+}
+
+const TRENDING_SHARE_FIELD_LABEL = { target_share: 'Target Share', rush_share: 'Rush Share', snap_pct: 'Snap %' };
+function renderTrendingShareTable(rows){
+  if(!rows || !rows.length) return `<div class="result-empty">No real player on this week's slate has a
+    genuine, meaningful increase in target/rush/snap share over their real recent games.</div>`;
+  return `<table class="result-table"><thead><tr>
+    <th>Player</th><th>Pos</th><th>Team</th><th>Opp.</th><th>Stat</th>
+    <th>Recent Avg</th><th>Earlier Avg</th><th>Change</th>
+    </tr></thead><tbody>
+    ${rows.map(r => `<tr><td>${esc(r.player)}</td><td>${esc(r.pos)}</td><td>${esc(r.team)}</td>
+      <td>${esc(r.opponent)}</td><td>${esc(TRENDING_SHARE_FIELD_LABEL[r.field] || r.field)}</td>
+      <td>${r.recent_avg}%</td><td>${r.earlier_avg}%</td><td>+${r.change} pts</td></tr>`).join('')}
+    </tbody></table>`;
+}
+
+function renderHistoricalH2HTable(rows){
+  if(!rows || !rows.length) return `<div class="result-empty">No real player on this week's slate clears
+    the bar for a genuinely notable historical split — at least 2 real past meetings, a real season
+    average high enough to be meaningful, a real 50%+ swing, and not currently ruled out.</div>`;
+  return `<table class="result-table"><thead><tr>
+    <th>Player</th><th>Pos</th><th>Team</th><th>Opp.</th><th>Season Avg</th>
+    <th>Vs. This Opp.</th><th>Real Meetings</th><th>Read</th>
+    </tr></thead><tbody>
+    ${rows.map(r => `<tr><td>${esc(r.player)}</td><td>${esc(r.pos)}</td><td>${esc(r.team)}</td>
+      <td>${esc(r.opponent)}</td><td>${r.season_avg}</td><td>${r.meeting_avg}</td>
+      <td>${r.meetings_found}</td>
+      <td>${r.direction === 'dominated' ? 'Dominated' : 'Struggled'} (${r.pct_diff > 0 ? '+' : ''}${r.pct_diff}%)</td>
+      </tr>`).join('')}
     </tbody></table>`;
 }
 
@@ -1583,19 +1909,25 @@ async function ask(question, prebuiltSpec){
     // cheaper, since there's nothing genuinely ambiguous to interpret.
     const spec = prebuiltSpec || await classifyQuestion(question);
     if(spec.mode === 'gamelog'){
-      if(!CONTEXT){
+      // REAL BUG FIX (2026-09-21): this guard only ever checked CONTEXT
+      // (current season) — a real "in 2025" question could get blocked
+      // here even when CONTEXT_2025 (the real data that question
+      // actually needs) was loaded and ready.
+      const neededCtx = spec.season === 2025 ? CONTEXT_2025 : CONTEXT;
+      if(!neededCtx){
+        const wkLabel = spec.season === 2025 ? 'archive/2025/context/wk18.json' :
+          `context/wk${String(CURRENT_WEEK).padStart(2,'0')}.json`;
         box.innerHTML = `<div class="answer-q">${esc(question)}</div>
-          <div class="error">context/wk${String(CURRENT_WEEK).padStart(2,'0')}.json isn't available
-          yet, so I don't have real game-by-game history to answer this from — not something I can
-          guess at instead.</div>`;
+          <div class="error">${esc(wkLabel)} isn't available yet, so I don't have real
+          game-by-game history to answer this from — not something I can guess at instead.</div>`;
         return;
       }
-      const games = getDefenseGameLog(spec.team, spec.position, spec.limit || 5, spec.top_n_only);
+      const games = getDefenseGameLog(spec.team, spec.position, spec.limit || 5, spec.top_n_only, spec.season, spec.tier);
       const narration = games && games.length
         ? await callClaude(NARRATE_SYSTEM, `Question: ${question}\nReal game-by-game results: ${JSON.stringify(games)}`, 800)
         : '';
       box.innerHTML = `<div class="answer-q">${esc(question)}</div>
-        <span class="answer-mode filter">Real game log — computed, not guessed</span>
+        <span class="answer-mode filter">Real ${spec.season ? spec.season + ' ' : ''}game log — computed, not guessed</span>
         ${renderGameLogTable(games, spec)}
         ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
     } else if(spec.mode === 'teamrank'){
@@ -1606,6 +1938,24 @@ async function ask(question, prebuiltSpec){
       box.innerHTML = `<div class="answer-q">${esc(question)}</div>
         <span class="answer-mode filter">Team defense ranking — computed, not guessed</span>
         ${renderTeamRankTable(rows, spec)}
+        ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
+    } else if(spec.mode === 'trending_share'){
+      const rows = findTrendingShare();
+      const narration = rows.length
+        ? await callClaude(NARRATE_SYSTEM, `Question: ${question}\nReal results: ${JSON.stringify(rows)}`, 800)
+        : '';
+      box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+        <span class="answer-mode filter">Real target/rush/snap share trend — computed, not guessed</span>
+        ${renderTrendingShareTable(rows)}
+        ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
+    } else if(spec.mode === 'historical_h2h'){
+      const rows = findHistoricalH2H();
+      const narration = rows.length
+        ? await callClaude(NARRATE_SYSTEM, `Question: ${question}\nReal results: ${JSON.stringify(rows)}`, 800)
+        : '';
+      box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+        <span class="answer-mode filter">Real history vs. this week's specific opponent — computed, not guessed</span>
+        ${renderHistoricalH2HTable(rows)}
         ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
     } else if(spec.mode === 'correlation'){
       const rows = findQBWRCorrelations(spec.favorable_rank_min);
@@ -1629,6 +1979,21 @@ async function ask(question, prebuiltSpec){
       box.innerHTML = `<div class="answer-q">${esc(question)}</div>
         <span class="answer-mode filter">Real per-game history vs. ${esc(r.opponent)} — computed, not guessed</span>
         ${r.all_stats ? renderPlayerVsTeamAllStatsTable(r) : renderPlayerVsTeamTable(r)}
+        ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
+    } else if(spec.mode === 'player_vs_tier'){
+      const r = findPlayerVsTier(spec);
+      if(r.error){
+        box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+          <div class="error">${esc(r.error)}</div>`;
+        return;
+      }
+      const seasonLabel = r.season === 'both' ? '2025-2026' : r.season;
+      const narration = r.games_found
+        ? await callClaude(NARRATE_SYSTEM, `Question: ${question}\nReal results: ${JSON.stringify(r)}`, 800)
+        : '';
+      box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+        <span class="answer-mode filter">Real ${seasonLabel} game log vs. ${esc(TIER_DISPLAY_LABEL[r.tier] || r.tier)} defenses — computed, not guessed</span>
+        ${renderPlayerVsTierTable(r)}
         ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
     } else if(spec.mode === 'player_recent_games'){
       const r = findPlayerRecentGames(spec);
@@ -1759,6 +2124,10 @@ const FEATURED_EXAMPLES = [
     spec: { mode: 'fantasy_allowed', position: 'RB', last_n: 5, limit: 10, worst_first: true } },
   { label: "Hardest defenses to score fantasy points against at RB (last 5 games)",
     spec: { mode: 'fantasy_allowed', position: 'RB', last_n: 5, limit: 10, worst_first: false } },
+  { label: "Which players face a team they've historically struggled against or dominated?",
+    spec: { mode: 'historical_h2h' } },
+  { label: "Which players have a target or snap share trending up?",
+    spec: { mode: 'trending_share' } },
 ];
 
 async function init(){

@@ -2260,7 +2260,8 @@ def dk_points_for_game(s):
 
 def build_player_log(player_df, pos, latest_matchup, team_week_totals=None,
                       rz_rush=None, rz_pass=None, team_rz_carries=None,
-                      team_rz_targets=None, team_rz_receptions=None):
+                      team_rz_targets=None, team_rz_receptions=None,
+                      snap_shares_by_game=None):
     """One player's game-by-game log, each game tagged with the tier
     (top5/top10/mid12/bottom10/bottom5) of the defense-vs-position rank
     their opponent held that
@@ -2385,6 +2386,21 @@ def build_player_log(player_df, pos, latest_matchup, team_week_totals=None,
                 if pos in ("RB", "WR", "TE") and team_targets > 0:
                     game_target_share = round(100 * s.get("targets", 0) / team_targets, 1)
 
+        # REAL ADDITION (2026-09-21), per Frank's direct request: this
+        # game's own real snap share, not just the season average — same
+        # real (gsis_id, week) lookup pattern as rz_rush/rz_pass above,
+        # against snap_shares_by_game (built in compute_snap_shares()
+        # from the exact same real PFR Snap Count feed the season number
+        # already comes from, just not yet collapsed to one value).
+        # Stays None for a game this real feed doesn't have yet (matches
+        # every other per-game stat's own real, honest gap handling here
+        # rather than fabricating a number).
+        game_snap_pct = None
+        if snap_shares_by_game is not None:
+            raw_pct = snap_shares_by_game.get((pid, wk))
+            if raw_pct is not None:
+                game_snap_pct = round(100 * raw_pct, 1)
+
         cum_games += 1
         for c in RAW_COLS:
             cum_raw[c] += s[c]
@@ -2413,6 +2429,7 @@ def build_player_log(player_df, pos, latest_matchup, team_week_totals=None,
             "cum": {k: round(cum_metrics.get(k, 0), 1) for k in rate_keys},
             "dk": round(dk_pts, 1),
             "rush_share": game_rush_share, "target_share": game_target_share,
+            "snap_pct": game_snap_pct,
         }
         log.append(entry)
         for mk in matchup_keys:
@@ -2481,24 +2498,36 @@ def compute_snap_shares():
     of each game's own offense_pct — same per-game-average convention as
     every other rate stat on the site (ppg, comp_pct, etc.), not a single
     season-long ratio. Always-current, not week-gated, matching the rest
-    of build_player_stats(). Returns {} (not an error) if the feed isn't
-    published yet — callers should degrade to '—' per player, not fail
-    the whole build."""
+    of build_player_stats(). Returns ({}, {}) (not an error) if the feed
+    isn't published yet — callers should degrade to '—' per player, not
+    fail the whole build.
+
+    REAL ADDITION (2026-09-21), per Frank's direct request: also returns
+    a real, per-(gsis_id, week) dict — the exact same real offense_pct
+    values the season average above is built from, just not yet
+    collapsed down to one number. This was always real, per-game data
+    sitting in the same real fetch; the season-only .mean() just never
+    exposed the individual weeks it came from. Enables a real "trending
+    up" read (this week's real snap share vs. a real earlier week's),
+    the same way rush_share/target_share already work per game."""
     try:
         snaps = fetch_csv(SNAP_COUNTS_URL)
         snaps = normalize_team_cols(snaps, "team")
     except SystemExit:
         print("  snap counts not available yet this season — skipping snap share.")
-        return {}
+        return {}, {}
     xwalk = load_pfr_to_gsis()
     if not xwalk:
-        return {}
+        return {}, {}
     snaps = snaps[(snaps["season"] == SEASON) & (snaps["game_type"] == "REG")]
     # RB shows up under RB/FB/HB in this feed depending on the player.
     snaps = snaps[snaps["position"].isin(["QB", "RB", "FB", "HB", "WR", "TE"])].copy()
     snaps["gsis_id"] = snaps["pfr_player_id"].map(xwalk)
     snaps = snaps.dropna(subset=["gsis_id"])
-    return snaps.groupby("gsis_id")["offense_pct"].mean().to_dict()
+    season = snaps.groupby("gsis_id")["offense_pct"].mean().to_dict()
+    by_game = {(row["gsis_id"], int(row["week"])): row["offense_pct"]
+               for _, row in snaps.iterrows()}
+    return season, by_game
 
 
 def compute_rush_contact_stats():
@@ -3222,7 +3251,7 @@ def build_player_stats():
     # Snap share (PFR Snap Counts, all four positions) and red zone usage
     # (play-by-play, RB/WR/TE) — both degrade to {} rather than failing the
     # build if their source isn't published yet (e.g. very early season).
-    snap_share = compute_snap_shares()
+    snap_share, snap_share_by_game = compute_snap_shares()
     rush_contact = compute_rush_contact_stats()
     rz_rush, rz_pass, team_rz_carries, team_rz_targets, team_rz_receptions = compute_red_zone_usage()
 
@@ -3264,7 +3293,8 @@ def build_player_stats():
         # years isn't a meaningful number the way a season snapshot is.
 
         log, splits_acc, ceiling = build_player_log(player_weeks[(pid, pos)], pos, latest_matchup, team_week_totals,
-                                                     rz_rush, rz_pass, team_rz_carries, team_rz_targets, team_rz_receptions)
+                                                     rz_rush, rz_pass, team_rz_carries, team_rz_targets, team_rz_receptions,
+                                                     snap_shares_by_game=snap_share_by_game)
 
         players_out[pos].append({
             "gsis_id": pid, "name": name, "team": team, "games": gp, "headshot": headshot,
