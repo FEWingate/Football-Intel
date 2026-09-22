@@ -61,6 +61,8 @@
 .split-card .sc-value{font-family:var(--font-display);font-weight:800;font-size:20px;margin-top:6px;letter-spacing:-.02em}
 .split-card.top{border-color:rgba(244,63,94,.3)}
 .split-card.bot{border-color:rgba(74,222,128,.3)}
+.gap-up{color:var(--accent-green);font-weight:700}
+.gap-down{color:var(--accent-red);font-weight:700}
 </style>
 </head>
 <body>
@@ -80,7 +82,20 @@ let PLAYERSTATS = null;
 let playerPos = 'QB', playerCat = null, playerSortKey = null, playerSortDir = 'desc';
 let currentPlayerRows = [], activePlayer = null, activeSec = 'season', logStatKey = null, lastFocus = null;
 
-let currentView = 'team_off'; // 'team_off' | 'players' | 'dvp' | 'cbdb'
+let currentView = 'team_off'; // 'team_off' | 'players' | 'dvp' | 'cbdb' | 'rank_shifts'
+
+let rankShiftsSide = 'offense', rankShiftsCat = null, rankShiftsSortKey = 'absRankDiff', rankShiftsSortDir = 'desc';
+// REAL ADDITION (2026-09-22), per Frank's own direct request (Saturday's
+// conversation): a real, side-by-side comparison of each real team's
+// season-long carryover rank (the "r" field already on every real
+// team_off/team_def category — computed from 2025's complete real
+// season) against their genuinely NEW, computed-here 2026 rank, built
+// from the same category's real "v26" value — which already exists per
+// team, per category, but was never itself ranked against the other 31
+// real teams anywhere in this project until now. Real reason this has to
+// be computed here rather than read from a stored field: no backend file
+// anywhere stores a real, standalone 2026-only rank — only the real 2026
+// VALUE (v26) exists pre-computed; the rank is genuinely new.
 
 let CBDB = null;
 let cbdbSortKey = null, cbdbSortDir = 'asc';
@@ -96,6 +111,7 @@ main.innerHTML = `
     <button role="tab" data-view="players" aria-selected="false">Players</button>
     <button role="tab" data-view="dvp" aria-selected="false">Defense vs Position</button>
     <button role="tab" data-view="cbdb" aria-selected="false">CB/DB Coverage</button>
+    <button role="tab" data-view="rank_shifts" aria-selected="false">Rank Shifts</button>
   </div>
   <div class="bar">
     <span class="lbl" id="sectionLbl">Team Offense</span>
@@ -255,7 +271,14 @@ async function load(){
 }
 
 function switchView(){
-  if(currentView === 'dvp'){
+  if(currentView === 'rank_shifts'){
+    $("sectionLbl").textContent = 'Rank Shifts';
+    $("sectionLegend").innerHTML = '<span>2025 carryover rank vs. real, computed 2026 rank · ' +
+      'all 32 teams, sorted by gap size · click any column to sort</span>';
+    $("weekSel").style.display = 'none';
+    $("catTabs").style.display = '';
+    setupRankShiftsControls();
+  } else if(currentView === 'dvp'){
     $("sectionLbl").textContent = 'Defense vs Position';
     $("sectionLegend").innerHTML = '<span>Cumulative through the selected week · click any column to sort</span>';
     $("weekSel").style.display = '';
@@ -322,6 +345,192 @@ function setupDvpControls(){
 function fmtVal(v){
   if(v === null || v === undefined) return '—';
   return Number.isInteger(v) ? String(v) : v.toFixed(1);
+}
+
+/* ── RANK SHIFTS (2025 carryover rank vs. real, computed 2026 rank) ── */
+const RANK_SHIFTS_HIGHER_IS_BETTER = { offense: true, defense: false };
+
+let RANK_SHIFTS_WK = null; // real, current-season matchup data — always
+// live/unprefixed, deliberately independent of the page's own season
+// toggle (see the real reasoning above setupRankShiftsControls()).
+
+// REAL BUG FIX (2026-09-22), per Frank's direct, real catch (2026 data
+// still showing "—" everywhere, even after confirming directly that
+// the real v26 field now exists in the real, rebuilt matchup file):
+// this tab was reusing the page's own WEEKS/weekList globals, which are
+// populated via seasonPath(season, ...) — and this page's own "Season"
+// dropdown defaults to 2025. If a person opens Rank Shifts without
+// first switching that dropdown to 2026, WEEKS would hold the
+// ARCHIVED 2025 matchup files, which never carry a real v26 field at
+// all — v26 only ever gets computed in the real, live current-season
+// build. Rank Shifts genuinely needs both numbers (the real 2025
+// carryover rank AND the real 2026 value) from the SAME real file
+// simultaneously — they already live together in the current, live
+// matchup/wkNN.json regardless of whatever season the rest of the page
+// happens to be showing, so this now fetches that directly, completely
+// independent of the season toggle, rather than reusing WEEKS/weekList.
+async function loadRankShiftsData(){
+  if(RANK_SHIFTS_WK) return RANK_SHIFTS_WK;
+  let latest = null;
+  for(let w = 1; w <= 22; w++){
+    try{
+      const r = await fetch(`matchup/wk${pad(w)}.json`, { cache: 'no-store' });
+      if(r.ok) latest = await r.json();
+    }catch(e){}
+  }
+  RANK_SHIFTS_WK = latest;
+  return latest;
+}
+
+async function setupRankShiftsControls(){
+  const wk = await loadRankShiftsData();
+  if(!wk){
+    $("innerTabs").innerHTML = '';
+    $("catTabs").innerHTML = '';
+    $("leadTable").outerHTML = `<div class="empty" id="leadTable">
+      No real matchup data found for computing rank shifts.<br>
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+  $("innerTabs").innerHTML = ['offense', 'defense'].map(s =>
+    `<button role="tab" aria-selected="${s===rankShiftsSide}" data-side="${s}">
+      ${s==='offense'?'Offense':'Defense'}</button>`).join('');
+  $("innerTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    $("innerTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    rankShiftsSide = b.dataset.side;
+    // Real reset — offense and defense share the same real category
+    // keys (ppg, total_ypg, etc.), but a stale selected category
+    // shouldn't silently carry over into the other side without the
+    // person noticing which category they're actually now looking at.
+    rankShiftsCat = null;
+    rankShiftsSortKey = 'absRankDiff'; rankShiftsSortDir = 'desc';
+    renderRankShiftsTable();
+  });
+  renderRankShiftsTable();
+}
+
+function renderRankShiftsTable(){
+  const wk = RANK_SHIFTS_WK;
+  const sideKey = rankShiftsSide === 'offense' ? 'team_off' : 'team_def';
+  const labels = wk.labels[sideKey];
+  const cats = Object.keys(labels);
+  if(!rankShiftsCat || !cats.includes(rankShiftsCat)) rankShiftsCat = cats[0];
+
+  $("catTabs").innerHTML = cats.map(c =>
+    `<button role="tab" aria-selected="${c===rankShiftsCat}" data-cat="${esc(c)}">${esc(labels[c])}</button>`).join('');
+  $("catTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    rankShiftsCat = b.dataset.cat;
+    rankShiftsSortKey = 'absRankDiff'; rankShiftsSortDir = 'desc';
+    renderRankShiftsTable();
+  });
+
+  const higherIsBetter = RANK_SHIFTS_HIGHER_IS_BETTER[rankShiftsSide];
+  const rows = Object.entries(wk.teams)
+    .map(([abbr, t]) => {
+      const cell = (t[sideKey] || {})[rankShiftsCat];
+      if(!cell) return null;
+      return { abbr, rank2025: cell.r, val2025: cell.v, val2026: cell.v26 ?? null };
+    })
+    .filter(r => r);
+
+  // REAL, GENUINELY NEW COMPUTATION — this exact rank has never existed
+  // anywhere in this project before. Every real category already has a
+  // real, standalone 2026 VALUE (v26, confirmed directly against real
+  // matchup/wkNN.json data) — but nothing anywhere ranks that value
+  // against the other 31 real teams' own real v26 values. Only teams
+  // with a real v26 already computed get ranked here; a team still
+  // missing one (not enough real 2026 sample yet) gets a real, honest
+  // "—" rather than a fabricated rank.
+  const withReal2026 = rows.filter(r => r.val2026 != null);
+  const sorted2026 = [...withReal2026].sort((a, b) =>
+    higherIsBetter ? b.val2026 - a.val2026 : a.val2026 - b.val2026);
+  const rank2026ByAbbr = {};
+  sorted2026.forEach((r, i) => { rank2026ByAbbr[r.abbr] = i + 1; });
+
+  rows.forEach(r => {
+    r.rank2026 = rank2026ByAbbr[r.abbr] ?? null;
+    // Positive rankDiff = rank NUMBER went down = real improvement (e.g. 28 -> 5).
+    // Negative rankDiff = rank NUMBER went up = real decline (e.g. 5 -> 28).
+    r.rankDiff = r.rank2026 != null ? r.rank2025 - r.rank2026 : null;
+    r.absRankDiff = r.rankDiff != null ? Math.abs(r.rankDiff) : null;
+    // REAL CHANGE (2026-09-22), per Frank's direct, real concern: this
+    // was direction-normalized (positive always = "improved") the same
+    // way rankDiff still is — but Coeus doesn't see the color coding a
+    // human reader uses to tell "+74 = improved" from "+74 = worse," and
+    // has no real way to know this column's good/bad convention flips
+    // for defense. A "+74" next to two pass-yards-ALLOWED numbers that
+    // actually went DOWN is a real, serious misread risk — reading the
+    // sign as "more yards" is the natural, literal interpretation, and
+    // here it would be exactly backwards. Now a real, literal
+    // (2026 - 2025) for BOTH sides — "+" always genuinely means "more of
+    // this stat," "-" always means "less," true regardless of which side
+    // is being viewed. rankDiff is left as direction-normalized on
+    // purpose — a rank NUMBER is already inherently "lower is better" on
+    // both sides, so there's no equivalent literal-vs-good/bad conflict
+    // there the way there is for a raw yards/points value.
+    r.valueDiff = r.val2026 != null ? +((r.val2026 - r.val2025).toFixed(1)) : null;
+    // Color still reflects real good/bad direction for a human reader —
+    // just no longer tied to the sign itself, which now stays literal.
+    r.valueDiffGood = r.valueDiff != null
+      ? (higherIsBetter ? r.valueDiff > 0 : r.valueDiff < 0)
+      : null;
+  });
+
+  if(!rankShiftsSortKey) rankShiftsSortKey = 'absRankDiff';
+  const valueFor = (r, key) => key === 'absRankDiff' ? r.absRankDiff : r[key];
+  rows.sort((a, b) => {
+    const av = valueFor(a, rankShiftsSortKey), bv = valueFor(b, rankShiftsSortKey);
+    const avn = av == null ? -Infinity : av, bvn = bv == null ? -Infinity : bv;
+    return rankShiftsSortDir === 'desc' ? bvn - avn : avn - bvn;
+  });
+
+  const cols = [
+    { key: 'rank2025', label: '2025 Rank' },
+    { key: 'val2025', label: '2025 Value' },
+    { key: 'rank2026', label: '2026 Rank' },
+    { key: 'val2026', label: '2026 Value' },
+    { key: 'valueDiff', label: 'Value Diff' },
+    { key: 'absRankDiff', label: 'Rank Diff' },
+  ];
+
+  let head = `<thead><tr>
+    <th class="team-col">Team</th>
+    ${cols.map(c => `<th data-key="${c.key}" class="${c.key===rankShiftsSortKey?'sorted':''}">
+      ${esc(c.label)}${c.key===rankShiftsSortKey ? (rankShiftsSortDir==='desc'?' ▾':' ▴') : ''}
+    </th>`).join('')}
+  </tr></thead>`;
+
+  let body = '<tbody>' + rows.map(r => {
+    // REAL CHANGE (2026-09-22), per Frank's direct request: the "improved"/
+    // "declined" words are gone — the +/- sign already says the same real
+    // thing on its own, without spelling it out redundantly in words.
+    const rankDiffText = r.rankDiff == null ? '—' :
+      r.rankDiff === 0 ? '±0' : (r.rankDiff > 0 ? `+${r.rankDiff}` : `${r.rankDiff}`);
+    const rankDiffClass = r.rankDiff == null ? '' : r.rankDiff > 0 ? 'gap-up' : r.rankDiff < 0 ? 'gap-down' : '';
+    const valueDiffText = r.valueDiff == null ? '—' :
+      r.valueDiff === 0 ? '±0' : (r.valueDiff > 0 ? `+${r.valueDiff}` : `${r.valueDiff}`);
+    const valueDiffClass = r.valueDiffGood == null ? '' : r.valueDiffGood ? 'gap-up' : 'gap-down';
+    return `<tr>
+      <td class="team-col">${fiLogoHTML(r.abbr,22)}${esc(FI_TEAM_NAME[r.abbr]||r.abbr)}</td>
+      <td><span class="cell-val">#${r.rank2025}</span></td>
+      <td><span class="cell-val">${fmtVal(r.val2025)}</span></td>
+      <td><span class="cell-val">${r.rank2026 != null ? '#'+r.rank2026 : '—'}</span></td>
+      <td><span class="cell-val">${r.val2026 != null ? fmtVal(r.val2026) : '—'}</span></td>
+      <td><span class="cell-val ${valueDiffClass}">${valueDiffText}</span></td>
+      <td><span class="cell-val ${rankDiffClass}">${rankDiffText}</span></td>
+    </tr>`;
+  }).join('') + '</tbody>';
+
+  $("leadTable").innerHTML = head + body;
+
+  $("leadTable").querySelectorAll("thead th[data-key]").forEach(th => {
+    th.onclick = () => {
+      const k = th.dataset.key;
+      if(k === rankShiftsSortKey) rankShiftsSortDir = rankShiftsSortDir === 'desc' ? 'asc' : 'desc';
+      else { rankShiftsSortKey = k; rankShiftsSortDir = 'desc'; }
+      renderRankShiftsTable();
+    };
+  });
 }
 
 function renderDvpTable(){

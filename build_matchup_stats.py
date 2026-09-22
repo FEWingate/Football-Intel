@@ -914,6 +914,19 @@ def build(week):
         # shown at the top of the matchup modal) — that's built from `wl`
         # directly, above, and is correctly left alone.
         gp = {t: (carry_gp.get(t, 0) or 1) for t in all_teams}
+        # REAL BUG FIX (2026-09-22), per Frank's direct catch: "Points/
+        # game" and "First downs/game" showed real ranks/values for 2025
+        # but a permanent "—" for 2026, even once real games existed —
+        # confirmed directly the real team_off26/team_def26 block below
+        # only ever computed pass_ypg/rush_ypg/total_ypg, never ppg or
+        # fd_pg, at all. The real, current-season pts/pa dicts already
+        # exist right here, a few lines up (built from prior_games,
+        # which is always the real current season) — they were just
+        # getting silently overwritten by the carryover season's own
+        # pts/pa immediately below, with no real copy saved first. Same
+        # real preservation pattern as carryover["real_gp"] two lines
+        # above this block — saved before the overwrite, not after.
+        carryover["real_pts"], carryover["real_pa"] = dict(pts), dict(pa)
         pts, pa = {}, {}
         for _, g in carry_games.iterrows():
             h, a = g["home_team"], g["away_team"]
@@ -1015,15 +1028,30 @@ def build(week):
                 continue   # no real games yet for this team — nothing to show
             ro = r_off_tot.loc[t] if t in r_off_tot.index else None
             rd = r_def_tot.loc[t] if t in r_def_tot.index else None
+            # REAL ADDITION (2026-09-22), per Frank's direct catch: real
+            # points-for/-against come from carryover["real_pts"]/
+            # ["real_pa"] (preserved above, before the carryover-season
+            # overwrite) rather than from `rs`/raw_cols — points were
+            # never part of that player-level stats dataframe in the
+            # first place, same real reason the ORIGINAL, non-carryover
+            # team_off/team_def block above sources ppg from pts/pa
+            # directly instead of from off_tot/def_tot too.
+            real_pts, real_pa = carryover.get("real_pts", {}), carryover.get("real_pa", {})
+            ppg26 = round(safe_div(sum(real_pts.get(t, [])), r_gp[t]), 1) if real_pts.get(t) else None
+            papg26 = round(safe_div(sum(real_pa.get(t, [])), r_gp[t]), 1) if real_pa.get(t) else None
             team_off26 = {
+                "ppg":       ppg26,
                 "pass_ypg":  round(safe_div(ro["passing_yards"], r_gp[t]), 1) if ro is not None else None,
                 "rush_ypg":  round(safe_div(ro["rushing_yards"], r_gp[t]), 1) if ro is not None else None,
                 "total_ypg": round(safe_div((ro["passing_yards"] + ro["rushing_yards"]), r_gp[t]), 1) if ro is not None else None,
+                "fd_pg":     round(safe_div((ro["passing_first_downs"] + ro["rushing_first_downs"]), r_gp[t]), 1) if ro is not None else None,
             }
             team_def26 = {
+                "ppg":       papg26,
                 "pass_ypg":  round(safe_div(rd["passing_yards"], r_gp[t]), 1) if rd is not None else None,
                 "rush_ypg":  round(safe_div(rd["rushing_yards"], r_gp[t]), 1) if rd is not None else None,
                 "total_ypg": round(safe_div((rd["passing_yards"] + rd["rushing_yards"]), r_gp[t]), 1) if rd is not None else None,
+                "fd_pg":     round(safe_div((rd["passing_first_downs"] + rd["rushing_first_downs"]), r_gp[t]), 1) if rd is not None else None,
             }
             for m, v in team_off26.items():
                 if v is not None and m in teams[t]["team_off"]:

@@ -129,6 +129,42 @@ def verify_evidence_check(evidence_check, evidence_by_game):
             elif real_rank != claimed_rank:
                 mismatches.append(f"REAL MISMATCH: {team}'s real current {pos} {role} {stat} "
                                    f"rank is #{real_rank} — the report claimed #{claimed_rank}.")
+
+        # REAL ADDITION (2026-09-22), per Frank's direct request: checks
+        # a real 2025-vs-2026 rank-shift claim against evidence["rank_shifts"]
+        # (see build_evidence_package_bootstrap.py's build_rank_shift_summary()
+        # for how that real, pre-computed data is built). Genuinely
+        # different lookup shape than current_opponent above — rank_shifts
+        # is keyed by "away"/"home" per game, not by team code directly, so
+        # each real game's own real game.away/game.home is used to resolve
+        # which side the named team is actually on before reading its data.
+        elif ctype == "rank_shift":
+            team, side, stat = claim.get("team"), claim.get("side"), claim.get("stat")
+            side_label = "offense" if side == "off" else "defense" if side == "def" else side
+            claimed_2025, claimed_2026 = claim.get("claimed_rank_2025"), claim.get("claimed_rank_2026")
+            entry = None
+            for game_evidence in evidence_by_game.values():
+                game_info = game_evidence.get("game") or {}
+                game_side = "away" if game_info.get("away") == team else "home" if game_info.get("home") == team else None
+                if game_side is None:
+                    continue
+                shifts = ((game_evidence.get("rank_shifts") or {}).get(game_side) or {}).get(side_label) or {}
+                if stat in shifts:
+                    entry = shifts[stat]
+                    break
+            if entry is None:
+                mismatches.append(f"evidence_check cites {team}'s {side_label} {stat} rank shift, "
+                                   f"but no real rank_shifts data for that exact combination "
+                                   f"exists in any game's evidence actually provided.")
+                continue
+            real_2025, real_2026 = entry.get("rank_2025"), entry.get("rank_2026")
+            if claimed_2025 is not None and real_2025 != claimed_2025:
+                mismatches.append(f"REAL MISMATCH: {team}'s real 2025 {side_label} {stat} rank "
+                                   f"is #{real_2025} — the report claimed #{claimed_2025}.")
+            if claimed_2026 is not None and real_2026 != claimed_2026:
+                mismatches.append(f"REAL MISMATCH: {team}'s real 2026 {side_label} {stat} rank "
+                                   f"is #{real_2026 if real_2026 is not None else 'not yet available'} "
+                                   f"— the report claimed #{claimed_2026}.")
         else:
             mismatches.append(f"evidence_check entry has an unrecognized type: {ctype!r}.")
 

@@ -369,6 +369,79 @@ def determine_real_bootstrap_week():
     return 1  # real fallback: no games/wkNN.json exists at all yet
 
 
+RANK_SHIFT_CATEGORIES = ["ppg", "total_ypg", "pass_ypg", "rush_ypg", "fd_pg"]
+RANK_SHIFT_HIGHER_IS_BETTER = {"team_off": True, "team_def": False}
+
+
+def compute_2026_ranks(matchup_teams):
+    """Real, one-time, league-wide computation — same real logic already
+    proven and tested on stats_hub.html's Rank Shifts tab (2026-09-22),
+    ported here so Coeus's evidence carries the identical real numbers a
+    person browsing that page would see, not a second, independently
+    reasoned-about version that could quietly drift from it. No backend
+    file anywhere stores a standalone real 2026 rank — only the real
+    2026 VALUE (v26) exists pre-computed per team, per category. Ranked
+    here, once, against all 32 real teams' own real v26 values — not
+    per-game, since this real ranking doesn't depend on which two teams
+    a given game involves. Returns {(side_key, category, team): rank}
+    — a team/category missing v26 (not enough real 2026 sample yet)
+    is simply absent from this dict, never a fabricated rank."""
+    ranks = {}
+    for side_key, higher_is_better in RANK_SHIFT_HIGHER_IS_BETTER.items():
+        for cat in RANK_SHIFT_CATEGORIES:
+            vals = {}
+            for team, t in matchup_teams.items():
+                cell = (t.get(side_key) or {}).get(cat)
+                if cell and cell.get("v26") is not None:
+                    vals[team] = cell["v26"]
+            ordered = sorted(vals, key=lambda t: vals[t], reverse=higher_is_better)
+            for i, team in enumerate(ordered):
+                ranks[(side_key, cat, team)] = i + 1
+    return ranks
+
+
+def build_rank_shift_summary(team, team_matchup_data, rank2026):
+    """Real, per-team summary of every category's real 2025-vs-2026
+    shift, in a small, structured, self-describing shape — deliberately
+    NOT just the raw r/v/v26 numbers alone, so Coeus doesn't have to
+    (and isn't tempted to) infer a good/bad direction from a sign
+    itself. Same real value_diff convention already fixed on
+    stats_hub.html (2026-09-22): LITERAL (2026 value - 2025 value), so
+    "+" always genuinely means "more of this stat" and "-" always means
+    "less," true regardless of offense or defense — no sign-reading
+    required to know what a number means. rank_diff stays direction-
+    normalized (positive = real improvement) since a rank number is
+    already inherently "lower is better" on both sides. `direction` is
+    the real, pre-computed, explicit label this whole feature exists
+    for — "improved" / "declined" / "unchanged" — so Coeus states a
+    real, already-known direction rather than deriving one itself from
+    a raw number, the same real principle behind evidence_check."""
+    summary = {}
+    for side_key in ("team_off", "team_def"):
+        side_label = "offense" if side_key == "team_off" else "defense"
+        higher_is_better = RANK_SHIFT_HIGHER_IS_BETTER[side_key]
+        summary[side_label] = {}
+        cats = (team_matchup_data.get(side_key) or {})
+        for cat in RANK_SHIFT_CATEGORIES:
+            cell = cats.get(cat)
+            if not cell:
+                continue
+            rank_2025, value_2025 = cell.get("r"), cell.get("v")
+            value_2026 = cell.get("v26")
+            rank_2026 = rank2026.get((side_key, cat, team))
+            entry = {"rank_2025": rank_2025, "value_2025": value_2025,
+                      "rank_2026": rank_2026, "value_2026": value_2026}
+            if value_2026 is not None:
+                entry["value_diff"] = round(value_2026 - value_2025, 1)
+            if rank_2026 is not None:
+                rank_diff = rank_2025 - rank_2026
+                entry["rank_diff"] = rank_diff
+                entry["direction"] = ("improved" if rank_diff > 0
+                                        else "declined" if rank_diff < 0 else "unchanged")
+            summary[side_label][cat] = entry
+    return summary
+
+
 def main():
     ap = argparse.ArgumentParser(description="Assemble evidence for an upcoming, not-yet-played slate.")
     ap.add_argument("--bootstrap-week", type=int, default=None,
@@ -691,6 +764,10 @@ def main():
                             "Red Zone Play Calling will be unavailable.")
 
     matchup_teams = matchup_json.get("teams", {})
+    # REAL ADDITION (2026-09-22), per Frank's direct request: computed
+    # once, before the per-game loop, since this real ranking is the
+    # same regardless of which two teams a given game involves.
+    rank2026 = compute_2026_ranks(matchup_teams)
     unavailable_teams = set()
     for (away, home) in real_games:
         for t in (away, home):
@@ -928,6 +1005,16 @@ def main():
                                            f"between them, which likely never happened as this "
                                            f"exact pairing.")},
             "matchup": matchup_block,
+            # REAL ADDITION (2026-09-22), per Frank's direct request: a
+            # real, explicit 2025-vs-2026 comparison for both teams,
+            # every category, in a self-describing shape so Coeus can
+            # cite a genuinely known direction ("improved"/"declined"/
+            # "unchanged") rather than inferring one from a raw sign —
+            # see build_rank_shift_summary()'s own real reasoning above.
+            "rank_shifts": {
+                side: build_rank_shift_summary(team, matchup_block.get(side, {}), rank2026)
+                for side, team in (("away", away), ("home", home)) if team in matchup_teams
+            },
             "team_context": context_block,
             "down_distance": {
                 "away": down_distance_for_team(teamstats_json, away, dd_off_ranks, dd_def_ranks),
