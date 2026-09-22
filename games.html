@@ -351,7 +351,19 @@ let espnPollTimer = null;
 // as an explicit, checkable seam rather than assumed permanent: if a
 // future mismatch shows up, it's fixed once here, not wherever a code
 // comparison happens to live in this file.
-const ESPN_TEAM_CODE_FIXUPS = {};
+// REAL BUG FIX (2026-09-22), per Frank's direct, real catch — a real
+// game (DAL@WAS) stayed permanently blank, over 24 hours after going
+// Final. Confirmed directly against ESPN's real, live scoreboard: ESPN
+// reports Washington as "WSH", not "WAS" (this project's own real
+// convention, matching nflverse). This fixup table existed already but
+// had never actually been populated — every real poll's exact-match
+// lookup (GAMES.games.find(x => x.away === awayCode...)) silently
+// failed for this one team, forever, since "WSH" never equals "WAS" no
+// matter how many times the poll ran. Same real class of bug the
+// build_fanduel_props.py / build_matchup_stats.py team-code fixups
+// already handle for LA/LAR — just never ported to this file's own
+// separate ESPN-facing table.
+const ESPN_TEAM_CODE_FIXUPS = { "WSH": "WAS" };
 function espnCode(abbr){ return ESPN_TEAM_CODE_FIXUPS[abbr] || abbr; }
 
 async function pollEspnScoreboard(){
