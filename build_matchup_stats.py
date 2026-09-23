@@ -4074,6 +4074,11 @@ def build_intel_reports(week=None):
                                  "teams": {}, "rb_teams": {}}, "intel/latest.json")
             return
 
+    # BUG FIX (2026-09-23): normalize nflverse's "LA" -> "LAR" here too.
+    # apply_current_rosters() usually masks this by overwriting team from
+    # rosters/latest.json, but if that file is missing the Rams' rows stay
+    # "LA" and silently drop out of the (team, week) join with team_stats.
+    players = normalize_team_cols(players, "team", "opponent_team")
     players = apply_current_rosters(players)
     # The chronological "only games before the week being previewed" filter
     # only makes sense WITHIN the current, in-progress season. A fallback
@@ -4114,6 +4119,11 @@ def build_intel_reports(week=None):
         ])
         if "season_type" in players_2025.columns:
             players_2025 = players_2025[players_2025["season_type"] == "REG"]
+        # BUG FIX (2026-09-23): this raw fetch was never team-normalized, so
+        # every Rams 2025 row stayed "LA" while 2026 starters are "LAR" —
+        # the same-team gate below silently failed for Stafford (QB) and
+        # Kyren Williams (RB), leaving them with 2026-only 1-game buckets.
+        players_2025 = normalize_team_cols(players_2025, "team", "opponent_team")
         qb_2025 = players_2025[(players_2025["position"] == "QB") & (players_2025["attempts"].fillna(0) >= 10)].copy()
         qb_2025_starters = qb_2025.loc[qb_2025.groupby(["team", "week"])["attempts"].idxmax()].copy()
         # Real primary 2025 team per real QB — the team they started for
@@ -4261,6 +4271,47 @@ def build_intel_reports(week=None):
     merged["run_hot"] = (merged["rushing_yards"] >= merged["team_rush_avg_loo"]).where(merged["team_rush_avg_loo"].notna())
     merged["qb_hot"] = (merged["passing_yards"] >= merged["qb_season_avg_loo"]).where(merged["qb_season_avg_loo"].notna())
 
+    # REAL BUG FIX (2026-09-23), per Frank's own direct, real catch: the
+    # blending above only ever improved the THRESHOLD each real 2026 game
+    # gets classified against — it never actually grew the real sample
+    # the correlation itself is computed over below (still only ever
+    # `merged`, i.e. still only the real, 1-2 real 2026 games per team).
+    # Splitting 2 real games into "hot"/"cold" buckets leaves at most 1
+    # real game per bucket, and a real one-game bucket's own hit rate is
+    # ALWAYS trivially 100% or 0% — confirmed directly, exactly the real
+    # "(n=1g)" pattern Frank caught on the real, live page. The real fix
+    # has to extend the correlation's own real sample, not just its
+    # threshold: for a real same-team QB, their real, complete 2025
+    # season becomes REAL ADDITIONAL ROWS here (each with its own real
+    # run_hot/qb_hot, using the same real blended leave-one-out averages
+    # already computed above), concatenated onto merged — not just a
+    # number quietly feeding into someone else's math.
+    real_2025_games = real_2025_qb_rows.merge(
+        real_2025_team_rush, on=["team", "week"], how="inner", suffixes=("", "_team"))
+    real_2025_games = real_2025_games.merge(
+        qb_avg_sample.loc[qb_avg_sample["src"] == "2025", ["player_id", "week", "qb_season_avg_loo"]],
+        on=["player_id", "week"], how="left")
+    real_2025_games = real_2025_games.merge(
+        team_rush_avg_sample.loc[team_rush_avg_sample["src"] == "2025", ["team", "week", "team_rush_avg_loo"]],
+        on=["team", "week"], how="left")
+    real_2025_games["run_hot"] = (real_2025_games["rushing_yards"] >= real_2025_games["team_rush_avg_loo"]).where(real_2025_games["team_rush_avg_loo"].notna())
+    real_2025_games["qb_hot"] = (real_2025_games["passing_yards"] >= real_2025_games["qb_season_avg_loo"]).where(real_2025_games["qb_season_avg_loo"].notna())
+    real_2025_games["src"] = "2025"
+    merged["src"] = "2026"
+    # Real 2025 rows don't carry every real column merged itself has
+    # (player_display_name, headshot_url, qb_season_avg/team_rush_avg —
+    # the real, FULL-sample display values, which should stay anchored to
+    # the real, current 2026 season only) — those are joined back in from
+    # starters/team_rush per real player_id/team so every column the
+    # downstream groupby loop below expects still exists on every row.
+    real_2025_games = real_2025_games.merge(
+        starters[["player_id", "player_display_name", "qb_season_avg", "qb_starts"] +
+                 (["headshot_url"] if "headshot_url" in starters.columns else [])].drop_duplicates("player_id"),
+        on="player_id", how="left")
+    real_2025_games = real_2025_games.merge(
+        team_rush[["team", "team_rush_avg"]].drop_duplicates("team"), on="team", how="left")
+    merged_extended = pd.concat([merged, real_2025_games], ignore_index=True)
+
     # --- run-defense rank for upcoming-opponent context (from teamstats, already built) ---
     # Only trust teamstats/latest.json's rank context if its OWN season
     # actually matches pattern_season — otherwise this would silently mix
@@ -4303,21 +4354,34 @@ def build_intel_reports(week=None):
         return (round(100 * sub["qb_hot"].mean(), 1), len(sub)) if len(sub) else (None, 0)
 
     out = {}
-    for team, g in merged.groupby("team"):
+    for team, g_full in merged_extended.groupby("team"):
         # the real starter = most starts this season, not whoever played most
         # recently — a late-season rest game for a backup shouldn't hijack
         # the report, and shouldn't blend into the primary QB's sample either
-        primary_pid = g.groupby("player_id").size().idxmax()
-        g = g[g["player_id"] == primary_pid].sort_values("week")
+        # REAL CHANGE: "most starts" is decided from the real 2026 rows
+        # only — a real 2025 backup-turned-2026-starter (or vice versa)
+        # shouldn't out-vote the real, current, actual 2026 starter just
+        # because their own blended 2025 games add extra rows here.
+        primary_pid = g_full[g_full["src"] == "2026"].groupby("player_id").size().idxmax()
+        g_full = g_full[g_full["player_id"] == primary_pid].sort_values("week")
+        # REAL FIX (2026-09-23), per Frank's direct, real catch: the
+        # correlation itself (qb_rate_hot etc. below) now runs over
+        # g_full — every real row for this real QB, 2025 blended history
+        # included where it real-qualified — so a real bucket split no
+        # longer collapses to a trivial real one-game 100%/0% the moment
+        # only 2 real 2026 games exist. g (2026-only) stays separate,
+        # used only for what should stay real-season-scoped: the drill-
+        # down log and the real, displayed "starts" count.
+        g = g_full[g_full["src"] == "2026"]
 
         pid = primary_pid
         name = g["player_display_name"].iloc[-1] if "player_display_name" in g.columns else str(pid)
         headshot = headshots.get(pid, "") if hasattr(headshots, "get") else ""
 
-        run_hot = g[g["run_hot"] == True]
-        run_cold = g[g["run_hot"] == False]
-        qb_hot = g[g["qb_hot"] == True]
-        qb_cold = g[g["qb_hot"] == False]
+        run_hot = g_full[g_full["run_hot"] == True]
+        run_cold = g_full[g_full["run_hot"] == False]
+        qb_hot = g_full[g_full["qb_hot"] == True]
+        qb_cold = g_full[g_full["qb_hot"] == False]
 
         qb_rate_hot, qb_n_hot = (round(100 * run_hot["qb_hot"].mean(), 1), len(run_hot)) if len(run_hot) else (None, 0)
         qb_rate_cold, qb_n_cold = (round(100 * run_cold["qb_hot"].mean(), 1), len(run_cold)) if len(run_cold) else (None, 0)
@@ -4368,24 +4432,63 @@ def build_intel_reports(week=None):
         rb_leaders = rb.loc[rb.groupby(["team", "week"])["carries"].idxmax()].copy()
         rb_season_avg = rb_leaders.groupby("player_id")["rushing_yards"].mean().rename("rb_season_avg")
         rb_leaders = rb_leaders.join(rb_season_avg, on="player_id")
-        # REAL BUG FIX (2026-09-23), same real fix, same real reasoning as
-        # qb_season_avg_loo/team_rush_avg_loo above — rb_season_avg is the
-        # identical real self-referential average, and the existing
-        # `if len(g) < 2: continue` below only ever protected against the
-        # most extreme real case (exactly one real game). A real RB with
-        # exactly two real games still had the same real bias — the two-
-        # game average sits between the two real values, so one game is
-        # always >= it and the other always < it, an artificial real 50/50
-        # split that's still an artifact of the self-reference, not a real
-        # signal about that back's actual tendencies.
-        rb_leaders["rb_season_avg_loo"] = rb_leaders.groupby("player_id")["rushing_yards"].transform(leave_one_out_avg)
+
+        # REAL ADDITION (2026-09-23), per Frank's own direct, real request —
+        # same real gate, same real reasoning as the QB side: a real RB who
+        # led rushing for the SAME real team in 2025 too gets that real,
+        # complete season blended into their own real sample, since the
+        # identical real "2 games -> at most 1-game buckets -> trivial
+        # 100%/0%" problem applies here too. A real RB who's new to a team
+        # this season gets none of a different team's real 2025 history.
+        try:
+            players_2025_rb = players_2025[(players_2025["position"] == "RB") & (players_2025["carries"].fillna(0) >= 8)].copy()
+            rb_2025_leaders = players_2025_rb.loc[players_2025_rb.groupby(["team", "week"])["carries"].idxmax()].copy()
+            rb_2025_primary_team = rb_2025_leaders.groupby("player_id")["team"].agg(lambda s: s.value_counts().idxmax())
+            rb_2025_leaders = rb_2025_leaders[["player_id", "team", "week", "rushing_yards"]].copy()
+        except (SystemExit, NameError):
+            rb_2025_leaders = pd.DataFrame(columns=["player_id", "team", "week", "rushing_yards"])
+            rb_2025_primary_team = pd.Series(dtype=str)
+
+        rb_same_team_pids = {
+            pid for pid in rb_leaders["player_id"].unique()
+            if pid in rb_2025_primary_team.index
+            and rb_2025_primary_team[pid] == rb_leaders.loc[rb_leaders["player_id"] == pid, "team"].iloc[0]
+        }
+        real_2025_rb_rows = rb_2025_leaders[rb_2025_leaders["player_id"].isin(rb_same_team_pids)]
+
+        rb_2026_sample = rb_leaders[["player_id", "week", "rushing_yards"]].copy()
+        rb_2026_sample["src"] = "2026"
+        rb_2025_sample = real_2025_rb_rows[["player_id", "week", "rushing_yards"]].copy()
+        rb_2025_sample["src"] = "2025"
+        rb_avg_sample = pd.concat([rb_2026_sample, rb_2025_sample], ignore_index=True)
+        rb_blended_n = rb_avg_sample.groupby("player_id")["rushing_yards"].transform("size")
+        rb_blended_sum = rb_avg_sample.groupby("player_id")["rushing_yards"].transform("sum")
+        rb_avg_sample["rb_season_avg_loo"] = ((rb_blended_sum - rb_avg_sample["rushing_yards"]) / (rb_blended_n - 1)).where(rb_blended_n > 1)
+        rb_leaders = rb_leaders.merge(
+            rb_avg_sample.loc[rb_avg_sample["src"] == "2026", ["player_id", "week", "rb_season_avg_loo"]],
+            on=["player_id", "week"], how="left")
         rb_headshots = (rb_leaders.groupby("player_id")["headshot_url"].last()
                          if "headshot_url" in rb_leaders.columns else {})
 
-        qb_hot_lookup = merged.set_index(["team", "week"])["qb_hot"]
-        qb_yds_lookup = merged.set_index(["team", "week"])["passing_yards"]
-        rb_leaders = rb_leaders.join(qb_hot_lookup, on=["team", "week"])
-        rb_leaders = rb_leaders.join(qb_yds_lookup, on=["team", "week"], rsuffix="_qb")
+        # REAL CHANGE: QB hot/cold lookup now reads from merged_extended
+        # (real 2026 + real blended same-team 2025 QB games) rather than
+        # merged alone — this correlation has two real sides, and both
+        # should benefit from the larger real sample where it's genuinely
+        # available, not just the RB's own.
+        # BUG FIX (2026-09-23): this lookup used to be keyed on (team, week)
+        # only. merged_extended holds BOTH 2026 and blended 2025 rows, so a
+        # 2026 RB game matched the QB's 2026 game AND his 2025 game from the
+        # same week number — and the second (yards) join doubled it again:
+        # 4 rows per real game, foreign 2025 passing yards in the log, and
+        # qb_hit/qb_pass_yds pairs that didn't belong together. Confirmed on
+        # real data (Cook's Week 1 log carried Allen's 2025 Week 1 394 yds).
+        # Keying on (src, team, week) makes each lookup exactly one row.
+        qb_lookup = (merged_extended[["src", "team", "week", "qb_hot", "passing_yards"]]
+                     .rename(columns={"passing_yards": "passing_yards_qb"})
+                     .drop_duplicates(["src", "team", "week"]))
+        rb_leaders["src"] = "2026"
+        rb_leaders = rb_leaders.merge(qb_lookup, on=["src", "team", "week"], how="left",
+                                      validate="many_to_one")
         rb_leaders = rb_leaders.dropna(subset=["qb_hot"])  # only games where we also know the QB's game
         # REAL BUG FIX (2026-09-09): the left-join above leaves "qb_hot" as
         # object dtype (True/False/NaN mixed) even after dropna() removes
@@ -4406,9 +4509,31 @@ def build_intel_reports(week=None):
         # honestly excluded.
         rb_leaders["rb_hot"] = (rb_leaders["rushing_yards"] >= rb_leaders["rb_season_avg_loo"]).where(rb_leaders["rb_season_avg_loo"].notna())
 
-        for team, g in rb_leaders.groupby("team"):
-            primary_pid = g.groupby("player_id").size().idxmax()
-            g = g[g["player_id"] == primary_pid].sort_values("week")
+        # REAL ADDITION: the RB's own real 2025 rows, same real blended
+        # leave-one-out average, same real join against merged_extended's
+        # real QB-hot data for that same real (team, week).
+        real_2025_rb_games = real_2025_rb_rows.merge(
+            rb_avg_sample.loc[rb_avg_sample["src"] == "2025", ["player_id", "week", "rb_season_avg_loo"]],
+            on=["player_id", "week"], how="left")
+        # Same (src, team, week) key — a 2025 RB game must only ever pair
+        # with that team's 2025 QB game, never the 2026 one.
+        real_2025_rb_games["src"] = "2025"
+        real_2025_rb_games = real_2025_rb_games.merge(qb_lookup, on=["src", "team", "week"], how="left",
+                                                      validate="many_to_one")
+        real_2025_rb_games = real_2025_rb_games.dropna(subset=["qb_hot"])
+        real_2025_rb_games["qb_hot"] = real_2025_rb_games["qb_hot"].astype(bool)
+        real_2025_rb_games["rb_hot"] = (real_2025_rb_games["rushing_yards"] >= real_2025_rb_games["rb_season_avg_loo"]).where(real_2025_rb_games["rb_season_avg_loo"].notna())
+        real_2025_rb_games = real_2025_rb_games.merge(
+            rb_leaders[["player_id", "player_display_name", "rb_season_avg"] +
+                       (["headshot_url"] if "headshot_url" in rb_leaders.columns else [])].drop_duplicates("player_id"),
+            on="player_id", how="left")
+        rb_leaders_extended = pd.concat([rb_leaders, real_2025_rb_games], ignore_index=True)
+
+        for team, g_full in rb_leaders_extended.groupby("team"):
+            primary_pid = g_full[g_full["src"] == "2026"].groupby("player_id").size().idxmax() \
+                if (g_full["src"] == "2026").any() else g_full.groupby("player_id").size().idxmax()
+            g_full = g_full[g_full["player_id"] == primary_pid].sort_values("week")
+            g = g_full[g_full["src"] == "2026"]
             if len(g) < 2:
                 continue
 
@@ -4416,10 +4541,10 @@ def build_intel_reports(week=None):
             name = g["player_display_name"].iloc[-1] if "player_display_name" in g.columns else str(pid)
             headshot = rb_headshots.get(pid, "") if hasattr(rb_headshots, "get") else ""
 
-            qb_hot_g = g[g["qb_hot"] == True]
-            qb_cold_g = g[g["qb_hot"] == False]
-            rb_hot_g = g[g["rb_hot"] == True]
-            rb_cold_g = g[g["rb_hot"] == False]
+            qb_hot_g = g_full[g_full["qb_hot"] == True]
+            qb_cold_g = g_full[g_full["qb_hot"] == False]
+            rb_hot_g = g_full[g_full["rb_hot"] == True]
+            rb_cold_g = g_full[g_full["rb_hot"] == False]
 
             rb_rate_hot, rb_n_hot = (round(100*qb_hot_g["rb_hot"].mean(),1), len(qb_hot_g)) if len(qb_hot_g) else (None,0)
             rb_rate_cold, rb_n_cold = (round(100*qb_cold_g["rb_hot"].mean(),1), len(qb_cold_g)) if len(qb_cold_g) else (None,0)
