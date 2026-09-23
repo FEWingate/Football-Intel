@@ -4092,13 +4092,106 @@ def build_intel_reports(week=None):
                              "teams": {}, "rb_teams": {}}, "intel/latest.json")
         return
     starters = qb.loc[qb.groupby(["team", "week"])["attempts"].idxmax()].copy()
+
+    # REAL ADDITION (2026-09-23), per Frank's own direct, real idea: real
+    # 2026 sample is genuinely thin this early (1-2 real games per team),
+    # and the leave-one-out fix above only ever honestly EXCLUDES a
+    # single-game QB rather than giving them a real, meaningful sample to
+    # classify against. For a real QB who started for the SAME real team
+    # in 2025 too, that team's real, complete 2025 season is a genuinely
+    # relevant real history — same real scheme, same real weapons, same
+    # real coaching staff calling plays — so it's pulled in here to
+    # extend the real sample used for the average/hot-cold math, while
+    # the "log" built further down stays real-2026-games-only (a drill-
+    # down should show what actually happened this real season, not a
+    # blended history — only the classification math benefits from 2025).
+    # A QB who changed teams gets none of this: a different team's 2025
+    # games tell you nothing real about this real matchup.
+    try:
+        players_2025 = fetch_csv([
+            f"https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_{SEASON-1}.csv",
+            f"https://github.com/nflverse/nflverse-data/releases/download/player_stats/player_stats_{SEASON-1}.csv",
+        ])
+        if "season_type" in players_2025.columns:
+            players_2025 = players_2025[players_2025["season_type"] == "REG"]
+        qb_2025 = players_2025[(players_2025["position"] == "QB") & (players_2025["attempts"].fillna(0) >= 10)].copy()
+        qb_2025_starters = qb_2025.loc[qb_2025.groupby(["team", "week"])["attempts"].idxmax()].copy()
+        # Real primary 2025 team per real QB — the team they started for
+        # most that real season, same real approach already confirmed
+        # correct for this exact kind of lookup elsewhere in this file.
+        qb_2025_primary_team = qb_2025_starters.groupby("player_id")["team"].agg(lambda s: s.value_counts().idxmax())
+        qb_2025_starters = qb_2025_starters[["player_id", "team", "week", "passing_yards"]].copy()
+    except SystemExit:
+        qb_2025_starters = pd.DataFrame(columns=["player_id", "team", "week", "passing_yards"])
+        qb_2025_primary_team = pd.Series(dtype=str)
+
+    # Same-team real QBs only — see the real reasoning in the block above.
+    same_team_pids = {
+        pid for pid in starters["player_id"].unique()
+        if pid in qb_2025_primary_team.index
+        and qb_2025_primary_team[pid] == starters.loc[starters["player_id"] == pid, "team"].iloc[0]
+    }
+    real_2025_qb_rows = qb_2025_starters[qb_2025_starters["player_id"].isin(same_team_pids)]
+    # A real, explicit source marker — not relied on for ordering or
+    # position, just used to safely pull the 2026 rows back out after the
+    # blended leave-one-out average is computed, by (player_id, week)
+    # rather than by row position (fragile, and not guaranteed to survive
+    # the concat in the same order or index starters itself used).
+    qb_2026_sample = starters[["player_id", "week", "passing_yards"]].copy()
+    qb_2026_sample["src"] = "2026"
+    qb_2025_sample = real_2025_qb_rows[["player_id", "week", "passing_yards"]].copy()
+    qb_2025_sample["src"] = "2025"
+    qb_avg_sample = pd.concat([qb_2026_sample, qb_2025_sample], ignore_index=True)
+
     qb_season_avg = starters.groupby("player_id")["passing_yards"].mean().rename("qb_season_avg")
     qb_starts = starters.groupby("player_id").size().rename("qb_starts")
     starters = starters.join(qb_season_avg, on="player_id").join(qb_starts, on="player_id")
     headshots = starters.groupby("player_id")["headshot_url"].last() if "headshot_url" in starters.columns else {}
 
+    # REAL BUG FIX (2026-09-23), per Frank's direct, real catch: every
+    # real team's real "hot" hit rate was showing 100% this early in the
+    # season. Confirmed directly: qb_season_avg above is a SELF-
+    # REFERENTIAL average — computed from the SAME real games later
+    # compared against it, including each game against its own
+    # contribution to that same average. With only 1-2 real games played
+    # by early September, this is catastrophic: a QB with exactly one
+    # real start has a real "season average" that EQUALS that one real
+    # game's own passing_yards exactly, so "this game >= season average"
+    # is trivially true, always, every time — 100%, not because the QB
+    # is a real trend, but because the math can't be anything else with
+    # that little real sample. A real, standard "leave-one-out" average
+    # (each real game compared against the average of every OTHER real
+    # game, excluding itself) removes this bias entirely — genuinely
+    # undefined for a QB with exactly one real start (dividing by zero
+    # other games), which is the real, honest answer for that case: NaN
+    # here, not a fabricated 100%, and the per-game qb_hot flag below
+    # correctly becomes NaN too (never True or False) for that one game,
+    # so it's excluded from the hit-rate calc rather than skewing it.
+    # REAL CHANGE: the leave-one-out average itself is now computed over
+    # qb_avg_sample (real 2026 games + real same-team 2025 games) rather
+    # than starters alone — a QB with one real 2026 start and a real,
+    # complete same-team 2025 season now gets a genuinely meaningful
+    # leave-one-out average instead of an honestly-undefined one.
+    def leave_one_out_avg(s):
+        n = len(s)
+        return (s.sum() - s) / (n - 1) if n > 1 else pd.Series([float("nan")] * n, index=s.index)
+    # Each real row's own leave-one-out average must exclude ITSELF
+    # specifically, from the FULL blended (2026+2025) group — computed as
+    # (blended sum - this row's own value) / (blended n - 1), so a real
+    # 2026 game correctly leaves out only its own real value while still
+    # counting every real 2025 game as part of the comparison group.
+    blended_n = qb_avg_sample.groupby("player_id")["passing_yards"].transform("size")
+    blended_sum = qb_avg_sample.groupby("player_id")["passing_yards"].transform("sum")
+    qb_avg_sample["qb_season_avg_loo"] = ((blended_sum - qb_avg_sample["passing_yards"]) / (blended_n - 1)).where(blended_n > 1)
+    # Real, explicit key-based merge — (player_id, week) uniquely
+    # identifies each real 2026 starter row, so this can't silently
+    # misalign the way a positional/index-based join risked doing.
+    starters = starters.merge(
+        qb_avg_sample.loc[qb_avg_sample["src"] == "2026", ["player_id", "week", "qb_season_avg_loo"]],
+        on=["player_id", "week"], how="left")
+
     starters = starters[["team", "week", "player_id", "player_display_name", "passing_yards",
-                          "qb_season_avg", "qb_starts"] +
+                          "qb_season_avg", "qb_season_avg_loo", "qb_starts"] +
                          (["headshot_url"] if "headshot_url" in starters.columns else [])]
 
     # --- team rushing yards per week + season average ---
@@ -4114,10 +4207,59 @@ def build_intel_reports(week=None):
     team_rush = team_stats[["team", "week", "rushing_yards"]].copy()
     team_rush_avg = team_rush.groupby("team")["rushing_yards"].mean().rename("team_rush_avg")
     team_rush = team_rush.join(team_rush_avg, on="team")
+    # Same real leave-one-out fix, same real reasoning, for the team's
+    # own rushing average — a team with one real game played has the
+    # identical real self-referential problem run_hot would otherwise have.
+
+    # REAL ADDITION (2026-09-23), same real reasoning and same real
+    # same-team QB gate as the QB passing extension above — this specific
+    # matchup (this QB's passing vs. THIS team's run game) only benefits
+    # from real 2025 history when the SAME real QB was running the SAME
+    # real team's offense that season too; a different real QB in 2025
+    # could mean a genuinely different real offensive approach and
+    # run/pass balance, so those real 2025 rushing games aren't pulled in
+    # for a team whose real 2026 starter is new this season.
+    same_team_teams = {starters.loc[starters["player_id"] == pid, "team"].iloc[0] for pid in same_team_pids}
+    try:
+        team_stats_2025 = fetch_csv([
+            f"https://github.com/nflverse/nflverse-data/releases/download/stats_team/stats_team_week_{SEASON-1}.csv"
+        ])
+        team_stats_2025 = normalize_team_cols(team_stats_2025, "team")
+        team_stats_2025 = team_stats_2025[team_stats_2025["season_type"] == "REG"] if "season_type" in team_stats_2025.columns else team_stats_2025
+        real_2025_team_rush = team_stats_2025[team_stats_2025["team"].isin(same_team_teams)][["team", "week", "rushing_yards"]].copy()
+    except SystemExit:
+        real_2025_team_rush = pd.DataFrame(columns=["team", "week", "rushing_yards"])
+
+    team_2026_sample = team_rush[["team", "week", "rushing_yards"]].copy()
+    team_2026_sample["src"] = "2026"
+    team_2025_sample = real_2025_team_rush.copy()
+    team_2025_sample["src"] = "2025"
+    team_rush_avg_sample = pd.concat([team_2026_sample, team_2025_sample], ignore_index=True)
+    blended_team_n = team_rush_avg_sample.groupby("team")["rushing_yards"].transform("size")
+    blended_team_sum = team_rush_avg_sample.groupby("team")["rushing_yards"].transform("sum")
+    team_rush_avg_sample["team_rush_avg_loo"] = (
+        (blended_team_sum - team_rush_avg_sample["rushing_yards"]) / (blended_team_n - 1)
+    ).where(blended_team_n > 1)
+    team_rush = team_rush.merge(
+        team_rush_avg_sample.loc[team_rush_avg_sample["src"] == "2026", ["team", "week", "team_rush_avg_loo"]],
+        on=["team", "week"], how="left")
 
     merged = starters.merge(team_rush, on=["team", "week"], how="inner")
-    merged["run_hot"] = merged["rushing_yards"] >= merged["team_rush_avg"]
-    merged["qb_hot"] = merged["passing_yards"] >= merged["qb_season_avg"]
+    # REAL CHANGE: hot/cold classification now uses the real, leave-one-
+    # out averages (never a game's own value pulling its own bar down to
+    # meet it) — the real, full-sample qb_season_avg/team_rush_avg
+    # columns are kept untouched below for real display purposes (what a
+    # reader sees as "this QB's season average" should still be the real,
+    # complete season number, not a per-game-varying leave-one-out one).
+    # REAL DETAIL: `value >= NaN` evaluates to False in pandas, not NaN —
+    # so a plain >= here would have silently miscounted a real one-game
+    # sample (undefined leave-one-out average) as genuinely "cold" rather
+    # than honestly excluding it. .where(...) explicitly keeps it NaN
+    # instead, which both real hot/cold filters below (g[g[col]] and
+    # g[~g[col]]) correctly drop either way — the real, honest "not
+    # enough sample to classify this one" outcome, not a fabricated cold.
+    merged["run_hot"] = (merged["rushing_yards"] >= merged["team_rush_avg_loo"]).where(merged["team_rush_avg_loo"].notna())
+    merged["qb_hot"] = (merged["passing_yards"] >= merged["qb_season_avg_loo"]).where(merged["qb_season_avg_loo"].notna())
 
     # --- run-defense rank for upcoming-opponent context (from teamstats, already built) ---
     # Only trust teamstats/latest.json's rank context if its OWN season
@@ -4172,10 +4314,10 @@ def build_intel_reports(week=None):
         name = g["player_display_name"].iloc[-1] if "player_display_name" in g.columns else str(pid)
         headshot = headshots.get(pid, "") if hasattr(headshots, "get") else ""
 
-        run_hot = g[g["run_hot"]]
-        run_cold = g[~g["run_hot"]]
-        qb_hot = g[g["qb_hot"]]
-        qb_cold = g[~g["qb_hot"]]
+        run_hot = g[g["run_hot"] == True]
+        run_cold = g[g["run_hot"] == False]
+        qb_hot = g[g["qb_hot"] == True]
+        qb_cold = g[g["qb_hot"] == False]
 
         qb_rate_hot, qb_n_hot = (round(100 * run_hot["qb_hot"].mean(), 1), len(run_hot)) if len(run_hot) else (None, 0)
         qb_rate_cold, qb_n_cold = (round(100 * run_cold["qb_hot"].mean(), 1), len(run_cold)) if len(run_cold) else (None, 0)
@@ -4196,8 +4338,8 @@ def build_intel_reports(week=None):
             game_opp = opponent_of.get((team, row["week"]))
             log.append({
                 "week": int(row["week"]), "opponent": game_opp,
-                "qb_pass_yds": round(row["passing_yards"], 1), "qb_hit": bool(row["qb_hot"]),
-                "team_rush_yds": round(row["rushing_yards"], 1), "run_hit": bool(row["run_hot"]),
+                "qb_pass_yds": round(row["passing_yards"], 1), "qb_hit": bool(row["qb_hot"]) if pd.notna(row["qb_hot"]) else None,
+                "team_rush_yds": round(row["rushing_yards"], 1), "run_hit": bool(row["run_hot"]) if pd.notna(row["run_hot"]) else None,
                 "opp_run_def_rank": run_def_rank.get(game_opp), "opp_pass_def_rank": pass_def_rank.get(game_opp),
             })
 
@@ -4226,6 +4368,17 @@ def build_intel_reports(week=None):
         rb_leaders = rb.loc[rb.groupby(["team", "week"])["carries"].idxmax()].copy()
         rb_season_avg = rb_leaders.groupby("player_id")["rushing_yards"].mean().rename("rb_season_avg")
         rb_leaders = rb_leaders.join(rb_season_avg, on="player_id")
+        # REAL BUG FIX (2026-09-23), same real fix, same real reasoning as
+        # qb_season_avg_loo/team_rush_avg_loo above — rb_season_avg is the
+        # identical real self-referential average, and the existing
+        # `if len(g) < 2: continue` below only ever protected against the
+        # most extreme real case (exactly one real game). A real RB with
+        # exactly two real games still had the same real bias — the two-
+        # game average sits between the two real values, so one game is
+        # always >= it and the other always < it, an artificial real 50/50
+        # split that's still an artifact of the self-reference, not a real
+        # signal about that back's actual tendencies.
+        rb_leaders["rb_season_avg_loo"] = rb_leaders.groupby("player_id")["rushing_yards"].transform(leave_one_out_avg)
         rb_headshots = (rb_leaders.groupby("player_id")["headshot_url"].last()
                          if "headshot_url" in rb_leaders.columns else {})
 
@@ -4246,7 +4399,12 @@ def build_intel_reports(week=None):
         # season, before the season-fallback above existed). Explicit
         # cast back to real bool dtype fixes it at the root.
         rb_leaders["qb_hot"] = rb_leaders["qb_hot"].astype(bool)
-        rb_leaders["rb_hot"] = rb_leaders["rushing_yards"] >= rb_leaders["rb_season_avg"]
+        # REAL CHANGE: same real .where(...) NaN-preservation as run_hot/
+        # qb_hot above — value >= NaN is False in pandas, not NaN, so
+        # without this a real single-game RB (undefined leave-one-out
+        # average) would silently get miscounted as "cold" instead of
+        # honestly excluded.
+        rb_leaders["rb_hot"] = (rb_leaders["rushing_yards"] >= rb_leaders["rb_season_avg_loo"]).where(rb_leaders["rb_season_avg_loo"].notna())
 
         for team, g in rb_leaders.groupby("team"):
             primary_pid = g.groupby("player_id").size().idxmax()
@@ -4258,10 +4416,10 @@ def build_intel_reports(week=None):
             name = g["player_display_name"].iloc[-1] if "player_display_name" in g.columns else str(pid)
             headshot = rb_headshots.get(pid, "") if hasattr(rb_headshots, "get") else ""
 
-            qb_hot_g = g[g["qb_hot"]]
-            qb_cold_g = g[~g["qb_hot"]]
-            rb_hot_g = g[g["rb_hot"]]
-            rb_cold_g = g[~g["rb_hot"]]
+            qb_hot_g = g[g["qb_hot"] == True]
+            qb_cold_g = g[g["qb_hot"] == False]
+            rb_hot_g = g[g["rb_hot"] == True]
+            rb_cold_g = g[g["rb_hot"] == False]
 
             rb_rate_hot, rb_n_hot = (round(100*qb_hot_g["rb_hot"].mean(),1), len(qb_hot_g)) if len(qb_hot_g) else (None,0)
             rb_rate_cold, rb_n_cold = (round(100*qb_cold_g["rb_hot"].mean(),1), len(qb_cold_g)) if len(qb_cold_g) else (None,0)
@@ -4280,8 +4438,8 @@ def build_intel_reports(week=None):
                 qb_yds = row["passing_yards_qb"] if "passing_yards_qb" in row.index else row.get("passing_yards")
                 rb_log.append({
                     "week": int(row["week"]), "opponent": game_opp,
-                    "rb_rush_yds": round(row["rushing_yards"], 1), "rb_hit": bool(row["rb_hot"]),
-                    "qb_pass_yds": round(qb_yds, 1) if pd.notna(qb_yds) else None, "qb_hit": bool(row["qb_hot"]),
+                    "rb_rush_yds": round(row["rushing_yards"], 1), "rb_hit": bool(row["rb_hot"]) if pd.notna(row["rb_hot"]) else None,
+                    "qb_pass_yds": round(qb_yds, 1) if pd.notna(qb_yds) else None, "qb_hit": bool(row["qb_hot"]) if pd.notna(row["qb_hot"]) else None,
                     "opp_run_def_rank": run_def_rank.get(game_opp), "opp_pass_def_rank": pass_def_rank.get(game_opp),
                 })
 

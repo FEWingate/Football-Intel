@@ -84,7 +84,7 @@ let currentPlayerRows = [], activePlayer = null, activeSec = 'season', logStatKe
 
 let currentView = 'team_off'; // 'team_off' | 'players' | 'dvp' | 'cbdb' | 'rank_shifts'
 
-let rankShiftsSide = 'offense', rankShiftsCat = null, rankShiftsSortKey = 'absRankDiff', rankShiftsSortDir = 'desc';
+let rankShiftsSide = 'offense', rankShiftsCat = null, rankShiftsPos = 'RB', rankShiftsSortKey = 'absRankDiff', rankShiftsSortDir = 'desc';
 // REAL ADDITION (2026-09-22), per Frank's own direct request (Saturday's
 // conversation): a real, side-by-side comparison of each real team's
 // season-long carryover rank (the "r" field already on every real
@@ -348,7 +348,7 @@ function fmtVal(v){
 }
 
 /* ── RANK SHIFTS (2025 carryover rank vs. real, computed 2026 rank) ── */
-const RANK_SHIFTS_HIGHER_IS_BETTER = { offense: true, defense: false };
+const RANK_SHIFTS_HIGHER_IS_BETTER = { offense: true, defense: false, dvp: false };
 
 let RANK_SHIFTS_WK = null; // real, current-season matchup data — always
 // live/unprefixed, deliberately independent of the page's own season
@@ -392,9 +392,16 @@ async function setupRankShiftsControls(){
       Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
     return;
   }
-  $("innerTabs").innerHTML = ['offense', 'defense'].map(s =>
+  // REAL ADDITION (2026-09-23), per Frank's direct request: a third
+  // real option alongside Offense/Defense — "vs Position" reuses the
+  // exact same real {v, r, v26} shape confirmed on team_off/team_def,
+  // just nested one level deeper under a real position
+  // (wk.teams[team].def[pos][stat]) — the real rank computation below
+  // needed zero changes, since it already works on any (side, cat) ->
+  // v26 lookup regardless of where that lookup actually points.
+  $("innerTabs").innerHTML = ['offense', 'defense', 'dvp'].map(s =>
     `<button role="tab" aria-selected="${s===rankShiftsSide}" data-side="${s}">
-      ${s==='offense'?'Offense':'Defense'}</button>`).join('');
+      ${s==='offense'?'Offense':s==='defense'?'Defense':'vs Position'}</button>`).join('');
   $("innerTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
     $("innerTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
     rankShiftsSide = b.dataset.side;
@@ -402,22 +409,55 @@ async function setupRankShiftsControls(){
     // keys (ppg, total_ypg, etc.), but a stale selected category
     // shouldn't silently carry over into the other side without the
     // person noticing which category they're actually now looking at.
+    // Same real reasoning extends to switching into/out of "vs
+    // Position" — its real category set (per-position labels) is
+    // genuinely different from team_off/team_def's own five.
     rankShiftsCat = null;
     rankShiftsSortKey = 'absRankDiff'; rankShiftsSortDir = 'desc';
     renderRankShiftsTable();
   });
+
   renderRankShiftsTable();
 }
 
 function renderRankShiftsTable(){
   const wk = RANK_SHIFTS_WK;
+  // REAL BUG FIX (2026-09-23), per Frank's direct catch: the weekSel
+  // (position dropdown) visibility toggle used to live in
+  // setupRankShiftsControls() above — which only runs ONCE, when the
+  // Rank Shifts tab first opens. Clicking between Offense/Defense/vs
+  // Position only ever calls renderRankShiftsTable() afterward, which
+  // never touched weekSel's visibility at all — so it stayed hidden
+  // forever once a person switched away from whatever side was active
+  // on first load. Moved here, which runs on every real switch, so
+  // weekSel's shown/hidden state always stays correctly synced with
+  // the real, current rankShiftsSide.
+  if(rankShiftsSide === 'dvp'){
+    $("weekSel").style.display = '';
+    $("weekSel").innerHTML = POSITIONS.map(p =>
+      `<option value="${p}"${p===rankShiftsPos?' selected':''}>${p}</option>`).join('');
+    $("weekSel").onchange = e => {
+      rankShiftsPos = e.target.value;
+      rankShiftsCat = null;
+      rankShiftsSortKey = 'absRankDiff'; rankShiftsSortDir = 'desc';
+      renderRankShiftsTable();
+    };
+  } else {
+    $("weekSel").style.display = 'none';
+  }
+  // REAL ADDITION (2026-09-23): "vs Position" reads the same real
+  // per-team, per-category {v, r, v26} cells DvP already reads
+  // (wk.teams[team].def[pos][stat], wk.labels.pos[pos]) — genuinely
+  // the SAME real data DvP itself shows, just compared across both
+  // real seasons here instead of shown for one at a time.
+  const isDvp = rankShiftsSide === 'dvp';
   const sideKey = rankShiftsSide === 'offense' ? 'team_off' : 'team_def';
-  const labels = wk.labels[sideKey];
+  const labels = isDvp ? wk.labels.pos[rankShiftsPos] : wk.labels[sideKey];
   const cats = Object.keys(labels);
   if(!rankShiftsCat || !cats.includes(rankShiftsCat)) rankShiftsCat = cats[0];
 
   $("catTabs").innerHTML = cats.map(c =>
-    `<button role="tab" aria-selected="${c===rankShiftsCat}" data-cat="${esc(c)}">${esc(labels[c])}</button>`).join('');
+    `<button role="tab" aria-selected="${c===rankShiftsCat}" data-cat="${esc(c)}">${esc(typeof labels[c] === 'object' ? labels[c].l : labels[c])}</button>`).join('');
   $("catTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
     rankShiftsCat = b.dataset.cat;
     rankShiftsSortKey = 'absRankDiff'; rankShiftsSortDir = 'desc';
@@ -427,7 +467,9 @@ function renderRankShiftsTable(){
   const higherIsBetter = RANK_SHIFTS_HIGHER_IS_BETTER[rankShiftsSide];
   const rows = Object.entries(wk.teams)
     .map(([abbr, t]) => {
-      const cell = (t[sideKey] || {})[rankShiftsCat];
+      const cell = isDvp
+        ? ((t.def || {})[rankShiftsPos] || {})[rankShiftsCat]
+        : (t[sideKey] || {})[rankShiftsCat];
       if(!cell) return null;
       return { abbr, rank2025: cell.r, val2025: cell.v, val2026: cell.v26 ?? null };
     })
