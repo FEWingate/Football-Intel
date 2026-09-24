@@ -92,7 +92,7 @@ const contextPath = (season, week) => season === 2026
 
 const wkSel=$("wk");
 for(let w=3;w<=18;w++){const o=document.createElement("option");o.value=w;o.textContent="Week "+w;wkSel.appendChild(o);}
-wkSel.value=10;
+wkSel.value=18; // REAL CHANGE (2026-09-24), per Frank's direct request: opens on the last, most complete week of 2025 (full-season carryover data) until enough real 2026 games exist to be worth opening on by default.
 wkSel.addEventListener("change",()=>load(Number(wkSel.value)));
 $("szn").value = String(season);
 $("szn").addEventListener("change", () => { season = Number($("szn").value); load(Number(wkSel.value)); });
@@ -234,7 +234,7 @@ function render(){
   $("body").innerHTML = h;
 }
 
-load(10);
+load(18); // kept in sync with wkSel.value above
 </script>
 </body>
 </html>

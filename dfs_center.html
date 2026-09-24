@@ -955,6 +955,27 @@ function renderBuilderSearch(){
   });
 }
 
+// BUG FIX (2026-09-24), per Frank's direct, real catch: across four
+// real, completely different stacks (BAL/HOU/DAL/CIN, ranging $9,700
+// to $19,100 in real pinned salary), the SOLVER-picked slots kept
+// landing on the exact same real players (Kenneth Walker III, Jaylen
+// Warren, Kayshon Boutte, Travis Kelce) every time, regardless of what
+// was pinned or how much real budget was actually left. Root cause:
+// this completor is a single, deterministic LP solve with NO real
+// mechanism to differ from its own prior output — unlike the 25-lineup
+// generator below, which already solves this exact real problem via
+// priorPidSets/minDiff (each new lineup required to differ from every
+// earlier one in the same real batch). Reusing that same, already-
+// proven mechanism here: remember what the solver chose last time
+// (non-pinned players only — a stack's own QB/WR pins were never part
+// of a prior SOLVER choice, so there's no real overlap risk there),
+// and require at least a couple of real, different picks next time.
+// If that ever makes the model infeasible (a genuinely thin slate at
+// some position), fall back to the old, unconstrained solve rather
+// than failing outright — real variety is a real preference, not
+// worth breaking a completion that would otherwise work.
+let lastGeneratedPids = null;
+
 function generateRestOfLineup(){
   if(typeof solver === 'undefined') return;
   const pool = CSV_PLAYERS
@@ -965,8 +986,62 @@ function generateRestOfLineup(){
   const pinnedPids = new Set(pinned.map(p => p.__pid));
   const scoreField = SCORE_FIELDS[scoringMode] || STACK_BASIS_FIELDS[stackBasis] || 'quality';
 
-  const model = buildLineupModel(pool, [], 0, stackMode, false, scoreField, false, pinnedPids);
-  const result = solver.Solve(model);
+  const priorPidSets = lastGeneratedPids ? [lastGeneratedPids] : [];
+  // SECOND BUG FIX (2026-09-24), per Frank's direct, real catch that the
+  // first version of this fix "didn't work at all": confirmed directly
+  // against a real DAL-stack generation followed by a real KC-stack
+  // generation — RB1, RB2/FLEX, and two of three WRs all repeated
+  // exactly; only the DST changed. minDiff=2 against 7 real solver-
+  // controlled slots (9 total minus 2 pinned) let the solver satisfy
+  // "differ by at least 2" the cheapest possible way — swapping the
+  // DST, which barely moves the real quality objective — rather than
+  // genuinely varying the real skill positions this was meant to fix.
+  // Scaling minDiff to over half the real open slots (not a small fixed
+  // number) closes that loophole: satisfying it now requires real
+  // change among the real RB/WR/TE picks, not just the cheapest slot
+  // available. The real fallback below still protects against this
+  // ever making a completion outright infeasible.
+  const openSlotCount = 9 - pinnedPids.size;
+  const minDiff = priorPidSets.length ? Math.max(2, Math.ceil(openSlotCount / 2) + 1) : 0;
+
+  // BUG FIX (2026-09-24), per Frank's direct, real catch, citing the
+  // same real article as TE_FLEX_CAPS elsewhere in this file (TE won
+  // real FLEX in only 10.0% of 80 real DraftKings Millionaire Maker
+  // winners, 2021–2025 — RB 43.8%, WR 46.3%): this completor hardcoded
+  // forceSingleTE = false unconditionally, so a 2nd TE in FLEX was
+  // treated as just as valid as an RB/WR every time — and since TEs
+  // tend to be cheap, a quality-maximizing objective kept reaching for
+  // one to fill FLEX. The 25-lineup generator already solves this the
+  // same real way (a ~10% random per-lineup allowance, for BATCH
+  // variety across many lineups) — but this is a single, deliberate
+  // stack build, not a batch needing portfolio variety, so this
+  // defaults to always excluding a 2nd TE rather than a random chance
+  // of one. The one real exception: if two TEs are ALREADY pinned
+  // (the user deliberately placed them both by hand), forcing a
+  // single-TE constraint here would fight that explicit choice and
+  // make the model infeasible for no good reason — so this only
+  // forces single-TE when fewer than 2 TEs are already pinned.
+  const pinnedTeCount = pinned.filter(p => p.pos === 'TE').length;
+  const forceSingleTE = pinnedTeCount < 2;
+
+  // enforceSalaryFloor: false — see the real reason in buildLineupModel
+  // above. Pins have already spent an unpredictable, uncontrolled chunk
+  // of the $50,000 before this ever runs, so forcing the real $48,500
+  // floor here was what pushed a low-quality filler into whatever slot
+  // was left, and kept landing on the same one regardless of the pins.
+  // minPlayerSalary: 4500 — per Frank's direct choice, a real floor on
+  // solver-picked RB/WR/TE so the solver can no longer reach for a true
+  // scrub just because it's cheap. Pinned players are never excluded by
+  // this regardless of price (see buildLineupModel above).
+  let model = buildLineupModel(pool, priorPidSets, minDiff, stackMode, false, scoreField, forceSingleTE, pinnedPids, false, 4500);
+  let result = solver.Solve(model);
+  if(!result.feasible && priorPidSets.length){
+    // Real fallback: the variety requirement made this specific
+    // combination infeasible — retry without it rather than showing an
+    // error for what would otherwise be a perfectly good completion.
+    model = buildLineupModel(pool, [], 0, stackMode, false, scoreField, forceSingleTE, pinnedPids, false, 4500);
+    result = solver.Solve(model);
+  }
   if(!result.feasible){
     $("builderSalary").textContent = 'No feasible completion — try clearing an exclusion or picking a cheaper stack.';
     $("builderSalary").className = 'builder-sub over';
@@ -977,13 +1052,16 @@ function generateRestOfLineup(){
   initBuilderSlots();
   // place pinned players first so they land in the same slots as before
   pinned.forEach(p => placeInBuilder(p));
-  chosen.filter(p => !pinnedPids.has(p.__pid)).forEach(p => placeInBuilder(p));
+  const solverChosen = chosen.filter(p => !pinnedPids.has(p.__pid));
+  solverChosen.forEach(p => placeInBuilder(p));
+  lastGeneratedPids = new Set(solverChosen.map(p => p.__pid));
   renderBuilderPanel();
 }
 
 function setupBuilderControls(){
   $("clearBuilderBtn").onclick = () => {
     initBuilderSlots(); selectedStackSig = null; builderSearchTerm = ''; excludedNames = new Set();
+    lastGeneratedPids = null; // real fresh start — no variety history to compare against
     $("builderSearchBox").value = '';
     renderStacks();
   };
@@ -1042,9 +1120,53 @@ function teamOpponentMap(players){
   return map;
 }
 
-function buildLineupModel(players, priorPidSets, minDiff, mode, bringBack, scoreField, forceSingleTE, pinnedPids){
+function buildLineupModel(players, priorPidSets, minDiff, mode, bringBack, scoreField, forceSingleTE, pinnedPids, enforceSalaryFloor, minPlayerSalary){
   scoreField = scoreField || 'quality';
   pinnedPids = pinnedPids || new Set();
+  // BUG FIX (2026-09-24), per Frank's direct, real catch (a real
+  // generated lineup forced in a $3,000 RB/WR/TE that rarely plays):
+  // 'quality' (this solver's whole objective) is 0.5*oppScore +
+  // 0.5*perfScore — confirmed directly against computeAll() above —
+  // with NO salary-efficiency term at all, even though this file
+  // already computes one (valueScore) for other displays. Maximizing
+  // raw quality under only a MAX salary constraint naturally buys the
+  // best players it can afford slot by slot, front-loading spend onto
+  // several studs and leaving whatever's cheapest for whatever's left
+  // — cheap, not good. Real per-player minimum floor for the skill
+  // positions that fill FLEX (RB/WR/TE) removes true scrub-tier
+  // players from consideration entirely, rather than trying to fix
+  // this through the scoring formula itself (which is also used for
+  // on-page rankings elsewhere, well beyond just this solver). A
+  // player the user PINNED themselves is never excluded by this,
+  // regardless of price — this only limits what the SOLVER can freely
+  // choose for open slots. Off (0) by default — unchanged behavior
+  // for the 25-lineup generator, which doesn't pass this yet.
+  minPlayerSalary = minPlayerSalary || 0;
+  if(minPlayerSalary){
+    players = players.filter(p => pinnedPids.has(p.__pid) ||
+      !['RB','WR','TE'].includes(p.pos) || p.salary >= minPlayerSalary);
+  }
+  // BUG FIX (2026-09-24), per Frank's direct, real catch: the single-
+  // lineup Best Plays completor (generateRestOfLineup) always produced
+  // the same "rest of the lineup" regardless of what was pinned, AND
+  // forced a low-quality, rarely-played filler into whatever slot was
+  // left just to spend remaining salary. Traced to this same salary
+  // floor below: it's real and correct for a FULL, from-scratch 9-slot
+  // build (the 25-lineup generator, which still gets it — see
+  // generateLineups()'s call below, unchanged) where the real EdgeLine
+  // evidence actually applies. But once several slots are already
+  // PINNED, they consume an unpredictable chunk of the $50,000 before
+  // the solver ever runs, leaving a narrow, specific leftover-budget
+  // window for the remaining slot(s). Very few real players are both
+  // high-quality AND priced to land in that exact narrow window — so
+  // the solver was forced to reach for whichever player's price closed
+  // the gap, real quality be damned, and kept landing on the same one
+  // or two "floor-filling" players run after run regardless of the
+  // actual pins, since the leftover-budget window is similar every
+  // time. Defaults to true (unchanged behavior for the 25-lineup
+  // generator, which never passes this and still gets the real floor);
+  // generateRestOfLineup() below passes false.
+  enforceSalaryFloor = enforceSalaryFloor !== false;
   const variables = {}, binaries = {};
   const constraints = {
     // REAL ADDITION (2026-09-21), per Frank's direct, real root-cause
@@ -1058,8 +1180,10 @@ function buildLineupModel(players, priorPidSets, minDiff, mode, bringBack, score
     // (97% of cap) is deliberately a little looser than the real $49,900
     // median, to leave real feasibility margin once stacking/bring-back
     // constraints are layered on too — still meaningfully closes the
-    // real gap that let a cheap FLEX TE go unpunished before.
-    salary: { min: 48500, max: 50000 }, total: { equal: 9 },
+    // real gap that let a cheap FLEX TE go unpunished before. Applied
+    // only when enforceSalaryFloor is true — see the real reason above
+    // for why the single-lineup completor turns it off.
+    salary: { min: enforceSalaryFloor ? 48500 : 0, max: 50000 }, total: { equal: 9 },
     isQB: { equal: 1 }, isDST: { equal: 1 },
     isRB: { min: 2, max: 3 }, isWR: { min: 3, max: 4 },
     isTE: forceSingleTE ? { equal: 1 } : { min: 1, max: 2 },
@@ -1120,6 +1244,34 @@ function buildLineupModel(players, priorPidSets, minDiff, mode, bringBack, score
         const vid = 'p' + p.__pid;
         if(p.team === O) variables[vid][key] = 1;
         if(p.team === T && p.pos === 'QB') variables[vid][key] = M;
+      });
+    });
+  }
+
+  // BUG FIX (2026-09-24), per Frank's direct, real catch: a real
+  // generated lineup had two Ravens skill players (WR + WR) with no
+  // Ravens QB in the lineup at all — real correlation-risk exposure to
+  // one team's game script with none of the actual stacking benefit,
+  // and nothing here was stopping it. The existing stack constraint
+  // above only ever REQUIRES extra same-team players once that team's
+  // OWN QB is picked — it never CAPS any other team's skill-player
+  // count. Same real Big-M pattern as onslaught's zero-opponent-
+  // exposure constraint just above: cap every team's real skill-
+  // position count at 1, UNLESS that team's own QB is picked (the M
+  // term relaxes the cap entirely there, leaving the real stack-size
+  // constraint above to govern how many catchers are required
+  // instead). This also naturally covers the real bring-back case —
+  // bring-back only ever wants exactly 1 real opponent player, which
+  // this cap already allows.
+  {
+    const M = 9;
+    teams.forEach(T => {
+      const key = 'nonStackCap_' + T;
+      constraints[key] = { max: 1 };
+      players.forEach((p) => {
+        const vid = 'p' + p.__pid;
+        if(p.team === T && stackPositions.includes(p.pos)) variables[vid][key] = 1;
+        if(p.team === T && p.pos === 'QB') variables[vid][key] = -M;
       });
     });
   }
