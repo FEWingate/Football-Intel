@@ -113,12 +113,63 @@ def verify_evidence_check(evidence_check, evidence_by_game):
 
         elif ctype == "current_opponent":
             team, pos, stat, role = claim.get("team"), claim.get("pos"), claim.get("stat"), claim.get("role")
+            # BUG FIX (2026-09-24), per Frank's direct catch: a real,
+            # complete report's EVIDENCE_CHECK block had every single
+            # current_opponent claim (65 of them, team-level AND
+            # position-level) come back as "no real matchup data found"
+            # — confirmed directly against the real evidence file that
+            # evidence["matchup"] is keyed by "away"/"home", never by
+            # team code directly (matchup.get(team) was always None,
+            # regardless of whether the claimed rank was actually
+            # right). The rank_shift branch right below already solves
+            # this exact real problem correctly — resolve team -> side
+            # via that game's own game.away/game.home first — so this
+            # now does the same. Separately, a real, complete matchup
+            # side's data splits "pos: TEAM" claims (team_off/team_def)
+            # from position-specific claims (off/def, keyed by RB/WR/
+            # TE/QB) into two different real groups, not one — confirmed
+            # directly against a real matchup["away"] block — so this
+            # now branches on pos == "TEAM" to read the right one.
             real_rank = None
             for game_evidence in evidence_by_game.values():
-                matchup = (game_evidence.get("matchup") or {}).get(team)
-                if matchup is None:
+                game_info = game_evidence.get("game") or {}
+                side = ("away" if game_info.get("away") == team
+                         else "home" if game_info.get("home") == team else None)
+                if side is None:
                     continue
-                cell = (matchup.get(role) or {}).get(pos, {}).get(stat)
+                side_data = (game_evidence.get("matchup") or {}).get(side)
+                if not isinstance(side_data, dict):
+                    continue
+                if pos == "TEAM":
+                    # BUG FIX (2026-09-24), per Frank's direct catch on a
+                    # real, complete report: 10 more current_opponent
+                    # claims (all third-down and red-zone TEAM stats)
+                    # came back "no real matchup data found" — confirmed
+                    # directly these real stats never lived in `matchup`
+                    # at all, only in two separate real blocks,
+                    # down_distance and red_zone_play_calling, each
+                    # keyed the same real away/home way. Their real stat
+                    # names (third_down_conversion_pct, red_zone_run_pct,
+                    # etc.) never overlap with matchup's own (ppg,
+                    # pass_ypg, ...), confirmed directly against both
+                    # real blocks — so checking all three real sources in
+                    # order, for pos == "TEAM" only, is safe and
+                    # unambiguous.
+                    group = side_data.get("team_off") if role == "off" \
+                        else side_data.get("team_def") if role == "def" else None
+                    cell = (group or {}).get(stat) if isinstance(group, dict) else None
+                    side_group = "offense" if role == "off" else "defense" if role == "def" else None
+                    if not (isinstance(cell, dict) and cell.get("r") is not None) and side_group:
+                        for block_key in ("down_distance", "red_zone_play_calling"):
+                            block = (game_evidence.get(block_key) or {}).get(side) or {}
+                            group2 = block.get(side_group)
+                            cell2 = (group2 or {}).get(stat) if isinstance(group2, dict) else None
+                            if isinstance(cell2, dict) and cell2.get("r") is not None:
+                                cell = cell2
+                                break
+                else:
+                    group = (side_data.get(role) or {}).get(pos)
+                    cell = (group or {}).get(stat) if isinstance(group, dict) else None
                 if isinstance(cell, dict) and cell.get("r") is not None:
                     real_rank = cell.get("r")
                     break

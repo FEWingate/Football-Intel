@@ -1387,10 +1387,25 @@ async function renderGbSingleReport(){
       md = await res.text();
       gbReportCache[`${g.wk}:${key}`] = md;
     }
-    body.innerHTML = `<div class="gb-report">${marked.parse(md)}</div>`;
+    body.innerHTML = `<div class="gb-report">${marked.parse(stripEvidenceCheck(md))}</div>`;
   }catch(e){
     body.innerHTML = `<div class="empty">This report could not be loaded.</div>`;
   }
+}
+
+// BUG FIX (2026-09-24), per Frank's direct catch: generate_game_breakdown.py
+// appends a real, machine-readable EVIDENCE_CHECK JSON block (plus a "---"
+// divider right before it) to the end of every report on disk — genuinely
+// needed there, since evidence_check_validator.py reads it straight off the
+// saved .md file to verify Coeus's rank claims. But this page was fetching
+// that same raw .md file and handing it straight to marked.parse() with no
+// trimming, so the block rendered on-screen as raw, unstyled JSON for
+// anyone reading the report. The underlying .md file on disk is untouched
+// by this — only what gets displayed here is cut, right before render.
+function stripEvidenceCheck(md){
+  const idx = md.indexOf('EVIDENCE_CHECK');
+  if(idx === -1) return md;
+  return md.slice(0, idx).replace(/\n{0,2}-{3,}\s*$/, '').trimEnd();
 }
 
 load();

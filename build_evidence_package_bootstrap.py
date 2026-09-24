@@ -731,12 +731,47 @@ def main():
               "use players/latest.json's stats-based team, which may be stale during "
               "the offseason (trades/signings won't be reflected).")
 
+    # REAL ADDITION (2026-09-24), per Frank's direct catch (a real
+    # ATL@GB report had Cooper Rush as Atlanta's confirmed QB, with no
+    # way to know Michael Penix Jr. was returning from injury to start
+    # that same night): real 2026 game logs only ever show who has
+    # ALREADY played — they have no way to reflect a starter change
+    # announced mid-week with zero games played under it yet. Confirmed
+    # directly that depth_charts/latest.json already carries exactly
+    # this signal (Penix at real pos_rank 1, ahead of Rush at 3, dated
+    # the day before this real game) — this project already fetches it,
+    # it just never made it into the evidence package. Loaded once here,
+    # same real pattern as rosters_json just above, and filtered to the
+    # real skill positions a Game Breakdown actually discusses (QB/RB/
+    # WR/TE — confirmed these are flat pos_abb values in this file,
+    # unlike OL/DB positions which split left/right).
+    depth_charts_json = load_json("depth_charts/latest.json")
+    DEPTH_CHART_POSITIONS = {"QB", "RB", "WR", "TE"}
+    depth_chart_by_id = {}
+    depth_chart_as_of = None
+    if depth_charts_json:
+        depth_chart_as_of = depth_charts_json.get("as_of")
+        for team, entries in (depth_charts_json.get("teams") or {}).items():
+            for e in entries:
+                if e.get("pos_abb") in DEPTH_CHART_POSITIONS and e.get("gsis_id"):
+                    depth_chart_by_id[e["gsis_id"]] = {
+                        "team": team, "pos_abb": e["pos_abb"], "pos_rank": e.get("pos_rank"),
+                    }
+    else:
+        print("  WARNING: depth_charts/latest.json not found — reports will have no way "
+              "to catch a real starter change with zero 2026 games played under it yet.")
+
     required = {"matchup": matchup_json, "players": players_json}
     missing = [k for k, v in required.items() if v is None]
     if missing:
         sys.exit(f"FATAL: required bootstrap file(s) missing for {bwk}: {missing}.")
 
     global_notes = []
+    if depth_charts_json is None:
+        global_notes.append("No depth_charts/latest.json found — this evidence has no real "
+                            "current depth-chart signal at all. A starter determined purely "
+                            "from 2026 game logs may be wrong if a change was announced this "
+                            "week with no games played under it yet.")
     if dfs_json is None:
         global_notes.append("No dfs/wkNN.json found — run build_dfs.py first. "
                             "DFS evidence will be unavailable.")
@@ -832,6 +867,13 @@ def main():
                 # so mutating it here would leak season_2025 onto every
                 # later game's use of the same player record.
                 p_out = {**p, "season_2025": players_2025_by_id.get(p.get("gsis_id"))}
+                # REAL ADDITION (2026-09-24) — see the depth_chart load above
+                # for the full real reasoning. None (not omitted) when this
+                # player has no real depth-chart entry at all — genuinely
+                # unavailable, not "not a starter," same honest-null
+                # convention already used for home_road_split above.
+                p_out["depth_chart"] = depth_chart_by_id.get(p.get("gsis_id"))
+                p_out["depth_chart_as_of"] = depth_chart_as_of
                 if p.get("team") == away:
                     side = "road"
                 elif p.get("team") == home:

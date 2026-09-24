@@ -1,258 +1,226 @@
 # GAME BREAKDOWN: Atlanta Falcons @ Green Bay Packers
-### Week 3, 2026 Season | 09/24/2026, 8:15 PM ET
+### Week 3, 2026 Season | Scheduled 09/24/2026, 8:15 PM ET
 
-**EVIDENCE BASIS NOTE:** This game has not been played — there is no box score or line for this specific matchup. The evidence package blends three distinct layers, and each is used only for what it's actually good for: (1) real 2026 in-season data through two games for both teams (records, individual game logs, snap shares, injury report); (2) full 2025 season-final data for team-level tendencies, opponent-quality splits, and down/distance and red-zone play-calling profiles; and (3) a small number of matchup-pattern fields (`qb_run_vs_pass`, `rb_rush_vs_pass`, `blitz_qb`) whose *opponent-quality context* was explicitly flagged in the data as either recomputed for this specific ATL–GB pairing or, in the case of the blitz fields, **not** recomputed and still tied to each team's real prior opponent — those un-recomputed opponent fields are not used below. Where 2025-final and 2026-to-date paint different pictures of the same unit, both are cited explicitly, per the Rank Shift evidence.
+**EVIDENCE VINTAGE NOTICE:** This specific game has not been played — there is no box score, result, or head-to-head history between these two teams to draw on this season. However, unlike a full "cold bootstrap," both teams DO have real, live 2026 in-season data: Atlanta is 0-2, Green Bay is 1-1, and every player in this report has two actual 2026 games logged. Season-long team and player rankings in this report draw on full 2025 season-final data (labeled "2025" throughout) as the stable baseline, layered with actual 2026 season-to-date figures and — critically — real rank_shift data showing how each team's unit rank has moved from 2025 to early 2026. Down/Distance, Red Zone Play Calling, and Threat Intelligence data in the evidence package are 2025 season-final only (no 2026 update yet computed for those fields) and are labeled as such below. Coverage-scheme data (team man/zone rates, individual CB/DB rankings) was not available in this evidence package for either team — that gap is flagged explicitly where relevant rather than filled in.
 
 ---
 
 ## 1. PREGAME BRIEFING
 
-Atlanta is 0-2 to open 2026, on the road for a second straight week. Green Bay is 1-1, coming off a lopsided Week 1 win over Minnesota and a much quieter Week 2 output. This is the first meeting between these two teams this season — there is no head-to-head data to draw on, and this is not a division game, so there's no multi-year familiarity to lean on either. Every read on this game has to come from each team's own current form.
+Atlanta arrives at 0-2 with an offense that has fallen off a cliff to start 2026 — after finishing the 2025 season 24th in scoring (20.8 ppg), the Falcons are averaging just 8.0 points per game through two 2026 contests. Green Bay is 1-1, and its own story is almost a mirror image on the other side of the ball: a passing attack that has taken a real step forward (266.0 pass yds/gm through two games, up from 226.2 in 2025) paired with a running game that has completely disappeared (64.5 rush yds/gm, down from 119.8 in 2025).
 
-Both team identities are shifting fast early in this season relative to their 2025 baselines. Atlanta's offense — a legitimately productive, ground-based unit in 2025 — has fallen off across nearly every category through two games, most dramatically in the passing game. Green Bay's offense has moved in the opposite direction through the air (a real uptick in passing production) while its own ground game has gone the other way. On defense, both units show real movement too, in ways that don't line up neatly with either team's reputation entering the season.
+There is no 2025 or 2026 meeting between these two teams to draw on — this is the first matchup of the season between them, and the bootstrap note confirms this specific pairing has no real head-to-head history in the evidence package.
 
-Broadly, this profiles as a game where each team's passing operation is likely to matter more than its running game — both backfields carry real questions right now, for different reasons — which puts real weight on protection, pressure, and each defense's ability to defend the pass. The deeper "why" behind several of these swings is worth its own look rather than a surface-level summary here (see Hidden Intelligence).
+Broad thesis: on paper, this profiles as a game where the passing lanes matter more than the ground game for both sides. Green Bay's offense has been trending toward the air, Atlanta's offense has been struggling across the board, and both defenses have shown meaningful early-season shifts from their 2025 form that are worth digging into before drawing any conclusions about how the two team identities actually collide. The deeper mechanics of exactly how that collision plays out — and what's driving each team's early-season swings — are the subject of the sections that follow.
 
 ---
 
 ## 2. INJURY & AVAILABILITY REPORT
 
-**Source: nflverse real injury report** (status policy: final designation or limited practice participation). Every player below currently carries a **"Pending"** report status, meaning a final game-status designation (Out/Doubtful/Questionable) has not yet been assigned as of this evidence freeze — only practice participation is confirmed.
+Source: nflverse real injury report (status_policy: final designation or limited practice) — this is a genuine, dedicated injury feed for this game, not the DraftKings-status fallback used when better data isn't available.
 
 **Atlanta:**
-- **Samson Ebukam (DE)** — Hamstring, Did Not Participate In Practice. A rotational pass-rush piece; no individual statistical profile available in this package to size his specific role, but a DNP designation for a hamstring this early in the week is worth tracking given Atlanta's defensive front has been a relative team strength (2025 sack rate ranked 2nd at 3.4/gm, see Section 4).
-- **A.J. Terrell (CB)** — Groin, Did Not Participate In Practice. Presumed top perimeter corner; the evidence package contains no CB/DB Ranking data for this matchup (that field is empty), so his specific coverage quality can't be quantified here — his absence would matter qualitatively for Green Bay's outside receivers (Christian Watson, Matthew Golden) but the report can't size that impact with real numbers.
+- **Samson Ebukam (DE) — Out (hamstring).** A real reduction to Atlanta's pass-rush personnel; worth weighing against the fact that Atlanta's team-wide sack rate has already dropped from an elite 3.4 sacks/gm (2nd in 2025) to 2.0 sacks/gm early in 2026 — Ebukam's absence is unlikely to reverse that trend.
+- **A.J. Terrell (CB) — Pending (groin), did not practice.** This is the single most consequential injury note in this report. Terrell profiles as Atlanta's top perimeter corner, and his uncertain status arrives at the worst possible time: Atlanta's pass defense has already regressed from a respectable 15th in 2025 (221.9 pass yds/gm allowed) to 25th early in 2026 (254.0 pass yds/gm allowed) — see Section 4 for the full rank-shift context — while Green Bay's passing attack has been trending the opposite direction. If Terrell is out, that gap widens further. Confidence in this read: MEDIUM (his exact designation is "Pending," not a confirmed Out).
+- **Billy Bowman Jr. (CB) — Questionable (Achilles), full practice participation.** Secondary depth piece; his full practice session is a mildly positive signal for availability.
 
 **Green Bay:**
-- **Jayden Reed (WR)** — Neck, Did Not Participate In Practice. The single most consequential name on this list. Reed's own snap share already dropped from 57% in Week 1 to 3% in Week 2 (target share 11.6% for the season), and if he's out or limited, expect his modest early role to be redistributed toward Christian Watson and Matthew Golden, both already trending up in usage (see Section 4).
-- **Javon Hargrave (DT)** — Knee, Limited (secondary: Concussion). A starting interior lineman; his health is relevant context given Green Bay's run defense has actually improved sharply from a 2025 rank of 18th to a 2026-to-date rank of 8th against the run (see Section 4/6) — a full-strength front is part of how that holds up against Atlanta's backfield.
-- **Aaron Banks (G)**, **Zach Bako-Bewele (T)**, **Anthony Belton (T)**, **Donovan Jennings (G)** — Knee/Toe, Knee, Elbow, Hand respectively, with practice statuses ranging from DNP to Limited. Four different offensive linemen flagged in the same week is a real pattern, not noise — Green Bay's run offense has collapsed from a 2025 rank of 15th (119.8 rush yds/gm) to dead last in the league through two 2026 games (64.5 rush yds/gm), and its sack rate allowed has nearly doubled (1.7/gm in 2025 to 3.5/gm in 2026). Offensive line health is directly relevant to whether either trend is sustainable or already stabilizing.
-- **Edgerrin Cooper (LB)** — Shoulder, Limited. A run-and-coverage piece at linebacker; no direct statistical tie-in available, but worth flagging given the run-defense improvement above.
-- **Warren Brinson (DT)**, **Anthony Campbell (DT)**, **Brandon Cisse (CB)** — additional defensive line/secondary depth pieces (Calf DNP, Ankle Limited, Teeth Limited); none carries an individual statistical profile in this package suggesting a starting-caliber role.
-
-No weather data was present in the evidence package for this game, and none was located that met this report's evidentiary standard — this section reflects the nflverse injury report only.
+- **Jayden Reed (WR) — Out (neck), did not practice.** Reed was already trending toward a diminished role even before this game — his snap share collapsed from 57% in Week 1 to just 3% in Week 2, and his 2026 target share (11.6%) already sat below his 2025 mark (16.9%). His absence further concentrates Green Bay's passing-game targets on Christian Watson and Matthew Golden (see Section 4).
+- **Aaron Banks (G) — Out (knee/toe)** and **Zach Bako-Bewele (T) — Out (knee).** Two real starting-caliber offensive line pieces sidelined. This is directly relevant context for Green Bay's rushing collapse discussed throughout this report — an offensive line missing multiple starters is a genuine, non-coincidental contributing explanation for a run game that has fallen from 15th (119.8 rush yds/gm, 2025) to dead-last, 32nd (64.5 rush yds/gm) early in 2026.
+- **Javon Hargrave (DT) — Questionable (knee/concussion), limited practice** and **Warren Brinson (DT) — Out (calf)**, **Anthony Campbell (DT) — Questionable (ankle).** Real depth concerns along Green Bay's own defensive interior, worth weighing against the fact that Green Bay's run defense has been one of the league's most-improved units early in 2026 (see Section 4) — a thinner interior rotation is a real risk to that trend holding up.
+- **Edgerrin Cooper (LB) — Pending (shoulder), limited practice.** Front-seven piece to monitor.
 
 ---
 
 ## 3. MATCHUP STATISTICS
 
 ### Atlanta Offense
-- Scoring: 20.8 ppg in 2025 (ranked 24th); has fallen to 8.0 ppg through two 2026 games — a rank-24-to-32 decline (worst in the league to date).
-- Total offense: 343.6 yds/gm in 2025 (17th) → 282.5 yds/gm in 2026 (28th).
-- Passing: 217.8 pass yds/gm in 2025 (20th) → 144.0 pass yds/gm in 2026 (32nd, last in the league).
-- Rushing: 125.8 rush yds/gm in 2025 (8th) → 138.5 rush yds/gm in 2026 (7th) — the one unit that's actually held steady or improved.
-- Protection/ball security (2025): elite — 1.5 sacks allowed/gm (4th-fewest), 0.5 interceptions/gm (4th-fewest). 2026-to-date: both have cratered — 3.5 sacks allowed/gm, 2.5 interceptions/gm.
-- Third-down offense: 33.3% conversion (2025, ranked 30th) on 12.2 attempts/gm — one of the worst in the league.
-- Red zone play-calling: 50.7% run (13th) / 49.3% pass (20th) once inside the 20 — a fairly balanced, slightly run-leaning profile.
+- Scoring: 20.8 ppg (24th, 2025) → 8.0 ppg through two 2026 games (32nd, per rank-shift data)
+- Total offense: 343.6 total yds/gm (17th, 2025) → 282.5 (28th, 2026)
+- Passing: 217.8 pass yds/gm (20th, 2025) → 144.0 (32nd, 2026) — the single steepest decline on this roster
+- Rushing: 125.8 rush yds/gm (8th, 2025) → 138.5 (7th, 2026) — the one unit that has actually held up
+- First downs: 17.5/gm (18th, 2025) → 15.0 (24th, 2026)
+- QB protection/turnovers (2025): 1.5 sacks allowed/gm (4th-best), 0.5 int/gm (4th-fewest) — both figures have worsened sharply in 2026 (3.5 sacks/gm, 2.5 int/gm)
 
 ### Atlanta Defense
-- Scoring allowed: 23.6 ppg in 2025 (19th) → 27.0 ppg in 2026 (23rd) — a modest decline.
-- Total defense: 348.2 yds/gm allowed in 2025 (17th) → 317.0 yds/gm in 2026 (12th) — improved.
-- Pass defense: 221.9 pass yds/gm allowed in 2025 (15th) → 254.0 pass yds/gm in 2026 (25th) — a real step back.
-- **Run defense: 126.2 rush yds/gm allowed in 2025 (24th) → 63.0 rush yds/gm in 2026 (ranked 1st in the league)** — the single largest swing in this evidence package for either team, discussed fully in Section 6.
-- Pass rush (2025): 3.4 sacks/gm, 2nd-best in the league; 2026-to-date: 2.0 sacks/gm — down from elite, still solid.
-- Takeaways: 0.9 interceptions/gm in 2025 (6th); 0.0 through two 2026 games.
-- Third-down defense: 39.9% allowed (17th) on 12.8 attempts faced/gm; 60.1% stop rate.
-- Red zone defense: allows 48.3% run (17th) / 51.7% pass (15th) once opponents reach the red zone.
+- Scoring allowed: 23.6 ppg (19th, 2025) → 27.0 (23rd, 2026)
+- Total yards allowed: 348.2/gm (17th, 2025) → 317.0 (12th, 2026)
+- Pass yards allowed: 221.9/gm (15th, 2025) → 254.0 (25th, 2026)
+- Rush yards allowed: 126.2/gm (24th, 2025) → 63.0 (1st, 2026) — the most dramatic single shift in this entire evidence package
+- First downs allowed: 17.6/gm (17th, 2025) → 15.0 (9th, 2026)
+- Down/Distance (2025 season): third-down defense 39.9% conversion rate allowed (17th), 60.1% stop rate; 4th-down stop rate 40.6%
+- Red Zone Play Calling faced (2025 season): opponents ran 48.3% (17th) and passed 51.7% (15th) once inside the red zone against Atlanta — a middling tendency profile, not an efficiency read
 
 ### Green Bay Offense
-- Scoring: 23.0 ppg in 2025 (16th) → 21.0 ppg in 2026 (18th) — steady, slight dip.
-- Total offense: 346.0 yds/gm in 2025 (16th) → 330.5 yds/gm in 2026 (15th) — essentially flat.
-- **Passing: 226.2 pass yds/gm in 2025 (18th) → 266.0 pass yds/gm in 2026 (8th)** — a real, meaningful improvement.
-- **Rushing: 119.8 rush yds/gm in 2025 (15th) → 64.5 rush yds/gm in 2026 (32nd, last in the league)** — a dramatic collapse, discussed in Section 6.
-- Protection/ball security (2025): 1.7 sacks allowed/gm (7th-fewest), 0.4 interceptions/gm (2nd-fewest, elite). 2026-to-date: sacks allowed up to 3.5/gm; interceptions barely moved, 0.5/gm.
-- Third-down offense: **48.8% conversion (2025, ranked 2nd in the NFL)** on 12.1 attempts/gm — elite.
-- Red zone play-calling: 55.0% run (7th) / 45.0% pass (26th) — a clearly run-leaning identity once inside the 20.
+- Scoring: 23.0 ppg (16th, 2025) → 21.0 (18th, 2026)
+- Total offense: 346.0 total yds/gm (16th, 2025) → 330.5 (15th, 2026)
+- Passing: 226.2 pass yds/gm (18th, 2025) → 266.0 (8th, 2026) — a real step forward
+- Rushing: 119.8 rush yds/gm (15th, 2025) → 64.5 (32nd, 2026) — a near-total collapse
+- First downs: 17.9/gm (14th, 2025) → 15.5 (21st, 2026)
+- QB protection/turnovers (2025): 1.7 sacks allowed/gm (7th-best), 0.4 int/gm (2nd-fewest) — both have worsened in the early 2026 sample (3.5 sacks/gm, 0.5 int/gm)
+- Down/Distance (2025 season): 48.8% third-down conversion rate (2nd in the league), on 12.1 attempts/gm; 56.0% fourth-down conversion rate on a 23.6% go-for-it rate
+- Red Zone Play Calling (2025 season): 55.0% run rate once in the red zone (7th-most run-heavy identity in the league), 45.0% pass rate (26th) — a clear, established run-first red-zone tendency, not a quality indicator on its own
 
 ### Green Bay Defense
-- Scoring allowed: 21.2 ppg in 2025 (11th) → 28.0 ppg in 2026 (24th) — a notable 13-spot decline in points allowed.
-- Total defense: 324.5 yds/gm allowed in 2025 (12th) → 286.0 yds/gm in 2026 (5th) — improved, and the yardage trend runs directly counter to the scoring trend above (flagged, not fully resolved, in Section 4).
-- Pass defense: 206.8 pass yds/gm allowed in 2025 (10th) → 199.0 pass yds/gm in 2026, unchanged at 10th.
-- Run defense: 117.7 rush yds/gm allowed in 2025 (18th) → 87.0 rush yds/gm in 2026 (8th) — a real improvement, though a smaller swing than Atlanta's own.
-- Pass rush (2025): 2.1 sacks/gm (20th, average); 2026-to-date: 3.5 sacks/gm — a real uptick.
-- Takeaways: 0.4 interceptions/gm in 2025 (28th, poor); 0.5/gm in 2026 — still below average.
-- Third-down defense: 39.4% allowed (14th) on 12.8 attempts faced/gm; 60.6% stop rate.
-- Red zone defense: allows 47.7% run (20th) / 52.3% pass (13th).
+- Scoring allowed: 21.2 ppg (11th, 2025) → 28.0 (24th, 2026)
+- Total yards allowed: 324.5/gm (12th, 2025) → 286.0 (5th, 2026)
+- Pass yards allowed: 206.8/gm (10th, 2025) → 199.0 (10th, 2026) — unchanged, a stable strength
+- Rush yards allowed: 117.7/gm (18th, 2025) → 87.0 (8th, 2026) — a real, meaningful improvement
+- First downs allowed: 17.5/gm (16th, 2025) → 15.5 (11th, 2026)
+- Down/Distance (2025 season): 39.4% third-down conversion rate allowed (14th), 60.6% stop rate; 44.4% fourth-down stop rate
+- Red Zone Play Calling faced (2025 season): opponents ran 47.7% (20th) and passed 52.3% (13th) against Green Bay in the red zone
 
-**Contextual Statistics (2025 season, opponent-quality splits):** Atlanta's own passing offense shrank hard against tougher defenses (201.2 pass yds/gm vs. top-tier opponents, n=4, down to 266.5 vs. bottom-tier, n=6), while its rushing offense stayed comparatively flat across tiers (94.4/105.7/151.8). Green Bay's passing offense showed an even steeper split (168.3 pass yds/gm vs. top-tier, n=3, up to 287.2 vs. bottom-tier, n=6), and its rushing offense also thinned against good competition specifically at the RB position (52.5 rush yds/gm vs. top-tier, n=2, vs. 99.8 vs. bottom-tier, n=8) — both used further in Sections 4 and 6.
+**Data gap, flagged plainly:** No team man/zone coverage-rate data ("team_coverage_rate") and no individual CB/DB ranking data were available in this evidence package for either team this week. That portion of the usual scheme breakdown cannot be completed and is not substituted with assumption below.
 
 ---
 
 ## 4. MATCHUP INTELLIGENCE
 
+### The Central Tension: Two Defenses That Flipped Their Identity
+
+The single most important structural fact in this game is that both defenses have meaningfully inverted their 2025 profile in the early 2026 sample. Atlanta's run defense has gone from one of the league's worst (126.2 rush yds/gm allowed, 24th in 2025) to the very best through two games (63.0 rush yds/gm, 1st in 2026) — while its pass defense has slid from a respectable 15th (221.9 pass yds/gm allowed) to 25th (254.0). Green Bay's defense shows the same directional shape in miniature: its run defense improved from 18th (117.7 rush yds/gm, 2025) to 8th (87.0, 2026), while its pass defense held essentially flat (10th both years, 206.8 → 199.0 pass yds/gm). Confidence on both reads: MEDIUM — these are large, directionally consistent shifts (not single-stat noise), but the underlying 2026 sample is still just two games per team.
+
+The practical consequence: Atlanta now presents as a defense built to make you throw, not run — and Green Bay's own offense has independently moved in exactly that direction anyway. Green Bay's passing offense has climbed from 18th (226.2 pass yds/gm, 2025) to 8th (266.0, 2026) at the same time its rushing offense has fallen from 15th (119.8 rush yds/gm) to dead-last, 32nd (64.5). Two real offensive line injuries (Aaron Banks and Zach Bako-Bewele, both out) are a legitimate, non-coincidental part of that collapse — this isn't purely a function of tougher opponents. Put together: Green Bay wants to throw, and now, and Atlanta's defense is unusually equipped to let them, having already ceded its pass-defense strength to become a run-funnel unit.
+
 ### Quarterbacks
 
-**Cooper Rush (ATL)** has taken every offensive snap for Atlanta so far in 2026 — 100% and 79%/58% snap shares across the two games. This matters because the evidence package's Threat Intelligence data still lists **Tua Tagovailoa** as Atlanta's nominal starter (see Section 5); the real, current-usage evidence says otherwise, and this report follows the player who has actually played. Rush's numbers are rough: 114.5 pass yds/gm on 56.4% completion, 1 total touchdown against roughly 4 interceptions (2.0/gm) through two games — thin sample, but consistent with Atlanta's team-wide passing collapse (217.8 pass yds/gm in 2025, ranked 20th, cratering to 144.0 pass yds/gm in 2026, dead last). His own *2025* season sample was even thinner (4 games, 75.75 pass ypg, 65.4% completion) — a career journeyman/backup profile, not a proven lead passer. Road split: his lone road game this season (Week 1 at Pittsburgh) produced 143 yards on 22 attempts, 4 sacks taken, and a 51.9 rating — his only career/season road data point, so treat it as a single data point, not a trend (confidence: LOW). One real individual wrinkle: Rush's **vs.-blitz split is dramatically stronger than his vs.-no-blitz split** — 66.7% completion, +0.202 EPA/play, 66.7% success rate against the blitz (n=9 plays) vs. just 45.7% completion and a brutal -0.851 EPA/play when NOT blitzed (n=35 plays). If Green Bay's improved 2026 pass rush (3.5 sacks/gm, up from 2.1 in 2025, 20th) tries to generate pressure by blitzing Rush rather than rushing with four, his own numbers say that's the wrong lever to pull. Confidence: MEDIUM (real, sizeable samples on both sides of the split, though it's 2025 data).
+**Atlanta — a real starter question, not a settled one.** Cooper Rush has taken every offensive snap through two 2026 games (100% Week 1, 58% Week 2), averaging 114.5 pass yds/gm on a 56.41% completion rate, with a rough 2.5 sacks/gm and 2.0 int/gm — both alarming volatility markers *(2025: 75.75 pass yds/gm, 65.38% comp, across just 4 emergency-relief games)*. But Rush is not Atlanta's top-listed quarterback on the current depth chart. As of the 2026-09-23 depth-chart snapshot, **Michael Penix Jr.** sits at pos_rank 1, with **Tua Tagovailoa** at pos_rank 2 — both above Rush at pos_rank 3 — despite neither having played a 2026 snap yet. Both are "roster_only" entries with real, populated 2025 profiles: Penix started 9 games in 2025 (220.22 pass yds/gm, 60.14% completion, 9 TD), Tua started 14 (190.0 pass yds/gm, 67.71% completion, 20 TD, but also 1.07 int/gm). This is a genuine, current-week signal that a starter change may be in play, not settled history — treat Rush as the presumptive starter for game-planning purposes given his actual 2026 usage, but flag this explicitly as LOW-to-MEDIUM confidence given the depth-chart signal points elsewhere.
 
-Backups Michael Penix Jr. and Tua Tagovailoa remain on Atlanta's roster (`roster_only`, 0 games played for this team in 2026) with real *prior* 2025 production (Penix: 9 games, 220.2 pass ypg; Tagovailoa: 14 games, 190.0 pass ypg) — but neither has taken a snap for Atlanta this season per the evidence, and there's no injury designation in the report explaining the change. Treat Rush as the operative starter based on actual 2026 usage.
-
-**Jordan Love (GB)** has been genuinely productive early — 266.0 pass yds/gm through two games (up from a 225.4 pass yds/gm 2025 season average), though completion percentage has dipped (52.1% in 2026 vs. 66.3% in 2025) alongside a much higher yards-per-completion (14.4 vs. 11.6) — a boom-or-bust, explosive-shots profile so far. His Week 1 game (387 yards) came against **Minnesota's real 2025-ranked 2nd-toughest pass defense** — an excellent number against a legitimately hard matchup; Week 2 (145 yards) came against a **New York Jets defense that ranked a middling 16th** — a real step down in production against an easier matchup, worth flagging as a small-sample inconsistency (confidence: LOW, n=2). Love faces Atlanta's pass defense this week, which ranked 15th in 2025 (221.9 pass yds/gm allowed) — a middle-tier matchup on paper, though Atlanta's pass defense has actually *worsened* to 25th in 2026 (254.0 pass yds/gm allowed), a real decline worth weighing in Love's favor. Individually, **Love's splits run the opposite direction of Rush's**: +0.158 EPA/play and 46.9% completion when NOT blitzed (n=32) vs. -0.238 EPA/play and 47.8% completion against the blitz (n=46) — if Atlanta brings extra pressure (its 2025 defensive sack rate ranked 2nd at 3.4/gm, still a respectable 2.0/gm in 2026), that plays into a real, documented weakness. Confidence: MEDIUM.
+**Green Bay — Jordan Love, a real early step forward.** Love has started and played all offensive snaps through two 2026 games, averaging 266.0 pass yds/gm on a 52.11% completion rate with 4 TD *(2025: 225.4 pass yds/gm, 66.29% completion, 23 TD across a full 15-game season)* — a lower completion rate paired with a higher per-game yardage figure suggests more of a downfield, boom-oriented approach early in 2026 than his 2025 profile. His blitz-response splits (career/season sample, opponent-independent): 47.8% completion, +6.5 yds/play, but a **negative** -0.238 EPA/play against the blitz (n=46), compared to a positive +0.158 EPA/play when unblitzed (n=32) — a real efficiency gap, MEDIUM confidence given the reasonably sized samples. Yet his best 2026 game by far (387 yds, Week 1) came in a game where he faced an 80.4% blitz rate — directly contradicting his own season-long blitz-efficiency trend, a genuine tension worth flagging rather than smoothing over (LOW confidence on reconciling it — small game-log sample).
 
 ### Running Backs
 
-**Bijan Robinson (ATL)** remains the clear focal point of Atlanta's offense — 58.7% rush share and a 28.0% target share through two 2026 games, on pace with a strong 2025 season (86.94 rush yds/gm, 48.24 rec yds/gm, *2025: 86.9 rush yds/gm, 48.2 rec yds/gm, 4.6 rec/gm*, with a massive red-zone role: 50.0% carry share and 42.5% touch share of Atlanta's red-zone snaps, 5 rushing TDs on 36 red-zone carries). His 2026 pace is 77.5 rush yds/gm — his lone road game so far (Week 1, vs. a middle-tier Pittsburgh run defense, tier "mid") produced 83 rush yards on 21 carries and an 8-catch, 90-yard receiving line (31.3 DK-style output) — no matching tier/site combination exists for a top-tier run defense on the road, so that specific bucket can't be cited; season and single-game numbers are the best available. Contact-efficiency detail: his 2026 broken-tackle rate has spiked to 3.0/gm (season yards-after-contact 2.05, yards-before-contact 2.14) against a 2025 season pace of 1.29 broken tackles/gm (2.32 YAC, 2.83 YBC) — small sample, but a real uptick in tackle-breaking even as his per-carry marks have dipped slightly. This week's matchup is the headline concern for Atlanta's offense: Green Bay's run defense has improved from 18th in 2025 (117.7 rush yds/gm allowed) to 8th through two 2026 games (87.0 rush yds/gm allowed) — a real step up, not the mid-tier matchup his own tiered career splits would otherwise suggest. Confidence: MEDIUM.
+**Bijan Robinson (ATL)** remains the clear engine of this offense even amid the team's broader struggles — 58.7% rush share this season, 77.5 rush yds/gm and 49.5 rec yds/gm through two games *(2025: 86.94 rush yds/gm, 48.24 rec yds/gm, 60.2% rush share, 19.9% target share across a full 17-game season)*. On the road specifically this season (his side this week, since Atlanta is the away team), his only tagged road game produced 83 rush yds and 90 rec yds (n=1) — and that game happened to come against a mid-tier run/pass defense, the same tier bucket Green Bay's run defense fell into by 2025 season-final rank (18th, 117.7 rush yds/gm allowed). Important complication: Green Bay's run defense has since improved to 8th in the 2026 sample (87.0 rush yds/gm allowed) — tougher than the "mid" label this one data point reflects, so treat Robinson's floor here as somewhat lower than that single road data point would suggest. Confidence: MEDIUM. Backup **Brian Robinson** remains a clear complementary change-of-pace piece (31.7% rush share, 41.0 rush yds/gm).
 
-**Green Bay's backfield remains an unsettled committee.** MarShawn Lloyd leads in rush share (48.7%, 9.5 carries/gm, 28.5 rush yds/gm) but has no 2025 season to compare against (no `season_2025` record — a newer addition to the roster). Chris Brooks (28.2% rush share, 20.0 rush yds/gm) and Kaleb Johnson (20.5% rush share, 16.0 rush yds/gm) round out a genuine three-man rotation with no clear lead back by workload dominance — a real contrast with Atlanta's Robinson-centric structure. Contact metrics: Lloyd (1.05 YAC, 1.95 YBC, 0.5 broken tackles/gm), Brooks (1.36 YAC, 2.27 YBC, 0.0 broken tackles/gm, *2025: 6.24 rush ypg, 1.85 YAC, 0.14 broken tackles/gm* — clearly a depth/passing-down role), Johnson (2.38 YAC, 1.62 YBC, 2.0 broken tackles/gm, *2025: 6.9 rush ypg, 1.21 YAC, 0.2 broken tackles/gm* — a limited rookie-year role). None of the three carries individual home/road or tiered split data (all null in the evidence). This committee lands directly into the meat of Section 6's central finding — Atlanta's run defense is now the best in the league by rate, and no single Green Bay back has separated himself as the workload leader against it.
+**MarShawn Lloyd (GB)** leads Green Bay's backfield committee and sits atop the depth chart (pos_rank 1) — 48.7% rush share, 28.5 rush ypg through two games on a rough per-carry average (season yards-after-contact 1.05/carry, yards-before-contact 1.95/carry — modest efficiency in both phases, no rushing profile currently to lean on). **Chris Brooks** (28.2% rush share, 20.0 rush ypg, 1.36 YAC/carry) and **Kaleb Johnson** (20.5% rush share, 16.0 rush ypg, but a notably better 2.38 YAC/carry and 2.0 broken tackles/gm in a limited sample) round out a genuine three-man committee with no back separating himself efficiency-wise. None of Green Bay's backs have a 2025 season line to lean on (Lloyd: 3 career games; Johnson: 12 career games, 8.42 rush ypg; Brooks: 6.24 rush ypg across 17 games in 2025) — this is a legitimately unproven group facing a defense (Atlanta) that has been historically elite against the run through two 2026 games. Confidence: LOW given both the committee uncertainty and Atlanta's thin run-defense sample.
 
 ### Wide Receivers / Tight Ends
 
-**Drake London (ATL)** is the clear WR1 — 18.0% target share through two 2026 games (40.0 rec yds/gm), down from a much heavier 2025 role (*2025: 76.58 rec yds/gm, 30.4% target share, 33.3% red-zone target share, 7 red-zone touchdowns on 16 red-zone targets* — a legitimate red-zone weapon last season). His road split (Week 1 at Pittsburgh, a bottom-tier pass defense, rank 28): 29 yards on 2 catches/4 targets — modest against an easy matchup. His Week 2 output (51 yards, 4/5 targets) came against a top-tier defense (Carolina, rank 8) — production actually improved against the tougher matchup, a real if small-sample inconsistency worth noting (confidence: LOW, n=2 total). This week's matchup: Green Bay's WR defense ranked 14th in 2025 (135.1 rec yds/gm allowed) — a middle-tier matchup, no 2026-specific positional rank available.
+**Drake London (ATL)** remains Atlanta's clear WR1 by role, but his early-2026 usage is a real step down from his 2025 peak — a 30.4% target share across 12 games in 2025 (76.58 rec ypg) has fallen to an 18.0% target share through two 2026 games (40.0 rec ypg). His only tagged road game this season produced 29 rec yds on 2 catches (4 targets) — but that came against a bottom-tier pass defense, not the profile Green Bay's defense currently presents; no matching mid/top-tier road data exists yet for London, a genuine gap rather than an estimate. Confidence: LOW-MEDIUM.
 
-**Jahan Dotson (ATL)** is a distant WR2 (14.0% target share, 15.0 rec yds/gm through two games; *2025: 17.47 rec yds/gm, 8.5% target share* — a marginal complementary role in both seasons). **Kyle Pitts (ATL, TE)** has seen a real usage drop early — just 8.0% target share and 7.5 rec yds/gm through two 2026 games, down sharply from *2025: 54.59 rec yds/gm, 22.8% target share, 18.6% red-zone target share, 5 red-zone touchdowns* — a legitimate red-zone weapon a year ago whose role has thinned out so far this season (confidence: LOW given the two-game sample, but the gap is large enough to flag).
+**Jahan Dotson (ATL)** has seen a modest target-share bump (14.0% in 2026 vs. 8.5% in 2025) but remains a low-value complementary piece (15.0 rec ypg through two games).
 
-**Christian Watson (GB)** has been the clear beneficiary of Green Bay's early passing surge — 27.5% target share (94.0 rec yds/gm) through two games, up from *2025: 61.1 rec yds/gm, 19.2% target share* (itself a productive 10-game sample after missing the first seven weeks). His Week 1 line (147 yards, 6 catches, 2 TDs, 8 targets) came against Minnesota's top-tier (rank 5) pass defense — an excellent, hard-matchup performance; Week 2 (41 yards, 4/11 targets) against a mid-tier Jets defense (rank 15) saw target volume rise but efficiency collapse — worth flagging as the one real inconsistency in an otherwise strong start (confidence: LOW, n=2). No home/road split data exists for Watson in this evidence package.
+**Kyle Pitts (ATL)** is the more striking name here: a legitimate 2025 receiving tight end (54.59 rec ypg, 22.8% target share, 7 red-zone TDs on 13 red-zone targets across 17 games) has all but disappeared from the offense in 2026 — just 7.5 rec ypg and an 8.0% target share through two games. Combined with London's own target-share decline, this reads less like an individual injury story and more like a broader signal about Atlanta's passing structure under center — worth watching closely if either Penix or Tua takes over (see Hidden Intelligence, Finding 3).
 
-**Matthew Golden (GB)** has emerged as a real second option — 26.1% target share, 76.5 rec yds/gm through two games, a sharp jump from a limited rookie role a year ago (*2025: 25.79 rec yds/gm, 11.7% target share*). Both of his 2026 games have produced real, useful volume regardless of matchup tier (95 yards on 6/12 vs. Minnesota's top-5 defense; 58 yards on 4/6 vs. a mid-tier Jets defense) — a more stable early profile than Watson's. No home/road split data available.
+**Christian Watson (GB)** has been the headline early-2026 story for Green Bay's passing game — 94.0 rec ypg and a 27.5% target share through two games (up sharply from 19.2% in 2025), anchored by a 147-yard, 2-touchdown explosion in Week 1 against a top-tier pass defense (his best career-tier bucket, n=1) *(2025: 61.1 rec ypg across 10 games)*. His Week 2 line (41 yds, mid-tier opponent) is a real step down but still featured heavy volume (11 targets). Confidence on continued volume: MEDIUM.
 
-**Jayden Reed (GB)** has seen his early role shrink (11.6% target share, 12.0 rec yds/gm) even before this week's Neck injury designation (DNP, Section 2) — *2025: 41.4 rec yds/gm, 16.9% target share* across a limited, injury-affected 5-game sample last year too. Treat his availability as a genuine open question this week.
+**Matthew Golden (GB)** has emerged as a genuine co-lead option — 76.5 rec ypg, a 26.1% target share (up from an 11.7% rookie-season share in 2025), and a standout 95-yard, 12-target Week 1 against a top-tier defense. With Jayden Reed out this week, expect both Watson's and Golden's already-elevated target shares to climb further.
 
-**Tucker Kraft (GB, TE)** remains Green Bay's clear TE1 by usage (82%/98% snap shares, 13.0% target share, 40.0 rec yds/gm through two 2026 games), and his 2025 season carried real red-zone weight — *2025: 61.12 rec yds/gm, 18.8% target share, 27.9% red-zone target share, 5 red-zone touchdowns on just 12 red-zone targets* — an outsized red-zone role relative to his overall volume. His Week 1 output (65 yards on 3/6, a top-5 Minnesota matchup) was efficient; Week 2 (15 yards on 2/3 vs. a mid-tier Jets TE defense, rank 19) was modest. Atlanta's TE defense allowed the fewest tight-end touchdowns in the league in 2025 (ranked 1st) but has already allowed 3 tight-end touchdowns through its first two 2026 games (57.0 rec yds/gm allowed to TEs, up from 48.0 in 2025) — a real, early reversal that lines up directly with Kraft's concentrated red-zone role. This is developed fully as Hidden Intelligence Finding 3 (Section 6).
-
-**Jonnu Smith (GB, TE)** appeared in one game (50 rec yds, 2 catches on 3 targets vs. Minnesota) but carries only a complementary role by career profile (*2025: 13.06 rec yds/gm, 10.4% target share*) — worth naming for depth-chart completeness, not a real factor projection.
-
-### Coverage & Scheme
-
-The evidence package's team-level man/zone coverage-rate field (`team_coverage_rate`) came back **empty for both teams**, and the player-level man/zone performance splits (`coverage_qb`, `coverage_wr`, `coverage_te`) and CB/DB Ranking data are likewise **empty** for this matchup. This report cannot make any man-vs.-zone or individual cornerback-matchup claims this week — that's a real evidentiary gap, not an oversight, and it should not be filled in with invented shell-level or coverage-rate detail. The one available scheme lever is blitz rate and effect, covered above in the Quarterbacks section: Cooper Rush's numbers argue Green Bay should NOT blitz him; Jordan Love's numbers argue Atlanta SHOULD blitz him, and Atlanta's pass rush (2nd in sacks in 2025, still solid at 2.0/gm in 2026) is built to do exactly that.
+**Tucker Kraft (GB)** remains Green Bay's clear TE1 — 40.0 rec ypg through two games on an 82% average snap share *(2025: 61.12 rec ypg across 8 games, with a notable 27.9% red-zone target share)* — his 65-yard Week 1 game came against a top-tier defense, a genuinely favorable sign given the tougher matchup class.
 
 ---
 
 ## 5. THREAT INTELLIGENCE
 
-**How the system works:** A Threat designation fires when a player's own season rank in a specific statistical category *and* the upcoming opponent's defensive rank in that *same* category both clear a fixed threshold at the same time — the convergence of standout individual production and a genuinely weak matchup, not either signal alone. The three tiers use these exact thresholds (player rank is 1st-best; defense rank is 1st-toughest, so a high defense-rank number means a weak defense):
-- **Nuclear** — player ranks top 3 in the category AND the opponent's defense ranks 30th or worse in that category
+**How the Threat system works:** A Threat designation fires only when a player's own season-long rank in a specific statistical category AND the upcoming opponent's defensive rank in that same category both clear a fixed tier threshold — the convergence of individually elite production and a genuinely exploitable matchup in the same category, not either signal in isolation. The three tiers use these exact thresholds (player rank is 1st-best; defense rank is 1st-toughest, so a high defense-rank number means a weak unit):
+
+- **Nuclear** — player ranks top 3 in the category AND the opponent's defense ranks 30th or worse in that same category
 - **Elite** — player ranks top 5 AND opponent defense ranks 28th or worse
 - **Standard** — player ranks top 10 AND opponent defense ranks 23rd or worse
 
-"Double/Triple/Quadruple" reflects how many categories converge for a given player.
+Double/Triple/Quadruple labels reflect how many categories converged for a given player.
 
-**No Threat designation fired for any evaluated player on either side of this game.** The players actually evaluated were Tua Tagovailoa, Bijan Robinson, Drake London, Jahan Dotson, and Kyle Pitts for Atlanta; Jordan Love, Chris Brooks, Christian Watson, Matthew Golden, and Josh Whyle for Green Bay.
+**This week's result:** the deterministic engine evaluated five starters per side — Tua Tagovailoa, Bijan Robinson, Drake London, Jahan Dotson, and Kyle Pitts for Atlanta; Jordan Love, Chris Brooks, Christian Watson, Matthew Golden, and Josh Whyle for Green Bay — across their relevant categories (pass yards/TDs for quarterbacks; rush/rec yards and receptions for backs; rec yards and receptions for pass-catchers). **No Threat designation fired for any player on either side.**
 
-This needs an important caveat, and it should be read plainly rather than glossed over: **the system evaluated the wrong player at three of the ten spots checked.** Atlanta's QB evaluation ran on Tua Tagovailoa's inputs (0 games played for this team in 2026), not Cooper Rush, who has actually taken every snap. Green Bay's TE evaluation ran on Josh Whyle (46.7% snap share, 0.8 rec/gm) rather than Tucker Kraft, who has handled the far larger role (82-98% snap share, real red-zone equity). Green Bay's RB evaluation ran on Chris Brooks (28.2% rush share) rather than MarShawn Lloyd, who actually leads Green Bay's backfield in rush share (48.7%). None of the three swapped-in players comes remotely close to a Threat-caliber individual rank regardless, so the practical conclusion (no fireworks-caliber convergence at these positions) likely still holds — but the "no Threat fired" verdict for QB, RB, and TE on those two rosters should be read as **not fully tested against the players most likely to actually matter this week.** Matchup Intelligence (Section 4) is the more reliable source for those three positions specifically.
-
-For the two positions the system evaluated correctly by actual usage (Drake London and Jahan Dotson at WR for Atlanta, Christian Watson and Matthew Golden at WR for Green Bay), the absence of a Threat designation reflects genuinely modest opponent-quality convergence at those spots this week, not missing data.
+A necessary caveat: the engine's evaluated "starters" don't perfectly match the players this report identifies as the most likely current-week factors. It evaluated **Tua Tagovailoa** at quarterback for Atlanta (not Cooper Rush, who has actually taken every 2026 snap) and **Chris Brooks** at running back for Green Bay (not MarShawn Lloyd, who leads the committee in both usage and depth-chart rank). This likely reflects a depth-chart snapshot rather than actual game-week usage. Read the "no Threats fired" result with that in mind — it describes the players evaluated, not necessarily the players who will actually be on the field Sunday night. This should be read as a data-transparency note, not evidence of hidden edges the engine missed; Section 4's Matchup Intelligence, not a Threat convergence, is the primary source of actionable insight in this specific game.
 
 ---
 
 ## 6. HIDDEN INTELLIGENCE & CONTEXTUAL ANALYSIS
 
-**Finding 1: Both teams' rushing games have inverted from their 2025 identities in exactly the wrong direction for Green Bay, and the offensive line injury report helps explain why.**
+**Finding 1: Jordan Love's own history says his passing success is tied to a functioning run game — and Green Bay's run game has completely disappeared.** Across a larger career/season sample, Love's own game-log correlation shows a real split: in games where Green Bay's rushing attack ran "hot" (above its own average), Love produced a personal statistical "hit" 66.7% of the time (n=9); when the run game ran "cold," that rate dropped to 37.5% (n=8). Context Expansion: Green Bay's team-level rushing splits by opponent tier (2025 season) already showed the run game shrinking against tougher competition (52.5 rush yds/gm vs. top-tier defenses, n=2, compared to 99.8 vs. bottom-tier, n=8) — a pattern of dependency on opponent quality that now compounds with a much larger problem: the run game has cratered leaguewide-relative in 2026 regardless of opponent (32nd, 64.5 rush yds/gm), a decline this report ties directly to real offensive-line injuries (Banks and Bako-Bewele both out). If Love's own historical correlation holds, a genuinely "cold" run game all season — which 2026 has been so far — is a real drag on his passing efficiency even as his raw yardage has climbed. This means Green Bay's passing surge may be running on a less stable foundation than the raw 266.0 pass yds/gm figure (8th, 2026) suggests. Confidence: LOW-MEDIUM — a real, sizable correlation sample (n=17), but causation (does a good run game create passing success, or does a leading game script create both?) can't be fully disentangled from this data.
 
-Atlanta's run defense has gone from one of the league's weaker units in 2025 (126.2 rush yds/gm allowed, ranked 24th) to the single best rate in the NFL through two 2026 games (63.0 rush yds/gm allowed, ranked 1st) — a 23-spot swing, the largest of any category tracked for either team. At the exact same time, Green Bay's rushing offense has collapsed from a respectable 2025 mark (119.8 rush yds/gm, ranked 15th) to dead last in the league in 2026 (64.5 rush yds/gm, ranked 32nd). This is not a coincidence worth shrugging off as noise on either side: it's confirmed by the Contextual Statistics splits already cited in Section 3 — Green Bay's own RB rushing production thinned dramatically against good run defenses even in 2025 (52.5 rush yds/gm vs. top-tier opponents, n=2, vs. 99.8 vs. bottom-tier, n=8), so a defense this good is exactly the environment where that offense has historically struggled most. The injury report adds a mechanism: four different Green Bay offensive linemen (Aaron Banks, Zach Bako-Bewele, Anthony Belton, Donovan Jennings) carry real practice-participation flags this week, which is a plausible real driver of both the rushing collapse and the near-doubling of Green Bay's sack rate allowed (1.7/gm in 2025 to 3.5/gm in 2026). None of the individual backfield options (Lloyd, Brooks, Johnson — Section 4) has separated from the committee, which only compounds the problem. This matters directly for this game: expect Green Bay to lean more on the pass than its red-zone-leaning, run-heavy 2025 identity (55.0% red-zone run rate, 7th) would suggest, purely because the ground game may not be a viable neutral-script option against this specific Atlanta front. Confidence: MEDIUM (the 2026 samples are only two games each, but the direction is extreme and consistent across three independent signals — team rank, contextual splits, and the O-line injury report).
+**Finding 2: Atlanta's defensive turnaround is a real schematic tradeoff, not a blanket improvement — and it lines up almost exactly with what Green Bay's offense already wants to do.** Atlanta's run defense flipped from one of the league's worst in 2025 (126.2 rush yds/gm allowed, 24th) to the best through two 2026 games (63.0, 1st), while its pass defense simultaneously slid from 15th (221.9 pass yds/gm allowed) to 25th (254.0) — both shifts are large and move in opposite directions, consistent with a defense that has effectively decided to sell out against the run and live with more passing volume. Context Expansion: independently, Green Bay's own offense has moved the same direction — passing offense up from 18th to 8th, rushing offense down from 15th to 32nd — meaning a team that already wants to throw is about to face a defense built to let it. The "so what": expect Green Bay to lean into the pass well beyond its own established red-zone identity (55.0% run rate in the red zone, 7th-most run-heavy league-wide, 2025 season) once inside the 20 — the red-zone tendency data describes 2025's play-calling identity, but the underlying run-game efficiency to support that identity right now simply isn't there. Confidence: MEDIUM — the team-level trend directions are large and mutually consistent, but the 2026 sample underlying both is only two games per team.
 
-**Finding 2: Jordan Love's own passing efficiency has historically tracked with whether Green Bay's run game is working — which, per Finding 1, is a real risk this week.**
-
-Green Bay's own matchup-pattern data shows a real correlation across the 2025 season: Love's own passing-hit rate was 66.7% (n=9 games) when the team's rushing output was above its own average, but dropped to 37.5% (n=8 games) when the rushing output was below average. This is a real, full-season signal, not a two-game artifact — and it directly connects to Finding 1. If Atlanta's now-elite run defense suppresses Green Bay's ground game the way both its own current rank (1st in the league) and Green Bay's historical tiered splits suggest it might, Love's own season-long pattern says that's a real risk to his passing production too, not just to called-run volume. This is the kind of downstream consequence that's easy to miss if the run-game collapse and the passing-game correlation are read as two separate, unrelated storylines rather than one connected risk. Confidence: MEDIUM (real, full-season sample size on the correlation itself; the conditional risk this week is inference, not a certainty).
-
-**Finding 3: Atlanta's 2025 tight-end defense was one of the best in the league at preventing touchdowns — and it has already given that up twice over through two 2026 games, right into a Green Bay tight end with a heavily concentrated red-zone role.**
-
-Atlanta allowed the fewest tight-end touchdowns of any defense in the NFL in 2025 (3 total, ranked 1st) despite fairly ordinary per-catch and per-game yardage numbers (48.0 rec yds/gm allowed, ranked 12th). Through two 2026 games, that touchdown suppression has already reversed hard: Atlanta has allowed 3 tight-end touchdowns already (matching its entire 2025 total in two games) alongside a rec-yards-allowed pace nearly 20% higher than last season (57.0 vs. 48.0 rec yds/gm). This wouldn't be worth much attention against a low-usage tight end — but Green Bay's Tucker Kraft carried a genuinely outsized red-zone role in his own right last season (27.9% red-zone target share, 5 touchdowns on just 12 red-zone targets — nearly a 42% touchdown rate on his red-zone looks), and remains Green Bay's clear TE1 by snap share in 2026 (82-98%). A defense that just gave up its entire 2025 touchdown total to tight ends in two games, facing a tight end whose whole value proposition is red-zone touchdown equity, is a real, specific, non-obvious point of tension for this game — one that a reader comparing only full-season averages (Atlanta still shows a strong overall TE-yardage rank) would likely miss entirely. Confidence: MEDIUM (the reversal is real and significant, but the 2026 sample is only two games).
+**Finding 3: Atlanta's top two 2025 receiving weapons have both seen their target shares collapse early in 2026 — a structural signal, not an individual-player story.** Drake London's target share has fallen from 30.4% (2025 season, 12 games) to 18.0% through two 2026 games; Kyle Pitts' has fallen even more sharply, from 22.8% to 8.0%. Context Expansion: this decline sits alongside Atlanta's own passing-protection collapse (sacks allowed up from 1.5/gm, 4th-best in 2025, to 3.5/gm in 2026; interceptions up from 0.5/gm, 4th-fewest, to 2.5/gm) — a quarterback under siege would typically be expected to lean MORE on his top target and safety-valve tight end, not less, which makes this decline in both players' shares at once a genuinely counter-intuitive finding rather than routine game-to-game noise. The likely explanation is structural (protection issues limiting time to develop downfield concepts, and/or Cooper Rush's own unfamiliarity as a non-primary starter) rather than injury or scheme-specific to either player. This matters directly for how much confidence to place in either London or Pitts as this-week factors regardless of who starts at quarterback for Atlanta. Confidence: LOW — only a two-game sample, and no data exists in this evidence package to confirm whether this pattern is Rush-specific or would persist under Penix or Tua.
 
 ---
 
 ## 7. COEUS FINAL READ
 
-### Keys to the Game
+**Keys to the Game:**
 
-- **If Atlanta blitzes Jordan Love more than it did in recent form,** his own season-long splits (-0.238 EPA/play vs. blitz, +0.158 unblitzed) say that's the correct lever, and Atlanta's defensive front — 2nd in sacks generated in 2025, still a solid 2.0/gm in 2026 — is built to apply exactly that pressure.
-- **If Green Bay blitzes Cooper Rush,** the opposite is true: his own splits (+0.202 EPA/play vs. blitz, -0.851 unblitzed) say pressure without a blitz call is the bigger problem for him, and blitzing him specifically plays to his own documented strength.
-- **If Green Bay's offensive line is compromised by its four flagged injuries,** expect the already-worst-in-the-league run game to stay muted and Green Bay to lean further into the pass than its 2025 red-zone-run-heavy identity would predict — which, per Finding 2, puts real pressure on Love to sustain his early passing surge without the ground-game complement that's historically supported it.
-- **If Atlanta's tight-end defense continues its 2026 regression,** Tucker Kraft's concentrated red-zone role (Finding 3) is the individual matchup most likely to produce a scoring play that the season-long team rankings alone wouldn't predict.
+- **If A.J. Terrell (Pending, groin) sits out**, Atlanta's already-regressed pass defense (25th in 2026, up from 15th in 2025) loses its top perimeter piece at the exact moment Green Bay's passing attack (8th in 2026, up from 18th) is playing its best football of the still-young season. This is the single biggest swing variable in the game.
+- **If Green Bay's offensive line (missing two real starters) cannot get any traction on the ground**, expect Atlanta's suddenly elite run defense (1st in 2026) to compound Green Bay's own rushing collapse (32nd) into a genuinely one-dimensional Green Bay offense — which, per Finding 1, carries its own real risk to Jordan Love's passing efficiency regardless of his raw yardage upside.
+- **If Cooper Rush continues to start for Atlanta** rather than a depth-chart change to Michael Penix Jr. or Tua Tagovailoa, expect the same diffuse, low-target-share passing distribution (Finding 3) that has already muted both Drake London and Kyle Pitts — a passing attack unlikely to punish Atlanta's leakier 2026 pass defense even if the opportunity is there statistically.
 
-### The Verdict
+**The Verdict:** The broad thesis from the top of this report — that the passing game matters more than the run for both sides — holds up under scrutiny, but with an important asymmetry: Green Bay's passing surge is real and has two legitimate, ascending weapons in Christian Watson and Matthew Golden, while Atlanta's passing attack remains structurally compromised regardless of who lines up at quarterback, with its two best 2025 weapons both marginalized early in 2026. Atlanta's defensive turnaround is genuine and would ordinarily be the swing factor working in its favor — but it is specifically a run-funnel defense, and Green Bay's offense has already, independently, stopped trying to run. The matchup that actually decides this game is Green Bay's passing attack against Atlanta's regressed and (possibly) Terrell-less secondary — not the ground-game battle either team's raw rushing numbers might otherwise suggest.
 
-The broad thesis from Pregame Briefing — that both teams' ground games carry real questions, putting outsized weight on the passing operations — holds up under the deeper look, but with a sharper edge than that opening framing could have known: this isn't a symmetric problem. Atlanta's run defense has become genuinely elite in a way that specifically neutralizes Green Bay's already-collapsed run game, while Atlanta's own run game (Bijan Robinson, still the clear focal point of that offense) faces a tougher, but less extreme, upgrade from Green Bay's defense. That asymmetry, combined with Atlanta's offensive collapse in protection and ball security (sacks and interceptions both roughly doubled from 2025) and a 33.3% third-down conversion rate that ranks among the league's worst, makes Atlanta's own offense look like the bigger structural liability in this game — even with Green Bay's passing surge riding on a run game that may not be there to support it. Green Bay's own defensive scoring regression (11th to 24th in points allowed, even as yardage numbers improved) is a real, unresolved tension worth watching, but nothing in this evidence base points to a clear mechanism for it beyond the units already covered above. On balance, the evidence favors Green Bay controlling the bigger share of this game's swing factors, with Atlanta's floor kept from collapsing further mainly by Bijan Robinson's continued central offensive role.
+**COEUS CHEAT SHEET**
 
-### Coeus Cheat Sheet
-
-**Team**
-- ATL: 0-2 (2026) | 2025 PPG 20.8 (24th) / PPG allowed 23.6 (19th)
-- GB: 1-1 (2026) | 2025 PPG 23.0 (16th) / PPG allowed 21.2 (11th)
-
-**Passing**
-- Cooper Rush (ATL): 114.5 pass yds/gm, 1 TD, ~4 INT, 56.4% comp (2026, 2 gm)
-- Jordan Love (GB): 266.0 pass yds/gm, 4 TD, 1 INT, 52.1% comp (2026, 2 gm)
-
-**Rushing**
-- Bijan Robinson (ATL): 77.5 rush yds/gm *(2025: 86.9 rush yds/gm)*
-- MarShawn Lloyd (GB): 28.5 rush yds/gm, 48.7% rush share (team-leading)
-- Chris Brooks (GB): 20.0 rush yds/gm | Kaleb Johnson (GB): 16.0 rush yds/gm
-
-**Receiving**
-- Drake London (ATL, WR): 40.0 rec yds/gm, 18.0% target share
-- Jahan Dotson (ATL, WR): 15.0 rec yds/gm, 14.0% target share
-- Kyle Pitts (ATL, TE): 7.5 rec yds/gm, 8.0% target share *(2025: 54.6 rec yds/gm)*
-- Christian Watson (GB, WR): 94.0 rec yds/gm, 27.5% target share
-- Matthew Golden (GB, WR): 76.5 rec yds/gm, 26.1% target share
-- Tucker Kraft (GB, TE): 40.0 rec yds/gm, 13.0% target share *(2025: 61.1 rec yds/gm)*
-
-**Team Defense**
-- ATL def: 254.0 pass yds/gm allowed 2026 (2025: 221.9, 15th) | 63.0 rush yds/gm allowed 2026 (2025: 126.2, 24th → 2026 rank 1st) | WR: 143.4 rec yds/gm allowed (2025, 19th) | TE: 48.0 rec yds/gm allowed (2025, 12th)
-- GB def: 199.0 pass yds/gm allowed 2026 (2025: 206.8, 10th) | 87.0 rush yds/gm allowed 2026 (2025: 117.7, 18th → 2026 rank 8th) | WR: 135.1 rec yds/gm allowed (2025, 14th) | TE: 44.6 rec yds/gm allowed (2025, 6th)
-- Team coverage rate (man%/zone%): not available for either team this week
-
-**Down/Distance**
-- ATL off 3rd down: 33.3% (30th) | ATL def 3rd down allowed: 39.9% (17th)
-- GB off 3rd down: 48.8% (2nd) | GB def 3rd down allowed: 39.4% (14th)
-
-**Red Zone Play Calling**
-- ATL off: 50.7% run (13th) / 49.3% pass (20th) | ATL def allowed: 48.3% run (17th) / 51.7% pass (15th)
-- GB off: 55.0% run (7th) / 45.0% pass (26th) | GB def allowed: 47.7% run (20th) / 52.3% pass (13th)
-
-**Head-to-head**
-- No meeting yet this season — first matchup between these two teams in 2026.
+- **Team:** ATL 0-2 | 8.0 ppg allowed 27.0 ppg (2026); GB 1-1 | 21.0 ppg allowed 28.0 ppg (2026)
+- **Passing:**
+  - Cooper Rush (ATL): 114.5 pass yds/gm, 1 TD (2 games), 56.41% comp *(2025: 75.75 pass yds/gm, 4 games)*
+  - Jordan Love (GB): 266.0 pass yds/gm (8th, 2026), 4 TD, 52.11% comp *(2025: 225.4 pass yds/gm, 23 TD, 15 games)*
+- **Rushing:**
+  - Bijan Robinson (ATL): 77.5 rush yds/gm *(2025: 86.94 rush yds/gm, 17 games)*
+  - MarShawn Lloyd (GB): 28.5 rush yds/gm, 48.7% rush share (committee w/ Chris Brooks 20.0 ypg, Kaleb Johnson 16.0 ypg)
+- **Receiving:**
+  - Drake London (ATL): 40.0 rec yds/gm, 18.0% target share *(2025: 76.58 rec yds/gm, 30.4% target share)*
+  - Jahan Dotson (ATL): 15.0 rec yds/gm, 14.0% target share
+  - Kyle Pitts (ATL, TE): 7.5 rec yds/gm, 8.0% target share *(2025: 54.59 rec yds/gm, 22.8% target share)*
+  - Christian Watson (GB): 94.0 rec yds/gm, 27.5% target share *(2025: 61.1 rec yds/gm, 19.2% target share)*
+  - Matthew Golden (GB): 76.5 rec yds/gm, 26.1% target share
+  - Tucker Kraft (GB, TE): 40.0 rec yds/gm *(2025: 61.12 rec yds/gm, 8 games)*
+- **Team Defense:**
+  - ATL: 254.0 pass yds/gm allowed (25th, 2026; 15th 2025), 63.0 rush yds/gm allowed (1st, 2026; 24th 2025), 177.5 rec yds/gm allowed to WR (2026)
+  - GB: 199.0 pass yds/gm allowed (10th, 2026; 10th 2025), 87.0 rush yds/gm allowed (8th, 2026; 18th 2025), 123.0 rec yds/gm allowed to WR (2026)
+  - Team coverage rate (man%/zone%): not available in this evidence package for either team
+- **Down/Distance (2025 season):** ATL offense 33.3% third-down conv. (30th); ATL defense 39.9% allowed (17th) | GB offense 48.8% third-down conv. (2nd); GB defense 39.4% allowed (14th)
+- **Red Zone Play Calling (2025 season):** ATL offense 50.7% run/49.3% pass; ATL defense faced 48.3% run/51.7% pass | GB offense 55.0% run (7th)/45.0% pass; GB defense faced 47.7% run/52.3% pass
+- **Head-to-head:** No 2025 or 2026 meeting between these two teams — first meeting of the season, no history to draw on
 
 ---
 
 EVIDENCE_CHECK
 {"claims": [
-{"type":"log_opponent","player":"Jordan Love","week":1,"stat":"pass_yds","claimed_rank":2},
-{"type":"log_opponent","player":"Jordan Love","week":2,"stat":"pass_yds","claimed_rank":16},
-{"type":"log_opponent","player":"Cooper Rush","week":1,"stat":"pass_yds","claimed_rank":30},
-{"type":"log_opponent","player":"Cooper Rush","week":2,"stat":"pass_yds","claimed_rank":14},
-{"type":"log_opponent","player":"Bijan Robinson","week":1,"stat":"rush_yds","claimed_rank":16},
-{"type":"log_opponent","player":"Bijan Robinson","week":2,"stat":"rush_yds","claimed_rank":25},
-{"type":"log_opponent","player":"Christian Watson","week":1,"stat":"rec_yds","claimed_rank":5},
-{"type":"log_opponent","player":"Christian Watson","week":2,"stat":"rec_yds","claimed_rank":15},
-{"type":"log_opponent","player":"Matthew Golden","week":1,"stat":"rec_yds","claimed_rank":5},
-{"type":"log_opponent","player":"Matthew Golden","week":2,"stat":"rec_yds","claimed_rank":15},
-{"type":"log_opponent","player":"Tucker Kraft","week":1,"stat":"rec_yds","claimed_rank":5},
-{"type":"log_opponent","player":"Tucker Kraft","week":2,"stat":"rec_yds","claimed_rank":19},
-{"type":"log_opponent","player":"Drake London","week":1,"stat":"rec_yds","claimed_rank":28},
-{"type":"log_opponent","player":"Drake London","week":2,"stat":"rec_yds","claimed_rank":8},
-{"type":"current_opponent","team":"GB","pos":"QB","stat":"pass_yds","role":"def","claimed_rank":10},
-{"type":"current_opponent","team":"ATL","pos":"QB","stat":"pass_yds","role":"def","claimed_rank":15},
-{"type":"current_opponent","team":"ATL","pos":"RB","stat":"rush_yds","role":"def","claimed_rank":24},
-{"type":"current_opponent","team":"ATL","pos":"RB","stat":"rush_yds","role":"def","claimed_rank":1},
-{"type":"current_opponent","team":"GB","pos":"RB","stat":"rush_yds","role":"def","claimed_rank":18},
-{"type":"current_opponent","team":"GB","pos":"RB","stat":"rush_yds","role":"def","claimed_rank":8},
-{"type":"current_opponent","team":"GB","pos":"WR","stat":"rec_yds","role":"def","claimed_rank":14},
-{"type":"current_opponent","team":"ATL","pos":"WR","stat":"rec_yds","role":"def","claimed_rank":19},
-{"type":"current_opponent","team":"GB","pos":"TE","stat":"rec_yds","role":"def","claimed_rank":6},
-{"type":"current_opponent","team":"ATL","pos":"TE","stat":"rec_yds","role":"def","claimed_rank":12},
-{"type":"current_opponent","team":"ATL","pos":"TE","stat":"td","role":"def","claimed_rank":1},
-{"type":"current_opponent","team":"ATL","pos":"QB","stat":"sacks_pg","role":"off","claimed_rank":4},
-{"type":"current_opponent","team":"ATL","pos":"QB","stat":"int_pg","role":"off","claimed_rank":4},
-{"type":"current_opponent","team":"GB","pos":"QB","stat":"sacks_pg","role":"off","claimed_rank":7},
-{"type":"current_opponent","team":"GB","pos":"QB","stat":"int_pg","role":"off","claimed_rank":2},
-{"type":"current_opponent","team":"ATL","pos":"QB","stat":"sacks_pg","role":"def","claimed_rank":2},
-{"type":"current_opponent","team":"GB","pos":"QB","stat":"sacks_pg","role":"def","claimed_rank":20},
-{"type":"current_opponent","team":"ATL","pos":"QB","stat":"int_pg","role":"def","claimed_rank":6},
-{"type":"current_opponent","team":"GB","pos":"QB","stat":"int_pg","role":"def","claimed_rank":28},
-{"type":"current_opponent","team":"ATL","pos":"TEAM","stat":"ppg","role":"off","claimed_rank":24},
-{"type":"current_opponent","team":"GB","pos":"TEAM","stat":"ppg","role":"off","claimed_rank":16},
-{"type":"current_opponent","team":"ATL","pos":"TEAM","stat":"ppg","role":"def","claimed_rank":19},
-{"type":"current_opponent","team":"GB","pos":"TEAM","stat":"ppg","role":"def","claimed_rank":11},
-{"type":"current_opponent","team":"ATL","pos":"QB","stat":"pass_yds","role":"off","claimed_rank":20},
-{"type":"current_opponent","team":"GB","pos":"QB","stat":"pass_yds","role":"off","claimed_rank":18},
-{"type":"current_opponent","team":"ATL","pos":"TEAM","stat":"rush_ypg","role":"off","claimed_rank":8},
-{"type":"current_opponent","team":"GB","pos":"TEAM","stat":"rush_ypg","role":"off","claimed_rank":15},
-{"type":"current_opponent","team":"ATL","pos":"RB","stat":"rush_ypg","role":"off","claimed_rank":3},
-{"type":"current_opponent","team":"GB","pos":"RB","stat":"rush_ypg","role":"off","claimed_rank":20},
-{"type":"current_opponent","team":"ATL","pos":"WR","stat":"rec_ypg","role":"off","claimed_rank":28},
-{"type":"current_opponent","team":"GB","pos":"WR","stat":"rec_ypg","role":"off","claimed_rank":12},
-{"type":"current_opponent","team":"ATL","pos":"TE","stat":"rec_ypg","role":"off","claimed_rank":13},
-{"type":"current_opponent","team":"GB","pos":"TE","stat":"rec_ypg","role":"off","claimed_rank":19},
-{"type":"current_opponent","team":"ATL","pos":"TEAM","stat":"third_down_conversion_pct","role":"off","claimed_rank":30},
-{"type":"current_opponent","team":"GB","pos":"TEAM","stat":"third_down_conversion_pct","role":"off","claimed_rank":2},
-{"type":"current_opponent","team":"ATL","pos":"TEAM","stat":"third_down_pct_allowed","role":"def","claimed_rank":17},
-{"type":"current_opponent","team":"GB","pos":"TEAM","stat":"third_down_pct_allowed","role":"def","claimed_rank":14
+{"type": "rank_shift", "team": "ATL", "side": "off", "stat": "ppg", "claimed_rank_2025": 24, "claimed_rank_2026": 32},
+{"type": "rank_shift", "team": "ATL", "side": "off", "stat": "pass_ypg", "claimed_rank_2025": 20, "claimed_rank_2026": 32},
+{"type": "rank_shift", "team": "ATL", "side": "off", "stat": "rush_ypg", "claimed_rank_2025": 8, "claimed_rank_2026": 7},
+{"type": "rank_shift", "team": "ATL", "side": "off", "stat": "total_ypg", "claimed_rank_2025": 17, "claimed_rank_2026": 28},
+{"type": "rank_shift", "team": "ATL", "side": "off", "stat": "fd_pg", "claimed_rank_2025": 18, "claimed_rank_2026": 24},
+{"type": "rank_shift", "team": "ATL", "side": "def", "stat": "rush_ypg", "claimed_rank_2025": 24, "claimed_rank_2026": 1},
+{"type": "rank_shift", "team": "ATL", "side": "def", "stat": "pass_ypg", "claimed_rank_2025": 15, "claimed_rank_2026": 25},
+{"type": "rank_shift", "team": "ATL", "side": "def", "stat": "ppg", "claimed_rank_2025": 19, "claimed_rank_2026": 23},
+{"type": "rank_shift", "team": "ATL", "side": "def", "stat": "total_ypg", "claimed_rank_2025": 17, "claimed_rank_2026": 12},
+{"type": "rank_shift", "team": "ATL", "side": "def", "stat": "fd_pg", "claimed_rank_2025": 17, "claimed_rank_2026": 9},
+{"type": "rank_shift", "team": "GB", "side": "off", "stat": "pass_ypg", "claimed_rank_2025": 18, "claimed_rank_2026": 8},
+{"type": "rank_shift", "team": "GB", "side": "off", "stat": "rush_ypg", "claimed_rank_2025": 15, "claimed_rank_2026": 32},
+{"type": "rank_shift", "team": "GB", "side": "off", "stat": "ppg", "claimed_rank_2025": 16, "claimed_rank_2026": 18},
+{"type": "rank_shift", "team": "GB", "side": "off", "stat": "total_ypg", "claimed_rank_2025": 16, "claimed_rank_2026": 15},
+{"type": "rank_shift", "team": "GB", "side": "off", "stat": "fd_pg", "claimed_rank_2025": 14, "claimed_rank_2026": 21},
+{"type": "rank_shift", "team": "GB", "side": "def", "stat": "pass_ypg", "claimed_rank_2025": 10, "claimed_rank_2026": 10},
+{"type": "rank_shift", "team": "GB", "side": "def", "stat": "rush_ypg", "claimed_rank_2025": 18, "claimed_rank_2026": 8},
+{"type": "rank_shift", "team": "GB", "side": "def", "stat": "ppg", "claimed_rank_2025": 11, "claimed_rank_2026": 24},
+{"type": "rank_shift", "team": "GB", "side": "def", "stat": "total_ypg", "claimed_rank_2025": 12, "claimed_rank_2026": 5},
+{"type": "rank_shift", "team": "GB", "side": "def", "stat": "fd_pg", "claimed_rank_2025": 16, "claimed_rank_2026": 11},
+{"type": "current_opponent", "team": "ATL", "pos": "QB", "stat": "comp_pct", "role": "off", "claimed_rank": 28},
+{"type": "current_opponent", "team": "ATL", "pos": "QB", "stat": "sacks_pg", "role": "off", "claimed_rank": 4},
+{"type": "current_opponent", "team": "ATL", "pos": "QB", "stat": "int_pg", "role": "off", "claimed_rank": 4},
+{"type": "current_opponent", "team": "ATL", "pos": "RB", "stat": "rush_yds", "role": "off", "claimed_rank": 3},
+{"type": "current_opponent", "team": "ATL", "pos": "RB", "stat": "rec_yds", "role": "off", "claimed_rank": 2},
+{"type": "current_opponent", "team": "ATL", "pos": "WR", "stat": "rec_yds", "role": "off", "claimed_rank": 28},
+{"type": "current_opponent", "team": "ATL", "pos": "TE", "stat": "rec_yds", "role": "off", "claimed_rank": 13},
+{"type": "current_opponent", "team": "ATL", "pos": "QB", "stat": "sacks_pg", "role": "def", "claimed_rank": 2},
+{"type": "current_opponent", "team": "ATL", "pos": "QB", "stat": "int_pg", "role": "def", "claimed_rank": 6},
+{"type": "current_opponent", "team": "ATL", "pos": "TE", "stat": "td", "role": "def", "claimed_rank": 1},
+{"type": "current_opponent", "team": "ATL", "pos": "WR", "stat": "td", "role": "def", "claimed_rank": 29},
+{"type": "current_opponent", "team": "GB", "pos": "QB", "stat": "comp_pct", "role": "off", "claimed_rank": 9},
+{"type": "current_opponent", "team": "GB", "pos": "QB", "stat": "sacks_pg", "role": "off", "claimed_rank": 7},
+{"type": "current_opponent", "team": "GB", "pos": "QB", "stat": "int_pg", "role": "off", "claimed_rank": 2},
+{"type": "current_opponent", "team": "GB", "pos": "RB", "stat": "rush_yds", "role": "off", "claimed_rank": 20},
+{"type": "current_opponent", "team": "GB", "pos": "QB", "stat": "int_pg", "role": "def", "claimed_rank": 28},
+{"type": "current_opponent", "team": "GB", "pos": "RB", "stat": "rec_yds", "role": "def", "claimed_rank": 8},
+{"type": "current_opponent", "team": "GB", "pos": "TE", "stat": "rec_yds", "role": "def", "claimed_rank": 6},
+{"type": "current_opponent", "team": "GB", "pos": "QB", "stat": "pass_ypg", "role": "off", "claimed_rank": 18},
+{"type": "current_opponent", "team": "ATL", "pos": "TEAM", "stat": "third_down_conversion_pct", "role": "off", "claimed_rank": 30},
+{"type": "current_opponent", "team": "ATL", "pos": "TEAM", "stat": "third_down_pct_allowed", "role": "def", "claimed_rank": 17},
+{"type": "current_opponent", "team": "GB", "pos": "TEAM", "stat": "third_down_conversion_pct", "role": "off", "claimed_rank": 2},
+{"type": "current_opponent", "team": "GB", "pos": "TEAM", "stat": "third_down_pct_allowed", "role": "def", "claimed_rank": 14},
+{"type": "current_opponent", "team": "ATL", "pos": "TEAM", "stat": "red_zone_run_pct_allowed", "role": "def", "claimed_rank": 17},
+{"type": "current_opponent", "team": "ATL", "pos": "TEAM", "stat": "red_zone_pass_pct_allowed", "role": "def", "claimed_rank": 15},
+{"type": "current_opponent", "team": "GB", "pos": "TEAM", "stat": "red_zone_run_pct", "role": "off", "claimed_rank": 7},
+{"type": "current_opponent", "team": "GB", "pos": "TEAM", "stat": "red_zone_pass_pct", "role": "off", "claimed_rank": 26},
+{"type": "current_opponent", "team": "GB", "pos": "TEAM", "stat": "red_zone_run_pct_allowed", "role": "def", "claimed_rank": 20},
+{"type": "current_opponent", "team": "GB", "pos": "TEAM", "stat": "red_zone_pass_pct_allowed", "role": "def", "claimed_rank": 13}
+]}

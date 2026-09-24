@@ -140,23 +140,72 @@ def flag_off_roster_players(report_text, away, home):
 
 def extract_evidence_check_block(report_text):
     """Pulls the real EVIDENCE_CHECK JSON block out of the finished
-    report. Same real extraction pattern already proven in
-    generate_props_report.py's extract_json_block() — a named tag
-    followed by one real JSON object, not a bare array. Returns None
-    (not an empty list) when the tag is missing entirely or its JSON
-    doesn't parse — a real failure worth distinguishing from "Coeus
-    made zero rank claims this report," which is a legitimate, real
-    outcome for a report that happens not to cite any."""
-    match = re.search(r"EVIDENCE_CHECK\s*\n(\{.*?\n\})", report_text, re.DOTALL)
-    if not match:
-        return None
+    report.
+
+    BUG FIX (2026-09-24), per Frank's direct catch on a real truncated
+    report (ATL@GB, stop_reason=max_tokens): this used to collapse "no
+    EVIDENCE_CHECK tag at all" (a legitimate, real outcome for a report
+    that cites no ranks) and "tag found but its JSON failed to parse"
+    (almost always a truncated response — every rank claim in THAT
+    report is genuinely unverified) into the same single None return.
+    Now returns a ("missing"|"parse_error"|"ok", data) pair so the
+    caller can tell these apart and make the parse-error case loud.
+
+    SECOND, SEPARATE BUG FIX (2026-09-24), per Frank's direct catch on
+    the VERY NEXT run, a real, complete, non-truncated report
+    (stop_reason=end_turn) with a full, valid 70-claim EVIDENCE_CHECK
+    block: the regex this replaced
+    assumed the block's closing brace always sat alone on its own
+    line — true for the bare {"key": "value"} shape this was
+    copied from (generate_props_report.py's extract_json_block()), but
+    FALSE for this report's real shape, {"claims": [...]} , whose
+    closing `}` sits directly next to the array's `]` on the same
+    line, never preceded by a lone newline. The regex therefore never
+    matched this shape AT ALL, confirmed directly against the real
+    saved output — a systemic silent failure, not a one-off, since
+    EVERY Game Breakdown report uses this exact {"claims": [...]}
+    shape. Replaced with a real balanced-brace scan (string-literal
+    aware, so a brace inside a quoted value never miscounts) starting
+    at the first '{' after the tag — this makes no assumption at all
+    about where the closing brace sits."""
+    tag_match = re.search(r"EVIDENCE_CHECK\s*\n", report_text)
+    if not tag_match:
+        return "missing", None
+    start = report_text.find("{", tag_match.end())
+    if start == -1:
+        return "missing", None
+    depth = 0
+    in_string = False
+    escape = False
+    end = None
+    for i in range(start, len(report_text)):
+        ch = report_text[i]
+        if in_string:
+            if escape:
+                escape = False
+            elif ch == "\\":
+                escape = True
+            elif ch == '"':
+                in_string = False
+            continue
+        if ch == '"':
+            in_string = True
+        elif ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                end = i + 1
+                break
+    if end is None:
+        return "parse_error", None
     try:
-        return json.loads(match.group(1))
+        return "ok", json.loads(report_text[start:end])
     except json.JSONDecodeError:
-        return None
+        return "parse_error", None
 
 
-def check_report_evidence_claims(report_text, evidence, away, home):
+def check_report_evidence_claims(report_text, evidence, away, home, truncated=False):
     """REAL ADDITION (2026-09-21), per Frank's own direct, real catch —
     same real principle as flag_off_roster_players() above (a
     deterministic, post-generation check that warns loudly rather than
@@ -166,12 +215,31 @@ def check_report_evidence_claims(report_text, evidence, away, home):
     catch — first confirmed in a real props report, then separately
     confirmed by Frank in a real Game Breakdown too, which is why this
     same check now runs here as well, against the exact same real
-    evidence this report was actually built from."""
-    raw = extract_evidence_check_block(report_text)
-    if raw is None:
+    evidence this report was actually built from.
+
+    BUG FIX (2026-09-24): a response that hit the max_tokens ceiling
+    (stop_reason == "max_tokens") skips the real check entirely now and
+    prints an unmistakable failure instead — a truncated EVIDENCE_CHECK
+    block reliably fails to parse, and running the normal check against
+    it produced the exact same soft "no claims" message a genuinely
+    clean report gets. See extract_evidence_check_block() for the
+    matching "missing" vs "parse_error" split this also relies on."""
+    if truncated:
+        print("\n  \u26a0 EVIDENCE-CLAIM CHECK SKIPPED — this response was cut off by "
+              "the max_tokens ceiling before it could finish. NONE of this report's "
+              "rank claims have been verified. Do not trust this report — re-run with "
+              "a higher --max-tokens value.")
+        return
+    status, raw = extract_evidence_check_block(report_text)
+    if status == "missing":
         print("\n  Evidence-claim check: no EVIDENCE_CHECK block found in this report "
-              "— either it made no rank claims worth checking, or the block failed "
-              "to parse. Worth a manual look if this report cites any real ranks.")
+              "— this report made no rank claims requiring verification.")
+        return
+    if status == "parse_error":
+        print("\n  \u26a0 EVIDENCE-CLAIM CHECK FAILED — an EVIDENCE_CHECK block was "
+              "found but its JSON did not parse. This report's rank claims have NOT "
+              "been verified — treat every rank in it as unchecked until this is "
+              "re-run and the block parses cleanly.")
         return
     claims = raw.get("claims") or []
     if not claims:
@@ -202,11 +270,14 @@ def main():
                      help="Read from evidence_bootstrap/{away}_{home}.json instead of "
                           "evidence/wkNN/ — use this for an upcoming, not-yet-played game.")
     ap.add_argument("--model", default=DEFAULT_MODEL)
-    ap.add_argument("--max-tokens", type=int, default=64000,
+    ap.add_argument("--max-tokens", type=int, default=120000,
                      help="Set higher than the DFS harness's 48000 — this report is expected "
                           "to run longer (both teams, all four units, deeper positional "
                           "detail, more Hidden Intelligence findings). You only pay for "
-                          "tokens actually generated, not the ceiling.")
+                          "tokens actually generated, not the ceiling. RAISED (2026-09-24), "
+                          "per Frank's real ATL@GB run hitting the old 64000 ceiling before "
+                          "finishing: 120000 leaves real headroom under claude-sonnet-5's "
+                          "confirmed 128K max-output limit on the synchronous Messages API.")
     ap.add_argument("--dry-run", action="store_true",
                      help="Build and save the exact prompt without calling the API.")
     args = ap.parse_args()
@@ -391,8 +462,9 @@ def main():
                      f"content block types={block_types}. Not a valid report.]")
         sys.exit(1)
 
+    truncated = response.stop_reason == "max_tokens"
     flag_off_roster_players(report_text, args.away, args.home)
-    check_report_evidence_claims(report_text, evidence, args.away, args.home)
+    check_report_evidence_claims(report_text, evidence, args.away, args.home, truncated=truncated)
 
     with open(f"{out_stem}.md", "w") as f:
         f.write(report_text)
@@ -410,17 +482,30 @@ def main():
     # other page) can check "does a real report exist for this game" via a
     # single small fetch, rather than guessing or trying every filename.
     # Read-modify-write since multiple separate script runs share one file.
+    #
+    # BUG FIX (2026-09-24), per Frank's direct catch: this used to run
+    # unconditionally, so a truncated report (stop_reason=max_tokens) got
+    # marked in the manifest exactly like a real, complete one — anything
+    # reading this file (games.html included) would show ATL@GB as done
+    # and safe to trust, which it genuinely was not. A truncated report
+    # is still written to disk below (so it's there to inspect or re-run
+    # from), but no longer marked "done" in the manifest.
     manifest_path = f"{out_dir}/manifest.json"
-    manifest = load_json(manifest_path) or {"games": {}}
-    manifest["games"][f"{args.away}_{args.home}"] = {
-        "away": args.away, "home": args.home, "season": season, "week": week,
-        "generated_at": prompt_record["generated_at"],
-    }
-    with open(manifest_path, "w") as f:
-        json.dump(manifest, f, indent=2)
-
-    print(f"\nWrote {out_stem}.md")
-    print(f"Updated {manifest_path}")
+    if truncated:
+        print(f"\nWrote {out_stem}.md")
+        print(f"  \u26a0 Manifest NOT updated — this report is INCOMPLETE "
+              f"(max_tokens). Re-run with a higher --max-tokens value, then "
+              f"this game will be marked done in {manifest_path}.")
+    else:
+        manifest = load_json(manifest_path) or {"games": {}}
+        manifest["games"][f"{args.away}_{args.home}"] = {
+            "away": args.away, "home": args.home, "season": season, "week": week,
+            "generated_at": prompt_record["generated_at"],
+        }
+        with open(manifest_path, "w") as f:
+            json.dump(manifest, f, indent=2)
+        print(f"\nWrote {out_stem}.md")
+        print(f"Updated {manifest_path}")
     print(f"Actual usage: {usage.input_tokens:,} input tokens, {usage.output_tokens:,} output tokens")
     if getattr(usage, "cache_read_input_tokens", None):
         print(f"  ({usage.cache_read_input_tokens:,} of those input tokens served from cache)")
