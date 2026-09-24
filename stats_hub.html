@@ -306,6 +306,28 @@ function switchView(){
 }
 
 /* ── DEFENSE VS POSITION ─────────────────────────────────────────── */
+// BUG FIX (2026-09-24), per Frank's direct catch: "Passing Yards / Game"
+// equaled raw "Passing Yards" for every team — the per-game math itself
+// was fine, but matchup/wkNN.json is built with "entering week N"
+// semantics (real games from weeks BEFORE N only, weeks < N) — the same
+// pre-game-context convention used everywhere else in this pipeline
+// (Intel Reports' "upcoming opponent" context, etc.), so it never
+// includes week N's own results. This DvP tab's own label promises
+// "Cumulative through the selected week" (inclusive), which is a
+// genuinely different, retrospective use of the same files — so
+// selecting "Week 2" showed real games from week 1 only (data_horizon
+// "weeks 1-1"), 1 real game per team, making per-game average trivially
+// equal the total. Confirmed directly: selecting "Season" (latestWeek)
+// has the identical gap — the most recently STARTED week's own results
+// are always missing from that week's own matchup file.
+// Fix: since matchup files are built a few weeks ahead on purpose (see
+// the weekHasRealGameStarted comment above), matchup/wk{N+1}.json
+// already exists and correctly covers real weeks 1..N. Reading N+1's
+// file for "Week N" / "Season" gives the genuinely inclusive cumulative
+// view the label promises, with no Python change or rebuild needed.
+function dvpDataFor(w){
+  return WEEKS[w + 1] || WEEKS[w];
+}
 function setupDvpControls(){
   if(!weekList.length){
     $("innerTabs").innerHTML = '';
@@ -324,7 +346,7 @@ function setupDvpControls(){
   $("weekSel").onchange = e => {
     currentWeek = Number(e.target.value);
     const label = currentWeek === latestWeek ? 'season' : `week ${currentWeek}`;
-    fiUpdated(`${label} · ${WEEKS[currentWeek].data_horizon}`);
+    fiUpdated(`${label} · ${dvpDataFor(currentWeek).data_horizon}`);
     renderDvpTable();
   };
 
@@ -338,7 +360,7 @@ function setupDvpControls(){
   });
 
   const label = currentWeek === latestWeek ? 'season' : `week ${currentWeek}`;
-  fiUpdated(`${label} · ${WEEKS[currentWeek].data_horizon}`);
+  fiUpdated(`${label} · ${dvpDataFor(currentWeek).data_horizon}`);
   renderDvpTable();
 }
 
@@ -576,7 +598,7 @@ function renderRankShiftsTable(){
 }
 
 function renderDvpTable(){
-  const wk = WEEKS[currentWeek];
+  const wk = dvpDataFor(currentWeek);
   const labels = wk.labels.pos[currentPos];
   const keys = Object.keys(labels);
   if(!sortKey) sortKey = keys[0];
