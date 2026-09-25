@@ -6,6 +6,97 @@
       "season": 2025,
       "week": 3,
       "generated_at": "2026-09-24T19:59:36.382619+00:00"
+    },
+    "LAC_BUF": {
+      "away": "LAC",
+      "home": "BUF",
+      "season": 2025,
+      "week": 3,
+      "generated_at": "2026-09-24T21:55:34.068809+00:00"
+    },
+    "CAR_CLE": {
+      "away": "CAR",
+      "home": "CLE",
+      "season": 2025,
+      "week": 3,
+      "generated_at": "2026-09-24T22:13:35.023283+00:00"
+    },
+    "NYJ_DET": {
+      "away": "NYJ",
+      "home": "DET",
+      "season": 2025,
+      "week": 3,
+      "generated_at": "2026-09-24T22:40:57.826111+00:00"
+    },
+    "HOU_IND": {
+      "away": "HOU",
+      "home": "IND",
+      "season": 2025,
+      "week": 3,
+      "generated_at": "2026-09-24T23:02:08.913287+00:00"
+    },
+    "NE_JAX": {
+      "away": "NE",
+      "home": "JAX",
+      "season": 2025,
+      "week": 3,
+      "generated_at": "2026-09-24T23:09:06.159946+00:00"
+    },
+    "KC_MIA": {
+      "away": "KC",
+      "home": "MIA",
+      "season": 2025,
+      "week": 3,
+      "generated_at": "2026-09-24T23:20:04.964156+00:00"
+    },
+    "TEN_NYG": {
+      "away": "TEN",
+      "home": "NYG",
+      "season": 2025,
+      "week": 3,
+      "generated_at": "2026-09-24T23:29:32.625581+00:00"
+    },
+    "CIN_PIT": {
+      "away": "CIN",
+      "home": "PIT",
+      "season": 2025,
+      "week": 3,
+      "generated_at": "2026-09-24T23:40:03.993867+00:00"
+    },
+    "SEA_WAS": {
+      "away": "SEA",
+      "home": "WAS",
+      "season": 2025,
+      "week": 3,
+      "generated_at": "2026-09-24T23:49:45.371282+00:00"
+    },
+    "ARI_SF": {
+      "away": "ARI",
+      "home": "SF",
+      "season": 2025,
+      "week": 3,
+      "generated_at": "2026-09-25T00:56:07.039828+00:00"
+    },
+    "MIN_TB": {
+      "away": "MIN",
+      "home": "TB",
+      "season": 2025,
+      "week": 3,
+      "generated_at": "2026-09-25T01:06:39.858326+00:00"
+    },
+    "BAL_DAL": {
+      "away": "BAL",
+      "home": "DAL",
+      "season": 2025,
+      "week": 3,
+      "generated_at": "2026-09-25T01:24:53.846383+00:00"
+    },
+    "LV_NO": {
+      "away": "LV",
+      "home": "NO",
+      "season": 2025,
+      "week": 3,
+      "generated_at": "2026-09-25T01:34:58.749639+00:00"
     }
   }
 }
