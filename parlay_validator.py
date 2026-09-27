@@ -52,7 +52,7 @@ def leg_key(leg):
             leg.get("market_key"), leg.get("player") or leg.get("side"))
 
 
-def validate_parlay(legs, expected_size, stake=100):
+def validate_parlay(legs, expected_size, stake=100, require_td=False):
     """legs: list of dicts, each with at least market_key, price
     (decimal), canonical_event_id (or event_id). expected_size: the
     declared N for this parlay (3, 4, 5, 6, or 7) — a real, checked
@@ -72,6 +72,29 @@ def validate_parlay(legs, expected_size, stake=100):
     if dupes:
         errors.append(f"Duplicate leg(s) — same event/market/player appears "
                        f"more than once: {dupes}")
+
+    # REAL RULE (2026-09-27): Anytime TD picks now have their own
+    # separate parlay structure (Section 7 of the Standard, "Favorite
+    # Anytime TD Parlays") — Frank's explicit call, since a TD market
+    # is a binary Yes/No prop that behaves very differently from a
+    # line-based Over/Under, and mixing the two into one parlay muddies
+    # both the payout math and the site's own reporting. require_td
+    # picks which real rule applies: a normal (Section 6) parlay must
+    # contain NO player_anytime_td leg, while a TD parlay (Section 7)
+    # must contain ONLY player_anytime_td legs — either way this is the
+    # real, independent enforcement backstop, regardless of what
+    # Coeus's own prompt-level compliance does.
+    if require_td:
+        non_td_legs = [i + 1 for i, l in enumerate(legs) if l.get("market_key") != "player_anytime_td"]
+        if non_td_legs:
+            errors.append(f"Leg(s) {non_td_legs} do NOT use the player_anytime_td market — "
+                           f"every leg in a TD parlay must be an Anytime TD pick.")
+    else:
+        td_legs = [i + 1 for i, l in enumerate(legs) if l.get("market_key") == "player_anytime_td"]
+        if td_legs:
+            errors.append(f"Leg(s) {td_legs} use the player_anytime_td market — "
+                           f"Anytime TD picks are not allowed in this parlay (see "
+                           f"Anytime TD tab instead).")
 
     prices = []
     for i, leg in enumerate(legs):

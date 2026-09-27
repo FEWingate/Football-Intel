@@ -97,6 +97,20 @@
       "season": 2025,
       "week": 3,
       "generated_at": "2026-09-25T01:34:58.749639+00:00"
+    },
+    "LAR_DEN": {
+      "away": "LAR",
+      "home": "DEN",
+      "season": 2026,
+      "week": 3,
+      "generated_at": "2026-09-27T16:23:56.905884+00:00"
+    },
+    "PHI_CHI": {
+      "away": "PHI",
+      "home": "CHI",
+      "season": 2026,
+      "week": 3,
+      "generated_at": "2026-09-27T16:41:20.678190+00:00"
     }
   }
 }

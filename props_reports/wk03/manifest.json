@@ -1,0 +1,15 @@
+{
+  "batches": {
+    "props_parlay_report_batch6_ARI.json": {
+      "games": [
+        "ARI_SF",
+        "MIN_TB",
+        "BAL_DAL",
+        "LV_NO",
+        "LAR_DEN",
+        "PHI_CHI"
+      ],
+      "generated_at": "2026-09-27T18:17:02.439583+00:00"
+    }
+  }
+}

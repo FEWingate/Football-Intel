@@ -408,15 +408,17 @@ def extract_json_block(report_text, tag):
         return None
 
 
-def extract_parlay_blocks(report_text):
-    """Pulls all five PARLAY_N_TEAM JSON blocks out of the response.
-    Returns {size: legs_list_or_None} — a missing or unparseable block
-    for a given size is a real failure to report for THAT size, not
+def extract_parlay_blocks(report_text, tag_prefix="PARLAY"):
+    """Pulls all five {tag_prefix}_N_TEAM JSON blocks out of the
+    response — tag_prefix is "PARLAY" for Section 6's regular parlays,
+    "TD_PARLAY" for Section 7's real Anytime-TD-only parlays. Returns
+    {size: legs_list_or_None} — a missing or unparseable block for a
+    given size is a real failure to report for THAT size, not
     something to silently skip past; the other sizes are unaffected."""
     result = {}
     for size in PARLAY_SIZES:
-        tag = f"PARLAY_{size}_TEAM"
-        match = re.search(rf"{tag}\s*\n(\[.*?\])", report_text, re.DOTALL)
+        tag = f"{tag_prefix}_{size}_TEAM"
+        match = re.search(rf"{tag}\s*\n(\[.*?\n\])", report_text, re.DOTALL)
         if not match:
             result[size] = None
             continue
@@ -526,7 +528,7 @@ def main():
     ap = argparse.ArgumentParser(description="Generate the Props & Parlay Report.")
     ap.add_argument("--model", default=DEFAULT_MODEL)
     ap.add_argument("--max-tokens", type=int, default=48000)
-    ap.add_argument("--stake", type=float, default=100,
+    ap.add_argument("--stake", type=float, default=10,
                      help="Hypothetical per-parlay stake used to compute a real "
                           "payout figure in the validator output. Default $100.")
     ap.add_argument("--dry-run", action="store_true",
@@ -891,6 +893,54 @@ def main():
         }
     print("=" * 60)
 
+    # REAL ADDITION (2026-09-27), per Frank's direct request: a second,
+    # separate set of five parlays (Section 7 of the Standard) built
+    # exclusively from real Anytime TD legs — same validation machinery
+    # as the regular parlays above, but require_td=True flips the rule
+    # so every leg MUST be player_anytime_td instead of forbidding it.
+    td_parlays = extract_parlay_blocks(report_text, tag_prefix="TD_PARLAY")
+    td_parlay_results = {}
+    for size in PARLAY_SIZES:
+        legs = td_parlays[size]
+        print(f"\n{size}-TEAM TD PARLAY VALIDATION:")
+        if legs is None:
+            print(f"  FAILED — could not find or parse a TD_PARLAY_{size}_TEAM JSON "
+                  f"block. This TD parlay has NOT been checked. Do not trust it.")
+            td_parlay_results[size] = {"valid": False, "errors": ["Could not parse this parlay's JSON block."],
+                                        "warnings": [], "result": None, "legs": None, "mismatches": []}
+            continue
+        verified_legs, mismatches = verify_legs_against_source(legs, real_by_key)
+        if mismatches:
+            print(f"  {len(mismatches)} leg(s) do NOT exist in the real FanDuel data "
+                  f"provided — Coeus referenced something not actually on the board:")
+            for m in mismatches:
+                print(f"    - {m}")
+        is_valid, errors, warnings, result = validate_parlay(
+            verified_legs, expected_size=size, stake=args.stake, require_td=True)
+        for leg in verified_legs:
+            leg_ev_mismatches = verify_evidence_check(leg.get("evidence_check"), evidence_by_game)
+            if leg_ev_mismatches:
+                for m in leg_ev_mismatches:
+                    errors.append(f"{leg.get('player')}: {m}")
+                is_valid = False
+        passed = is_valid and not mismatches
+        if passed:
+            print(f"  PASSED — {result['legs']} real legs, combined odds "
+                  f"{result['combined_decimal']} (American {result['combined_american']:+d}), "
+                  f"${args.stake:.0f} stake -> ${result['payout']:.2f} payout.")
+        else:
+            print(f"  FAILED:")
+            for e in errors:
+                print(f"    - {e}")
+        for w in warnings:
+            print(f"  NOTE: {w}")
+        td_parlay_results[size] = {
+            "valid": passed, "errors": errors, "warnings": warnings,
+            "result": result, "legs": verified_legs,
+            "mismatches": [m for m in mismatches],
+        }
+    print("=" * 60)
+
     report_json = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "games_included": [f"{a}_{h}" for _, a, h in games],
@@ -900,6 +950,7 @@ def main():
         "prop_breakdown": prop_breakdown, "prop_breakdown_errors": pb_errors,
         "favorite_ou": favorite_ou, "favorite_ou_errors": fou_errors,
         "parlays": {str(size): parlay_results[size] for size in PARLAY_SIZES},
+        "td_parlays": {str(size): td_parlay_results[size] for size in PARLAY_SIZES},
     }
     with open(f"{out_stem}.json", "w") as f:
         json.dump(report_json, f)

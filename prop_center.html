@@ -136,6 +136,7 @@ main.innerHTML = `
     <button data-s="props">Player Props</button>
     <button data-s="breakdown">Coeus Prop Breakdown</button>
     <button data-s="overunder">Favorite O/U</button>
+    <button data-s="anytimetd">Anytime TD</button>
     <button data-s="parlays">Parlays</button>
   </div>
   <div id="body"></div>
@@ -602,6 +603,39 @@ function renderFavoriteOU(){
   wireReportToggle();
 }
 
+// REAL ADDITION (2026-09-27), per Frank's direct request: Anytime TD
+// picks now get their own dedicated tab, pulled from the same real
+// per_game/per_position pick data every other tab already uses — no
+// new report schema needed, just a market_key filter — and Anytime TD
+// legs are no longer allowed in the Parlays tab at all (see
+// parlay_validator.py's real, independent enforcement of that rule).
+// REAL CHANGE (2026-09-27), per Frank's direct request: Anytime TD
+// picks are no longer a passive filter over Section 4's per-game
+// picks — Coeus now actively curates its own favorite Anytime TD
+// combinations at 5 real sizes (3/4/5/6/7), same structure as the
+// Parlays tab, built exclusively from player_anytime_td legs (see
+// Section 7 of the Standard and td_parlays in the report JSON).
+function renderAnytimeTD(){
+  if(!REPORT || !REPORT.td_parlays){
+    $('body').innerHTML = `<div class="empty">No Anytime TD Parlays have been generated yet.<br>
+      Run <b>python3 generate_props_report.py</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+  const sizes = ['3','4','5','6','7'];
+  const cards = sizes.map(s => REPORT.td_parlays[s] ? parlayCard(s, REPORT.td_parlays[s]) : '').join('');
+
+  $('body').innerHTML = `
+    <div class="lineup-note" style="margin-bottom:14px">
+      Coeus's favorite real Anytime TD combinations for the week, at 5 sizes — every leg
+      is a player_anytime_td pick, independently re-checked against real FanDuel prices.
+      These never appear in the regular Parlays tab.
+    </div>
+    <div class="parlay-grid">${cards}</div>
+    ${reportToggleHTML()}
+  `;
+  wireReportToggle();
+}
+
 /* ── PARLAYS — existing, working feature ─────────────────────────────── */
 function parlayCard(size, p){
   const invalid = !p.valid;
@@ -708,6 +742,7 @@ function render(){
   if(activeSection === 'props') return renderPlayerProps();
   if(activeSection === 'breakdown') return renderPropBreakdown();
   if(activeSection === 'overunder') return renderFavoriteOU();
+  if(activeSection === 'anytimetd') return renderAnytimeTD();
   if(activeSection === 'parlays') return renderParlays();
 }
 
