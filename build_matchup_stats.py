@@ -813,44 +813,20 @@ def build(week):
 
     carryover = None
     prior_stats = real_prior_stats
-    # REAL BUG FIX (2026-09-16), per Frank's direct observation that the
-    # site's own gold/blue carryover convention had gone missing on
-    # Threats and Matchup Stats: confirmed directly that carryover_season
-    # was already None for the real week 2 files, even though real 2026
-    # data at that point was a single game per team — the same "n=1"
-    # sample-size problem Game Breakdowns has to caveat explicitly.
-    # Traced the real cause here: this condition required
-    # real_prior_stats to be COMPLETELY EMPTY to enter carryover mode at
-    # all, so the moment even one real week of 2026 data existed, this
-    # branch — and the "real_stats"/"real_gp" display-only logic several
-    # hundred lines below, already fully written and explicitly commented
-    # "week 2+, once real games exist" — became unreachable. That
-    # unreachable code is real, working evidence the original design
-    # intended carryover to persist through the whole real
-    # CARRYOVER_WEEKS window regardless of whether some real, thin data
-    # already exists — not just in the narrow case of zero real data.
-    # Dropping the "real_prior_stats.empty" requirement here lets that
-    # already-built logic run for the first time, restoring the real
-    # gold/blue display for weeks 2 and 3, not just week 1.
-    if week <= CARRYOVER_WEEKS:
-        # REAL BUG FIX (2026-09-18), per Frank's direct question about
-        # this exact message: it always said "no data yet" unconditionally
-        # whenever week <= CARRYOVER_WEEKS, which was accurate back when
-        # that was the ONLY way into this branch — but the real fix above
-        # (dropping the real_prior_stats.empty requirement from the outer
-        # condition) means this branch now also runs when real 2026 games
-        # genuinely have been played, just still within the real
-        # CARRYOVER_WEEKS window. Printing "no data yet" for a week whose
-        # real games have already happened is a real, confirmed
-        # inaccuracy — the message now reflects which of the two real
-        # cases is actually true.
-        if real_prior_stats.empty:
-            print(f"  No {SEASON} data yet for week {week} — ranking off "
-                  f"{CARRYOVER_SEASON}'s complete season instead.")
-        else:
-            print(f"  Real {SEASON} data exists for week {week}, but the sample is still too thin "
-                  f"to rank on its own (week {week} of {CARRYOVER_WEEKS} carryover weeks) — "
-                  f"ranking off {CARRYOVER_SEASON}'s complete season instead.")
+    # REAL CHANGE (2026-09-28), per Frank's direct request: Matchup Stats
+    # and Threats should use ONLY real 2026 data to rank teams — 2025
+    # carryover ranking now kicks in ONLY when there is truly zero real
+    # 2026 data yet (week 1, before any 2026 games have been played).
+    # The moment even a single real 2026 game exists for a team, ranking
+    # switches to real 2026 data alone, however thin — no more blending
+    # with, or ranking off, 2025's complete season just because the
+    # sample is still small. This replaces the old CARRYOVER_WEEKS-based
+    # window (which forced 2025 ranking through week 3 regardless of how
+    # much real 2026 data already existed) with a single real condition:
+    # is there any real 2026 data at all.
+    if real_prior_stats.empty:
+        print(f"  No {SEASON} data yet for week {week} — ranking off "
+              f"{CARRYOVER_SEASON}'s complete season instead.")
         carry_stats = fetch_carryover_stats(CARRYOVER_SEASON)
         carry_games = fetch_csv(GAMES_URL)
         carry_games = normalize_team_cols(carry_games, "home_team", "away_team")
@@ -865,14 +841,12 @@ def build(week):
         carryover = {
             "season": CARRYOVER_SEASON,
             "gp": carry_gp,
-            # real_stats/real_gp are the NEW season's own games so far —
-            # empty in week 1, real (if thin) by week 2+. Filled in below,
-            # once all_teams/wl exist to compute real_gp from.
-            "real_stats": None if real_prior_stats.empty else real_prior_stats,
+            # Always None now — this branch only runs when there is
+            # truly no real 2026 data yet, so there is nothing real 2026
+            # to show alongside the 2025 numbers.
+            "real_stats": None,
             "real_gp": None,
         }
-    elif real_prior_stats.empty:
-        raise SystemExit(f"no prior data for week {week} (data-horizon rule)")
 
     all_teams = sorted(set(games["home_team"]) | set(games["away_team"]))
 
