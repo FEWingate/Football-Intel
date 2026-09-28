@@ -1113,10 +1113,17 @@ async function openGameBreakdown(gid, source){
       gbCache[key] = md;
     }
     $('mBody').innerHTML = `<div class="coeus-attribution">Engineered by Coeus</div>
-      <div class="gb-report">${marked.parse(md)}</div>`;
+      <div class="gb-report">${marked.parse(stripEvidenceCheck(md))}</div>`;
   } catch (e){
     $('mBody').innerHTML = `<div class="empty">Game Breakdown not available for this game yet.</div>`;
   }
+}
+
+/* ── strips the hidden EVIDENCE_CHECK block (used by the validator) before rendering ── */
+function stripEvidenceCheck(md){
+  const idx = md.indexOf('EVIDENCE_CHECK');
+  if(idx === -1) return md;
+  return md.slice(0, idx).replace(/\n{0,2}-{3,}\s*$/, '').trimEnd();
 }
 
 $('mClose').addEventListener('click', closeModal);
