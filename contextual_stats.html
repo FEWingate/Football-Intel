@@ -92,10 +92,53 @@ const contextPath = (season, week) => season === 2026
 
 const wkSel=$("wk");
 for(let w=3;w<=18;w++){const o=document.createElement("option");o.value=w;o.textContent="Week "+w;wkSel.appendChild(o);}
-wkSel.value=18; // REAL CHANGE (2026-09-24), per Frank's direct request: opens on the last, most complete week of 2025 (full-season carryover data) until enough real 2026 games exist to be worth opening on by default.
 wkSel.addEventListener("change",()=>load(Number(wkSel.value)));
-$("szn").value = String(season);
 $("szn").addEventListener("change", () => { season = Number($("szn").value); load(Number(wkSel.value)); });
+
+// REAL CHANGE (2026-09-28), per Frank's direct request: this page now opens
+// on real 2026 data, one week BEHIND the real current NFL week — e.g. once
+// Week 3's real Monday game has finished and the real current week has
+// advanced to 4, this opens on Week 3 (the most recently COMPLETED week),
+// not Week 4 itself (still in progress, its own game logs not final yet).
+// Replaces the old fixed "always open on 2025 Week 18" default now that
+// real 2026 data exists to open on instead — same real reasoning as the
+// 2026-only change already made to Matchup Stats and Threats.
+//
+// Same real Monday-kickoff-passed detection Games already uses (reads
+// games/wkNN.json, not this page's own context/wkNN.json, since Games'
+// schedule data is what real kickoff times live in) — duplicated here
+// rather than shared, since this page has no other dependency on
+// games.html's script.
+function etOffsetMinutes(dateStr){
+  const d = new Date(`${dateStr}T12:00:00Z`);
+  const utcStr = d.toLocaleString('en-US', { timeZone: 'UTC', hour12: false });
+  const etStr = d.toLocaleString('en-US', { timeZone: 'America/New_York', hour12: false });
+  return (new Date(utcStr) - new Date(etStr)) / 60000;
+}
+function kickoffHasPassed(g){
+  if(!g.gameday || !g.gametime) return false;
+  const [h, m] = g.gametime.split(':').map(Number);
+  const kickoffUTC = new Date(`${g.gameday}T00:00:00Z`);
+  kickoffUTC.setUTCMinutes(kickoffUTC.getUTCMinutes() + h * 60 + m + etOffsetMinutes(g.gameday));
+  return new Date() >= kickoffUTC;
+}
+async function determineCurrentWeek(){
+  let week = 1;
+  while (week < 18) {
+    let wkData;
+    try {
+      const r = await fetch(`games/wk${pad(week)}.json`, { cache: 'no-store' });
+      if (!r.ok) break;
+      wkData = await r.json();
+    } catch (e) { break; }
+    const monGames = (wkData.games || []).filter(g => g.weekday === 'Monday' && g.gameday);
+    if (!monGames.length) break;
+    const latestMon = monGames.reduce((max, g) => (!max || g.gametime > max.gametime) ? g : max, null);
+    if (!kickoffHasPassed(latestMon)) break;
+    week += 1;
+  }
+  return week;
+}
 $("tm").addEventListener("change",()=>{team=$("tm").value;syncTeamLogo();render();});
 function syncTeamLogo(){ $("tmLogo").innerHTML = team ? fiLogoHTML(team,22) : ''; }
 
@@ -234,7 +277,16 @@ function render(){
   $("body").innerHTML = h;
 }
 
-load(18); // kept in sync with wkSel.value above
+determineCurrentWeek().then(currentWeek => {
+  // Floor of 3: the week selector itself only offers weeks 3-18 (weeks 1-2
+  // never have enough real sample for a meaningful contextual split), so
+  // never resolve to a week the selector can't actually show.
+  const week = Math.max(3, currentWeek - 1);
+  season = 2026;
+  $("szn").value = "2026";
+  wkSel.value = week;
+  load(week);
+});
 </script>
 </body>
 </html>
