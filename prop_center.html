@@ -116,6 +116,20 @@
 .pc-pick-side.over{background:rgba(74,222,128,.14);color:#4ade80}
 .pc-pick-side.under{background:rgba(248,113,113,.14);color:#f87171}
 .pc-pick-side.spread{background:rgba(96,165,250,.14);color:#60a5fa}
+.grade-badge{font-family:var(--font-mono);font-size:11px;font-weight:700;padding:2px 7px;
+  border-radius:5px;display:inline-block;letter-spacing:.04em}
+.grade-badge.win{background:rgba(74,222,128,.16);color:#4ade80}
+.grade-badge.loss{background:rgba(248,113,113,.16);color:#f87171}
+.grade-badge.push{background:rgba(250,204,21,.16);color:#facc15}
+.grade-badge.pending{background:var(--surface2);color:var(--text-mid)}
+.pc-stat-row{display:flex;flex-wrap:wrap;gap:10px}
+.pc-stat-tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:12px 16px;min-width:120px}
+.pc-stat-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text-mid);margin-bottom:4px}
+.pc-stat-val{font-size:20px;font-weight:700}
+.pc-stat-pct{font-size:12px;color:var(--text-mid)}
+.pc-stat-ungraded{font-size:10.5px;color:var(--text-mid);margin-top:2px}
 .pc-pick-reason{font-size:11px;color:var(--text-dim);margin-top:6px;line-height:1.4}
 </style>
 </head>
@@ -140,6 +154,7 @@ main.innerHTML = `
     <button data-s="anytimetd">Anytime TD</button>
     <button data-s="spreads">Spreads</button>
     <button data-s="parlays">Parlays</button>
+    <button data-s="results">Results</button>
   </div>
   <div id="body"></div>
   <div class="modal-overlay" id="scrim"></div>
@@ -154,6 +169,15 @@ main.innerHTML = `
 
 let FDPROPS = null;   // fanduel_props/latest.json — real, live data, no LLM
 let REPORT = null;    // props_reports — Coeus's picks + parlays
+// REAL ADDITION (2026-09-28), per Frank's direct request to track how
+// Coeus's real picks actually did: REPORT_GRADED is the sibling
+// "*_graded.json" grade_props_report.py writes once a week's real
+// games are final (same picks as REPORT, each with a real "grade"
+// field added) — null until that script has actually been run for
+// the selected week/batch. SEASON_RECORD is the rolling real W/L/P
+// tally across every graded week, results/season_record.json.
+let REPORT_GRADED = null;
+let SEASON_RECORD = null;
 let activeSection = 'lines';
 let activeStat = 'passing_yards';
 let PROPS_WEEKS = [];      // real week folders (plus 'mixed', if present) that actually have a report
@@ -168,6 +192,11 @@ async function load(){
     const res = await fetch('fanduel_props/latest.json', { cache: 'no-store' });
     if(res.ok) FDPROPS = await res.json();
   }catch(e){ /* Game Lines / Player Props just won't have data yet */ }
+
+  try{
+    const res = await fetch('results/season_record.json', { cache: 'no-store' });
+    if(res.ok) SEASON_RECORD = await res.json();
+  }catch(e){ /* no real graded weeks yet */ }
 
   // REAL CHANGE (2026-09-21), per Frank's direct request: a full slate
   // can now be split into several real, separate batches (--games,
@@ -283,10 +312,19 @@ async function loadManifestForWeek(wk){
 
 async function loadReportForBatch(wk, filename){
   REPORT = null;
+  REPORT_GRADED = null;
   try{
     const res = await fetch(`props_reports/${wk}/${filename}`, { cache: 'no-store' });
     if(res.ok) REPORT = await res.json();
   }catch(e){ /* Coeus Prop Breakdown / Favorite O/U / Parlays just won't have data for this batch */ }
+  // REAL ADDITION (2026-09-28): grade_props_report.py writes a sibling
+  // "*_graded.json" once this batch's real games are final — a 404
+  // here just means that hasn't happened yet, not an error.
+  try{
+    const gradedName = filename.replace(/\.json$/, '_graded.json');
+    const res = await fetch(`props_reports/${wk}/${gradedName}`, { cache: 'no-store' });
+    if(res.ok) REPORT_GRADED = await res.json();
+  }catch(e){ /* not graded yet */ }
 }
 
 /* ── decimal -> American only, per Frank's real preference — decimal is
@@ -538,12 +576,28 @@ function sideLineLabel(pick){
   return `<span class="pc-pick-side ${pick.side}">${sideText}${lineText}</span>`;
 }
 
+// REAL ADDITION (2026-09-28), per Frank's direct request to track how
+// Coeus's real picks actually did: renders a ✓/✗/PUSH/pending badge
+// for a real graded pick's "grade" field. Returns '' when "grade" is
+// absent entirely (an ungraded REPORT, i.e. every tab except Results)
+// so this has zero effect anywhere the pick hasn't actually been
+// graded — only the Results tab ever passes graded picks through
+// pickCardHTML/parlayCard.
+function gradeBadgeHTML(grade){
+  if(grade === undefined) return '';
+  if(grade === 'W') return `<span class="grade-badge win">✓ Hit</span>`;
+  if(grade === 'L') return `<span class="grade-badge loss">✗ Miss</span>`;
+  if(grade === 'P') return `<span class="grade-badge push">Push</span>`;
+  return `<span class="grade-badge pending">Pending</span>`;
+}
+
 function pickCardHTML(pick, badge){
   const game = gameForEventId(pick.canonical_event_id);
   const gameLabel = game ? `${game.away_code} @ ${game.home_code}` : '';
   const sideLabel = sideLineLabel(pick);
   return `<div class="pc-pick-card">
     ${badge ? `<span class="pc-pick-badge">${esc(badge)}</span>` : ''}
+    ${gradeBadgeHTML(pick.grade)}
     <div class="pc-pick-player">${esc(pick.player)}</div>
     <div class="pc-pick-market">${esc(marketKeyLabel(pick.market_key))}${gameLabel ? ' · ' + esc(gameLabel) : ''}</div>
     <div class="pc-pick-price-row">${sideLabel}<span class="pc-pick-price">${priceLine(pick.price)}</span></div>
@@ -690,7 +744,7 @@ function parlayCard(size, p){
     })();
     return `
     <div class="parlay-leg">
-      <div><div class="who">${esc(leg.player || leg.side || '—')}</div>
+      <div><div class="who">${esc(leg.player || leg.side || '—')} ${gradeBadgeHTML(leg.grade)}</div>
         <div class="mkt">${esc(marketKeyLabel(leg.market_key || ''))}${gameLabel ? ' · ' + esc(gameLabel) : ''}</div>
         ${legSideLabel}
         ${leg.reason ? `<div class="pc-pick-reason">${esc(leg.reason)}</div>` : ''}</div>
@@ -717,6 +771,7 @@ function parlayCard(size, p){
     <div class="parlay-head">
       <span class="parlay-size">${size}-Team Parlay</span>
       <span class="parlay-badge ${invalid ? 'fail' : 'pass'}">${invalid ? 'Failed validation' : 'Validated'}</span>
+      ${gradeBadgeHTML(p.overall_grade)}
     </div>
     <div class="parlay-legs">${legsHTML || '<div class="empty" style="padding:10px 0">No legs parsed</div>'}</div>
     ${footHTML}
@@ -780,6 +835,95 @@ function renderParlays(){
   wireReportToggle();
 }
 
+// REAL ADDITION (2026-09-28), per Frank's direct request: a Results
+// tab showing the real season-to-date W/L/P record (results/
+// season_record.json, written by grade_props_report.py) plus every
+// one of the currently-selected week's picks with a real ✓/✗/Push
+// badge — reuses pickCardHTML/parlayCard as-is (see gradeBadgeHTML)
+// rather than a second, separate rendering path.
+function seasonStatTile(label, t){
+  if(!t) return '';
+  const decided = t.w + t.l;
+  const pct = decided ? Math.round(t.w / decided * 100) : null;
+  return `<div class="pc-stat-tile">
+    <div class="pc-stat-label">${esc(label)}</div>
+    <div class="pc-stat-val">${t.w}-${t.l}${t.p ? '-' + t.p : ''}</div>
+    ${pct !== null ? `<div class="pc-stat-pct">${pct}% hit rate</div>` : ''}
+    ${t.ungraded ? `<div class="pc-stat-ungraded">${t.ungraded} ungraded</div>` : ''}
+  </div>`;
+}
+
+function renderResults(){
+  if(!SEASON_RECORD){
+    $('body').innerHTML = `<div class="empty">No graded results yet.<br>
+      Once a week's real games are final, run <b>python3 grade_props_report.py &lt;week&gt;</b>
+      in your lab folder, then reload.</div>`;
+    return;
+  }
+  const season = SEASON_RECORD.season_totals || {};
+  const sectionLabels = {
+    overall: 'Overall', prop_breakdown: 'Prop Breakdown', favorite_ou: 'Favorite O/U',
+    parlays: 'Parlays', td_parlays: 'Anytime TD Parlays', spread_parlays: 'Spread Parlays',
+  };
+  let h = `<div class="lineup-note" style="margin-bottom:14px">
+    Season-to-date record across every real, graded Coeus pick. A parlay counts once as a
+    whole combination (Parlays/Anytime TD/Spread tiles); its individual legs also count
+    toward the Overall tile, same as every other individual pick.
+  </div>`;
+  h += `<div class="pc-stat-row">${Object.keys(sectionLabels)
+    .map(k => seasonStatTile(sectionLabels[k], season[k])).join('')}</div>`;
+
+  if(!REPORT_GRADED){
+    h += `<div class="empty" style="margin-top:18px">This week's report hasn't been graded yet.<br>
+      Once this week's real games are final, run <b>python3 grade_props_report.py</b>
+      with this week's number, then reload.</div>`;
+    $('body').innerHTML = h;
+    return;
+  }
+
+  h += `<div class="subsect" style="margin-top:18px">This Week's Graded Picks</div>`;
+
+  const pb = REPORT_GRADED.prop_breakdown;
+  if(pb){
+    for(const game of (pb.per_game || [])){
+      h += `<div class="pc-game-card">
+        <div class="pc-game-head"><span class="pc-game-teams">${esc(game.away)} @ ${esc(game.home)}</span></div>
+        <div class="pc-pick-grid">${(game.picks || []).map(p => pickCardHTML(p)).join('')}</div>
+      </div>`;
+    }
+    const posPicks = ['QB', 'RB', 'WR', 'TE']
+      .map(pos => (pb.per_position || {})[pos] ? pickCardHTML(pb.per_position[pos], pos) : '')
+      .join('');
+    if(posPicks){
+      h += `<div class="subsect" style="margin-top:8px">League-Wide Position Favorites</div>
+        <div class="pc-pick-grid">${posPicks}</div>`;
+    }
+  }
+
+  const fou = REPORT_GRADED.favorite_ou;
+  if(fou){
+    h += `<div class="subsect" style="margin-top:14px">Favorite Overs</div>
+      <div class="pc-pick-grid">${(fou.overs || []).map(p => pickCardHTML(p)).join('') ||
+        '<div class="empty">None</div>'}</div>`;
+    h += `<div class="subsect" style="margin-top:8px">Favorite Unders</div>
+      <div class="pc-pick-grid">${(fou.unders || []).map(p => pickCardHTML(p)).join('') ||
+        '<div class="empty">None</div>'}</div>`;
+  }
+
+  const sizes = ['3', '4', '5', '6', '7'];
+  const parlaySection = (title, block) => {
+    if(!block) return '';
+    const cards = sizes.map(s => block[s] ? parlayCard(s, block[s]) : '').join('');
+    return `<div class="subsect" style="margin-top:14px">${esc(title)}</div>
+      <div class="parlay-grid">${cards}</div>`;
+  };
+  h += parlaySection('Parlays', REPORT_GRADED.parlays);
+  h += parlaySection('Anytime TD Parlays', REPORT_GRADED.td_parlays);
+  h += parlaySection('Spread Parlays', REPORT_GRADED.spread_parlays);
+
+  $('body').innerHTML = h;
+}
+
 function render(){
   if(activeSection === 'lines') return renderGameLines();
   if(activeSection === 'props') return renderPlayerProps();
@@ -788,6 +932,7 @@ function render(){
   if(activeSection === 'anytimetd') return renderAnytimeTD();
   if(activeSection === 'spreads') return renderSpreads();
   if(activeSection === 'parlays') return renderParlays();
+  if(activeSection === 'results') return renderResults();
 }
 
 load();

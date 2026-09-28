@@ -165,7 +165,16 @@ def verify_legs_against_source(legs, real_props_by_key):
     price overwritten with the REAL price from source data wherever a
     match is found; mismatches lists legs that don't exist in the real
     data at all, which is a real problem (Coeus referenced a leg that
-    isn't actually on the board), not a rounding difference to shrug off."""
+    isn't actually on the board), not a rounding difference to shrug off.
+
+    REAL ADDITION (2026-09-28), per Frank's direct request to be able to
+    grade parlay legs once games are final: the real posted spread
+    point / O-U line / alt-line threshold is now carried onto every
+    verified leg too, not just price — "point" for a real mainline
+    spreads/h2h/totals leg (same field name Section 8 Spread Parlays
+    already use), "line" for a plain player-prop Over/Under leg, or
+    "threshold" for an alt-line leg. Straight from the same real
+    FanDuel data already being checked against, never invented."""
     verified, mismatches = [], []
     for leg in legs:
         key = leg_key(leg)
@@ -177,5 +186,12 @@ def verify_legs_against_source(legs, real_props_by_key):
         merged = dict(leg)
         merged["price"] = real.get("price", real.get("over_price"))
         merged["canonical_event_id"] = real.get("canonical_event_id")
+        if real.get("point") is not None:
+            if leg.get("market_key") == "spreads":
+                merged["point"] = real.get("point")
+            else:
+                merged["line"] = real.get("point")
+        elif real.get("threshold") is not None:
+            merged["threshold"] = real.get("threshold")
         verified.append(merged)
     return verified, mismatches

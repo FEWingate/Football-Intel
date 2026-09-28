@@ -457,13 +457,28 @@ def verify_pick(pick, real_by_key, evidence_by_game=None):
     silently dropping them, so a downstream caller can decide how to
     treat a factually-wrong reasoning claim (fail the pick, fail the
     whole report, or simply surface it) without this function making
-    that call unilaterally."""
+    that call unilaterally.
+
+    REAL ADDITION (2026-09-28), per Frank's direct request to be able to
+    grade picks once games are final: the real posted line (for a plain
+    Over/Under market) or the real alt-line threshold was being looked
+    up here for verification but never actually saved onto the pick —
+    only price was. Without it, nothing downstream (this report's own
+    UI, or a future grading pass) can tell WHAT number a pick has to
+    clear, only that Coeus wrote something. Now carried onto every
+    verified pick as "line" (plain market) or "threshold" (alt market),
+    straight from the same real FanDuel data already being checked
+    against — never invented, never taken from Coeus's own prose."""
     key = leg_key(pick)
     real = real_by_key.get(key)
     if real is None:
         return pick, False
     merged = dict(pick)
     merged["price"] = real.get("price")
+    if real.get("point") is not None:
+        merged["line"] = real.get("point")
+    elif real.get("threshold") is not None:
+        merged["threshold"] = real.get("threshold")
     if evidence_by_game is not None:
         ev_mismatches = verify_evidence_check(pick.get("evidence_check"), evidence_by_game)
         if ev_mismatches:
