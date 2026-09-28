@@ -115,6 +115,7 @@
   font-weight:700;padding:2px 6px;border-radius:4px}
 .pc-pick-side.over{background:rgba(74,222,128,.14);color:#4ade80}
 .pc-pick-side.under{background:rgba(248,113,113,.14);color:#f87171}
+.pc-pick-side.spread{background:rgba(96,165,250,.14);color:#60a5fa}
 .pc-pick-reason{font-size:11px;color:var(--text-dim);margin-top:6px;line-height:1.4}
 </style>
 </head>
@@ -137,6 +138,7 @@ main.innerHTML = `
     <button data-s="breakdown">Coeus Prop Breakdown</button>
     <button data-s="overunder">Favorite O/U</button>
     <button data-s="anytimetd">Anytime TD</button>
+    <button data-s="spreads">Spreads</button>
     <button data-s="parlays">Parlays</button>
   </div>
   <div id="body"></div>
@@ -515,8 +517,21 @@ function gameForEventId(eid){
 function isAnytimeTdMarket(marketKey){
   return String(marketKey || '').includes('anytime_td');
 }
+// REAL ADDITION (2026-09-28): a spread leg has no Over/Under side at
+// all — just a real team name (in the shared "player" field, same as
+// every other leg shape) and a real posted point (e.g. -3.5), so it
+// needs its own label rather than being squeezed into the Over/Under
+// side badge above.
+function isSpreadMarket(marketKey){
+  return marketKey === 'spreads';
+}
 function sideLineLabel(pick){
   if (isAnytimeTdMarket(pick.market_key)) return ''; // no Over/Under, no line — real single "Yes" price only
+  if (isSpreadMarket(pick.market_key)){
+    if (pick.point === undefined || pick.point === null) return '';
+    const pt = pick.point > 0 ? `+${pick.point}` : `${pick.point}`;
+    return `<span class="pc-pick-side spread">${pt}</span>`;
+  }
   if (pick.side !== 'over' && pick.side !== 'under') return '';
   const sideText = pick.side === 'over' ? 'Over' : 'Under';
   const lineText = (pick.line !== undefined && pick.line !== null) ? ` ${pick.line}` : '';
@@ -636,6 +651,34 @@ function renderAnytimeTD(){
   wireReportToggle();
 }
 
+// REAL ADDITION (2026-09-28), per Frank's direct request: a dedicated
+// Spreads tab, same real 5-size (3/4/5/6/7) structure as Anytime TD
+// above — every leg is a real, current FanDuel mainline spread pick
+// (market_key "spreads"), independently re-checked against real
+// FanDuel prices, and required by the Standard to cite the real team
+// ATS record (teams.html's ATS RECORD tab data — see REPORT.ats_records)
+// as part of each pick's data-supported explanation.
+function renderSpreads(){
+  if(!REPORT || !REPORT.spread_parlays){
+    $('body').innerHTML = `<div class="empty">No Spread Parlays have been generated yet.<br>
+      Run <b>python3 generate_props_report.py</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+  const sizes = ['3','4','5','6','7'];
+  const cards = sizes.map(s => REPORT.spread_parlays[s] ? parlayCard(s, REPORT.spread_parlays[s]) : '').join('');
+
+  $('body').innerHTML = `
+    <div class="lineup-note" style="margin-bottom:14px">
+      Coeus's favorite real spread combinations for the week, at 5 sizes — every leg is a
+      real, current FanDuel mainline spread pick, independently re-checked against real
+      FanDuel prices, with each team's real ATS record factored into the explanation.
+    </div>
+    <div class="parlay-grid">${cards}</div>
+    ${reportToggleHTML()}
+  `;
+  wireReportToggle();
+}
+
 /* ── PARLAYS — existing, working feature ─────────────────────────────── */
 function parlayCard(size, p){
   const invalid = !p.valid;
@@ -743,6 +786,7 @@ function render(){
   if(activeSection === 'breakdown') return renderPropBreakdown();
   if(activeSection === 'overunder') return renderFavoriteOU();
   if(activeSection === 'anytimetd') return renderAnytimeTD();
+  if(activeSection === 'spreads') return renderSpreads();
   if(activeSection === 'parlays') return renderParlays();
 }
 

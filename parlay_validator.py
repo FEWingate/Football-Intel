@@ -52,7 +52,7 @@ def leg_key(leg):
             leg.get("market_key"), leg.get("player") or leg.get("side"))
 
 
-def validate_parlay(legs, expected_size, stake=100, require_td=False):
+def validate_parlay(legs, expected_size, stake=100, require_td=False, require_spread=False):
     """legs: list of dicts, each with at least market_key, price
     (decimal), canonical_event_id (or event_id). expected_size: the
     declared N for this parlay (3, 4, 5, 6, or 7) — a real, checked
@@ -84,11 +84,24 @@ def validate_parlay(legs, expected_size, stake=100, require_td=False):
     # must contain ONLY player_anytime_td legs — either way this is the
     # real, independent enforcement backstop, regardless of what
     # Coeus's own prompt-level compliance does.
+    # REAL RULE (2026-09-28), per Frank's direct request: Favorite Spread
+    # Parlays (Section 8 of the Standard) get the same real, independent
+    # market-purity enforcement as Anytime TD parlays above — every leg
+    # must be a real game-line spread pick (the mainline "spreads" market
+    # key, the same one FanDuel's own closing-line data and each team's
+    # real ATS record are both measured against), not an alternate-line
+    # or player-prop leg mixed in.
     if require_td:
         non_td_legs = [i + 1 for i, l in enumerate(legs) if l.get("market_key") != "player_anytime_td"]
         if non_td_legs:
             errors.append(f"Leg(s) {non_td_legs} do NOT use the player_anytime_td market — "
                            f"every leg in a TD parlay must be an Anytime TD pick.")
+    elif require_spread:
+        non_spread_legs = [i + 1 for i, l in enumerate(legs) if l.get("market_key") != "spreads"]
+        if non_spread_legs:
+            errors.append(f"Leg(s) {non_spread_legs} do NOT use the real mainline 'spreads' "
+                           f"market — every leg in a Spread parlay must be a real, current "
+                           f"FanDuel spread pick (not alternate_spreads, not a player prop).")
     else:
         td_legs = [i + 1 for i, l in enumerate(legs) if l.get("market_key") == "player_anytime_td"]
         if td_legs:

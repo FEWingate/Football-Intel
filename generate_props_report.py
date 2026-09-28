@@ -97,6 +97,11 @@ PROMPTS_DIR = "prompts"
 MASTER_PROMPT_PATH = f"{PROMPTS_DIR}/Coeus_Master_Prompt_v1.1.md"
 PROPS_STANDARD_PATH = f"{PROMPTS_DIR}/Coeus_Props_Parlay_Report_Standard_v2.0.md"
 FANDUEL_DATA_PATH = "fanduel_props/latest.json"
+# REAL ADDITION (2026-09-28), per Frank's direct request: Favorite Spread
+# Parlays (Section 8) must reference each team's real ATS record — the
+# same real, build_ats_records()-computed data teams.html's ATS RECORD
+# tab already shows, not something re-derived or guessed here.
+TEAMSTATS_PATH = "teamstats/latest.json"
 
 DEFAULT_MODEL = "claude-sonnet-5"
 PARLAY_SIZES = [3, 4, 5, 6, 7]
@@ -667,6 +672,23 @@ def main():
 
     real_by_key = build_real_index(fanduel_data)
 
+    # REAL ADDITION (2026-09-28), per Frank's direct request: every team
+    # actually on this slate's real ATS (against-the-spread) record,
+    # straight from teamstats/latest.json's build_ats_records() output —
+    # the exact same real data teams.html's ATS RECORD tab shows.
+    # Filtered to just the teams in play here for the same real cost
+    # reason fanduel_data itself is filtered above (32 teams' worth of
+    # ATS history is small, but there's no reason to send teams not even
+    # in this slate).
+    teamstats = load_json(TEAMSTATS_PATH) or {}
+    all_ats_records = teamstats.get("ats_records") or {}
+    slate_teams = sorted({t for _, away, home in games for t in (away, home)})
+    ats_records = {t: all_ats_records[t] for t in slate_teams if t in all_ats_records}
+    missing_ats = [t for t in slate_teams if t not in all_ats_records]
+    if missing_ats:
+        print(f"  NOTE: no real ATS record on file for {missing_ats} — run "
+              f"build_matchup_stats.py all to refresh teamstats/latest.json.")
+
     gb_texts, evidence_texts, folders_used, missing_evidence = [], [], set(), []
     evidence_by_game = {}   # REAL ADDITION (2026-09-21): retains each real
     # game's real, structured evidence (not just its stringified prompt
@@ -712,7 +734,10 @@ def main():
         "\n\n=== REAL EVIDENCE PACKAGES (Contextual Stats, Matchup Intelligence, Threat "
         "Intelligence — the same underlying data the Game Breakdowns above were built from) ===\n" +
         combined_evidence +
-        "\n\n=== REAL FANDUEL GAME LINES + PROPS DATA (this slate only) ===\n" + fanduel_json
+        "\n\n=== REAL FANDUEL GAME LINES + PROPS DATA (this slate only) ===\n" + fanduel_json +
+        "\n\n=== REAL TEAM ATS RECORDS (against the spread, real completed games with a real "
+        "closing line, teams on this slate only — same data as teams.html's ATS RECORD tab) ===\n" +
+        json.dumps(ats_records, separators=(",", ":"))
     )
 
     out_dir = f"props_reports/{list(folders_used)[0]}" if len(folders_used) == 1 else "props_reports/mixed"
@@ -941,6 +966,56 @@ def main():
         }
     print("=" * 60)
 
+    # REAL ADDITION (2026-09-28), per Frank's direct request: a third,
+    # separate set of five parlays (Section 8 of the Standard) built
+    # exclusively from real mainline spread legs — same validation
+    # machinery as the regular and TD parlays above, but
+    # require_spread=True flips the rule so every leg MUST use the real
+    # "spreads" market_key instead of being forbidden or required to be
+    # player_anytime_td.
+    spread_parlays = extract_parlay_blocks(report_text, tag_prefix="SPREAD_PARLAY")
+    spread_parlay_results = {}
+    for size in PARLAY_SIZES:
+        legs = spread_parlays[size]
+        print(f"\n{size}-TEAM SPREAD PARLAY VALIDATION:")
+        if legs is None:
+            print(f"  FAILED — could not find or parse a SPREAD_PARLAY_{size}_TEAM JSON "
+                  f"block. This spread parlay has NOT been checked. Do not trust it.")
+            spread_parlay_results[size] = {"valid": False, "errors": ["Could not parse this parlay's JSON block."],
+                                            "warnings": [], "result": None, "legs": None, "mismatches": []}
+            continue
+        verified_legs, mismatches = verify_legs_against_source(legs, real_by_key)
+        if mismatches:
+            print(f"  {len(mismatches)} leg(s) do NOT exist in the real FanDuel data "
+                  f"provided — Coeus referenced something not actually on the board:")
+            for m in mismatches:
+                print(f"    - {m}")
+        is_valid, errors, warnings, result = validate_parlay(
+            verified_legs, expected_size=size, stake=args.stake, require_spread=True)
+        for leg in verified_legs:
+            leg_ev_mismatches = verify_evidence_check(leg.get("evidence_check"), evidence_by_game)
+            if leg_ev_mismatches:
+                for m in leg_ev_mismatches:
+                    errors.append(f"{leg.get('player')}: {m}")
+                is_valid = False
+        passed = is_valid and not mismatches
+        if passed:
+            print(f"  PASSED — {result['legs']} real legs, combined odds "
+                  f"{result['combined_decimal']} (American {result['combined_american']:+d}), "
+                  f"${args.stake:.0f} stake -> ${result['payout']:.2f} payout.")
+        else:
+            print(f"  FAILED:")
+            for e in errors:
+                print(f"    - {e}")
+        for w in warnings:
+            print(f"  NOTE: {w}")
+        spread_parlay_results[size] = {
+            "valid": passed, "errors": errors, "warnings": warnings,
+            "result": result, "legs": verified_legs,
+            "mismatches": [m for m in mismatches],
+        }
+    print("=" * 60)
+
     report_json = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "games_included": [f"{a}_{h}" for _, a, h in games],
@@ -951,6 +1026,8 @@ def main():
         "favorite_ou": favorite_ou, "favorite_ou_errors": fou_errors,
         "parlays": {str(size): parlay_results[size] for size in PARLAY_SIZES},
         "td_parlays": {str(size): td_parlay_results[size] for size in PARLAY_SIZES},
+        "spread_parlays": {str(size): spread_parlay_results[size] for size in PARLAY_SIZES},
+        "ats_records": ats_records,
     }
     with open(f"{out_stem}.json", "w") as f:
         json.dump(report_json, f)
