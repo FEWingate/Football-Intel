@@ -159,7 +159,7 @@ main.innerHTML = `
 
 const $ = id => document.getElementById(id);
 const pad = n => String(n).padStart(2,"0");
-let RECORDS = null, RECORDS_2025 = null, TEAMSTATS = null, TEAMSTATS_2025 = null, statsYear = 2025, COVERAGE = null, CBDB = null, ROSTERS = null, activeTeam = null, activeSec = 'offense', lastFocus = null;
+let RECORDS = null, RECORDS_2025 = null, TEAMSTATS = null, TEAMSTATS_2025 = null, statsYear = 2026, COVERAGE = null, CBDB = null, ROSTERS = null, activeTeam = null, activeSec = 'offense', lastFocus = null;
 
 async function load(){
   fiStatus("Loading","loading");
@@ -845,12 +845,13 @@ function rosterHTML(team){
   return h;
 }
 
-// Which season's team-stats data is currently in play — 2025 (real,
-// complete) by default, since a brand-new season is genuinely too thin
-// in its first couple weeks to be a useful "season averages" view.
-// Applies only to the four stats-driven tabs (Offense/Defense/Special
-// Teams/Penalties) — Roster, ATS Record, and Home/Road each have their
-// own separate data source and season handling already.
+// Which season's team-stats data is currently in play — 2026 by
+// default now that the season is real and in progress (per Frank's
+// direct request; this used to default to 2025 back when 2026 was too
+// thin in its first couple weeks to be a useful "season averages"
+// view). Applies only to the four stats-driven tabs (Offense/Defense/
+// Special Teams/Penalties) — Roster, ATS Record, and Home/Road each
+// have their own separate data source and season handling already.
 function activeTeamstats(){
   return statsYear === 2025 ? TEAMSTATS_2025 : TEAMSTATS;
 }

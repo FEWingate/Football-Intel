@@ -1173,8 +1173,20 @@ const SPLITS_COLS = [
   ['rating','Rate',1], ['sacks','Sk',0], ['dk_pts_pg','DK/G',1],
 ];
 
+// REAL BUG FIX (2026-09-30), per Frank's direct catch: same real cause
+// as the CB/DB Coverage crash fixed in stats_hub.html last night —
+// build_matchup_stats.py switched qb_dome_splits over to a real, year-
+// split qb_dome_splits_by_season structure (renderHomeRoadTab() above
+// already reads it correctly), but this view was never updated and was
+// still reading the old flat qb_dome_splits key, which the live file no
+// longer writes at all. The archived 2025 snapshot still has the OLD
+// flat shape, which is why this only broke once the season default
+// changed to 2026 — reads whichever shape is actually present, keyed by
+// the page's own Season toggle when the new shape is there.
 function renderSplits(){
-  const dome = PLAYERSTATS.qb_dome_splits || {};
+  const dome = (PLAYERSTATS.qb_dome_splits_by_season
+    ? PLAYERSTATS.qb_dome_splits_by_season[String(season)]
+    : PLAYERSTATS.qb_dome_splits) || {};
   const teams = Object.keys(dome).sort();
   if(!teams.length){
     $("splitsView").innerHTML = `<div class="empty">No dome/road splits available yet.<br>
