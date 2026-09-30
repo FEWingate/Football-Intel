@@ -113,26 +113,47 @@ def flag_off_roster_players(report_text, away, home):
     either cause the same way, without needing to know which one it was.
     A name match here is a real signal worth a human's attention, not an
     auto-fix — a shared name or a legitimate historical reference is
-    possible, if rare — so this warns rather than silently blocking."""
+    possible, if rare — so this warns rather than silently blocking.
+
+    BUG FIX (2026-09-30), per Frank's direct catch: a real, complete
+    MIA@MIN report flagged "Justin Jefferson (real current team: CLE)"
+    — Minnesota's own real WR1, genuinely and correctly cited. Confirmed
+    directly against rosters/latest.json: there are two REAL, different
+    NFL players both named Justin Jefferson — Minnesota's real WR
+    (gsis_id 00-0036322) and an unrelated rookie Cleveland LB (gsis_id
+    00-0041075) — and this check matched by name text alone, with
+    nothing to tell them apart. Since the report's own two teams
+    (away/home) are exactly where a genuinely-cited player's name
+    should also appear, a name is now checked against away/home's OWN
+    rosters FIRST — if it's a real player on one of this game's two
+    teams, this is a real name collision with some other, unrelated
+    team's same-named player, not a real off-roster citation, and is
+    skipped entirely rather than flagged."""
     rosters_json = load_json("rosters/latest.json")
     if not rosters_json:
         print("\n  WARNING: rosters/latest.json not found — skipping the "
               "off-roster player name check.")
         return
+    teams = rosters_json.get("teams") or {}
+    home_away_names = {rp.get("name") for t in (away, home)
+                        for rp in (teams.get(t) or []) if rp.get("name")}
     flagged = []
-    for team, roster_players in (rosters_json.get("teams") or {}).items():
+    for team, roster_players in teams.items():
         if team in (away, home):
             continue
         for rp in roster_players:
-            name = rp.get("name")
-            if name and name in report_text:
-                flagged.append((name, team))
+            name, pos = rp.get("name"), rp.get("position")
+            if not name or name not in report_text:
+                continue
+            if name in home_away_names:
+                continue
+            flagged.append((name, team, pos))
     if flagged:
         print(f"\n  \u26a0 WARNING: {len(flagged)} player name(s) found in this report "
               f"who currently play for neither {away} nor {home} — worth a manual "
               f"check before trusting this report:")
-        for name, team in flagged:
-            print(f"    - {name} (real current team: {team})")
+        for name, team, pos in flagged:
+            print(f"    - {name} ({pos}, real current team: {team})")
     else:
         print(f"\n  Off-roster player check: clean — no player names found who "
               f"currently play for a team other than {away}/{home}.")

@@ -77,12 +77,32 @@ let currentWeek = null, currentPos = 'QB', sortKey = null, sortDir = 'desc';
 
 let TEAMSTATS = null;
 let offSubgroup = null, offSortKey = null, offSortDir = 'desc';
+// REAL ADDITION (2026-09-30), per Frank's direct request: a ranked,
+// team-level DEFENSE table to sit alongside Team Offense — until now the
+// only ranked defensive numbers on this page were position-specific
+// (Defense vs Position: yards allowed to RBs/WRs/TEs/QBs specifically),
+// so a genuinely different, real number — a team's TOTAL defense against
+// the run/pass (including QB scrambles, WR jet-sweep carries, etc.) —
+// had nowhere ranked to live. The Teams modal already showed these exact
+// real totals (teamstats/latest.json's teams[abbr].defense, confirmed
+// directly to already carry every real Pass Defense/Run Defense/etc.
+// field needed) but with NO rank at all, which is exactly what surfaced
+// a real false-alarm Game Breakdown "mismatch" this same day — Coeus
+// correctly cited a team's real total pass-defense rank, but nothing on
+// the site could be used to independently verify it. Mirrors
+// team_off's own state/render pattern exactly, on purpose, so both
+// tables behave identically for the person using them. Defaults to
+// ascending (not offense's descending) because most of these columns are
+// "___ Allowed" stats, where the stingiest defense — the LOWEST number —
+// should rank #1; mirroring offense's "biggest number first" default
+// exactly would instead rank the WORST defense #1.
+let defSubgroup = null, defSortKey = null, defSortDir = 'asc';
 
 let PLAYERSTATS = null;
 let playerPos = 'QB', playerCat = null, playerSortKey = null, playerSortDir = 'desc';
 let currentPlayerRows = [], activePlayer = null, activeSec = 'season', logStatKey = null, lastFocus = null;
 
-let currentView = 'team_off'; // 'team_off' | 'players' | 'dvp' | 'cbdb' | 'rank_shifts'
+let currentView = 'team_off'; // 'team_off' | 'team_def' | 'players' | 'dvp' | 'cbdb' | 'rank_shifts'
 
 let rankShiftsSide = 'offense', rankShiftsCat = null, rankShiftsPos = 'RB', rankShiftsSortKey = 'absRankDiff', rankShiftsSortDir = 'desc';
 // REAL ADDITION (2026-09-22), per Frank's own direct request (Saturday's
@@ -109,6 +129,7 @@ let season = 2026;
 main.innerHTML = `
   <div class="tabs view-switch" id="viewSwitch" role="tablist">
     <button role="tab" data-view="team_off" aria-selected="true">Team Offense</button>
+    <button role="tab" data-view="team_def" aria-selected="false">Team Defense</button>
     <button role="tab" data-view="players" aria-selected="false">Players</button>
     <button role="tab" data-view="dvp" aria-selected="false">Defense vs Position</button>
     <button role="tab" data-view="rank_shifts" aria-selected="false">Rank Shifts</button>
@@ -298,6 +319,12 @@ function switchView(){
     $("weekSel").style.display = 'none';
     $("catTabs").style.display = 'none';
     setupTeamOffenseControls();
+  } else if(currentView === 'team_def'){
+    $("sectionLbl").textContent = 'Team Defense';
+    $("sectionLegend").innerHTML = '<span>Season totals so far, per team · TOTAL defense (not position-specific — see Defense vs Position for that) · click any column to sort</span>';
+    $("weekSel").style.display = 'none';
+    $("catTabs").style.display = 'none';
+    setupTeamDefenseControls();
   } else if(currentView === 'cbdb'){
     $("sectionLbl").textContent = 'CB/DB Coverage';
     $("sectionLegend").innerHTML = '<span>Individual defensive backs, season totals · click any column to sort</span>';
@@ -753,6 +780,103 @@ function renderTeamOffenseTable(){
       if(k === offSortKey) offSortDir = offSortDir === 'desc' ? 'asc' : 'desc';
       else { offSortKey = k; offSortDir = 'desc'; }
       renderTeamOffenseTable();
+    };
+  });
+}
+
+// REAL ADDITION (2026-09-30), per Frank's direct request: ranked
+// TEAM-level defense (total defense — including QB scrambles on the
+// ground, every receiver on the pass side — the same real total Coeus's
+// prose cites when it says "Team X ranks Nth against the pass/run"),
+// distinct on purpose from the existing Defense vs Position tab's
+// RB/WR/TE/QB-specific numbers. Exact mirror of setupTeamOffenseControls/
+// offenseColumns/renderTeamOffenseTable above — same rank-by-current-sort
+// approach, same column-building logic — just pointed at
+// TEAMSTATS.teams[abbr].defense / TEAMSTATS.labels.defense instead of
+// .offense, which were both already present in teamstats/latest.json
+// (confirmed directly) with nothing on this page ever reading them.
+function setupTeamDefenseControls(){
+  if(!TEAMSTATS){
+    $("innerTabs").innerHTML = '';
+    $("leadTable").outerHTML = `<div class="empty" id="leadTable">
+      No team-stats data found.<br>
+      Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
+    return;
+  }
+  const subgroups = Object.keys(TEAMSTATS.labels.defense);
+  if(!defSubgroup || !subgroups.includes(defSubgroup)) defSubgroup = subgroups[0];
+
+  $("innerTabs").innerHTML = subgroups.map(s =>
+    `<button role="tab" aria-selected="${s===defSubgroup}" data-sub="${esc(s)}">${esc(s)}</button>`).join('');
+  $("innerTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    $("innerTabs").querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
+    defSubgroup = b.dataset.sub;
+    defSortKey = null; defSortDir = 'desc';
+    renderTeamDefenseTable();
+  });
+
+  fiUpdated(`season · ${TEAMSTATS.data_horizon}`);
+  renderTeamDefenseTable();
+}
+
+function defenseColumns(){
+  const labels = TEAMSTATS.labels.defense[defSubgroup];
+  const sampleTeam = Object.values(TEAMSTATS.teams)[0];
+  const cols = [];
+  for(const [key, label] of Object.entries(labels)){
+    const isRate = sampleTeam.defense[defSubgroup][key].tot === null;
+    if(isRate){
+      cols.push({ key, field:'avg', sortKey:`${key}:avg`, label, pct:true });
+    } else {
+      cols.push({ key, field:'tot', sortKey:`${key}:tot`, label });
+      cols.push({ key, field:'avg', sortKey:`${key}:avg`, label: label + ' / G' });
+    }
+  }
+  return cols;
+}
+
+function renderTeamDefenseTable(){
+  const cols = defenseColumns();
+  if(!defSortKey) defSortKey = cols[0].sortKey;
+
+  const valueFor = (abbr, sk) => {
+    const [key, field] = sk.split(':');
+    return TEAMSTATS.teams[abbr].defense[defSubgroup][key][field];
+  };
+
+  const rows = Object.keys(TEAMSTATS.teams).map(abbr => ({ abbr }));
+  rows.sort((a,b) => {
+    const av = valueFor(a.abbr, defSortKey) ?? Infinity, bv = valueFor(b.abbr, defSortKey) ?? Infinity;
+    return defSortDir === 'desc' ? bv - av : av - bv;
+  });
+
+  let head = `<thead><tr>
+    <th class="team-col">Team</th>
+    ${cols.map(c => `<th data-key="${c.sortKey}" class="${c.sortKey===defSortKey?'sorted':''}">
+      ${esc(c.label)}${c.sortKey===defSortKey ? (defSortDir==='desc'?' ▾':' ▴') : ''}
+    </th>`).join('')}
+  </tr></thead>`;
+
+  let body = '<tbody>' + rows.map((row,i) => {
+    const cells = cols.map(c => {
+      const v = valueFor(row.abbr, c.sortKey);
+      const text = c.pct ? (v==null?'—':`${v.toFixed(1)}%`) : fmtVal(v);
+      return `<td><span class="cell-val">${text}</span></td>`;
+    }).join('');
+    return `<tr>
+      <td class="team-col"><span class="rank-num">${i+1}</span>${fiLogoHTML(row.abbr,22)}${esc(FI_TEAM_NAME[row.abbr]||row.abbr)}</td>
+      ${cells}
+    </tr>`;
+  }).join('') + '</tbody>';
+
+  $("leadTable").innerHTML = head + body;
+
+  $("leadTable").querySelectorAll("thead th[data-key]").forEach(th => {
+    th.onclick = () => {
+      const k = th.dataset.key;
+      if(k === defSortKey) defSortDir = defSortDir === 'desc' ? 'asc' : 'desc';
+      else { defSortKey = k; defSortDir = 'asc'; }
+      renderTeamDefenseTable();
     };
   });
 }

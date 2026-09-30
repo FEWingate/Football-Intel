@@ -3781,7 +3781,24 @@ def build_team_stats(yr=None, team_stats_url=None, pbp_url=None, output_path="te
     yr = yr if yr is not None else SEASON
     team_stats_url = team_stats_url or f"https://github.com/nflverse/nflverse-data/releases/download/stats_team/stats_team_week_{yr}.csv"
     df = fetch_csv(team_stats_url)
-    df = normalize_team_cols(df, "team")
+    # REAL BUG FIX (2026-09-30), per Frank's direct catch: this only
+    # normalized the "team" column, never "opponent_team" — so every "Los
+    # Angeles Rams" row correctly became team="LAR", but stayed
+    # opponent_team="LA" (nflverse's raw code, see TEAM_CODE_FIX above)
+    # wherever the RAMS were someone ELSE's opponent that week.
+    # compute_pass_run_defense() below groups this exact df by
+    # "opponent_team" to build Pass/Run Defense ("yards allowed" is
+    # literally "what the opposing offense did against this team") —
+    # with opponent_team still holding the raw "LA" code, a lookup for
+    # normalized "LAR" in that grouped result silently found nothing and
+    # fell back to an all-zero row, confirmed directly against the real
+    # data (comp_allowed/att_faced/pass_yds_allowed/rush_yds_allowed all
+    # 0 for LAR specifically, while derived fields computed a different
+    # way — def_sacks, explosive-play counts — were fine). This bug
+    # predates today's new Team Defense tab entirely; it was just never
+    # visible anywhere ranked or otherwise easy to spot before, including
+    # silently in the Teams modal's own Defense tab this whole time.
+    df = normalize_team_cols(df, "team", "opponent_team")
     df = df[(df["season"] == yr) & (df["season_type"] == "REG")]
     if df.empty:
         raise SystemExit(f"no {yr} team stats available yet")
