@@ -1,0 +1,39 @@
+{
+  "games": {
+    "ATL_PIT": {
+      "away": "ATL",
+      "home": "PIT",
+      "season": null,
+      "week": 1,
+      "generated_at": "2026-09-27T18:32:27.751123+00:00"
+    },
+    "BUF_HOU": {
+      "away": "BUF",
+      "home": "HOU",
+      "season": null,
+      "week": 1,
+      "generated_at": "2026-09-27T18:32:27.751300+00:00"
+    },
+    "GB_MIN": {
+      "away": "GB",
+      "home": "MIN",
+      "season": null,
+      "week": 1,
+      "generated_at": "2026-09-27T18:32:27.751300+00:00"
+    },
+    "NO_DET": {
+      "away": "NO",
+      "home": "DET",
+      "season": null,
+      "week": 1,
+      "generated_at": "2026-09-27T18:32:27.751300+00:00"
+    },
+    "WAS_PHI": {
+      "away": "WAS",
+      "home": "PHI",
+      "season": null,
+      "week": 1,
+      "generated_at": "2026-09-27T18:32:27.751300+00:00"
+    }
+  }
+}
