@@ -167,7 +167,8 @@ main.innerHTML = `
     <div class="modal-body" id="mBody"></div>
   </div>`;
 
-let FDPROPS = null;   // fanduel_props/latest.json — real, live data, no LLM
+let FDPROPS = null;   // fanduel_props/latest.json, filtered down to the selected week's real games
+let FDPROPS_ALL = null; // the full, unfiltered fanduel_props/latest.json snapshot — real, live data, no LLM
 let REPORT = null;    // props_reports — Coeus's picks + parlays
 // REAL ADDITION (2026-09-28), per Frank's direct request to track how
 // Coeus's real picks actually did: REPORT_GRADED is the sibling
@@ -185,12 +186,60 @@ let propsWeekFilter = null;
 let PROPS_BATCHES = {};    // real batch filename -> {games, generated_at} for the selected week
 let propsBatchFilter = null;
 
+const pad = n => String(n).padStart(2, '0');
+
+// REAL CHANGE (2026-09-29), same real feature already built and tested
+// on games.html/matchup_stats.html/threats.html/dfs_center.html: ported
+// over UNCHANGED (fully self-contained — reads games/wkNN.json
+// directly, nothing specific to this page) rather than reimplemented,
+// per Frank's direct request that the Prop Center's week selector
+// behave exactly like every other section — advancing past a week once
+// ITS OWN real Monday game has actually finished, and never quietly
+// falling back to an older, already-built week just because the
+// current week's props report hasn't been generated yet.
+//
+// Deliberately does NOT trust matchup/current.json's own "week" value —
+// confirmed on games.html that this field tracks "the highest week
+// build_matchup_stats.py has ever built," not "the real current NFL
+// week." Always starts the real check from week 1 and walks forward.
+function etOffsetMinutes(dateStr){
+  const d = new Date(`${dateStr}T12:00:00Z`);
+  const utcStr = d.toLocaleString('en-US', { timeZone: 'UTC', hour12: false });
+  const etStr = d.toLocaleString('en-US', { timeZone: 'America/New_York', hour12: false });
+  return (new Date(utcStr) - new Date(etStr)) / 60000;
+}
+function kickoffHasPassed(g){
+  if(!g.gameday || !g.gametime) return false;
+  const [h, m] = g.gametime.split(':').map(Number);
+  const kickoffUTC = new Date(`${g.gameday}T00:00:00Z`);
+  kickoffUTC.setUTCMinutes(kickoffUTC.getUTCMinutes() + h * 60 + m + etOffsetMinutes(g.gameday));
+  return new Date() >= kickoffUTC;
+}
+async function determineDefaultWeek(){
+  let week = 1;
+  while (week < 18) {
+    let wkData;
+    try {
+      const r = await fetch(`games/wk${pad(week)}.json`, { cache: 'no-store' });
+      if (!r.ok) break; // that week isn't built yet — stop advancing, use what we have
+      wkData = await r.json();
+    } catch (e) { break; }
+
+    const monGames = (wkData.games || []).filter(g => g.weekday === 'Monday' && g.gameday);
+    if (!monGames.length) break; // no real Monday game this week — nothing to advance past
+    const latestMon = monGames.reduce((max, g) => (!max || g.gametime > max.gametime) ? g : max, null);
+    if (!kickoffHasPassed(latestMon)) break; // this week's real MNF hasn't happened yet — stay here
+    week += 1;
+  }
+  return week;
+}
+
 async function load(){
   fiStatus('Loading','loading');
 
   try{
     const res = await fetch('fanduel_props/latest.json', { cache: 'no-store' });
-    if(res.ok) FDPROPS = await res.json();
+    if(res.ok) FDPROPS_ALL = await res.json();
   }catch(e){ /* Game Lines / Player Props just won't have data yet */ }
 
   try{
@@ -210,7 +259,7 @@ async function load(){
   // Game Breakdowns already uses) instead of guessing filenames.
   PROPS_WEEKS = [];
   for(let w = 1; w <= 18; w++){
-    const wk = `wk${String(w).padStart(2,'0')}`;
+    const wk = `wk${pad(w)}`;
     try{
       const r = await fetch(`props_reports/${wk}/manifest.json`, { method: 'HEAD', cache: 'no-store' });
       if(r.ok) PROPS_WEEKS.push(wk);
@@ -221,26 +270,34 @@ async function load(){
     if(r.ok) PROPS_WEEKS.push('mixed');
   }catch(e){}
 
-  if(PROPS_WEEKS.length){
-    // Default to the most recent real week's report — mirrors the same
-    // real "most recent week that actually has content" default used
-    // for Game Breakdowns, for the same real reason: a report sitting
-    // in the list is not automatically the one just generated.
-    propsWeekFilter = PROPS_WEEKS.filter(w => w !== 'mixed').sort().pop() || PROPS_WEEKS[PROPS_WEEKS.length - 1];
-    await loadManifestForWeek(propsWeekFilter);
+  // REAL CHANGE (2026-09-29), per Frank's direct request: always default
+  // to the REAL current NFL week (same auto-advance rule as Matchup
+  // Stats, Threats, and the DFS Center), even when this week's props
+  // report hasn't been generated yet — loadManifestForWeek() already
+  // shows the real "not generated yet" empty states in that case, rather
+  // than this silently substituting an older, already-built week.
+  const currentWeek = await determineDefaultWeek();
+  const currentWk = `wk${pad(currentWeek)}`;
+  propsWeekFilter = currentWk;
+  await loadManifestForWeek(propsWeekFilter);
+  await applyGameLinesWeekFilter(propsWeekFilter);
 
-    const wkLabel = wk => wk === 'mixed' ? 'Mixed / partial slate' : `Week ${Number(wk.slice(2))}`;
-    $('pcWeek').innerHTML = PROPS_WEEKS
-      .map(wk => `<option value="${wk}"${wk===propsWeekFilter?' selected':''}>${wkLabel(wk)}</option>`).join('');
-    $('pcWeekBar').style.display = '';
-    $('pcWeek').addEventListener('change', async (e) => {
-      propsWeekFilter = e.target.value;
-      fiStatus('Loading','loading');
-      await loadManifestForWeek(propsWeekFilter);
-      fiStatus('Ready');
-      render();
-    });
-  }
+  const optionWeeks = Array.from(new Set([...PROPS_WEEKS, currentWk]));
+  const rank = wk => wk === 'mixed' ? 1e6 : Number(wk.slice(2));
+  optionWeeks.sort((a, b) => rank(a) - rank(b));
+
+  const wkLabel = wk => wk === 'mixed' ? 'Mixed / partial slate' : `Week ${Number(wk.slice(2))}`;
+  $('pcWeek').innerHTML = optionWeeks
+    .map(wk => `<option value="${wk}"${wk===propsWeekFilter?' selected':''}>${wkLabel(wk)}</option>`).join('');
+  $('pcWeekBar').style.display = '';
+  $('pcWeek').addEventListener('change', async (e) => {
+    propsWeekFilter = e.target.value;
+    fiStatus('Loading','loading');
+    await loadManifestForWeek(propsWeekFilter);
+    await applyGameLinesWeekFilter(propsWeekFilter);
+    fiStatus('Ready');
+    render();
+  });
 
   fiStatus('Ready');
   fiUpdated(FDPROPS ? `Lines updated ${new Date(FDPROPS.generated_at).toLocaleString()}` : '');
@@ -258,6 +315,36 @@ async function load(){
   });
 
   render();
+}
+
+// REAL ADDITION (2026-09-29), per Frank's direct request: fanduel_props/
+// latest.json is a single, un-week-scoped snapshot — whatever games were
+// on the board the last time build_fanduel_props.py ran, nothing more.
+// Once the week selector auto-advances to a new real week (see
+// determineDefaultWeek() above) that snapshot can easily be stale —
+// still holding the PRIOR week's real games — and showing those under
+// the new week's label would be actively misleading, not just empty.
+// This cross-checks FDPROPS_ALL's games against that week's real
+// schedule (games/wkNN.json) and keeps only the ones that actually
+// belong to it; if none match, Game Lines / Player Props correctly show
+// their existing "no data yet" empty states instead of the wrong week's
+// real games.
+async function applyGameLinesWeekFilter(wk){
+  if(!FDPROPS_ALL){ FDPROPS = null; return; }
+  let schedule = null;
+  try{
+    const res = await fetch(`games/${wk}.json`, { cache: 'no-store' });
+    if(res.ok) schedule = await res.json();
+  }catch(e){}
+  if(!schedule || !schedule.games || !schedule.games.length){
+    FDPROPS = { ...FDPROPS_ALL, games: [] };
+    return;
+  }
+  const validKeys = new Set(schedule.games.map(g => `${g.away}_${g.home}`));
+  FDPROPS = {
+    ...FDPROPS_ALL,
+    games: (FDPROPS_ALL.games || []).filter(g => validKeys.has(`${g.away_code}_${g.home_code}`)),
+  };
 }
 
 // REAL CHANGE (2026-09-21): loads the real, per-week manifest, builds
@@ -350,7 +437,11 @@ function gameTitle(g){
    the same modal pattern the Games page already uses. ── */
 function renderGameLines(){
   if(!FDPROPS || !FDPROPS.games || !FDPROPS.games.length){
-    $('body').innerHTML = `<div class="empty">No live FanDuel line data available yet.<br>
+    const msg = FDPROPS_ALL && (FDPROPS_ALL.games || []).length
+      ? `FanDuel lines haven't been fetched for this week yet — the most recent snapshot
+         (${new Date(FDPROPS_ALL.generated_at).toLocaleString()}) is for an earlier week.`
+      : `No live FanDuel line data available yet.`;
+    $('body').innerHTML = `<div class="empty">${msg}<br>
       Run <b>python3 build_fanduel_props.py</b> in your lab folder, then reload.</div>`;
     return;
   }
@@ -461,7 +552,11 @@ const STAT_LABELS = {
 
 function renderPlayerProps(){
   if(!FDPROPS || !FDPROPS.games || !FDPROPS.games.length){
-    $('body').innerHTML = `<div class="empty">No live FanDuel prop data available yet.<br>
+    const msg = FDPROPS_ALL && (FDPROPS_ALL.games || []).length
+      ? `FanDuel props haven't been fetched for this week yet — the most recent snapshot
+         (${new Date(FDPROPS_ALL.generated_at).toLocaleString()}) is for an earlier week.`
+      : `No live FanDuel prop data available yet.`;
+    $('body').innerHTML = `<div class="empty">${msg}<br>
       Run <b>python3 build_fanduel_props.py</b> in your lab folder, then reload.</div>`;
     return;
   }

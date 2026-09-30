@@ -159,9 +159,57 @@ let INTEL = null;
 let BLITZ = null;
 let COVERAGE = null;
 let activeReport = 'gb'; // 'gb' | 'qb' | 'rb' | 'blitz' | 'coverage' | 'cbdb'
-let gbWeekFilter = 'all'; // set to the most recent real week once GB_GAMES loads
+let gbWeekFilter = 'all'; // set to the real current NFL week once GB_GAMES loads
 let sortKey = 'watch';
 let searchTerm = '';
+
+const pad = n => String(n).padStart(2, '0');
+
+// REAL CHANGE (2026-09-29), same real feature already built and tested
+// on games.html/matchup_stats.html/threats.html/dfs_center.html/
+// prop_center.html: ported over UNCHANGED (fully self-contained — reads
+// games/wkNN.json directly, nothing specific to this page) rather than
+// reimplemented, per Frank's direct request that Coeus Game Breakdowns'
+// week selector behave exactly like every other section — advancing
+// past a week once ITS OWN real Monday game has actually finished, and
+// never quietly staying on an older, already-built week just because
+// the current week's breakdowns haven't been generated yet.
+//
+// Deliberately does NOT trust matchup/current.json's own "week" value —
+// confirmed on games.html that this field tracks "the highest week
+// build_matchup_stats.py has ever built," not "the real current NFL
+// week." Always starts the real check from week 1 and walks forward.
+function etOffsetMinutes(dateStr){
+  const d = new Date(`${dateStr}T12:00:00Z`);
+  const utcStr = d.toLocaleString('en-US', { timeZone: 'UTC', hour12: false });
+  const etStr = d.toLocaleString('en-US', { timeZone: 'America/New_York', hour12: false });
+  return (new Date(utcStr) - new Date(etStr)) / 60000;
+}
+function kickoffHasPassed(g){
+  if(!g.gameday || !g.gametime) return false;
+  const [h, m] = g.gametime.split(':').map(Number);
+  const kickoffUTC = new Date(`${g.gameday}T00:00:00Z`);
+  kickoffUTC.setUTCMinutes(kickoffUTC.getUTCMinutes() + h * 60 + m + etOffsetMinutes(g.gameday));
+  return new Date() >= kickoffUTC;
+}
+async function determineDefaultWeek(){
+  let week = 1;
+  while (week < 18) {
+    let wkData;
+    try {
+      const r = await fetch(`games/wk${pad(week)}.json`, { cache: 'no-store' });
+      if (!r.ok) break; // that week isn't built yet — stop advancing, use what we have
+      wkData = await r.json();
+    } catch (e) { break; }
+
+    const monGames = (wkData.games || []).filter(g => g.weekday === 'Monday' && g.gameday);
+    if (!monGames.length) break; // no real Monday game this week — nothing to advance past
+    const latestMon = monGames.reduce((max, g) => (!max || g.gametime > max.gametime) ? g : max, null);
+    if (!kickoffHasPassed(latestMon)) break; // this week's real MNF hasn't happened yet — stay here
+    week += 1;
+  }
+  return week;
+}
 let rbSortKey = 'watch';
 let rbSearchTerm = '';
 let blitzPos = 'QB';
@@ -278,15 +326,16 @@ async function load(){
     }catch(e){}
   }
 
-  // REAL CHANGE (2026-09-16), per Frank's direct request: default the
-  // Game Breakdowns week filter to the most recent real week that
-  // actually has breakdowns, not "show everything at once" — the exact
-  // complaint that prompted this was a genuinely new breakdown reading
-  // as "bunched in with last week's" once more than one week had real
-  // data. Falls back to "all" only if GB_GAMES is completely empty.
-  const realWeekNums = GB_GAMES.filter(g => g.wk !== 'bootstrap')
-    .map(g => Number(g.wk.slice(2)));
-  gbWeekFilter = realWeekNums.length ? `wk${String(Math.max(...realWeekNums)).padStart(2,'0')}` : 'all';
+  // REAL CHANGE (2026-09-29), per Frank's direct request: default the
+  // Game Breakdowns week filter to the REAL current NFL week (same
+  // auto-advance rule as Matchup Stats, Threats, the DFS Center, and
+  // the Prop Center) rather than the most recent week that happens to
+  // already have breakdowns — that quietly kept showing an older week
+  // even after the real current week had arrived, if this week's
+  // breakdowns hadn't been generated yet. The existing "No breakdowns
+  // for Week N yet" empty state below already covers that case honestly.
+  // Falls back to "all" only if GB_GAMES is completely empty.
+  gbWeekFilter = GB_GAMES.length ? `wk${pad(await determineDefaultWeek())}` : 'all';
 
   const hasIntel = INTEL && Object.keys(INTEL.teams||{}).length;
   fiStatus(hasIntel ? "Ready" : "No data", hasIntel ? undefined : "error");
@@ -1319,7 +1368,13 @@ function renderGbGrid(){
   // long, undifferentiated list. Options are built from whichever real
   // weeks GB_GAMES actually has, not a fixed 1-18 range, so an empty
   // week never shows up as a selectable option with nothing behind it.
-  const realWks = [...new Set(GB_GAMES.map(g => g.wk))]
+  // REAL ADDITION (2026-09-29): always includes gbWeekFilter itself
+  // (the real current NFL week) even when it has no breakdowns yet, so
+  // the dropdown's displayed selection matches what the grid below is
+  // actually showing — without this, selecting a not-yet-built current
+  // week left no option marked "selected" and the dropdown silently
+  // fell back to showing "All weeks" instead.
+  const realWks = [...new Set([...GB_GAMES.map(g => g.wk), gbWeekFilter].filter(w => w !== 'all'))]
     .sort((a, b) => a === 'bootstrap' ? 1 : b === 'bootstrap' ? -1 : a.localeCompare(b));
   const wkLabel = wk => wk === 'bootstrap' ? 'Upcoming (bootstrap)' : `Week ${Number(wk.slice(2))}`;
   const filterOptions = [`<option value="all"${gbWeekFilter==='all'?' selected':''}>All weeks</option>`]

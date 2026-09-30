@@ -4856,7 +4856,14 @@ def build_cb_db_rankings():
     of {SEASON, SEASON-1} produce a real qualifying leaderboard, and lets
     the frontend show a season dropdown — same real design call already
     made for Home/Road Splits."""
-    MIN_TARGETS = 20
+    # REAL CHANGE (2026-09-29), per Frank's direct request: lowered from
+    # 20 to 10 — with only 2-3 real 2026 games played so far, 20 targets
+    # left the current-season leaderboard down to just a handful of DBs.
+    # 10 still gates out single-game noise while surfacing far more of
+    # the league this early; the frontend's "min N targets" label always
+    # reflects whatever this is currently set to, so nothing there needs
+    # a matching change.
+    MIN_TARGETS = 10
 
     def compute_for_season(yr):
         try:

@@ -101,17 +101,18 @@ let CBDB = null;
 let cbdbSortKey = null, cbdbSortDir = 'asc';
 let cbdbSearchTerm = '';
 
-let season = 2025;
-  // Same real reason as Matchup Stats/Contextual: 2026's matchup, team,
-  // and player stats need real played games, which don't exist yet.
+// REAL CHANGE (2026-09-29), per Frank's direct request: defaults to 2026
+// now that the season is real and in progress (this used to default to
+// 2025 back when 2026 had no played games yet to show).
+let season = 2026;
 
 main.innerHTML = `
   <div class="tabs view-switch" id="viewSwitch" role="tablist">
     <button role="tab" data-view="team_off" aria-selected="true">Team Offense</button>
     <button role="tab" data-view="players" aria-selected="false">Players</button>
     <button role="tab" data-view="dvp" aria-selected="false">Defense vs Position</button>
-    <button role="tab" data-view="cbdb" aria-selected="false">CB/DB Coverage</button>
     <button role="tab" data-view="rank_shifts" aria-selected="false">Rank Shifts</button>
+    <button role="tab" data-view="cbdb" aria-selected="false">CB/DB Coverage</button>
   </div>
   <div class="bar">
     <span class="lbl" id="sectionLbl">Team Offense</span>
@@ -240,18 +241,25 @@ async function load(){
     weekList = weekList.filter((w, i) => startedChecks[i]);
   }
 
+  // REAL BUG FIX (2026-09-29), per Frank's direct catch: these three
+  // fetches were missing the same { cache: 'no-store' } option every
+  // other real fetch on this page already uses (see games/wkNN.json and
+  // matchup/wkNN.json above) — without it, the browser can keep serving
+  // a stale cached copy of these files indefinitely, surviving even a
+  // hard refresh in some cases, which is exactly what made a real,
+  // already-rebuilt cb_rankings.json look unchanged.
   try{
-    const res = await fetch(seasonPath(season, `teamstats/latest.json`));
+    const res = await fetch(seasonPath(season, `teamstats/latest.json`), { cache: 'no-store' });
     if(res.ok) TEAMSTATS = await res.json();
   }catch(e){ /* team stats not built yet */ }
 
   try{
-    const res = await fetch(seasonPath(season, `players/latest.json`));
+    const res = await fetch(seasonPath(season, `players/latest.json`), { cache: 'no-store' });
     if(res.ok) PLAYERSTATS = await res.json();
   }catch(e){ /* player stats not built yet */ }
 
   try{
-    const res = await fetch(seasonPath(season, `intel/cb_rankings.json`));
+    const res = await fetch(seasonPath(season, `intel/cb_rankings.json`), { cache: 'no-store' });
     if(res.ok) CBDB = await res.json();
   }catch(e){ /* cb/db rankings not built yet */ }
 
@@ -760,23 +768,41 @@ const CBDB_HUB_COLS = [
   { key: 'rating_allowed', label: 'Rating Allowed' },
 ];
 
+// REAL BUG FIX (2026-09-29), per Frank's direct catch: build_matchup_stats.py
+// switched intel/cb_rankings.json over to a real, year-split
+// players_by_season structure (so a single live file can hold both the
+// current, in-progress 2026 sample AND 2025's full-season one, the same
+// real reason Rank Shifts needed both years from one file) but this page
+// was never updated to match — it was still reading a top-level
+// "players" array that no longer exists on the live file (the archived
+// 2025 snapshot still has the OLD flat shape, which is why this only
+// broke once the season default changed to 2026). Reads whichever shape
+// is actually present, keyed by the page's own Season toggle when the
+// new shape is there.
+function cbdbRowsForSeason(){
+  if(!CBDB) return [];
+  if(CBDB.players_by_season) return CBDB.players_by_season[String(season)] || [];
+  return CBDB.players || [];
+}
+
 function setupCbDbControls(){
-  if(!CBDB || !CBDB.available || !CBDB.players.length){
+  const rows0 = cbdbRowsForSeason();
+  if(!CBDB || !CBDB.available || !rows0.length){
     $("innerTabs").innerHTML = '';
     $("leadTable").outerHTML = `<div class="empty" id="leadTable">
-      No CB/DB rankings data found.<br>
+      No CB/DB rankings data found for ${season}.<br>
       Run <b>python3 build_matchup_stats.py all</b> in your lab folder, then reload.</div>`;
     return;
   }
   $("innerTabs").innerHTML = '';
   if(!cbdbSortKey) cbdbSortKey = 'yds_per_tgt_allowed';
-  fiUpdated(`season · ${CBDB.data_horizon} · min ${CBDB.min_targets} targets`);
+  fiUpdated(`${season} · min ${CBDB.min_targets} targets`);
   renderCbDbTable();
 }
 
 function renderCbDbTable(){
   try{
-    const rows = CBDB.players.slice().sort((a,b) => {
+    const rows = cbdbRowsForSeason().slice().sort((a,b) => {
       const av = a[cbdbSortKey] ?? Infinity, bv = b[cbdbSortKey] ?? Infinity;
       return cbdbSortDir === 'desc' ? bv - av : av - bv;
     });
