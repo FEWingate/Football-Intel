@@ -1,0 +1,1931 @@
+{
+  "generated_at": "2026-10-01T21:39:58.463885+00:00",
+  "games_included": [
+    "LAC_SEA",
+    "DEN_SF",
+    "DET_CAR",
+    "ATL_NO"
+  ],
+  "coverage": {
+    "passing_yards": {
+      "status": "current",
+      "current_event_count": 16,
+      "displayed_event_count": 16,
+      "previous_event_count": 10,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-01T20:46:12.852310+00:00",
+      "source_age_seconds": 0
+    },
+    "rushing_yards": {
+      "status": "current",
+      "current_event_count": 12,
+      "displayed_event_count": 12,
+      "previous_event_count": 10,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-01T20:46:12.852310+00:00",
+      "source_age_seconds": 0
+    },
+    "receiving_yards": {
+      "status": "current",
+      "current_event_count": 8,
+      "displayed_event_count": 8,
+      "previous_event_count": 9,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-01T20:46:12.852310+00:00",
+      "source_age_seconds": 0
+    },
+    "receptions": {
+      "status": "current",
+      "current_event_count": 10,
+      "displayed_event_count": 10,
+      "previous_event_count": 9,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-01T20:46:12.852310+00:00",
+      "source_age_seconds": 0
+    },
+    "anytime_td": {
+      "status": "current",
+      "current_event_count": 16,
+      "displayed_event_count": 16,
+      "previous_event_count": 10,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-01T20:46:12.852310+00:00",
+      "source_age_seconds": 0
+    }
+  },
+  "stake_used_for_payout_examples": 10,
+  "markdown": "# COEUS PROPS & PARLAY REPORT \u2014 Week 4, 2026\n### LAC @ SEA \u00b7 DEN @ SF \u00b7 DET @ CAR \u00b7 ATL @ NO\n\n---\n\n## REAL DATA COVERAGE NOTE (read before anything else)\n\n- Passing Yards, Anytime TD: **LIVE** for all 4 games \u2014 used normally below.\n- Rushing Yards, Receiving Yards, Receptions: the feed-level coverage summary reports these as \"current\" league-wide, but **for all four specific games on this slate, the actual market data returned is empty** \u2014 no RB/WR/TE yardage or reception lines exist in the real data provided for LAC@SEA, DEN@SF, DET@CAR, or ATL@NO. Per the No-Fabrication rule, this report does **not** invent lines for those three markets anywhere below. Every pick in this report is built only from the two markets that actually returned real data this week: **passing yards** (2 QBs/game) and **anytime TD** (full roster/game).\n- This also means Section 8 (spread parlays) is capped at two real parlay sizes \u2014 see that section for why.\n\n---\n\n## 1. COEUS PROP BREAKDOWN\n\n### LAC @ SEA\n- **Jaxon Smith-Njigba (SEA) \u2014 Anytime TD, Over, -115** \u2014 1st in the league in rec yards (135.0/gm) and receptions (9.0/gm), 37.9% target share, 50% RZ target share, 6 TD through 3 games; LAC's WR defense allows 159.3 rec yds/gm, ranked 22nd. Missed a formal Standard Threat by one spot (needed rank 23+), but the underlying gap is real.\n- **Justin Herbert (LAC) \u2014 Under 199.5 passing yards, -114** \u2014 Herbert's QB group ranks 19th in pass yards (209.0 ypg) against Seattle's defense, the league's best at 152.0 pass yds/gm allowed (1st) \u2014 his toughest statistical test of the season. FanDuel's alt ladder here (150\u2013325) is Over-only; no Under-side alt exists.\n- **Omarion Hampton (LAC) \u2014 Anytime TD, Over, +105** \u2014 55.6% RZ carry share, 2 rush TDs (12th among RBs); Seattle allows RBs just 65.3 rush yds/gm (6th) \u2014 a real step up in competition, but the RZ role alone sustains TD equity.\n\n### DEN @ SF\n- **Christian McCaffrey (SF) \u2014 Anytime TD, Over, -195** \u2014 61.5% RZ carry share, 3 rush TD (8th); Denver's run defense ranks 31st vs RBs (129.7 rush yds/gm allowed) and 29th vs RB receiving \u2014 an Elite Threat convergence.\n- **Brock Purdy (SF) \u2014 Over 229.5 passing yards, -114** \u2014 Purdy's QB group ranks 8th in pass yards (263.0 ypg) and 1st in TDs vs Denver's 24th-ranked pass defense \u2014 a confirmed Standard Threat. His lone bottom-tier-defense game this season produced 297 yds/4 TD. The 225+ alt (-132) is a tighter number on the same thesis.\n- **George Kittle (SF) \u2014 Anytime TD, Over, +160** \u2014 5th in rec yards (58.0/gm) vs Denver's 25th-ranked TE defense; his two bottom-tier-defense games this season average 81.0 ypg \u2014 directly Denver's caliber.\n\n### DET @ CAR\n- **Jahmyr Gibbs (DET) \u2014 Anytime TD, Over, -340** \u2014 4th in rush yards (102.3 ypg), 90% RZ carry share; Carolina allows RBs 144.7 rush yds/gm (32nd, worst in this report) \u2014 an Elite Threat, the cleanest convergence in this week's evidence.\n- **Bryce Young (CAR) \u2014 Over 246.5 passing yards, -114** \u2014 Young's QB group ranks 1st in pass yards (313.0 ypg) vs Detroit's 32nd-ranked pass defense (326.3 yds/gm allowed) \u2014 a Nuclear Threat, the strongest convergence anywhere this week. The 250+ alt (-106) is the tighter equivalent.\n- **Darren Waller (CAR) \u2014 Anytime TD, Over, +260** \u2014 2-for-2 on RZ targets this season; Detroit's TE defense is the single worst in the league (32nd in yards, catches, and TDs allowed to the position).\n\n### ATL @ NO\n- **Bijan Robinson (ATL) \u2014 Anytime TD, Over, -220** \u2014 2nd in rush yards (116.3 ypg); New Orleans allows RBs 115.7 rush yds/gm (29th); his season-high game (194 yds) came against a bottom-tier run defense \u2014 exactly NO's bucket.\n- **Chris Olave (NO) \u2014 Anytime TD, Over, +115** \u2014 1st in receptions (9.0/gm), 2nd in rec yards (125.0/gm); Atlanta's WR defense is the worst in the league (32nd in yards allowed, 30th in catches allowed) \u2014 a Nuclear Threat.\n- **Tyler Shough (NO) \u2014 Over 254.5 passing yards, -114** \u2014 2nd in the league in pass yards (305.7 ypg); his Quadruple Threat vs Atlanta's 27th-ranked pass D is real, though his Week-1 410-yard outlier inflates the average \u2014 his two non-outlier games still average 253.5 ypg, right at this line. The 250 alt (-130) is a cleaner number.\n\n### League-Wide Favorites by Position\n- **QB: Bryce Young Over 246.5 (-114)** \u2014 Nuclear Threat, the strongest QB convergence on the slate.\n- **RB: Jahmyr Gibbs Anytime TD (-340)** \u2014 cleanest, least-qualified Threat in this week's evidence.\n- **WR: Chris Olave Anytime TD (+115)** \u2014 Nuclear tier, Quadruple-rated.\n- **TE: George Kittle Anytime TD (+160)** \u2014 Standard tier, confirmed Threat Engine designation (unlike Waller, which is evidence-based but not formally flagged).\n\n```json\nPROP_BREAKDOWN\n{\n  \"per_game\": [\n    {\"away\": \"LAC\", \"home\": \"SEA\", \"picks\": [\n      {\"player\": \"Jaxon Smith-Njigba\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"53d9d3807e4d3e66\", \"price\": 1.87, \"side\": \"over\", \"line\": null, \"reason\": \"1st in rec yards (135.0/gm) and receptions, 50% RZ target share, 6 TD; LAC allows WRs 159.3 rec yds/gm (22nd).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"LAC\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":22}]},\n      {\"player\": \"Justin Herbert\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"53d9d3807e4d3e66\", \"price\": 1.877, \"side\": \"under\", \"line\": 199.5, \"reason\": \"LAC QB group ranks 19th in pass yards; Seattle's pass D ranks 1st allowing 152.0 ypg, Herbert's toughest test of the season.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"SEA\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":1},{\"type\":\"current_opponent\",\"team\":\"LAC\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"off\",\"claimed_rank\":19}]},\n      {\"player\": \"Omarion Hampton\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"53d9d3807e4d3e66\", \"price\": 2.05, \"side\": \"over\", \"line\": null, \"reason\": \"55.6% RZ carry share, 2 rush TD (12th); Seattle allows RBs just 65.3 rush yds/gm (6th), a tougher test but RZ role holds.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"SEA\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":6}]}\n    ]},\n    {\"away\": \"DEN\", \"home\": \"SF\", \"picks\": [\n      {\"player\": \"Christian McCaffrey\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"d5a0d1b78d351969\", \"price\": 1.513, \"side\": \"over\", \"line\": null, \"reason\": \"61.5% RZ carry share, 3 rush TD (8th); Denver allows RBs 129.7 rush yds/gm (31st) and ranks 29th vs RB receiving.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DEN\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":31},{\"type\":\"current_opponent\",\"team\":\"SF\",\"pos\":\"RB\",\"stat\":\"rush_td\",\"role\":\"off\",\"claimed_rank\":8}]},\n      {\"player\": \"Brock Purdy\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"d5a0d1b78d351969\", \"price\": 1.877, \"side\": \"over\", \"line\": 229.5, \"reason\": \"SF QB group ranks 8th in pass yards vs Denver's 24th-ranked pass D; his lone bottom-tier matchup produced 297 yds/4 TD.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DEN\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":24},{\"type\":\"current_opponent\",\"team\":\"SF\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"off\",\"claimed_rank\":8}]},\n      {\"player\": \"George Kittle\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"d5a0d1b78d351969\", \"price\": 2.6, \"side\": \"over\", \"line\": null, \"reason\": \"5th in rec yards (58.0/gm) vs Denver's 25th-ranked TE D; his two bottom-tier games this season average 81.0 ypg.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DEN\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":25}]}\n    ]},\n    {\"away\": \"DET\", \"home\": \"CAR\", \"picks\": [\n      {\"player\": \"Jahmyr Gibbs\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.294, \"side\": \"over\", \"line\": null, \"reason\": \"4th in rush yards (102.3 ypg), 90% RZ carry share; Carolina allows RBs 144.7 rush yds/gm (32nd, worst specific matchup in this report).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CAR\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":32},{\"type\":\"current_opponent\",\"team\":\"DET\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"off\",\"claimed_rank\":4}]},\n      {\"player\": \"Bryce Young\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.877, \"side\": \"over\", \"line\": 246.5, \"reason\": \"CAR QB group ranks 1st in pass yards vs Detroit's 32nd-ranked pass D, the strongest Nuclear convergence this week.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DET\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":32},{\"type\":\"current_opponent\",\"team\":\"CAR\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"off\",\"claimed_rank\":1}]},\n      {\"player\": \"Darren Waller\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 3.6, \"side\": \"over\", \"line\": null, \"reason\": \"2-for-2 on RZ targets this season; Detroit's TE D is worst in the league (32nd in yards, catches, TDs allowed).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DET\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":32}]}\n    ]},\n    {\"away\": \"ATL\", \"home\": \"NO\", \"picks\": [\n      {\"player\": \"Bijan Robinson\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"ab7bde95c9d5a8fc\", \"price\": 1.455, \"side\": \"over\", \"line\": null, \"reason\": \"2nd in rush yards (116.3 ypg); NO allows RBs 115.7 rush yds/gm (29th); his season-high (194 yds) came vs a bottom-tier run D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":29},{\"type\":\"current_opponent\",\"team\":\"ATL\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"off\",\"claimed_rank\":2}]},\n      {\"player\": \"Chris Olave\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"ab7bde95c9d5a8fc\", \"price\": 2.15, \"side\": \"over\", \"line\": null, \"reason\": \"1st in receptions, 2nd in rec yards; Atlanta's WR D is worst in the league (32nd in yards allowed, 30th in catches allowed).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"ATL\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":32}]},\n      {\"player\": \"Tyler Shough\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"ab7bde95c9d5a8fc\", \"price\": 1.877, \"side\": \"over\", \"line\": 254.5, \"reason\": \"NO QB group ranks 2nd in pass yards vs Atlanta's 27th-ranked pass D; non-outlier games still average 253.5 ypg.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"ATL\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":27},{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"off\",\"claimed_rank\":2}]}\n    ]}\n  ],\n  \"per_position\": {\n    \"QB\": {\"player\": \"Bryce Young\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.877, \"side\": \"over\", \"line\": 246.5, \"reason\": \"Nuclear Threat \u2014 1st-ranked passer vs the single worst pass D in this report (32nd).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DET\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":32},{\"type\":\"current_opponent\",\"team\":\"CAR\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"off\",\"claimed_rank\":1}]},\n    \"RB\": {\"player\": \"Jahmyr Gibbs\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.294, \"side\": \"over\", \"line\": null, \"reason\": \"Elite Threat, cleanest convergence of the week \u2014 4th-ranked rusher vs Carolina's 32nd-ranked run D vs RBs.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CAR\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":32}]},\n    \"WR\": {\"player\": \"Chris Olave\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"ab7bde95c9d5a8fc\", \"price\": 2.15, \"side\": \"over\", \"line\": null, \"reason\": \"Nuclear tier, Quadruple-rated \u2014 1st in receptions vs Atlanta's worst-in-league WR D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"ATL\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":32}]},\n    \"TE\": {\"player\": \"George Kittle\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"d5a0d1b78d351969\", \"price\": 2.6, \"side\": \"over\", \"line\": null, \"reason\": \"Confirmed Standard Threat vs Denver's 25th-ranked TE D, with a matching bottom-tier track record.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DEN\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":25}]}\n  }\n}\n```\n\n---\n\n## 2. FAVORITE OVERS AND UNDERS FOR THE WEEK\n\n**Overs (ranked):**\n1. **Bryce Young Over 246.5 (-114)** \u2014 Nuclear Threat (HIGH).\n2. **Jahmyr Gibbs Anytime TD (-340)** \u2014 Elite Threat, cleanest in report (HIGH).\n3. **Chris Olave Anytime TD (+115)** \u2014 Nuclear/Quadruple (HIGH).\n4. **Bijan Robinson Anytime TD (-220)** \u2014 Elite Threat, bottom-tier run D (HIGH).\n5. **Christian McCaffrey Anytime TD (-195)** \u2014 Elite Threat, league's worst specific run-D match (HIGH).\n6. **Brock Purdy Over 229.5 (-114)** \u2014 Standard Threat (MEDIUM-HIGH).\n7. **Tyler Shough Over 254.5 (-114)** \u2014 Quadruple Threat, tempered by Week-1 outlier (MEDIUM).\n\n**Unders (ranked):**\n1. **Justin Herbert Under 199.5 (-114)** \u2014 Seattle's #1-ranked pass D, zero top-tier sample this year (MEDIUM-HIGH).\n2. **Jared Goff Under 260.5 (-114)** \u2014 Carolina's 5th-ranked pass D (3rd vs WRs); real but his lone prior top-tier game actually exceeded his season pace, so this is mixed evidence (MEDIUM).\n\n```json\nFAVORITE_OU\n{\n  \"overs\": [\n    {\"player\": \"Bryce Young\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.877, \"side\": \"over\", \"line\": 246.5, \"reason\": \"Nuclear Threat \u2014 1st-ranked passer vs Detroit's 32nd-ranked pass D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DET\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":32}]},\n    {\"player\": \"Jahmyr Gibbs\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.294, \"side\": \"over\", \"line\": null, \"reason\": \"Elite Threat, cleanest convergence of the week vs Carolina's 32nd-ranked run D vs RBs.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CAR\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":32}]},\n    {\"player\": \"Chris Olave\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"ab7bde95c9d5a8fc\", \"price\": 2.15, \"side\": \"over\", \"line\": null, \"reason\": \"Nuclear/Quadruple Threat vs Atlanta's worst-in-league WR defense.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"ATL\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":32}]},\n    {\"player\": \"Bijan Robinson\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"ab7bde95c9d5a8fc\", \"price\": 1.455, \"side\": \"over\", \"line\": null, \"reason\": \"Elite Threat vs New Orleans' 29th-ranked run D vs RBs.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":29}]},\n    {\"player\": \"Christian McCaffrey\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"d5a0d1b78d351969\", \"price\": 1.513, \"side\": \"over\", \"line\": null, \"reason\": \"Elite Threat vs Denver's 31st-ranked run D vs RBs, the most generous RB matchup in this report.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DEN\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":31}]},\n    {\"player\": \"Brock Purdy\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"d5a0d1b78d351969\", \"price\": 1.877, \"side\": \"over\", \"line\": 229.5, \"reason\": \"Standard Threat vs Denver's 24th-ranked pass D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DEN\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":24}]},\n    {\"player\": \"Tyler Shough\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"ab7bde95c9d5a8fc\", \"price\": 1.877, \"side\": \"over\", \"line\": 254.5, \"reason\": \"Quadruple Threat vs Atlanta's 27th-ranked pass D, tempered by a Week-1 outlier game.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"ATL\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":27}]}\n  ],\n  \"unders\": [\n    {\"player\": \"Justin Herbert\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"53d9d3807e4d3e66\", \"price\": 1.877, \"side\": \"under\", \"line\": 199.5, \"reason\": \"Seattle's pass D ranks 1st in the league (152.0 ypg allowed); Herbert has zero top-tier-opponent sample this year.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"SEA\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":1}]},\n    {\"player\": \"Jared Goff\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.877, \"side\": \"under\", \"line\": 260.5, \"reason\": \"Carolina's pass D ranks 5th overall, 3rd vs WRs \u2014 his toughest matchup of the season, though mixed by a prior strong top-tier game.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CAR\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":5}]}\n  ]\n}\n```\n\n---\n\n## 3. FIVE PARLAYS (Line-Based, 3/4/5/6/7 Team)\n\nNo Anytime TD legs here \u2014 every leg below is a real `player_passing_yards` market, the only non-ATD market this slate's data supports.\n\n**3-Team:** Young O 246.5, Shough O 254.5, Herbert U 199.5 \u2014 three different games, three clean Threat/matchup convictions. No same-game overlap. Combined: **\u2248+561**.\n\n**4-Team:** adds Purdy O 229.5 (SF game) \u2014 four different games, still no overlap. Combined: **\u2248+1141**.\n\n**5-Team:** adds Goff U 260.5 (DET@CAR) \u2014 **Young and Goff are from the same game (DET@CAR, event 8f044a7004d58a5c)** \u2014 the combined price below is a cross-game-style estimate, not a real FanDuel SGP quote for that pair. Combined: **\u2248+2230**.\n\n**6-Team:** adds Darnold O 233.5 (SEA) \u2014 **Herbert and Darnold are from the same game (LAC@SEA, event 53d9d3807e4d3e66)**, on top of the existing Young/Goff overlap. Combined: **\u2248+4274**.\n\n**7-Team:** adds Nix O 221.5 (DEN) \u2014 **Purdy and Nix are from the same game (DEN@SF, event d5a0d1b78d351969)**, on top of both prior overlaps \u2014 this is now a parlay with three same-game pairs; treat the combined number purely as an independent-legs estimate, not a true SGP price. Combined: **\u2248+8110**.\n\n```json\nPARLAY_3_TEAM\n[\n  {\"player\": \"Bryce Young\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.877, \"side\": \"over\", \"line\": 246.5, \"reason\": \"Nuclear Threat vs Detroit's 32nd-ranked pass D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DET\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":32}]},\n  {\"player\": \"Tyler Shough\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"ab7bde95c9d5a8fc\", \"price\": 1.877, \"side\": \"over\", \"line\": 254.5, \"reason\": \"Quadruple Threat vs Atlanta's 27th-ranked pass D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"ATL\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":27}]},\n  {\"player\": \"Justin Herbert\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"53d9d3807e4d3e66\", \"price\": 1.877, \"side\": \"under\", \"line\": 199.5, \"reason\": \"Seattle's pass D ranks 1st in the league allowing 152.0 ypg.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"SEA\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":1}]}\n]\n```\n\n```json\nPARLAY_4_TEAM\n[\n  {\"player\": \"Bryce Young\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.877, \"side\": \"over\", \"line\": 246.5, \"reason\": \"Nuclear Threat vs Detroit's 32nd-ranked pass D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DET\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":32}]},\n  {\"player\": \"Tyler Shough\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"ab7bde95c9d5a8fc\", \"price\": 1.877, \"side\": \"over\", \"line\": 254.5, \"reason\": \"Quadruple Threat vs Atlanta's 27th-ranked pass D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"ATL\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":27}]},\n  {\"player\": \"Justin Herbert\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"53d9d3807e4d3e66\", \"price\": 1.877, \"side\": \"under\", \"line\": 199.5, \"reason\": \"Seattle's pass D ranks 1st in the league allowing 152.0 ypg.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"SEA\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":1}]},\n  {\"player\": \"Brock Purdy\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"d5a0d1b78d351969\", \"price\": 1.877, \"side\": \"over\", \"line\": 229.5, \"reason\": \"Standard Threat vs Denver's 24th-ranked pass D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DEN\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":24}]}\n]\n```\n\n```json\nPARLAY_5_TEAM\n[\n  {\"player\": \"Bryce Young\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.877, \"side\": \"over\", \"line\": 246.5, \"reason\": \"Nuclear Threat vs Detroit's 32nd-ranked pass D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DET\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":32}]},\n  {\"player\": \"Tyler Shough\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"ab7bde95c9d5a8fc\", \"price\": 1.877, \"side\": \"over\", \"line\": 254.5, \"reason\": \"Quadruple Threat vs Atlanta's 27th-ranked pass D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"ATL\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":27}]},\n  {\"player\": \"Justin Herbert\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"53d9d3807e4d3e66\", \"price\": 1.877, \"side\": \"under\", \"line\": 199.5, \"reason\": \"Seattle's pass D ranks 1st in the league allowing 152.0 ypg.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"SEA\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":1}]},\n  {\"player\": \"Brock Purdy\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"d5a0d1b78d351969\", \"price\": 1.877, \"side\": \"over\", \"line\": 229.5, \"reason\": \"Standard Threat vs Denver's 24th-ranked pass D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DEN\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":24}]},\n  {\"player\": \"Jared Goff\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.877, \"side\": \"under\", \"line\": 260.5, \"reason\": \"Carolina's pass D ranks 5th overall, 3rd vs WRs \u2014 same game as the Young leg above.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CAR\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":5}]}\n]\n```\n\n```json\nPARLAY_6_TEAM\n[\n  {\"player\": \"Bryce Young\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.877, \"side\": \"over\", \"line\": 246.5, \"reason\": \"Nuclear Threat vs Detroit's 32nd-ranked pass D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DET\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":32}]},\n  {\"player\": \"Tyler Shough\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"ab7bde95c9d5a8fc\", \"price\": 1.877, \"side\": \"over\", \"line\": 254.5, \"reason\": \"Quadruple Threat vs Atlanta's 27th-ranked pass D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"ATL\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":27}]},\n  {\"player\": \"Justin Herbert\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"53d9d3807e4d3e66\", \"price\": 1.877, \"side\": \"under\", \"line\": 199.5, \"reason\": \"Seattle's pass D ranks 1st in the league allowing 152.0 ypg.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"SEA\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":1}]},\n  {\"player\": \"Brock Purdy\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"d5a0d1b78d351969\", \"price\": 1.877, \"side\": \"over\", \"line\": 229.5, \"reason\": \"Standard Threat vs Denver's 24th-ranked pass D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DEN\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":24}]},\n  {\"player\": \"Jared Goff\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.877, \"side\": \"under\", \"line\": 260.5, \"reason\": \"Carolina's pass D ranks 5th overall, 3rd vs WRs \u2014 same game as the Young leg above.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CAR\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":5}]},\n  {\"player\": \"Sam Darnold\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"53d9d3807e4d3e66\", \"price\": 1.877, \"side\": \"over\", \"line\": 233.5, \"reason\": \"Likely current starter after a 379-yard, 100%-snap Week 3; same game as the Herbert leg above.\", \"evidence_check\": []}\n]\n```\n\n```json\nPARLAY_7_TEAM\n[\n  {\"player\": \"Bryce Young\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.877, \"side\": \"over\", \"line\": 246.5, \"reason\": \"Nuclear Threat vs Detroit's 32nd-ranked pass D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DET\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":32}]},\n  {\"player\": \"Tyler Shough\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"ab7bde95c9d5a8fc\", \"price\": 1.877, \"side\": \"over\", \"line\": 254.5, \"reason\": \"Quadruple Threat vs Atlanta's 27th-ranked pass D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"ATL\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":27}]},\n  {\"player\": \"Justin Herbert\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"53d9d3807e4d3e66\", \"price\": 1.877, \"side\": \"under\", \"line\": 199.5, \"reason\": \"Seattle's pass D ranks 1st in the league allowing 152.0 ypg.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"SEA\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":1}]},\n  {\"player\": \"Brock Purdy\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"d5a0d1b78d351969\", \"price\": 1.877, \"side\": \"over\", \"line\": 229.5, \"reason\": \"Standard Threat vs Denver's 24th-ranked pass D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DEN\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":24}]},\n  {\"player\": \"Jared Goff\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.877, \"side\": \"under\", \"line\": 260.5, \"reason\": \"Carolina's pass D ranks 5th overall, 3rd vs WRs \u2014 same game as the Young leg above.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CAR\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":5}]},\n  {\"player\": \"Sam Darnold\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"53d9d3807e4d3e66\", \"price\": 1.877, \"side\": \"over\", \"line\": 233.5, \"reason\": \"Likely current starter after a 379-yard, 100%-snap Week 3; same game as the Herbert leg above.\", \"evidence_check\": []},\n  {\"player\": \"Bo Nix\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"d5a0d1b78d351969\", \"price\": 1.877, \"side\": \"over\", \"line\": 221.5, \"reason\": \"His one mid-tier-opponent game this season (vs JAX) produced 288 yards, well above this line; same game as the Purdy leg above.\", \"evidence_check\": []}\n]\n```\n\n---\n\n## 4. FAVORITE ANYTIME TD PARLAYS (3/4/5/6/7 Team)\n\n**3-Team:** Gibbs, Bijan, McCaffrey \u2014 three different games, three of the slate's cleanest Threat convergences. Combined: **\u2248+185**.\n\n**4-Team:** adds Jaxon Smith-Njigba \u2014 four different games, no overlap. Combined: **\u2248+433**.\n\n**5-Team:** adds Amon-Ra St. Brown \u2014 **St. Brown and Gibbs are both in the DET@CAR game (event 8f044a7004d58a5c)**, correlated. Combined: **\u2248+859**.\n\n**6-Team:** adds Chuba Hubbard \u2014 now **three legs (Gibbs, St. Brown, Hubbard) share the DET@CAR game**; this is a heavily correlated same-game stack and the combined number below is purely an independent-legs estimate, not a real SGP quote. Combined: **\u2248+1569**.\n\n**7-Team:** adds Chris Olave \u2014 **Olave and Bijan now also share the ATL@NO game**, on top of the DET@CAR stack. Combined: **\u2248+3488**.\n\n```json\nTD_PARLAY_3_TEAM\n[\n  {\"player\": \"Jahmyr Gibbs\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.294, \"side\": \"over\", \"line\": null, \"reason\": \"Elite Threat vs Carolina's 32nd-ranked run D vs RBs.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CAR\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":32}]},\n  {\"player\": \"Bijan Robinson\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"ab7bde95c9d5a8fc\", \"price\": 1.455, \"side\": \"over\", \"line\": null, \"reason\": \"Elite Threat vs New Orleans' 29th-ranked run D vs RBs.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":29}]},\n  {\"player\": \"Christian McCaffrey\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"d5a0d1b78d351969\", \"price\": 1.513, \"side\": \"over\", \"line\": null, \"reason\": \"Elite Threat vs Denver's 31st-ranked run D vs RBs.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DEN\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":31}]}\n]\n```\n\n```json\nTD_PARLAY_4_TEAM\n[\n  {\"player\": \"Jahmyr Gibbs\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.294, \"side\": \"over\", \"line\": null, \"reason\": \"Elite Threat vs Carolina's 32nd-ranked run D vs RBs.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CAR\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":32}]},\n  {\"player\": \"Bijan Robinson\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"ab7bde95c9d5a8fc\", \"price\": 1.455, \"side\": \"over\", \"line\": null, \"reason\": \"Elite Threat vs New Orleans' 29th-ranked run D vs RBs.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":29}]},\n  {\"player\": \"Christian McCaffrey\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"d5a0d1b78d351969\", \"price\": 1.513, \"side\": \"over\", \"line\": null, \"reason\": \"Elite Threat vs Denver's 31st-ranked run D vs RBs.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DEN\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":31}]},\n  {\"player\": \"Jaxon Smith-Njigba\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"53d9d3807e4d3e66\", \"price\": 1.87, \"side\": \"over\", \"line\": null, \"reason\": \"1st in rec yards and receptions, 50% RZ target share vs LAC's 22nd-ranked WR D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"LAC\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":22}]}\n]\n```\n\n```json\nTD_PARLAY_5_TEAM\n[\n  {\"player\": \"Jahmyr Gibbs\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.294, \"side\": \"over\", \"line\": null, \"reason\": \"Elite Threat vs Carolina's 32nd-ranked run D vs RBs.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CAR\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":32}]},\n  {\"player\": \"Bijan Robinson\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"ab7bde95c9d5a8fc\", \"price\": 1.455, \"side\": \"over\", \"line\": null, \"reason\": \"Elite Threat vs New Orleans' 29th-ranked run D vs RBs.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":29}]},\n  {\"player\": \"Christian McCaffrey\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"d5a0d1b78d351969\", \"price\": 1.513, \"side\": \"over\", \"line\": null, \"reason\": \"Elite Threat vs Denver's 31st-ranked run D vs RBs.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DEN\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":31}]},\n  {\"player\": \"Jaxon Smith-Njigba\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"53d9d3807e4d3e66\", \"price\": 1.87, \"side\": \"over\", \"line\": null, \"reason\": \"1st in rec yards and receptions, 50% RZ target share vs LAC's 22nd-ranked WR D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"LAC\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":22}]},\n  {\"player\": \"Amon-Ra St. Brown\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.8, \"side\": \"over\", \"line\": null, \"reason\": \"37.5% RZ target share, 4 TD on 9 RZ targets; same game as the Gibbs leg above.\", \"evidence_check\": []}\n]\n```\n\n```json\nTD_PARLAY_6_TEAM\n[\n  {\"player\": \"Jahmyr Gibbs\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.294, \"side\": \"over\", \"line\": null, \"reason\": \"Elite Threat vs Carolina's 32nd-ranked run D vs RBs.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CAR\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":32}]},\n  {\"player\": \"Bijan Robinson\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"ab7bde95c9d5a8fc\", \"price\": 1.455, \"side\": \"over\", \"line\": null, \"reason\": \"Elite Threat vs New Orleans' 29th-ranked run D vs RBs.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":29}]},\n  {\"player\": \"Christian McCaffrey\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"d5a0d1b78d351969\", \"price\": 1.513, \"side\": \"over\", \"line\": null, \"reason\": \"Elite Threat vs Denver's 31st-ranked run D vs RBs.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DEN\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":31}]},\n  {\"player\": \"Jaxon Smith-Njigba\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"53d9d3807e4d3e66\", \"price\": 1.87, \"side\": \"over\", \"line\": null, \"reason\": \"1st in rec yards and receptions, 50% RZ target share vs LAC's 22nd-ranked WR D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"LAC\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":22}]},\n  {\"player\": \"Amon-Ra St. Brown\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.8, \"side\": \"over\", \"line\": null, \"reason\": \"37.5% RZ target share, 4 TD on 9 RZ targets; same game as the Gibbs leg above.\", \"evidence_check\": []},\n  {\"player\": \"Chuba Hubbard\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.741, \"side\": \"over\", \"line\": null, \"reason\": \"53.8% RZ touch share; a third leg now sharing the DET@CAR game with Gibbs and St. Brown above.\", \"evidence_check\": []}\n]\n```\n\n```json\nTD_PARLAY_7_TEAM\n[\n  {\"player\": \"Jahmyr Gibbs\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.294, \"side\": \"over\", \"line\": null, \"reason\": \"Elite Threat vs Carolina's 32nd-ranked run D vs RBs.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CAR\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":32}]},\n  {\"player\": \"Bijan Robinson\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"ab7bde95c9d5a8fc\", \"price\": 1.455, \"side\": \"over\", \"line\": null, \"reason\": \"Elite Threat vs New Orleans' 29th-ranked run D vs RBs.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":29}]},\n  {\"player\": \"Christian McCaffrey\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"d5a0d1b78d351969\", \"price\": 1.513, \"side\": \"over\", \"line\": null, \"reason\": \"Elite Threat vs Denver's 31st-ranked run D vs RBs.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DEN\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":31}]},\n  {\"player\": \"Jaxon Smith-Njigba\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"53d9d3807e4d3e66\", \"price\": 1.87, \"side\": \"over\", \"line\": null, \"reason\": \"1st in rec yards and receptions, 50% RZ target share vs LAC's 22nd-ranked WR D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"LAC\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":22}]},\n  {\"player\": \"Amon-Ra St. Brown\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.8, \"side\": \"over\", \"line\": null, \"reason\": \"37.5% RZ target share, 4 TD on 9 RZ targets; same game as the Gibbs leg above.\", \"evidence_check\": []},\n  {\"player\": \"Chuba Hubbard\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.741, \"side\": \"over\", \"line\": null, \"reason\": \"53.8% RZ touch share; a third leg now sharing the DET@CAR game with Gibbs and St. Brown above.\", \"evidence_check\": []},\n  {\"player\": \"Chris Olave\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"ab7bde95c9d5a8fc\", \"price\": 2.15, \"side\": \"over\", \"line\": null, \"reason\": \"Nuclear Threat vs Atlanta's worst-in-league WR D; same game as the Bijan leg above.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"ATL\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":32}]}\n]\n```\n\n---\n\n## 5. FAVORITE SPREAD PARLAYS \u2014 DATA LIMITATION NOTE\n\nThis slate has exactly **4 real mainline spread markets** (one per game). Building honest 5-, 6-, and 7-team spread parlays would require reusing a market or inventing one \u2014 this report does neither. Only a **3-team** and **4-team** spread parlay are offered below; 5/6/7-team spread parlays are not provided this week.\n\n- **Detroit Lions -3.5 (-114)** \u2014 DET's road ATS is 61.5% (32-20), overall 60.4% \u2014 the best ATS team on the slate; matchup evidence (elite Lions offense vs Carolina's historically broken run D) reinforces it.\n- **San Francisco 49ers -2.5 (-120)** \u2014 SF's home ATS is a middling 48.1% (25-27), but the matchup specifics (3rd-down disparity, Denver's 30th-ranked total defense) argue this game should outperform that historical home rate.\n- **Atlanta Falcons +2.5 (-102)** \u2014 fading New Orleans at home given the Saints' weak 41.2% home ATS mark (21-30); Atlanta's away ATS sits a more respectable 48.1% (25-27), and Bijan Robinson's individual matchup edge supports live-dog value.\n- **Seattle Seahawks -7.0 (-115)** \u2014 Seattle's home ATS is middling (46.9%, 23-26), but the specific matchup (elite SEA defense vs a historically bad Chargers passing offense) argues this game breaks from that trend; Herbert projects for one of his worst slates of the season.\n\n**3-Team:** DET -3.5, SF -2.5, ATL +2.5 \u2014 three different games, best overall convictions combining matchup edge and real ATS context. Combined: **\u2248+564**.\n\n**4-Team:** adds SEA -7.0 \u2014 four different games, no overlap. Combined: **\u2248+1142**.\n\n```json\nSPREAD_PARLAY_3_TEAM\n[\n  {\"player\": \"Detroit Lions\", \"market_key\": \"spreads\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.847, \"point\": -3.5, \"reason\": \"DET's road ATS is 61.5% (32-20), the best mark on this slate; Carolina's run D is the worst specific matchup in this week's evidence.\", \"evidence_check\": []},\n  {\"player\": \"San Francisco 49ers\", \"market_key\": \"spreads\", \"canonical_event_id\": \"d5a0d1b78d351969\", \"price\": 1.833, \"point\": -2.5, \"reason\": \"SF's home ATS sits at a middling 48.1%, but a 3rd-down disparity and Denver's 30th-ranked defense argue this specific game outperforms that trend.\", \"evidence_check\": []},\n  {\"player\": \"Atlanta Falcons\", \"market_key\": \"spreads\", \"canonical_event_id\": \"ab7bde95c9d5a8fc\", \"price\": 1.962, \"point\": 2.5, \"reason\": \"New Orleans' home ATS is just 41.2% (21-30), one of the worst on the slate, while Atlanta's road ATS (48.1%) is more respectable.\", \"evidence_check\": []}\n]\n```\n\n```json\nSPREAD_PARLAY_4_TEAM\n[\n  {\"player\": \"Detroit Lions\", \"market_key\": \"spreads\", \"canonical_event_id\": \"8f044a7004d58a5c\", \"price\": 1.847, \"point\": -3.5, \"reason\": \"DET's road ATS is 61.5% (32-20), the best mark on this slate; Carolina's run D is the worst specific matchup in this week's evidence.\", \"evidence_check\": []},\n  {\"player\": \"San Francisco 49ers\", \"market_key\": \"spreads\", \"canonical_event_id\": \"d5a0d1b78d351969\", \"price\": 1.833, \"point\": -2.5, \"reason\": \"SF's home ATS sits at a middling 48.1%, but a 3rd-down disparity and Denver's 30th-ranked defense argue this specific game outperforms that trend.\", \"evidence_check\": []},\n  {\"player\": \"Atlanta Falcons\", \"market_key\": \"spreads\", \"canonical_event_id\": \"ab7bde95c9d5a8fc\", \"price\": 1.962, \"point\": 2.5, \"reason\": \"New Orleans' home ATS is just 41.2% (21-30), one of the worst on the slate, while Atlanta's road ATS (48.1%) is more respectable.\", \"evidence_check\": []},\n  {\"player\": \"Seattle Seahawks\", \"market_key\": \"spreads\", \"canonical_event_id\": \"53d9d3807e4d3e66\", \"price\": 1.87, \"point\": -7.0, \"reason\": \"SEA's home ATS is only 46.9% (23-26), but the specific matchup (elite SEA D vs a historically bad LAC passing game) argues this breaks that trend.\", \"evidence_check\": []}\n]\n```",
+  "prop_breakdown": {
+    "per_game": [
+      {
+        "away": "LAC",
+        "home": "SEA",
+        "picks": [
+          {
+            "player": "Jaxon Smith-Njigba",
+            "market_key": "player_anytime_td",
+            "canonical_event_id": "53d9d3807e4d3e66",
+            "price": 1.87,
+            "side": "over",
+            "line": null,
+            "reason": "1st in rec yards (135.0/gm) and receptions, 50% RZ target share, 6 TD; LAC allows WRs 159.3 rec yds/gm (22nd).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "LAC",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 22
+              }
+            ]
+          },
+          {
+            "player": "Justin Herbert",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "53d9d3807e4d3e66",
+            "price": 1.877,
+            "side": "under",
+            "line": 199.5,
+            "reason": "LAC QB group ranks 19th in pass yards; Seattle's pass D ranks 1st allowing 152.0 ypg, Herbert's toughest test of the season.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "SEA",
+                "pos": "QB",
+                "stat": "pass_ypg",
+                "role": "def",
+                "claimed_rank": 1
+              },
+              {
+                "type": "current_opponent",
+                "team": "LAC",
+                "pos": "QB",
+                "stat": "pass_ypg",
+                "role": "off",
+                "claimed_rank": 19
+              }
+            ]
+          },
+          {
+            "player": "Omarion Hampton",
+            "market_key": "player_anytime_td",
+            "canonical_event_id": "53d9d3807e4d3e66",
+            "price": 2.05,
+            "side": "over",
+            "line": null,
+            "reason": "55.6% RZ carry share, 2 rush TD (12th); Seattle allows RBs just 65.3 rush yds/gm (6th), a tougher test but RZ role holds.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "SEA",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "def",
+                "claimed_rank": 6
+              }
+            ],
+            "evidence_mismatches": [
+              "REAL MISMATCH: SEA's real current RB def rush_yds rank is #5 or #23 \u2014 the report claimed #6."
+            ]
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "DEN",
+        "home": "SF",
+        "picks": [
+          {
+            "player": "Christian McCaffrey",
+            "market_key": "player_anytime_td",
+            "canonical_event_id": "d5a0d1b78d351969",
+            "price": 1.513,
+            "side": "over",
+            "line": null,
+            "reason": "61.5% RZ carry share, 3 rush TD (8th); Denver allows RBs 129.7 rush yds/gm (31st) and ranks 29th vs RB receiving.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "DEN",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "def",
+                "claimed_rank": 31
+              },
+              {
+                "type": "current_opponent",
+                "team": "SF",
+                "pos": "RB",
+                "stat": "rush_td",
+                "role": "off",
+                "claimed_rank": 8
+              }
+            ]
+          },
+          {
+            "player": "Brock Purdy",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "d5a0d1b78d351969",
+            "price": 1.877,
+            "side": "over",
+            "line": 229.5,
+            "reason": "SF QB group ranks 8th in pass yards vs Denver's 24th-ranked pass D; his lone bottom-tier matchup produced 297 yds/4 TD.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "DEN",
+                "pos": "QB",
+                "stat": "pass_ypg",
+                "role": "def",
+                "claimed_rank": 24
+              },
+              {
+                "type": "current_opponent",
+                "team": "SF",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "off",
+                "claimed_rank": 8
+              }
+            ]
+          },
+          {
+            "player": "George Kittle",
+            "market_key": "player_anytime_td",
+            "canonical_event_id": "d5a0d1b78d351969",
+            "price": 2.6,
+            "side": "over",
+            "line": null,
+            "reason": "5th in rec yards (58.0/gm) vs Denver's 25th-ranked TE D; his two bottom-tier games this season average 81.0 ypg.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "DEN",
+                "pos": "TE",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 25
+              }
+            ]
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "DET",
+        "home": "CAR",
+        "picks": [
+          {
+            "player": "Jahmyr Gibbs",
+            "market_key": "player_anytime_td",
+            "canonical_event_id": "8f044a7004d58a5c",
+            "price": 1.294,
+            "side": "over",
+            "line": null,
+            "reason": "4th in rush yards (102.3 ypg), 90% RZ carry share; Carolina allows RBs 144.7 rush yds/gm (32nd, worst specific matchup in this report).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "CAR",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "def",
+                "claimed_rank": 32
+              },
+              {
+                "type": "current_opponent",
+                "team": "DET",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "off",
+                "claimed_rank": 4
+              }
+            ]
+          },
+          {
+            "player": "Bryce Young",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "8f044a7004d58a5c",
+            "price": 1.877,
+            "side": "over",
+            "line": 246.5,
+            "reason": "CAR QB group ranks 1st in pass yards vs Detroit's 32nd-ranked pass D, the strongest Nuclear convergence this week.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "DET",
+                "pos": "QB",
+                "stat": "pass_ypg",
+                "role": "def",
+                "claimed_rank": 32
+              },
+              {
+                "type": "current_opponent",
+                "team": "CAR",
+                "pos": "QB",
+                "stat": "pass_ypg",
+                "role": "off",
+                "claimed_rank": 1
+              }
+            ]
+          },
+          {
+            "player": "Darren Waller",
+            "market_key": "player_anytime_td",
+            "canonical_event_id": "8f044a7004d58a5c",
+            "price": 3.6,
+            "side": "over",
+            "line": null,
+            "reason": "2-for-2 on RZ targets this season; Detroit's TE D is worst in the league (32nd in yards, catches, TDs allowed).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "DET",
+                "pos": "TE",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 32
+              }
+            ]
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "ATL",
+        "home": "NO",
+        "picks": [
+          {
+            "player": "Bijan Robinson",
+            "market_key": "player_anytime_td",
+            "canonical_event_id": "ab7bde95c9d5a8fc",
+            "price": 1.455,
+            "side": "over",
+            "line": null,
+            "reason": "2nd in rush yards (116.3 ypg); NO allows RBs 115.7 rush yds/gm (29th); his season-high (194 yds) came vs a bottom-tier run D.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NO",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "def",
+                "claimed_rank": 29
+              },
+              {
+                "type": "current_opponent",
+                "team": "ATL",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "off",
+                "claimed_rank": 2
+              }
+            ]
+          },
+          {
+            "player": "Chris Olave",
+            "market_key": "player_anytime_td",
+            "canonical_event_id": "ab7bde95c9d5a8fc",
+            "price": 2.15,
+            "side": "over",
+            "line": null,
+            "reason": "1st in receptions, 2nd in rec yards; Atlanta's WR D is worst in the league (32nd in yards allowed, 30th in catches allowed).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "ATL",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 32
+              }
+            ]
+          },
+          {
+            "player": "Tyler Shough",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "ab7bde95c9d5a8fc",
+            "price": 1.877,
+            "side": "over",
+            "line": 254.5,
+            "reason": "NO QB group ranks 2nd in pass yards vs Atlanta's 27th-ranked pass D; non-outlier games still average 253.5 ypg.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "ATL",
+                "pos": "QB",
+                "stat": "pass_ypg",
+                "role": "def",
+                "claimed_rank": 27
+              },
+              {
+                "type": "current_opponent",
+                "team": "NO",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "off",
+                "claimed_rank": 2
+              }
+            ]
+          }
+        ],
+        "mismatch_count": 0
+      }
+    ],
+    "per_position": {
+      "QB": {
+        "player": "Bryce Young",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "8f044a7004d58a5c",
+        "price": 1.877,
+        "side": "over",
+        "line": 246.5,
+        "reason": "Nuclear Threat \u2014 1st-ranked passer vs the single worst pass D in this report (32nd).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "DET",
+            "pos": "QB",
+            "stat": "pass_ypg",
+            "role": "def",
+            "claimed_rank": 32
+          },
+          {
+            "type": "current_opponent",
+            "team": "CAR",
+            "pos": "QB",
+            "stat": "pass_ypg",
+            "role": "off",
+            "claimed_rank": 1
+          }
+        ]
+      },
+      "RB": {
+        "player": "Jahmyr Gibbs",
+        "market_key": "player_anytime_td",
+        "canonical_event_id": "8f044a7004d58a5c",
+        "price": 1.294,
+        "side": "over",
+        "line": null,
+        "reason": "Elite Threat, cleanest convergence of the week \u2014 4th-ranked rusher vs Carolina's 32nd-ranked run D vs RBs.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "CAR",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "def",
+            "claimed_rank": 32
+          }
+        ]
+      },
+      "WR": {
+        "player": "Chris Olave",
+        "market_key": "player_anytime_td",
+        "canonical_event_id": "ab7bde95c9d5a8fc",
+        "price": 2.15,
+        "side": "over",
+        "line": null,
+        "reason": "Nuclear tier, Quadruple-rated \u2014 1st in receptions vs Atlanta's worst-in-league WR D.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "ATL",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 32
+          }
+        ]
+      },
+      "TE": {
+        "player": "George Kittle",
+        "market_key": "player_anytime_td",
+        "canonical_event_id": "d5a0d1b78d351969",
+        "price": 2.6,
+        "side": "over",
+        "line": null,
+        "reason": "Confirmed Standard Threat vs Denver's 25th-ranked TE D, with a matching bottom-tier track record.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "DEN",
+            "pos": "TE",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 25
+          }
+        ]
+      }
+    }
+  },
+  "prop_breakdown_errors": [
+    "LAC@SEA \u2014 Omarion Hampton: REAL MISMATCH: SEA's real current RB def rush_yds rank is #5 or #23 \u2014 the report claimed #6."
+  ],
+  "favorite_ou": {
+    "overs": [
+      {
+        "player": "Bryce Young",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "8f044a7004d58a5c",
+        "price": 1.877,
+        "side": "over",
+        "line": 246.5,
+        "reason": "Nuclear Threat \u2014 1st-ranked passer vs Detroit's 32nd-ranked pass D.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "DET",
+            "pos": "QB",
+            "stat": "pass_ypg",
+            "role": "def",
+            "claimed_rank": 32
+          }
+        ]
+      },
+      {
+        "player": "Brock Purdy",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "d5a0d1b78d351969",
+        "price": 1.877,
+        "side": "over",
+        "line": 229.5,
+        "reason": "Standard Threat vs Denver's 24th-ranked pass D.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "DEN",
+            "pos": "QB",
+            "stat": "pass_ypg",
+            "role": "def",
+            "claimed_rank": 24
+          }
+        ]
+      },
+      {
+        "player": "Tyler Shough",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "ab7bde95c9d5a8fc",
+        "price": 1.877,
+        "side": "over",
+        "line": 254.5,
+        "reason": "Quadruple Threat vs Atlanta's 27th-ranked pass D, tempered by a Week-1 outlier game.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "ATL",
+            "pos": "QB",
+            "stat": "pass_ypg",
+            "role": "def",
+            "claimed_rank": 27
+          }
+        ]
+      }
+    ],
+    "unders": [
+      {
+        "player": "Justin Herbert",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "53d9d3807e4d3e66",
+        "price": 1.877,
+        "side": "under",
+        "line": 199.5,
+        "reason": "Seattle's pass D ranks 1st in the league (152.0 ypg allowed); Herbert has zero top-tier-opponent sample this year.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "SEA",
+            "pos": "QB",
+            "stat": "pass_ypg",
+            "role": "def",
+            "claimed_rank": 1
+          }
+        ]
+      },
+      {
+        "player": "Jared Goff",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "8f044a7004d58a5c",
+        "price": 1.877,
+        "side": "under",
+        "line": 260.5,
+        "reason": "Carolina's pass D ranks 5th overall, 3rd vs WRs \u2014 his toughest matchup of the season, though mixed by a prior strong top-tier game.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "CAR",
+            "pos": "QB",
+            "stat": "pass_ypg",
+            "role": "def",
+            "claimed_rank": 5
+          }
+        ]
+      }
+    ]
+  },
+  "favorite_ou_errors": [],
+  "parlays": {
+    "3": {
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "result": {
+        "legs": 3,
+        "combined_decimal": 6.6129,
+        "combined_american": 561,
+        "stake": 10,
+        "payout": 66.13,
+        "profit": 56.13,
+        "same_game_legs": false
+      },
+      "legs": [
+        {
+          "player": "Bryce Young",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "8f044a7004d58a5c",
+          "price": 1.877,
+          "side": "over",
+          "line": 246.5,
+          "reason": "Nuclear Threat vs Detroit's 32nd-ranked pass D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "DET",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 32
+            }
+          ]
+        },
+        {
+          "player": "Tyler Shough",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "ab7bde95c9d5a8fc",
+          "price": 1.877,
+          "side": "over",
+          "line": 254.5,
+          "reason": "Quadruple Threat vs Atlanta's 27th-ranked pass D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "ATL",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 27
+            }
+          ]
+        },
+        {
+          "player": "Justin Herbert",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "53d9d3807e4d3e66",
+          "price": 1.877,
+          "side": "under",
+          "line": 199.5,
+          "reason": "Seattle's pass D ranks 1st in the league allowing 152.0 ypg.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "SEA",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 1
+            }
+          ]
+        }
+      ],
+      "mismatches": []
+    },
+    "4": {
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "result": {
+        "legs": 4,
+        "combined_decimal": 12.4124,
+        "combined_american": 1141,
+        "stake": 10,
+        "payout": 124.12,
+        "profit": 114.12,
+        "same_game_legs": false
+      },
+      "legs": [
+        {
+          "player": "Bryce Young",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "8f044a7004d58a5c",
+          "price": 1.877,
+          "side": "over",
+          "line": 246.5,
+          "reason": "Nuclear Threat vs Detroit's 32nd-ranked pass D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "DET",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 32
+            }
+          ]
+        },
+        {
+          "player": "Tyler Shough",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "ab7bde95c9d5a8fc",
+          "price": 1.877,
+          "side": "over",
+          "line": 254.5,
+          "reason": "Quadruple Threat vs Atlanta's 27th-ranked pass D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "ATL",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 27
+            }
+          ]
+        },
+        {
+          "player": "Justin Herbert",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "53d9d3807e4d3e66",
+          "price": 1.877,
+          "side": "under",
+          "line": 199.5,
+          "reason": "Seattle's pass D ranks 1st in the league allowing 152.0 ypg.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "SEA",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 1
+            }
+          ]
+        },
+        {
+          "player": "Brock Purdy",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "d5a0d1b78d351969",
+          "price": 1.877,
+          "side": "over",
+          "line": 229.5,
+          "reason": "Standard Threat vs Denver's 24th-ranked pass D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "DEN",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 24
+            }
+          ]
+        }
+      ],
+      "mismatches": []
+    },
+    "5": {
+      "valid": true,
+      "errors": [],
+      "warnings": [
+        "1 game(s) contribute more than one leg to this parlay: ['8f044a7004d58a5c']. The combined price below is a naive cross-game-style product, NOT a real same-game-parlay (SGP) quote \u2014 correlated same-game legs are not independent, and this API does not expose FanDuel's actual SGP pricing."
+      ],
+      "result": {
+        "legs": 5,
+        "combined_decimal": 23.2981,
+        "combined_american": 2230,
+        "stake": 10,
+        "payout": 232.98,
+        "profit": 222.98,
+        "same_game_legs": true
+      },
+      "legs": [
+        {
+          "player": "Bryce Young",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "8f044a7004d58a5c",
+          "price": 1.877,
+          "side": "over",
+          "line": 246.5,
+          "reason": "Nuclear Threat vs Detroit's 32nd-ranked pass D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "DET",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 32
+            }
+          ]
+        },
+        {
+          "player": "Tyler Shough",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "ab7bde95c9d5a8fc",
+          "price": 1.877,
+          "side": "over",
+          "line": 254.5,
+          "reason": "Quadruple Threat vs Atlanta's 27th-ranked pass D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "ATL",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 27
+            }
+          ]
+        },
+        {
+          "player": "Justin Herbert",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "53d9d3807e4d3e66",
+          "price": 1.877,
+          "side": "under",
+          "line": 199.5,
+          "reason": "Seattle's pass D ranks 1st in the league allowing 152.0 ypg.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "SEA",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 1
+            }
+          ]
+        },
+        {
+          "player": "Brock Purdy",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "d5a0d1b78d351969",
+          "price": 1.877,
+          "side": "over",
+          "line": 229.5,
+          "reason": "Standard Threat vs Denver's 24th-ranked pass D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "DEN",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 24
+            }
+          ]
+        },
+        {
+          "player": "Jared Goff",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "8f044a7004d58a5c",
+          "price": 1.877,
+          "side": "under",
+          "line": 260.5,
+          "reason": "Carolina's pass D ranks 5th overall, 3rd vs WRs \u2014 same game as the Young leg above.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "CAR",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 5
+            }
+          ]
+        }
+      ],
+      "mismatches": []
+    },
+    "6": {
+      "valid": true,
+      "errors": [],
+      "warnings": [
+        "2 game(s) contribute more than one leg to this parlay: ['8f044a7004d58a5c', '53d9d3807e4d3e66']. The combined price below is a naive cross-game-style product, NOT a real same-game-parlay (SGP) quote \u2014 correlated same-game legs are not independent, and this API does not expose FanDuel's actual SGP pricing."
+      ],
+      "result": {
+        "legs": 6,
+        "combined_decimal": 43.7306,
+        "combined_american": 4273,
+        "stake": 10,
+        "payout": 437.31,
+        "profit": 427.31,
+        "same_game_legs": true
+      },
+      "legs": [
+        {
+          "player": "Bryce Young",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "8f044a7004d58a5c",
+          "price": 1.877,
+          "side": "over",
+          "line": 246.5,
+          "reason": "Nuclear Threat vs Detroit's 32nd-ranked pass D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "DET",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 32
+            }
+          ]
+        },
+        {
+          "player": "Tyler Shough",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "ab7bde95c9d5a8fc",
+          "price": 1.877,
+          "side": "over",
+          "line": 254.5,
+          "reason": "Quadruple Threat vs Atlanta's 27th-ranked pass D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "ATL",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 27
+            }
+          ]
+        },
+        {
+          "player": "Justin Herbert",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "53d9d3807e4d3e66",
+          "price": 1.877,
+          "side": "under",
+          "line": 199.5,
+          "reason": "Seattle's pass D ranks 1st in the league allowing 152.0 ypg.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "SEA",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 1
+            }
+          ]
+        },
+        {
+          "player": "Brock Purdy",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "d5a0d1b78d351969",
+          "price": 1.877,
+          "side": "over",
+          "line": 229.5,
+          "reason": "Standard Threat vs Denver's 24th-ranked pass D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "DEN",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 24
+            }
+          ]
+        },
+        {
+          "player": "Jared Goff",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "8f044a7004d58a5c",
+          "price": 1.877,
+          "side": "under",
+          "line": 260.5,
+          "reason": "Carolina's pass D ranks 5th overall, 3rd vs WRs \u2014 same game as the Young leg above.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "CAR",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 5
+            }
+          ]
+        },
+        {
+          "player": "Sam Darnold",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "53d9d3807e4d3e66",
+          "price": 1.877,
+          "side": "over",
+          "line": 233.5,
+          "reason": "Likely current starter after a 379-yard, 100%-snap Week 3; same game as the Herbert leg above.",
+          "evidence_check": []
+        }
+      ],
+      "mismatches": []
+    },
+    "7": {
+      "valid": true,
+      "errors": [],
+      "warnings": [
+        "3 game(s) contribute more than one leg to this parlay: ['8f044a7004d58a5c', '53d9d3807e4d3e66', 'd5a0d1b78d351969']. The combined price below is a naive cross-game-style product, NOT a real same-game-parlay (SGP) quote \u2014 correlated same-game legs are not independent, and this API does not expose FanDuel's actual SGP pricing."
+      ],
+      "result": {
+        "legs": 7,
+        "combined_decimal": 82.0824,
+        "combined_american": 8108,
+        "stake": 10,
+        "payout": 820.82,
+        "profit": 810.82,
+        "same_game_legs": true
+      },
+      "legs": [
+        {
+          "player": "Bryce Young",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "8f044a7004d58a5c",
+          "price": 1.877,
+          "side": "over",
+          "line": 246.5,
+          "reason": "Nuclear Threat vs Detroit's 32nd-ranked pass D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "DET",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 32
+            }
+          ]
+        },
+        {
+          "player": "Tyler Shough",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "ab7bde95c9d5a8fc",
+          "price": 1.877,
+          "side": "over",
+          "line": 254.5,
+          "reason": "Quadruple Threat vs Atlanta's 27th-ranked pass D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "ATL",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 27
+            }
+          ]
+        },
+        {
+          "player": "Justin Herbert",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "53d9d3807e4d3e66",
+          "price": 1.877,
+          "side": "under",
+          "line": 199.5,
+          "reason": "Seattle's pass D ranks 1st in the league allowing 152.0 ypg.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "SEA",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 1
+            }
+          ]
+        },
+        {
+          "player": "Brock Purdy",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "d5a0d1b78d351969",
+          "price": 1.877,
+          "side": "over",
+          "line": 229.5,
+          "reason": "Standard Threat vs Denver's 24th-ranked pass D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "DEN",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 24
+            }
+          ]
+        },
+        {
+          "player": "Jared Goff",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "8f044a7004d58a5c",
+          "price": 1.877,
+          "side": "under",
+          "line": 260.5,
+          "reason": "Carolina's pass D ranks 5th overall, 3rd vs WRs \u2014 same game as the Young leg above.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "CAR",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 5
+            }
+          ]
+        },
+        {
+          "player": "Sam Darnold",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "53d9d3807e4d3e66",
+          "price": 1.877,
+          "side": "over",
+          "line": 233.5,
+          "reason": "Likely current starter after a 379-yard, 100%-snap Week 3; same game as the Herbert leg above.",
+          "evidence_check": []
+        },
+        {
+          "player": "Bo Nix",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "d5a0d1b78d351969",
+          "price": 1.877,
+          "side": "over",
+          "line": 221.5,
+          "reason": "His one mid-tier-opponent game this season (vs JAX) produced 288 yards, well above this line; same game as the Purdy leg above.",
+          "evidence_check": []
+        }
+      ],
+      "mismatches": []
+    }
+  },
+  "td_parlays": {
+    "3": {
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "result": {
+        "legs": 3,
+        "combined_decimal": 2.8486,
+        "combined_american": 185,
+        "stake": 10,
+        "payout": 28.49,
+        "profit": 18.49,
+        "same_game_legs": false
+      },
+      "legs": [
+        {
+          "player": "Jahmyr Gibbs",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "8f044a7004d58a5c",
+          "price": 1.294,
+          "side": "over",
+          "line": null,
+          "reason": "Elite Threat vs Carolina's 32nd-ranked run D vs RBs.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "CAR",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 32
+            }
+          ]
+        },
+        {
+          "player": "Bijan Robinson",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "ab7bde95c9d5a8fc",
+          "price": 1.455,
+          "side": "over",
+          "line": null,
+          "reason": "Elite Threat vs New Orleans' 29th-ranked run D vs RBs.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "NO",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 29
+            }
+          ]
+        },
+        {
+          "player": "Christian McCaffrey",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "d5a0d1b78d351969",
+          "price": 1.513,
+          "side": "over",
+          "line": null,
+          "reason": "Elite Threat vs Denver's 31st-ranked run D vs RBs.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "DEN",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 31
+            }
+          ]
+        }
+      ],
+      "mismatches": []
+    },
+    "4": {
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "result": {
+        "legs": 4,
+        "combined_decimal": 5.3269,
+        "combined_american": 433,
+        "stake": 10,
+        "payout": 53.27,
+        "profit": 43.27,
+        "same_game_legs": false
+      },
+      "legs": [
+        {
+          "player": "Jahmyr Gibbs",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "8f044a7004d58a5c",
+          "price": 1.294,
+          "side": "over",
+          "line": null,
+          "reason": "Elite Threat vs Carolina's 32nd-ranked run D vs RBs.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "CAR",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 32
+            }
+          ]
+        },
+        {
+          "player": "Bijan Robinson",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "ab7bde95c9d5a8fc",
+          "price": 1.455,
+          "side": "over",
+          "line": null,
+          "reason": "Elite Threat vs New Orleans' 29th-ranked run D vs RBs.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "NO",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 29
+            }
+          ]
+        },
+        {
+          "player": "Christian McCaffrey",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "d5a0d1b78d351969",
+          "price": 1.513,
+          "side": "over",
+          "line": null,
+          "reason": "Elite Threat vs Denver's 31st-ranked run D vs RBs.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "DEN",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 31
+            }
+          ]
+        },
+        {
+          "player": "Jaxon Smith-Njigba",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "53d9d3807e4d3e66",
+          "price": 1.87,
+          "side": "over",
+          "line": null,
+          "reason": "1st in rec yards and receptions, 50% RZ target share vs LAC's 22nd-ranked WR D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "LAC",
+              "pos": "WR",
+              "stat": "rec_yds",
+              "role": "def",
+              "claimed_rank": 22
+            }
+          ]
+        }
+      ],
+      "mismatches": []
+    },
+    "5": {
+      "valid": true,
+      "errors": [],
+      "warnings": [
+        "1 game(s) contribute more than one leg to this parlay: ['8f044a7004d58a5c']. The combined price below is a naive cross-game-style product, NOT a real same-game-parlay (SGP) quote \u2014 correlated same-game legs are not independent, and this API does not expose FanDuel's actual SGP pricing."
+      ],
+      "result": {
+        "legs": 5,
+        "combined_decimal": 9.5885,
+        "combined_american": 859,
+        "stake": 10,
+        "payout": 95.88,
+        "profit": 85.88,
+        "same_game_legs": true
+      },
+      "legs": [
+        {
+          "player": "Jahmyr Gibbs",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "8f044a7004d58a5c",
+          "price": 1.294,
+          "side": "over",
+          "line": null,
+          "reason": "Elite Threat vs Carolina's 32nd-ranked run D vs RBs.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "CAR",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 32
+            }
+          ]
+        },
+        {
+          "player": "Bijan Robinson",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "ab7bde95c9d5a8fc",
+          "price": 1.455,
+          "side": "over",
+          "line": null,
+          "reason": "Elite Threat vs New Orleans' 29th-ranked run D vs RBs.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "NO",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 29
+            }
+          ]
+        },
+        {
+          "player": "Christian McCaffrey",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "d5a0d1b78d351969",
+          "price": 1.513,
+          "side": "over",
+          "line": null,
+          "reason": "Elite Threat vs Denver's 31st-ranked run D vs RBs.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "DEN",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 31
+            }
+          ]
+        },
+        {
+          "player": "Jaxon Smith-Njigba",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "53d9d3807e4d3e66",
+          "price": 1.87,
+          "side": "over",
+          "line": null,
+          "reason": "1st in rec yards and receptions, 50% RZ target share vs LAC's 22nd-ranked WR D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "LAC",
+              "pos": "WR",
+              "stat": "rec_yds",
+              "role": "def",
+              "claimed_rank": 22
+            }
+          ]
+        },
+        {
+          "player": "Amon-Ra St. Brown",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "8f044a7004d58a5c",
+          "price": 1.8,
+          "side": "over",
+          "line": null,
+          "reason": "37.5% RZ target share, 4 TD on 9 RZ targets; same game as the Gibbs leg above.",
+          "evidence_check": []
+        }
+      ],
+      "mismatches": []
+    },
+    "6": {
+      "valid": true,
+      "errors": [],
+      "warnings": [
+        "1 game(s) contribute more than one leg to this parlay: ['8f044a7004d58a5c']. The combined price below is a naive cross-game-style product, NOT a real same-game-parlay (SGP) quote \u2014 correlated same-game legs are not independent, and this API does not expose FanDuel's actual SGP pricing."
+      ],
+      "result": {
+        "legs": 6,
+        "combined_decimal": 16.6936,
+        "combined_american": 1569,
+        "stake": 10,
+        "payout": 166.94,
+        "profit": 156.94,
+        "same_game_legs": true
+      },
+      "legs": [
+        {
+          "player": "Jahmyr Gibbs",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "8f044a7004d58a5c",
+          "price": 1.294,
+          "side": "over",
+          "line": null,
+          "reason": "Elite Threat vs Carolina's 32nd-ranked run D vs RBs.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "CAR",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 32
+            }
+          ]
+        },
+        {
+          "player": "Bijan Robinson",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "ab7bde95c9d5a8fc",
+          "price": 1.455,
+          "side": "over",
+          "line": null,
+          "reason": "Elite Threat vs New Orleans' 29th-ranked run D vs RBs.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "NO",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 29
+            }
+          ]
+        },
+        {
+          "player": "Christian McCaffrey",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "d5a0d1b78d351969",
+          "price": 1.513,
+          "side": "over",
+          "line": null,
+          "reason": "Elite Threat vs Denver's 31st-ranked run D vs RBs.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "DEN",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 31
+            }
+          ]
+        },
+        {
+          "player": "Jaxon Smith-Njigba",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "53d9d3807e4d3e66",
+          "price": 1.87,
+          "side": "over",
+          "line": null,
+          "reason": "1st in rec yards and receptions, 50% RZ target share vs LAC's 22nd-ranked WR D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "LAC",
+              "pos": "WR",
+              "stat": "rec_yds",
+              "role": "def",
+              "claimed_rank": 22
+            }
+          ]
+        },
+        {
+          "player": "Amon-Ra St. Brown",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "8f044a7004d58a5c",
+          "price": 1.8,
+          "side": "over",
+          "line": null,
+          "reason": "37.5% RZ target share, 4 TD on 9 RZ targets; same game as the Gibbs leg above.",
+          "evidence_check": []
+        },
+        {
+          "player": "Chuba Hubbard",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "8f044a7004d58a5c",
+          "price": 1.741,
+          "side": "over",
+          "line": null,
+          "reason": "53.8% RZ touch share; a third leg now sharing the DET@CAR game with Gibbs and St. Brown above.",
+          "evidence_check": []
+        }
+      ],
+      "mismatches": []
+    },
+    "7": {
+      "valid": true,
+      "errors": [],
+      "warnings": [
+        "2 game(s) contribute more than one leg to this parlay: ['8f044a7004d58a5c', 'ab7bde95c9d5a8fc']. The combined price below is a naive cross-game-style product, NOT a real same-game-parlay (SGP) quote \u2014 correlated same-game legs are not independent, and this API does not expose FanDuel's actual SGP pricing."
+      ],
+      "result": {
+        "legs": 7,
+        "combined_decimal": 35.8912,
+        "combined_american": 3489,
+        "stake": 10,
+        "payout": 358.91,
+        "profit": 348.91,
+        "same_game_legs": true
+      },
+      "legs": [
+        {
+          "player": "Jahmyr Gibbs",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "8f044a7004d58a5c",
+          "price": 1.294,
+          "side": "over",
+          "line": null,
+          "reason": "Elite Threat vs Carolina's 32nd-ranked run D vs RBs.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "CAR",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 32
+            }
+          ]
+        },
+        {
+          "player": "Bijan Robinson",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "ab7bde95c9d5a8fc",
+          "price": 1.455,
+          "side": "over",
+          "line": null,
+          "reason": "Elite Threat vs New Orleans' 29th-ranked run D vs RBs.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "NO",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 29
+            }
+          ]
+        },
+        {
+          "player": "Christian McCaffrey",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "d5a0d1b78d351969",
+          "price": 1.513,
+          "side": "over",
+          "line": null,
+          "reason": "Elite Threat vs Denver's 31st-ranked run D vs RBs.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "DEN",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 31
+            }
+          ]
+        },
+        {
+          "player": "Jaxon Smith-Njigba",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "53d9d3807e4d3e66",
+          "price": 1.87,
+          "side": "over",
+          "line": null,
+          "reason": "1st in rec yards and receptions, 50% RZ target share vs LAC's 22nd-ranked WR D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "LAC",
+              "pos": "WR",
+              "stat": "rec_yds",
+              "role": "def",
+              "claimed_rank": 22
+            }
+          ]
+        },
+        {
+          "player": "Amon-Ra St. Brown",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "8f044a7004d58a5c",
+          "price": 1.8,
+          "side": "over",
+          "line": null,
+          "reason": "37.5% RZ target share, 4 TD on 9 RZ targets; same game as the Gibbs leg above.",
+          "evidence_check": []
+        },
+        {
+          "player": "Chuba Hubbard",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "8f044a7004d58a5c",
+          "price": 1.741,
+          "side": "over",
+          "line": null,
+          "reason": "53.8% RZ touch share; a third leg now sharing the DET@CAR game with Gibbs and St. Brown above.",
+          "evidence_check": []
+        },
+        {
+          "player": "Chris Olave",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "ab7bde95c9d5a8fc",
+          "price": 2.15,
+          "side": "over",
+          "line": null,
+          "reason": "Nuclear Threat vs Atlanta's worst-in-league WR D; same game as the Bijan leg above.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "ATL",
+              "pos": "WR",
+              "stat": "rec_yds",
+              "role": "def",
+              "claimed_rank": 32
+            }
+          ]
+        }
+      ],
+      "mismatches": []
+    }
+  },
+  "spread_parlays": {
+    "3": {
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "result": {
+        "legs": 3,
+        "combined_decimal": 6.6425,
+        "combined_american": 564,
+        "stake": 10,
+        "payout": 66.42,
+        "profit": 56.42,
+        "same_game_legs": false
+      },
+      "legs": [
+        {
+          "player": "Detroit Lions",
+          "market_key": "spreads",
+          "canonical_event_id": "8f044a7004d58a5c",
+          "price": 1.847,
+          "point": -3.5,
+          "reason": "DET's road ATS is 61.5% (32-20), the best mark on this slate; Carolina's run D is the worst specific matchup in this week's evidence.",
+          "evidence_check": []
+        },
+        {
+          "player": "San Francisco 49ers",
+          "market_key": "spreads",
+          "canonical_event_id": "d5a0d1b78d351969",
+          "price": 1.833,
+          "point": -2.5,
+          "reason": "SF's home ATS sits at a middling 48.1%, but a 3rd-down disparity and Denver's 30th-ranked defense argue this specific game outperforms that trend.",
+          "evidence_check": []
+        },
+        {
+          "player": "Atlanta Falcons",
+          "market_key": "spreads",
+          "canonical_event_id": "ab7bde95c9d5a8fc",
+          "price": 1.962,
+          "point": 2.5,
+          "reason": "New Orleans' home ATS is just 41.2% (21-30), one of the worst on the slate, while Atlanta's road ATS (48.1%) is more respectable.",
+          "evidence_check": []
+        }
+      ],
+      "mismatches": []
+    },
+    "4": {
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "result": {
+        "legs": 4,
+        "combined_decimal": 12.4214,
+        "combined_american": 1142,
+        "stake": 10,
+        "payout": 124.21,
+        "profit": 114.21,
+        "same_game_legs": false
+      },
+      "legs": [
+        {
+          "player": "Detroit Lions",
+          "market_key": "spreads",
+          "canonical_event_id": "8f044a7004d58a5c",
+          "price": 1.847,
+          "point": -3.5,
+          "reason": "DET's road ATS is 61.5% (32-20), the best mark on this slate; Carolina's run D is the worst specific matchup in this week's evidence.",
+          "evidence_check": []
+        },
+        {
+          "player": "San Francisco 49ers",
+          "market_key": "spreads",
+          "canonical_event_id": "d5a0d1b78d351969",
+          "price": 1.833,
+          "point": -2.5,
+          "reason": "SF's home ATS sits at a middling 48.1%, but a 3rd-down disparity and Denver's 30th-ranked defense argue this specific game outperforms that trend.",
+          "evidence_check": []
+        },
+        {
+          "player": "Atlanta Falcons",
+          "market_key": "spreads",
+          "canonical_event_id": "ab7bde95c9d5a8fc",
+          "price": 1.962,
+          "point": 2.5,
+          "reason": "New Orleans' home ATS is just 41.2% (21-30), one of the worst on the slate, while Atlanta's road ATS (48.1%) is more respectable.",
+          "evidence_check": []
+        },
+        {
+          "player": "Seattle Seahawks",
+          "market_key": "spreads",
+          "canonical_event_id": "53d9d3807e4d3e66",
+          "price": 1.87,
+          "point": -7.0,
+          "reason": "SEA's home ATS is only 46.9% (23-26), but the specific matchup (elite SEA D vs a historically bad LAC passing game) argues this breaks that trend.",
+          "evidence_check": []
+        }
+      ],
+      "mismatches": []
+    },
+    "5": {
+      "valid": false,
+      "errors": [
+        "Could not parse this parlay's JSON block."
+      ],
+      "warnings": [],
+      "result": null,
+      "legs": null,
+      "mismatches": []
+    },
+    "6": {
+      "valid": false,
+      "errors": [
+        "Could not parse this parlay's JSON block."
+      ],
+      "warnings": [],
+      "result": null,
+      "legs": null,
+      "mismatches": []
+    },
+    "7": {
+      "valid": false,
+      "errors": [
+        "Could not parse this parlay's JSON block."
+      ],
+      "warnings": [],
+      "result": null,
+      "legs": null,
+      "mismatches": []
+    }
+  },
+  "ats_records": {
+    "ATL": {
+      "since": 2020,
+      "overall": {
+        "w": 42,
+        "l": 60,
+        "p": 2,
+        "pct": 41.2
+      },
+      "home": {
+        "w": 17,
+        "l": 33,
+        "p": 1,
+        "pct": 34.0
+      },
+      "away": {
+        "w": 25,
+        "l": 27,
+        "p": 1,
+        "pct": 48.1
+      }
+    },
+    "CAR": {
+      "since": 2020,
+      "overall": {
+        "w": 46,
+        "l": 56,
+        "p": 2,
+        "pct": 45.1
+      },
+      "home": {
+        "w": 22,
+        "l": 28,
+        "p": 1,
+        "pct": 44.0
+      },
+      "away": {
+        "w": 24,
+        "l": 28,
+        "p": 1,
+        "pct": 46.2
+      }
+    },
+    "DEN": {
+      "since": 2020,
+      "overall": {
+        "w": 51,
+        "l": 52,
+        "p": 1,
+        "pct": 49.5
+      },
+      "home": {
+        "w": 29,
+        "l": 24,
+        "p": 0,
+        "pct": 54.7
+      },
+      "away": {
+        "w": 22,
+        "l": 28,
+        "p": 1,
+        "pct": 44.0
+      }
+    },
+    "DET": {
+      "since": 2020,
+      "overall": {
+        "w": 61,
+        "l": 40,
+        "p": 3,
+        "pct": 60.4
+      },
+      "home": {
+        "w": 29,
+        "l": 20,
+        "p": 3,
+        "pct": 59.2
+      },
+      "away": {
+        "w": 32,
+        "l": 20,
+        "p": 0,
+        "pct": 61.5
+      }
+    },
+    "LAC": {
+      "since": 2020,
+      "overall": {
+        "w": 55,
+        "l": 47,
+        "p": 2,
+        "pct": 53.9
+      },
+      "home": {
+        "w": 26,
+        "l": 25,
+        "p": 2,
+        "pct": 51.0
+      },
+      "away": {
+        "w": 29,
+        "l": 22,
+        "p": 0,
+        "pct": 56.9
+      }
+    },
+    "NO": {
+      "since": 2020,
+      "overall": {
+        "w": 49,
+        "l": 54,
+        "p": 1,
+        "pct": 47.6
+      },
+      "home": {
+        "w": 21,
+        "l": 30,
+        "p": 0,
+        "pct": 41.2
+      },
+      "away": {
+        "w": 28,
+        "l": 24,
+        "p": 1,
+        "pct": 53.8
+      }
+    },
+    "SEA": {
+      "since": 2020,
+      "overall": {
+        "w": 51,
+        "l": 50,
+        "p": 3,
+        "pct": 50.5
+      },
+      "home": {
+        "w": 23,
+        "l": 26,
+        "p": 2,
+        "pct": 46.9
+      },
+      "away": {
+        "w": 28,
+        "l": 24,
+        "p": 1,
+        "pct": 53.8
+      }
+    },
+    "SF": {
+      "since": 2020,
+      "overall": {
+        "w": 54,
+        "l": 50,
+        "p": 0,
+        "pct": 51.9
+      },
+      "home": {
+        "w": 25,
+        "l": 27,
+        "p": 0,
+        "pct": 48.1
+      },
+      "away": {
+        "w": 29,
+        "l": 23,
+        "p": 0,
+        "pct": 55.8
+      }
+    }
+  }
+}

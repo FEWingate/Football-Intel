@@ -1,0 +1,19 @@
+{
+  "generated_at": "2026-10-01T20:56:08.189849+00:00",
+  "model": "claude-sonnet-5",
+  "max_tokens": 64000,
+  "games_included": [
+    "NYJ_CHI",
+    "JAX_CIN",
+    "DAL_HOU",
+    "ARI_NYG"
+  ],
+  "fanduel_data_source": "fanduel_props/latest.json",
+  "evidence_missing_for": [],
+  "system_char_count": 66163,
+  "user_char_count": 886280,
+  "usage": {
+    "input_tokens": 533039,
+    "output_tokens": 47760
+  }
+}

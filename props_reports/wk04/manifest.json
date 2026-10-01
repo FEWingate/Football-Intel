@@ -1,0 +1,62 @@
+{
+  "batches": {
+    "props_parlay_report_batch4_PIT.json": {
+      "games": [
+        "PIT_CLE",
+        "IND_WAS",
+        "TEN_BAL",
+        "NE_BUF"
+      ],
+      "generated_at": "2026-10-01T20:44:04.857510+00:00"
+    },
+    "props_parlay_report_batch4_NYJ.json": {
+      "games": [
+        "NYJ_CHI",
+        "JAX_CIN",
+        "DAL_HOU",
+        "ARI_NYG"
+      ],
+      "generated_at": "2026-10-01T21:03:09.206839+00:00"
+    },
+    "props_parlay_report_batch4_LAR.json": {
+      "games": [
+        "LAR_PHI",
+        "GB_TB",
+        "MIA_MIN",
+        "KC_LV"
+      ],
+      "generated_at": "2026-10-01T21:51:25.472927+00:00"
+    },
+    "props_parlay_report_batch4_LAC.json": {
+      "games": [
+        "LAC_SEA",
+        "DEN_SF",
+        "DET_CAR",
+        "ATL_NO"
+      ],
+      "generated_at": "2026-10-01T21:39:58.463885+00:00"
+    },
+    "props_parlay_report_WHOLEWEEK.json": {
+      "games": [
+        "PIT_CLE",
+        "IND_WAS",
+        "TEN_BAL",
+        "NE_BUF",
+        "NYJ_CHI",
+        "JAX_CIN",
+        "DAL_HOU",
+        "ARI_NYG",
+        "LAR_PHI",
+        "GB_TB",
+        "MIA_MIN",
+        "KC_LV",
+        "LAC_SEA",
+        "DEN_SF",
+        "DET_CAR",
+        "ATL_NO"
+      ],
+      "generated_at": "2026-10-01T23:31:40.802103+00:00",
+      "whole_week_parlays_only": true
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "generated_at": "2026-10-01T21:33:42.550721+00:00",
+  "model": "claude-sonnet-5",
+  "max_tokens": 64000,
+  "games_included": [
+    "LAC_SEA",
+    "DEN_SF",
+    "DET_CAR",
+    "ATL_NO"
+  ],
+  "fanduel_data_source": "fanduel_props/latest.json",
+  "evidence_missing_for": [],
+  "system_char_count": 66163,
+  "user_char_count": 872028,
+  "usage": {
+    "input_tokens": 529361,
+    "output_tokens": 44500
+  }
+}

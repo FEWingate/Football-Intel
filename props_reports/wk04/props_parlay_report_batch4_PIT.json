@@ -1,0 +1,2066 @@
+{
+  "generated_at": "2026-10-01T20:44:04.857510+00:00",
+  "games_included": [
+    "PIT_CLE",
+    "IND_WAS",
+    "TEN_BAL",
+    "NE_BUF"
+  ],
+  "coverage": {
+    "passing_yards": {
+      "status": "current",
+      "current_event_count": 10,
+      "displayed_event_count": 10,
+      "previous_event_count": 0,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-09-30T03:27:01.935787+00:00",
+      "source_age_seconds": 0
+    },
+    "rushing_yards": {
+      "status": "current",
+      "current_event_count": 10,
+      "displayed_event_count": 10,
+      "previous_event_count": 0,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-09-30T03:27:01.935787+00:00",
+      "source_age_seconds": 0
+    },
+    "receiving_yards": {
+      "status": "current",
+      "current_event_count": 9,
+      "displayed_event_count": 9,
+      "previous_event_count": 0,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-09-30T03:27:01.935787+00:00",
+      "source_age_seconds": 0
+    },
+    "receptions": {
+      "status": "current",
+      "current_event_count": 9,
+      "displayed_event_count": 9,
+      "previous_event_count": 0,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-09-30T03:27:01.935787+00:00",
+      "source_age_seconds": 0
+    },
+    "anytime_td": {
+      "status": "current",
+      "current_event_count": 10,
+      "displayed_event_count": 10,
+      "previous_event_count": 0,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-09-30T03:27:01.935787+00:00",
+      "source_age_seconds": 0
+    }
+  },
+  "stake_used_for_payout_examples": 10,
+  "markdown": "# COEUS PROPS & PARLAY REPORT \u2014 WEEK 4\n\n**Data Coverage Note:** All five stat families (passing/rushing/receiving yards, receptions, anytime TD) are LIVE league-wide. However, **TEN @ BAL has zero real FanDuel player-prop or anytime-TD data for this specific game** \u2014 only game lines (spread, total, moneyline) are posted. No prop picks are made for that game anywhere below; this is stated plainly rather than padded or invented. Mainline spreads exist for all four games.\n\n---\n\n## SECTION 4 \u2014 COEUS PROP BREAKDOWN\n\n### PIT @ CLE (3 picks)\n\n- **Jaylen Warren (PIT)** \u2014 Rushing Yards, Over 67.5, **-114**. Warren's own 72.0 rush yds/gm ranks 8th among RBs; Cleveland allows 106.0 rush yds/gm to backs, ranked 24th (bottom tier) \u2014 this exact convergence is what fired PIT's Standard-tier Threat. Division game (CLE/PIT play twice) but no 2026 head-to-head exists yet for either side. Confidence: MEDIUM.\n- **Pat Freiermuth (PIT)** \u2014 Receiving Yards, Over 28.5, **-114**. Freiermuth's 36.0 rec yds/gm; Cleveland's TE defense allows 66.0 rec yds/gm, ranked 24th (bottom tier) \u2014 plus Pittsburgh's extreme pass-heavy red-zone identity (70.6% pass rate, 2nd-most) keeps his RZ role live. Confidence: MEDIUM.\n- **Aaron Rodgers (PIT)** \u2014 Passing Yards, Under 212.5, **-114**. Rodgers' own 233.3 pass yds/gm ranks 16th, but Cleveland's pass defense allows just 211.0 yds/gm, ranked 10th (genuinely tougher than average) \u2014 and his lone top-tier-matchup game this year (187 yds at NE) sits well under this line. Confidence: MEDIUM.\n\n### IND @ WAS (3 picks)\n\n- **Josh Downs (IND)** \u2014 Receiving Yards, Over 64.5, **-114**. Downs' own 62.0 rec yds/gm ranks 19th; Washington allows 191.0 rec yds/gm to WRs, ranked 30th, and the most catches allowed to the position in the league (32nd) \u2014 the Threat Engine's own closest near-miss this week. Confidence: MEDIUM.\n- **Jonathan Taylor (IND)** \u2014 Rushing Yards, Under 90.5, **-114**. Taylor's own 86.0 rush yds/gm ranks 6th, but Washington allows just 56.0 rush yds/gm to backs, ranked 3rd (elite) \u2014 the stiffest run funnel he's faced in 2026. The alt ladder for this market is Over-priced only, so there's no Under-side alternate to this 90.5 line. Confidence: MEDIUM.\n- **Tyler Warren (IND)** \u2014 Receptions, Over 5.5, **-102**. Warren catches 6.0 passes/gm, ranked 3rd among TEs; Washington allows 6.7 receptions/gm to tight ends, ranked 27th (bottom tier) \u2014 elite target volume into a leaky underneath defense. Confidence: MEDIUM.\n\n### TEN @ BAL\n\n- **No real prop data exists for this game.** FanDuel's data feed returned empty `player_props` and an empty `anytime_td` array for this specific matchup \u2014 only the spread/total/moneyline are posted. No picks are made here; this is a genuine data gap, not an omission.\n\n### NE @ BUF (3 picks)\n\n- **James Cook (BUF)** \u2014 Rushing Yards, Over 87.5, **-114**. Cook's 115.33 rush yds/gm ranks 3rd; New England's run defense allows 92.3 rush yds/gm to backs, ranked 16th (mid tier) \u2014 his most directly comparable 2026 game (vs a similarly mid-ranked Detroit front) produced 135 yards. Division game; no 2026 head-to-head exists yet for either side. Confidence: MEDIUM.\n- **Dalton Kincaid (BUF)** \u2014 Receiving Yards, Under 52.5, **-114**. Kincaid's 87.67 rec yds/gm ranks top of the position this year, but New England's TE defense allows just 28.0 rec yds/gm, ranked 4th (elite) \u2014 a defensive caliber he has no 2026 data point against yet. Alt ladder here is Over-only; no Under alternate exists. Confidence: MEDIUM.\n- **Josh Allen (BUF)** \u2014 Passing Yards, Under 242.5, **-114**. Allen's 262.0 pass yds/gm ranks 9th, but New England's pass defense allows only 189.7 yds/gm, ranked 6th (elite) \u2014 the toughest pass defense he's seen this season. Alt ladder is Over-only. Confidence: MEDIUM.\n\n### League-Wide Favorite by Position\n\n- **QB: Daniel Jones (IND)** \u2014 Passing Yards, Over 224.5, **-114**. Jones' own 203.7 pass yds/gm ranks 22nd, but Washington's pass defense allows 287.0 yds/gm, ranked 31st (worst in the league) \u2014 the gap carries the pick even with a modest individual rate. Confidence: MEDIUM.\n- **RB: Jonathan Taylor (IND)** \u2014 Rushing Yards, Under 90.5, **-114**. Same evidence as above (Taylor own rank 6th vs WAS run D rank 3rd). Confidence: MEDIUM.\n- **WR: Josh Downs (IND)** \u2014 Receiving Yards, Over 64.5, **-114**. Same evidence as above. Confidence: MEDIUM.\n- **TE: Tyler Warren (IND)** \u2014 Receiving Yards, Over 46.5, **-114**. Warren's 29.7 rec yds/gm ranks 19th; Washington's TE defense allows 67.3 rec yds/gm, ranked 26th (bottom tier) \u2014 reinforced by his 3rd-ranked reception volume. Confidence: MEDIUM.\n\n```json\nPROP_BREAKDOWN\n{\n  \"per_game\": [\n    {\"away\": \"PIT\", \"home\": \"CLE\", \"picks\": [\n      {\"player\": \"Jaylen Warren\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 1.877, \"side\": \"over\", \"line\": 67.5, \"reason\": \"Warren's 72.0 rush yds/gm ranks 8th among RBs; CLE allows 106.0 rush yds/gm to backs, ranked 24th \u2014 the exact convergence behind PIT's Standard-tier Threat.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":24}]},\n      {\"player\": \"Pat Freiermuth\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 1.877, \"side\": \"over\", \"line\": 28.5, \"reason\": \"Freiermuth's 36.0 rec yds/gm; CLE's TE defense allows 66.0 rec yds/gm, ranked 24th, with PIT's red zone staying pass-heavy.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":24}]},\n      {\"player\": \"Aaron Rodgers\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 1.877, \"side\": \"under\", \"line\": 212.5, \"reason\": \"Rodgers' 233.3 pass yds/gm ranks 16th, but CLE's pass defense allows only 211.0 yds/gm, ranked 10th \u2014 tougher than his season rate suggests.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":10}]}\n    ]},\n    {\"away\": \"IND\", \"home\": \"WAS\", \"picks\": [\n      {\"player\": \"Josh Downs\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.877, \"side\": \"over\", \"line\": 64.5, \"reason\": \"Downs' 62.0 rec yds/gm ranks 19th; WAS allows 191.0 rec yds/gm to WRs, ranked 30th, and the most catches allowed to the position (32nd).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":30}]},\n      {\"player\": \"Jonathan Taylor\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.877, \"side\": \"under\", \"line\": 90.5, \"reason\": \"Taylor's 86.0 rush yds/gm ranks 6th, but WAS allows just 56.0 rush yds/gm to backs, ranked 3rd \u2014 his stiffest run funnel this year.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":3}]},\n      {\"player\": \"Tyler Warren\", \"market_key\": \"player_receptions\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.98, \"side\": \"over\", \"line\": 5.5, \"reason\": \"Warren catches 6.0/gm, ranked 3rd among TEs; WAS allows 6.7 receptions/gm to TEs, ranked 27th.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"TE\",\"stat\":\"rec\",\"role\":\"def\",\"claimed_rank\":27}]}\n    ]},\n    {\"away\": \"NE\", \"home\": \"BUF\", \"picks\": [\n      {\"player\": \"James Cook\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.877, \"side\": \"over\", \"line\": 87.5, \"reason\": \"Cook's 115.33 rush yds/gm ranks 3rd; NE's run defense allows 92.3 rush yds/gm to backs, ranked 16th \u2014 a mid-tier matchup he's already handled well.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":16}]},\n      {\"player\": \"Dalton Kincaid\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.877, \"side\": \"under\", \"line\": 52.5, \"reason\": \"Kincaid's 87.67 rec yds/gm this year, but NE's TE defense allows just 28.0 rec yds/gm, ranked 4th \u2014 a caliber he hasn't faced in 2026 yet.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":4}]},\n      {\"player\": \"Josh Allen\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.877, \"side\": \"under\", \"line\": 242.5, \"reason\": \"Allen's 262.0 pass yds/gm ranks 9th, but NE's pass defense allows only 189.7 yds/gm, ranked 6th \u2014 his toughest test of the season.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":6}]}\n    ]}\n  ],\n  \"per_position\": {\n    \"QB\": {\"player\": \"Daniel Jones\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.877, \"side\": \"over\", \"line\": 224.5, \"reason\": \"Jones' 203.7 pass yds/gm ranks 22nd, but WAS allows 287.0 pass yds/gm, ranked 31st \u2014 the worst pass defense in the league.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":31}]},\n    \"RB\": {\"player\": \"Jonathan Taylor\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.877, \"side\": \"under\", \"line\": 90.5, \"reason\": \"Taylor's 86.0 rush yds/gm ranks 6th, but WAS allows just 56.0 rush yds/gm to backs, ranked 3rd \u2014 elite run funnel.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":3}]},\n    \"WR\": {\"player\": \"Josh Downs\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.877, \"side\": \"over\", \"line\": 64.5, \"reason\": \"Downs' 62.0 rec yds/gm ranks 19th; WAS allows 191.0 rec yds/gm to WRs, ranked 30th.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":30}]},\n    \"TE\": {\"player\": \"Tyler Warren\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.877, \"side\": \"over\", \"line\": 46.5, \"reason\": \"Warren's 29.7 rec yds/gm ranks 19th; WAS allows 67.3 rec yds/gm to TEs, ranked 26th, reinforced by his 3rd-ranked reception volume.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":26}]}\n  }\n}\n```\n\n---\n\n## SECTION 5 \u2014 FAVORITE OVERS AND UNDERS FOR THE WEEK\n\n**Overs (ranked):**\n1. **Josh Downs** Over 64.5 rec yds, **-114** \u2014 WAS allows the most WR catches (32nd) and 30th-ranked WR yardage in the league.\n2. **James Cook** Over 87.5 rush yds, **-114** \u2014 elite volume (64.4% rush share) vs a mid-tier NE front.\n3. **Jaylen Warren** Over 67.5 rush yds, **-114** \u2014 Threat-confirmed matchup edge vs CLE's 24th-ranked RB run defense.\n4. **Pat Freiermuth** Over 28.5 rec yds, **-114** \u2014 CLE's 24th-ranked TE defense meets a real red-zone role.\n5. **Pat Freiermuth** Anytime TD, **+360** \u2014 16.7% red-zone target share on PIT's most pass-heavy red-zone offense in the league; CLE's TE touchdown defense is only mid-tier (11th), so this is a lower-conviction lean. Confidence: LOW.\n\n**Unders (ranked):**\n1. **Jonathan Taylor** Under 90.5 rush yds, **-114** \u2014 WAS's run D ranks 3rd (elite) against backs. Alt ladder is Over-only.\n2. **Josh Allen** Under 242.5 pass yds, **-114** \u2014 NE's pass D ranks 6th (elite), his toughest test this year. Alt ladder is Over-only.\n3. **Dalton Kincaid** Under 52.5 rec yds, **-114** \u2014 NE's TE D ranks 4th (elite) against a role he hasn't tested that caliber against yet. Alt ladder is Over-only.\n4. **Aaron Rodgers** Under 212.5 pass yds, **-114** \u2014 CLE's pass D ranks 10th, genuinely tougher than his season rate. Alt ladder is Over-only.\n\n```json\nFAVORITE_OU\n{\n  \"overs\": [\n    {\"player\": \"Josh Downs\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.877, \"side\": \"over\", \"line\": 64.5, \"reason\": \"WAS allows the most WR catches in the league (32nd) and ranks 30th in WR yardage allowed.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":30}]},\n    {\"player\": \"James Cook\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.877, \"side\": \"over\", \"line\": 87.5, \"reason\": \"Elite 64.4% rush share into a mid-tier (16th) NE run defense.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":16}]},\n    {\"player\": \"Jaylen Warren\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 1.877, \"side\": \"over\", \"line\": 67.5, \"reason\": \"Threat-confirmed convergence vs CLE's 24th-ranked RB run defense.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":24}]},\n    {\"player\": \"Pat Freiermuth\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 1.877, \"side\": \"over\", \"line\": 28.5, \"reason\": \"CLE's 24th-ranked TE defense meets a real red-zone role for Freiermuth.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":24}]},\n    {\"player\": \"Pat Freiermuth\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 4.6, \"side\": \"over\", \"line\": null, \"reason\": \"16.7% red-zone target share on PIT's most pass-heavy red-zone offense; CLE's TE TD defense is only mid-tier (11th).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"TE\",\"stat\":\"td\",\"role\":\"def\",\"claimed_rank\":11}]}\n  ],\n  \"unders\": [\n    {\"player\": \"Jonathan Taylor\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.877, \"side\": \"under\", \"line\": 90.5, \"reason\": \"WAS run D ranks 3rd (elite) against backs.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":3}]},\n    {\"player\": \"Josh Allen\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.877, \"side\": \"under\", \"line\": 242.5, \"reason\": \"NE pass D ranks 6th (elite), his toughest test of 2026.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":6}]},\n    {\"player\": \"Dalton Kincaid\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.877, \"side\": \"under\", \"line\": 52.5, \"reason\": \"NE TE D ranks 4th (elite) against a role Kincaid hasn't tested at that caliber yet.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":4}]},\n    {\"player\": \"Aaron Rodgers\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 1.877, \"side\": \"under\", \"line\": 212.5, \"reason\": \"CLE pass D ranks 10th, tougher than Rodgers' season rate suggests.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":10}]}\n  ]\n}\n```\n\n---\n\n## SECTION 6 \u2014 FIVE LINE-BASED PARLAYS\n\n**3-Team** \u2014 Warren Over, Cook Over, Downs Over. All three legs are from different games (no same-game overlap). Thread: three independent, Threat/opponent-rank-confirmed Overs. Combined: **+561**.\n\n**4-Team** \u2014 adds Josh Allen Under. Allen and Cook share the NE@BUF game \u2014 the combined price below is a cross-game-style estimate, not a real FanDuel same-game-parlay quote. Combined: **+1141**.\n\n**5-Team** \u2014 Warren, Freiermuth (same game, PIT@CLE), Cook, Downs, Taylor (Downs & Taylor share IND@WAS). Two same-game pairs disclosed. Combined: **+2230**.\n\n**6-Team** \u2014 adds Allen (same game as Cook, NE@BUF \u2014 third same-game pair). Combined: **+4273**.\n\n**7-Team** \u2014 adds Rodgers Under (same game as Warren/Freiermuth \u2014 PIT@CLE now carries 3 legs). Combined: **+8108**.\n\n```json\nPARLAY_3_TEAM\n[\n  {\"player\": \"Jaylen Warren\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 1.877, \"side\": \"over\", \"line\": 67.5, \"reason\": \"Threat-confirmed vs CLE's 24th-ranked RB run D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":24}]},\n  {\"player\": \"James Cook\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.877, \"side\": \"over\", \"line\": 87.5, \"reason\": \"Elite volume vs NE's mid-tier (16th) run D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":16}]},\n  {\"player\": \"Josh Downs\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.877, \"side\": \"over\", \"line\": 64.5, \"reason\": \"WAS 30th-ranked WR defense.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":30}]}\n]\n```\n```json\nPARLAY_4_TEAM\n[\n  {\"player\": \"Jaylen Warren\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 1.877, \"side\": \"over\", \"line\": 67.5, \"reason\": \"Threat-confirmed vs CLE's 24th-ranked RB run D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":24}]},\n  {\"player\": \"James Cook\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.877, \"side\": \"over\", \"line\": 87.5, \"reason\": \"Elite volume vs NE's mid-tier run D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":16}]},\n  {\"player\": \"Josh Downs\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.877, \"side\": \"over\", \"line\": 64.5, \"reason\": \"WAS 30th-ranked WR defense.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":30}]},\n  {\"player\": \"Josh Allen\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.877, \"side\": \"under\", \"line\": 242.5, \"reason\": \"NE pass D ranks 6th, his toughest test this year.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":6}]}\n]\n```\n```json\nPARLAY_5_TEAM\n[\n  {\"player\": \"Jaylen Warren\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 1.877, \"side\": \"over\", \"line\": 67.5, \"reason\": \"Threat-confirmed vs CLE's 24th-ranked RB run D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":24}]},\n  {\"player\": \"Pat Freiermuth\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 1.877, \"side\": \"over\", \"line\": 28.5, \"reason\": \"CLE 24th-ranked TE D; real red-zone role.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":24}]},\n  {\"player\": \"James Cook\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.877, \"side\": \"over\", \"line\": 87.5, \"reason\": \"Elite volume vs NE's mid-tier run D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":16}]},\n  {\"player\": \"Josh Downs\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.877, \"side\": \"over\", \"line\": 64.5, \"reason\": \"WAS 30th-ranked WR defense.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":30}]},\n  {\"player\": \"Jonathan Taylor\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.877, \"side\": \"under\", \"line\": 90.5, \"reason\": \"WAS run D ranks 3rd, elite.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":3}]}\n]\n```\n```json\nPARLAY_6_TEAM\n[\n  {\"player\": \"Jaylen Warren\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 1.877, \"side\": \"over\", \"line\": 67.5, \"reason\": \"Threat-confirmed vs CLE's 24th-ranked RB run D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":24}]},\n  {\"player\": \"Pat Freiermuth\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 1.877, \"side\": \"over\", \"line\": 28.5, \"reason\": \"CLE 24th-ranked TE D; real red-zone role.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":24}]},\n  {\"player\": \"James Cook\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.877, \"side\": \"over\", \"line\": 87.5, \"reason\": \"Elite volume vs NE's mid-tier run D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":16}]},\n  {\"player\": \"Josh Allen\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.877, \"side\": \"under\", \"line\": 242.5, \"reason\": \"NE pass D ranks 6th, elite.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":6}]},\n  {\"player\": \"Josh Downs\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.877, \"side\": \"over\", \"line\": 64.5, \"reason\": \"WAS 30th-ranked WR defense.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":30}]},\n  {\"player\": \"Jonathan Taylor\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.877, \"side\": \"under\", \"line\": 90.5, \"reason\": \"WAS run D ranks 3rd, elite.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":3}]}\n]\n```\n```json\nPARLAY_7_TEAM\n[\n  {\"player\": \"Jaylen Warren\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 1.877, \"side\": \"over\", \"line\": 67.5, \"reason\": \"Threat-confirmed vs CLE's 24th-ranked RB run D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":24}]},\n  {\"player\": \"Pat Freiermuth\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 1.877, \"side\": \"over\", \"line\": 28.5, \"reason\": \"CLE 24th-ranked TE D; real red-zone role.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":24}]},\n  {\"player\": \"Aaron Rodgers\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 1.877, \"side\": \"under\", \"line\": 212.5, \"reason\": \"CLE pass D ranks 10th, tougher than Rodgers' rate.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":10}]},\n  {\"player\": \"James Cook\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.877, \"side\": \"over\", \"line\": 87.5, \"reason\": \"Elite volume vs NE's mid-tier run D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":16}]},\n  {\"player\": \"Josh Allen\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.877, \"side\": \"under\", \"line\": 242.5, \"reason\": \"NE pass D ranks 6th, elite.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":6}]},\n  {\"player\": \"Josh Downs\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.877, \"side\": \"over\", \"line\": 64.5, \"reason\": \"WAS 30th-ranked WR defense.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":30}]},\n  {\"player\": \"Jonathan Taylor\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.877, \"side\": \"under\", \"line\": 90.5, \"reason\": \"WAS run D ranks 3rd, elite.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":3}]}\n]\n```\n\n---\n\n## SECTION 7 \u2014 FAVORITE ANYTIME TD PARLAYS\n\n**3-Team** \u2014 Jonathan Taylor, James Cook, Quinshon Judkins. Three different games, all RBs with dominant red-zone roles. Combined: **+421**.\n\n**4-Team** \u2014 adds Jacory Croskey-Merritt. Croskey-Merritt and Taylor share IND@WAS. Combined: **+1045**.\n\n**5-Team** \u2014 adds Stefon Diggs (IND@WAS now carries 3 legs). Combined: **+4022**.\n\n**6-Team** \u2014 adds Denzel Boston (shares PIT@CLE with Judkins). Combined: **+16,802**.\n\n**7-Team** \u2014 adds Pat Freiermuth (PIT@CLE now carries 3 legs). Combined: **+77,650**.\n\n```json\nTD_PARLAY_3_TEAM\n[\n  {\"player\": \"Jonathan Taylor\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.345, \"side\": \"over\", \"line\": null, \"reason\": \"80% of IND's red-zone carries; WAS's RB rush-TD defense ranks 7th, tough but Taylor's workload share dominates regardless.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"RB\",\"stat\":\"rush_td\",\"role\":\"def\",\"claimed_rank\":7}]},\n  {\"player\": \"James Cook\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.8, \"side\": \"over\", \"line\": null, \"reason\": \"56.2% of BUF's red-zone carries, 2 rush TDs already; NE's RB rush-TD defense ranks a mid-tier 22nd.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"RB\",\"stat\":\"rush_td\",\"role\":\"def\",\"claimed_rank\":22}]},\n  {\"player\": \"Quinshon Judkins\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 2.15, \"side\": \"over\", \"line\": null, \"reason\": \"54.5% of CLE's red-zone carries; PIT's RB rush-TD defense ranks a moderate 14th.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"PIT\",\"pos\":\"RB\",\"stat\":\"rush_td\",\"role\":\"def\",\"claimed_rank\":14}]}\n]\n```\n```json\nTD_PARLAY_4_TEAM\n[\n  {\"player\": \"Jonathan Taylor\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.345, \"side\": \"over\", \"line\": null, \"reason\": \"80% of IND's red-zone carries vs WAS's 7th-ranked rush-TD D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"RB\",\"stat\":\"rush_td\",\"role\":\"def\",\"claimed_rank\":7}]},\n  {\"player\": \"James Cook\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.8, \"side\": \"over\", \"line\": null, \"reason\": \"56.2% red-zone carry share vs NE's 22nd-ranked rush-TD D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"RB\",\"stat\":\"rush_td\",\"role\":\"def\",\"claimed_rank\":22}]},\n  {\"player\": \"Quinshon Judkins\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 2.15, \"side\": \"over\", \"line\": null, \"reason\": \"54.5% red-zone carry share vs PIT's 14th-ranked rush-TD D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"PIT\",\"pos\":\"RB\",\"stat\":\"rush_td\",\"role\":\"def\",\"claimed_rank\":14}]},\n  {\"player\": \"Jacory Croskey-Merritt\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 2.2, \"side\": \"over\", \"line\": null, \"reason\": \"29.4% red-zone carry share; IND's RB rush-TD defense ranks 30th, one of the worst in the league.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"IND\",\"pos\":\"RB\",\"stat\":\"rush_td\",\"role\":\"def\",\"claimed_rank\":30}]}\n]\n```\n```json\nTD_PARLAY_5_TEAM\n[\n  {\"player\": \"Jonathan Taylor\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.345, \"side\": \"over\", \"line\": null, \"reason\": \"80% of IND's red-zone carries vs WAS's 7th-ranked rush-TD D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"RB\",\"stat\":\"rush_td\",\"role\":\"def\",\"claimed_rank\":7}]},\n  {\"player\": \"James Cook\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.8, \"side\": \"over\", \"line\": null, \"reason\": \"56.2% red-zone carry share vs NE's 22nd-ranked rush-TD D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"RB\",\"stat\":\"rush_td\",\"role\":\"def\",\"claimed_rank\":22}]},\n  {\"player\": \"Quinshon Judkins\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 2.15, \"side\": \"over\", \"line\": null, \"reason\": \"54.5% red-zone carry share vs PIT's 14th-ranked rush-TD D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"PIT\",\"pos\":\"RB\",\"stat\":\"rush_td\",\"role\":\"def\",\"claimed_rank\":14}]},\n  {\"player\": \"Jacory Croskey-Merritt\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 2.2, \"side\": \"over\", \"line\": null, \"reason\": \"29.4% red-zone carry share vs IND's 30th-ranked rush-TD D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"IND\",\"pos\":\"RB\",\"stat\":\"rush_td\",\"role\":\"def\",\"claimed_rank\":30}]},\n  {\"player\": \"Stefon Diggs\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 3.6, \"side\": \"over\", \"line\": null, \"reason\": \"4 red-zone targets, 3 TDs already (near-automatic conversion); IND's WR TD defense ranks a mid 20th.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"IND\",\"pos\":\"WR\",\"stat\":\"td\",\"role\":\"def\",\"claimed_rank\":20}]}\n]\n```\n```json\nTD_PARLAY_6_TEAM\n[\n  {\"player\": \"Jonathan Taylor\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.345, \"side\": \"over\", \"line\": null, \"reason\": \"80% of IND's red-zone carries vs WAS's 7th-ranked rush-TD D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"RB\",\"stat\":\"rush_td\",\"role\":\"def\",\"claimed_rank\":7}]},\n  {\"player\": \"James Cook\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.8, \"side\": \"over\", \"line\": null, \"reason\": \"56.2% red-zone carry share vs NE's 22nd-ranked rush-TD D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"RB\",\"stat\":\"rush_td\",\"role\":\"def\",\"claimed_rank\":22}]},\n  {\"player\": \"Quinshon Judkins\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 2.15, \"side\": \"over\", \"line\": null, \"reason\": \"54.5% red-zone carry share vs PIT's 14th-ranked rush-TD D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"PIT\",\"pos\":\"RB\",\"stat\":\"rush_td\",\"role\":\"def\",\"claimed_rank\":14}]},\n  {\"player\": \"Jacory Croskey-Merritt\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 2.2, \"side\": \"over\", \"line\": null, \"reason\": \"29.4% red-zone carry share vs IND's 30th-ranked rush-TD D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"IND\",\"pos\":\"RB\",\"stat\":\"rush_td\",\"role\":\"def\",\"claimed_rank\":30}]},\n  {\"player\": \"Stefon Diggs\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 3.6, \"side\": \"over\", \"line\": null, \"reason\": \"4 red-zone targets, 3 TDs already vs IND's 20th-ranked WR TD D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"IND\",\"pos\":\"WR\",\"stat\":\"td\",\"role\":\"def\",\"claimed_rank\":20}]},\n  {\"player\": \"Denzel Boston\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 4.1, \"side\": \"over\", \"line\": null, \"reason\": \"30.8% red-zone target share, the highest of any player in this game; PIT's WR TD defense ranks a tougher 10th.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"PIT\",\"pos\":\"WR\",\"stat\":\"td\",\"role\":\"def\",\"claimed_rank\":10}]}\n]\n```\n```json\nTD_PARLAY_7_TEAM\n[\n  {\"player\": \"Jonathan Taylor\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.345, \"side\": \"over\", \"line\": null, \"reason\": \"80% of IND's red-zone carries vs WAS's 7th-ranked rush-TD D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"RB\",\"stat\":\"rush_td\",\"role\":\"def\",\"claimed_rank\":7}]},\n  {\"player\": \"James Cook\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.8, \"side\": \"over\", \"line\": null, \"reason\": \"56.2% red-zone carry share vs NE's 22nd-ranked rush-TD D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"RB\",\"stat\":\"rush_td\",\"role\":\"def\",\"claimed_rank\":22}]},\n  {\"player\": \"Quinshon Judkins\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 2.15, \"side\": \"over\", \"line\": null, \"reason\": \"54.5% red-zone carry share vs PIT's 14th-ranked rush-TD D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"PIT\",\"pos\":\"RB\",\"stat\":\"rush_td\",\"role\":\"def\",\"claimed_rank\":14}]},\n  {\"player\": \"Jacory Croskey-Merritt\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 2.2, \"side\": \"over\", \"line\": null, \"reason\": \"29.4% red-zone carry share vs IND's 30th-ranked rush-TD D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"IND\",\"pos\":\"RB\",\"stat\":\"rush_td\",\"role\":\"def\",\"claimed_rank\":30}]},\n  {\"player\": \"Stefon Diggs\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 3.6, \"side\": \"over\", \"line\": null, \"reason\": \"4 red-zone targets, 3 TDs already vs IND's 20th-ranked WR TD D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"IND\",\"pos\":\"WR\",\"stat\":\"td\",\"role\":\"def\",\"claimed_rank\":20}]},\n  {\"player\": \"Denzel Boston\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 4.1, \"side\": \"over\", \"line\": null, \"reason\": \"30.8% red-zone target share vs PIT's 10th-ranked WR TD D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"PIT\",\"pos\":\"WR\",\"stat\":\"td\",\"role\":\"def\",\"claimed_rank\":10}]},\n  {\"player\": \"Pat Freiermuth\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 4.6, \"side\": \"over\", \"line\": null, \"reason\": \"16.7% red-zone target share vs CLE's 11th-ranked TE TD D.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"TE\",\"stat\":\"td\",\"role\":\"def\",\"claimed_rank\":11}]}\n]\n```\n\n---\n\n## SECTION 8 \u2014 FAVORITE SPREAD PARLAYS\n\n**Real-data limitation (stated plainly):** this slate has exactly **four** real mainline spread markets \u2014 one per game \u2014 and both sides of each are mutually exclusive, so only four genuinely independent real legs exist this week. A real 5-, 6-, or 7-team mainline spread parlay cannot be built from real data without reusing a market already used on its opposite side, which is incoherent. Rather than fabricate additional markets, the 5/6/7-team blocks below are left at the same 4-leg maximum, explicitly flagged as not a genuinely larger combination.\n\n- **PIT -2.5** (-112) \u2014 PIT's defense and Finding 1/2 rushing-matchup edge are the stronger supported side; PIT's real ATS record is **58.8%** overall (60-42-2) and **56.0%** on the road (28-22-1).\n- **BAL -11.5** (-110) \u2014 statistically overwhelming mismatch (Henry's Threat, TEN's red-zone run funnel); BAL's real ATS record is a more modest **51.5%** overall, and notably **45.1%** at home (23-28-1) \u2014 a real tension worth flagging against laying this many points.\n- **BUF -6.5** (-115) \u2014 BUF's offense and real ATS record both support this: **56.0%** overall, **56.9%** at home (29-22-2).\n- **WAS +3.5** (-110) \u2014 genuine game-script uncertainty (Daniels' availability, IND's own 30th-ranked defense) argues for the points; WAS's real ATS record is close to a coin flip at **48.5%** overall, **49.0%** at home (24-25-2).\n\n**3-Team** \u2014 PIT, BAL, BUF (the three strongest convictions). Combined: **+576**.\n\n**4-Team** \u2014 adds WAS +3.5 (all four real spread markets on the slate). Combined: **+1190**.\n\n**5/6/7-Team** \u2014 not constructible from real data this week; see limitation note above.\n\n```json\nSPREAD_PARLAY_3_TEAM\n[\n  {\"player\": \"Pittsburgh Steelers\", \"market_key\": \"spreads\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 1.893, \"point\": -2.5, \"reason\": \"Stronger, more stable defense and rushing-matchup edge; PIT is 58.8% ATS overall, 56.0% ATS on the road.\", \"evidence_check\": []},\n  {\"player\": \"Baltimore Ravens\", \"market_key\": \"spreads\", \"canonical_event_id\": \"ac76e69da9802c5f\", \"price\": 1.909, \"point\": -11.5, \"reason\": \"Statistically dominant matchup vs TEN's run funnel; BAL is 51.5% ATS overall but only 45.1% ATS at home \u2014 a real caution flag at this number.\", \"evidence_check\": []},\n  {\"player\": \"Buffalo Bills\", \"market_key\": \"spreads\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.87, \"point\": -6.5, \"reason\": \"Top-scoring offense facing a shaky NE pass D long-term floor; BUF is 56.0% ATS overall, 56.9% ATS at home.\", \"evidence_check\": []}\n]\n```\n```json\nSPREAD_PARLAY_4_TEAM\n[\n  {\"player\": \"Pittsburgh Steelers\", \"market_key\": \"spreads\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 1.893, \"point\": -2.5, \"reason\": \"Stronger defense and rushing edge; 58.8% ATS overall, 56.0% ATS on the road.\", \"evidence_check\": []},\n  {\"player\": \"Baltimore Ravens\", \"market_key\": \"spreads\", \"canonical_event_id\": \"ac76e69da9802c5f\", \"price\": 1.909, \"point\": -11.5, \"reason\": \"Dominant matchup vs TEN; 51.5% ATS overall, only 45.1% ATS at home.\", \"evidence_check\": []},\n  {\"player\": \"Buffalo Bills\", \"market_key\": \"spreads\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.87, \"point\": -6.5, \"reason\": \"Top-scoring offense; 56.0% ATS overall, 56.9% ATS at home.\", \"evidence_check\": []},\n  {\"player\": \"Washington Commanders\", \"market_key\": \"spreads\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.909, \"point\": 3.5, \"reason\": \"Genuine game-script uncertainty (Daniels availability, IND's 30th-ranked D) argues for the points; WAS is 48.5% ATS overall, 49.0% ATS at home.\", \"evidence_check\": []}\n]\n```\n```json\nSPREAD_PARLAY_5_TEAM\n[\n  {\"player\": \"Pittsburgh Steelers\", \"market_key\": \"spreads\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 1.893, \"point\": -2.5, \"reason\": \"Stronger defense and rushing edge; 58.8% ATS overall, 56.0% ATS on the road. NOTE: only 4 real spread markets exist on this slate \u2014 no 5th independent leg is available.\", \"evidence_check\": []},\n  {\"player\": \"Baltimore Ravens\", \"market_key\": \"spreads\", \"canonical_event_id\": \"ac76e69da9802c5f\", \"price\": 1.909, \"point\": -11.5, \"reason\": \"Dominant matchup vs TEN; 51.5% ATS overall, only 45.1% ATS at home.\", \"evidence_check\": []},\n  {\"player\": \"Buffalo Bills\", \"market_key\": \"spreads\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.87, \"point\": -6.5, \"reason\": \"Top-scoring offense; 56.0% ATS overall, 56.9% ATS at home.\", \"evidence_check\": []},\n  {\"player\": \"Washington Commanders\", \"market_key\": \"spreads\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.909, \"point\": 3.5, \"reason\": \"Game-script uncertainty argues for the points; 48.5% ATS overall, 49.0% ATS at home.\", \"evidence_check\": []}\n]\n```\n```json\nSPREAD_PARLAY_6_TEAM\n[\n  {\"player\": \"Pittsburgh Steelers\", \"market_key\": \"spreads\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 1.893, \"point\": -2.5, \"reason\": \"Stronger defense and rushing edge; 58.8% ATS overall, 56.0% ATS on the road. NOTE: only 4 real spread markets exist on this slate \u2014 no 6th independent leg is available.\", \"evidence_check\": []},\n  {\"player\": \"Baltimore Ravens\", \"market_key\": \"spreads\", \"canonical_event_id\": \"ac76e69da9802c5f\", \"price\": 1.909, \"point\": -11.5, \"reason\": \"Dominant matchup vs TEN; 51.5% ATS overall, only 45.1% ATS at home.\", \"evidence_check\": []},\n  {\"player\": \"Buffalo Bills\", \"market_key\": \"spreads\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.87, \"point\": -6.5, \"reason\": \"Top-scoring offense; 56.0% ATS overall, 56.9% ATS at home.\", \"evidence_check\": []},\n  {\"player\": \"Washington Commanders\", \"market_key\": \"spreads\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.909, \"point\": 3.5, \"reason\": \"Game-script uncertainty argues for the points; 48.5% ATS overall, 49.0% ATS at home.\", \"evidence_check\": []}\n]\n```\n```json\nSPREAD_PARLAY_7_TEAM\n[\n  {\"player\": \"Pittsburgh Steelers\", \"market_key\": \"spreads\", \"canonical_event_id\": \"1c79ffc934ef3e24\", \"price\": 1.893, \"point\": -2.5, \"reason\": \"Stronger defense and rushing edge; 58.8% ATS overall, 56.0% ATS on the road. NOTE: only 4 real spread markets exist on this slate \u2014 no 7th independent leg is available.\", \"evidence_check\": []},\n  {\"player\": \"Baltimore Ravens\", \"market_key\": \"spreads\", \"canonical_event_id\": \"ac76e69da9802c5f\", \"price\": 1.909, \"point\": -11.5, \"reason\": \"Dominant matchup vs TEN; 51.5% ATS overall, only 45.1% ATS at home.\", \"evidence_check\": []},\n  {\"player\": \"Buffalo Bills\", \"market_key\": \"spreads\", \"canonical_event_id\": \"5a6a506f9ff2a30f\", \"price\": 1.87, \"point\": -6.5, \"reason\": \"Top-scoring offense; 56.0% ATS overall, 56.9% ATS at home.\", \"evidence_check\": []},\n  {\"player\": \"Washington Commanders\", \"market_key\": \"spreads\", \"canonical_event_id\": \"b9550fb6e56e66e2\", \"price\": 1.909, \"point\": 3.5, \"reason\": \"Game-script uncertainty argues for the points; 48.5% ATS overall, 49.0% ATS at home.\", \"evidence_check\": []}\n]\n```",
+  "prop_breakdown": {
+    "per_game": [
+      {
+        "away": "PIT",
+        "home": "CLE",
+        "picks": [
+          {
+            "player": "Jaylen Warren",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "1c79ffc934ef3e24",
+            "price": 1.877,
+            "side": "over",
+            "line": 67.5,
+            "reason": "Warren's 72.0 rush yds/gm ranks 8th among RBs; CLE allows 106.0 rush yds/gm to backs, ranked 24th \u2014 the exact convergence behind PIT's Standard-tier Threat.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "CLE",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "def",
+                "claimed_rank": 24
+              }
+            ]
+          },
+          {
+            "player": "Pat Freiermuth",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "1c79ffc934ef3e24",
+            "price": 1.877,
+            "side": "over",
+            "line": 28.5,
+            "reason": "Freiermuth's 36.0 rec yds/gm; CLE's TE defense allows 66.0 rec yds/gm, ranked 24th, with PIT's red zone staying pass-heavy.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "CLE",
+                "pos": "TE",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 24
+              }
+            ]
+          },
+          {
+            "player": "Aaron Rodgers",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "1c79ffc934ef3e24",
+            "price": 1.877,
+            "side": "under",
+            "line": 212.5,
+            "reason": "Rodgers' 233.3 pass yds/gm ranks 16th, but CLE's pass defense allows only 211.0 yds/gm, ranked 10th \u2014 tougher than his season rate suggests.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "CLE",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "def",
+                "claimed_rank": 10
+              }
+            ]
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "IND",
+        "home": "WAS",
+        "picks": [
+          {
+            "player": "Josh Downs",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "b9550fb6e56e66e2",
+            "price": 1.877,
+            "side": "over",
+            "line": 64.5,
+            "reason": "Downs' 62.0 rec yds/gm ranks 19th; WAS allows 191.0 rec yds/gm to WRs, ranked 30th, and the most catches allowed to the position (32nd).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "WAS",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 30
+              }
+            ]
+          },
+          {
+            "player": "Jonathan Taylor",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "b9550fb6e56e66e2",
+            "price": 1.877,
+            "side": "under",
+            "line": 90.5,
+            "reason": "Taylor's 86.0 rush yds/gm ranks 6th, but WAS allows just 56.0 rush yds/gm to backs, ranked 3rd \u2014 his stiffest run funnel this year.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "WAS",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "def",
+                "claimed_rank": 3
+              }
+            ]
+          },
+          {
+            "player": "Tyler Warren",
+            "market_key": "player_receptions",
+            "canonical_event_id": "b9550fb6e56e66e2",
+            "price": 1.98,
+            "side": "over",
+            "line": 5.5,
+            "reason": "Warren catches 6.0/gm, ranked 3rd among TEs; WAS allows 6.7 receptions/gm to TEs, ranked 27th.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "WAS",
+                "pos": "TE",
+                "stat": "rec",
+                "role": "def",
+                "claimed_rank": 27
+              }
+            ]
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "NE",
+        "home": "BUF",
+        "picks": [
+          {
+            "player": "James Cook",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "5a6a506f9ff2a30f",
+            "price": 1.877,
+            "side": "over",
+            "line": 87.5,
+            "reason": "Cook's 115.33 rush yds/gm ranks 3rd; NE's run defense allows 92.3 rush yds/gm to backs, ranked 16th \u2014 a mid-tier matchup he's already handled well.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NE",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "def",
+                "claimed_rank": 16
+              }
+            ]
+          },
+          {
+            "player": "Dalton Kincaid",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "5a6a506f9ff2a30f",
+            "price": 1.877,
+            "side": "under",
+            "line": 52.5,
+            "reason": "Kincaid's 87.67 rec yds/gm this year, but NE's TE defense allows just 28.0 rec yds/gm, ranked 4th \u2014 a caliber he hasn't faced in 2026 yet.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NE",
+                "pos": "TE",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 4
+              }
+            ]
+          },
+          {
+            "player": "Josh Allen",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "5a6a506f9ff2a30f",
+            "price": 1.877,
+            "side": "under",
+            "line": 242.5,
+            "reason": "Allen's 262.0 pass yds/gm ranks 9th, but NE's pass defense allows only 189.7 yds/gm, ranked 6th \u2014 his toughest test of the season.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NE",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "def",
+                "claimed_rank": 6
+              }
+            ]
+          }
+        ],
+        "mismatch_count": 0
+      }
+    ],
+    "per_position": {
+      "QB": {
+        "player": "Daniel Jones",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "b9550fb6e56e66e2",
+        "price": 1.877,
+        "side": "over",
+        "line": 224.5,
+        "reason": "Jones' 203.7 pass yds/gm ranks 22nd, but WAS allows 287.0 pass yds/gm, ranked 31st \u2014 the worst pass defense in the league.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "WAS",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "def",
+            "claimed_rank": 31
+          }
+        ]
+      },
+      "RB": {
+        "player": "Jonathan Taylor",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "b9550fb6e56e66e2",
+        "price": 1.877,
+        "side": "under",
+        "line": 90.5,
+        "reason": "Taylor's 86.0 rush yds/gm ranks 6th, but WAS allows just 56.0 rush yds/gm to backs, ranked 3rd \u2014 elite run funnel.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "WAS",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "def",
+            "claimed_rank": 3
+          }
+        ]
+      },
+      "WR": {
+        "player": "Josh Downs",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "b9550fb6e56e66e2",
+        "price": 1.877,
+        "side": "over",
+        "line": 64.5,
+        "reason": "Downs' 62.0 rec yds/gm ranks 19th; WAS allows 191.0 rec yds/gm to WRs, ranked 30th.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "WAS",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 30
+          }
+        ]
+      },
+      "TE": {
+        "player": "Tyler Warren",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "b9550fb6e56e66e2",
+        "price": 1.877,
+        "side": "over",
+        "line": 46.5,
+        "reason": "Warren's 29.7 rec yds/gm ranks 19th; WAS allows 67.3 rec yds/gm to TEs, ranked 26th, reinforced by his 3rd-ranked reception volume.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "WAS",
+            "pos": "TE",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 26
+          }
+        ]
+      }
+    }
+  },
+  "prop_breakdown_errors": [],
+  "favorite_ou": {
+    "overs": [
+      {
+        "player": "Josh Downs",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "b9550fb6e56e66e2",
+        "price": 1.877,
+        "side": "over",
+        "line": 64.5,
+        "reason": "WAS allows the most WR catches in the league (32nd) and ranks 30th in WR yardage allowed.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "WAS",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 30
+          }
+        ]
+      },
+      {
+        "player": "James Cook",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "5a6a506f9ff2a30f",
+        "price": 1.877,
+        "side": "over",
+        "line": 87.5,
+        "reason": "Elite 64.4% rush share into a mid-tier (16th) NE run defense.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NE",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "def",
+            "claimed_rank": 16
+          }
+        ]
+      },
+      {
+        "player": "Jaylen Warren",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "1c79ffc934ef3e24",
+        "price": 1.877,
+        "side": "over",
+        "line": 67.5,
+        "reason": "Threat-confirmed convergence vs CLE's 24th-ranked RB run defense.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "CLE",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "def",
+            "claimed_rank": 24
+          }
+        ]
+      },
+      {
+        "player": "Pat Freiermuth",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "1c79ffc934ef3e24",
+        "price": 1.877,
+        "side": "over",
+        "line": 28.5,
+        "reason": "CLE's 24th-ranked TE defense meets a real red-zone role for Freiermuth.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "CLE",
+            "pos": "TE",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 24
+          }
+        ]
+      }
+    ],
+    "unders": [
+      {
+        "player": "Jonathan Taylor",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "b9550fb6e56e66e2",
+        "price": 1.877,
+        "side": "under",
+        "line": 90.5,
+        "reason": "WAS run D ranks 3rd (elite) against backs.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "WAS",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "def",
+            "claimed_rank": 3
+          }
+        ]
+      },
+      {
+        "player": "Josh Allen",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "5a6a506f9ff2a30f",
+        "price": 1.877,
+        "side": "under",
+        "line": 242.5,
+        "reason": "NE pass D ranks 6th (elite), his toughest test of 2026.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NE",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "def",
+            "claimed_rank": 6
+          }
+        ]
+      },
+      {
+        "player": "Dalton Kincaid",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "5a6a506f9ff2a30f",
+        "price": 1.877,
+        "side": "under",
+        "line": 52.5,
+        "reason": "NE TE D ranks 4th (elite) against a role Kincaid hasn't tested at that caliber yet.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NE",
+            "pos": "TE",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 4
+          }
+        ]
+      },
+      {
+        "player": "Aaron Rodgers",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "1c79ffc934ef3e24",
+        "price": 1.877,
+        "side": "under",
+        "line": 212.5,
+        "reason": "CLE pass D ranks 10th, tougher than Rodgers' season rate suggests.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "CLE",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "def",
+            "claimed_rank": 10
+          }
+        ]
+      }
+    ]
+  },
+  "favorite_ou_errors": [],
+  "parlays": {
+    "3": {
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "result": {
+        "legs": 3,
+        "combined_decimal": 6.6129,
+        "combined_american": 561,
+        "stake": 10,
+        "payout": 66.13,
+        "profit": 56.13,
+        "same_game_legs": false
+      },
+      "legs": [
+        {
+          "player": "Jaylen Warren",
+          "market_key": "player_rushing_yards",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 1.877,
+          "side": "over",
+          "line": 67.5,
+          "reason": "Threat-confirmed vs CLE's 24th-ranked RB run D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "CLE",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 24
+            }
+          ]
+        },
+        {
+          "player": "James Cook",
+          "market_key": "player_rushing_yards",
+          "canonical_event_id": "5a6a506f9ff2a30f",
+          "price": 1.877,
+          "side": "over",
+          "line": 87.5,
+          "reason": "Elite volume vs NE's mid-tier (16th) run D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "NE",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 16
+            }
+          ]
+        },
+        {
+          "player": "Josh Downs",
+          "market_key": "player_receiving_yards",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 1.877,
+          "side": "over",
+          "line": 64.5,
+          "reason": "WAS 30th-ranked WR defense.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "WAS",
+              "pos": "WR",
+              "stat": "rec_yds",
+              "role": "def",
+              "claimed_rank": 30
+            }
+          ]
+        }
+      ],
+      "mismatches": []
+    },
+    "4": {
+      "valid": true,
+      "errors": [],
+      "warnings": [
+        "1 game(s) contribute more than one leg to this parlay: ['5a6a506f9ff2a30f']. The combined price below is a naive cross-game-style product, NOT a real same-game-parlay (SGP) quote \u2014 correlated same-game legs are not independent, and this API does not expose FanDuel's actual SGP pricing."
+      ],
+      "result": {
+        "legs": 4,
+        "combined_decimal": 12.4124,
+        "combined_american": 1141,
+        "stake": 10,
+        "payout": 124.12,
+        "profit": 114.12,
+        "same_game_legs": true
+      },
+      "legs": [
+        {
+          "player": "Jaylen Warren",
+          "market_key": "player_rushing_yards",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 1.877,
+          "side": "over",
+          "line": 67.5,
+          "reason": "Threat-confirmed vs CLE's 24th-ranked RB run D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "CLE",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 24
+            }
+          ]
+        },
+        {
+          "player": "James Cook",
+          "market_key": "player_rushing_yards",
+          "canonical_event_id": "5a6a506f9ff2a30f",
+          "price": 1.877,
+          "side": "over",
+          "line": 87.5,
+          "reason": "Elite volume vs NE's mid-tier run D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "NE",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 16
+            }
+          ]
+        },
+        {
+          "player": "Josh Downs",
+          "market_key": "player_receiving_yards",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 1.877,
+          "side": "over",
+          "line": 64.5,
+          "reason": "WAS 30th-ranked WR defense.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "WAS",
+              "pos": "WR",
+              "stat": "rec_yds",
+              "role": "def",
+              "claimed_rank": 30
+            }
+          ]
+        },
+        {
+          "player": "Josh Allen",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "5a6a506f9ff2a30f",
+          "price": 1.877,
+          "side": "under",
+          "line": 242.5,
+          "reason": "NE pass D ranks 6th, his toughest test this year.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "NE",
+              "pos": "QB",
+              "stat": "pass_yds",
+              "role": "def",
+              "claimed_rank": 6
+            }
+          ]
+        }
+      ],
+      "mismatches": []
+    },
+    "5": {
+      "valid": true,
+      "errors": [],
+      "warnings": [
+        "2 game(s) contribute more than one leg to this parlay: ['1c79ffc934ef3e24', 'b9550fb6e56e66e2']. The combined price below is a naive cross-game-style product, NOT a real same-game-parlay (SGP) quote \u2014 correlated same-game legs are not independent, and this API does not expose FanDuel's actual SGP pricing."
+      ],
+      "result": {
+        "legs": 5,
+        "combined_decimal": 23.2981,
+        "combined_american": 2230,
+        "stake": 10,
+        "payout": 232.98,
+        "profit": 222.98,
+        "same_game_legs": true
+      },
+      "legs": [
+        {
+          "player": "Jaylen Warren",
+          "market_key": "player_rushing_yards",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 1.877,
+          "side": "over",
+          "line": 67.5,
+          "reason": "Threat-confirmed vs CLE's 24th-ranked RB run D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "CLE",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 24
+            }
+          ]
+        },
+        {
+          "player": "Pat Freiermuth",
+          "market_key": "player_receiving_yards",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 1.877,
+          "side": "over",
+          "line": 28.5,
+          "reason": "CLE 24th-ranked TE D; real red-zone role.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "CLE",
+              "pos": "TE",
+              "stat": "rec_yds",
+              "role": "def",
+              "claimed_rank": 24
+            }
+          ]
+        },
+        {
+          "player": "James Cook",
+          "market_key": "player_rushing_yards",
+          "canonical_event_id": "5a6a506f9ff2a30f",
+          "price": 1.877,
+          "side": "over",
+          "line": 87.5,
+          "reason": "Elite volume vs NE's mid-tier run D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "NE",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 16
+            }
+          ]
+        },
+        {
+          "player": "Josh Downs",
+          "market_key": "player_receiving_yards",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 1.877,
+          "side": "over",
+          "line": 64.5,
+          "reason": "WAS 30th-ranked WR defense.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "WAS",
+              "pos": "WR",
+              "stat": "rec_yds",
+              "role": "def",
+              "claimed_rank": 30
+            }
+          ]
+        },
+        {
+          "player": "Jonathan Taylor",
+          "market_key": "player_rushing_yards",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 1.877,
+          "side": "under",
+          "line": 90.5,
+          "reason": "WAS run D ranks 3rd, elite.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "WAS",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 3
+            }
+          ]
+        }
+      ],
+      "mismatches": []
+    },
+    "6": {
+      "valid": true,
+      "errors": [],
+      "warnings": [
+        "3 game(s) contribute more than one leg to this parlay: ['1c79ffc934ef3e24', '5a6a506f9ff2a30f', 'b9550fb6e56e66e2']. The combined price below is a naive cross-game-style product, NOT a real same-game-parlay (SGP) quote \u2014 correlated same-game legs are not independent, and this API does not expose FanDuel's actual SGP pricing."
+      ],
+      "result": {
+        "legs": 6,
+        "combined_decimal": 43.7306,
+        "combined_american": 4273,
+        "stake": 10,
+        "payout": 437.31,
+        "profit": 427.31,
+        "same_game_legs": true
+      },
+      "legs": [
+        {
+          "player": "Jaylen Warren",
+          "market_key": "player_rushing_yards",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 1.877,
+          "side": "over",
+          "line": 67.5,
+          "reason": "Threat-confirmed vs CLE's 24th-ranked RB run D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "CLE",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 24
+            }
+          ]
+        },
+        {
+          "player": "Pat Freiermuth",
+          "market_key": "player_receiving_yards",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 1.877,
+          "side": "over",
+          "line": 28.5,
+          "reason": "CLE 24th-ranked TE D; real red-zone role.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "CLE",
+              "pos": "TE",
+              "stat": "rec_yds",
+              "role": "def",
+              "claimed_rank": 24
+            }
+          ]
+        },
+        {
+          "player": "James Cook",
+          "market_key": "player_rushing_yards",
+          "canonical_event_id": "5a6a506f9ff2a30f",
+          "price": 1.877,
+          "side": "over",
+          "line": 87.5,
+          "reason": "Elite volume vs NE's mid-tier run D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "NE",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 16
+            }
+          ]
+        },
+        {
+          "player": "Josh Allen",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "5a6a506f9ff2a30f",
+          "price": 1.877,
+          "side": "under",
+          "line": 242.5,
+          "reason": "NE pass D ranks 6th, elite.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "NE",
+              "pos": "QB",
+              "stat": "pass_yds",
+              "role": "def",
+              "claimed_rank": 6
+            }
+          ]
+        },
+        {
+          "player": "Josh Downs",
+          "market_key": "player_receiving_yards",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 1.877,
+          "side": "over",
+          "line": 64.5,
+          "reason": "WAS 30th-ranked WR defense.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "WAS",
+              "pos": "WR",
+              "stat": "rec_yds",
+              "role": "def",
+              "claimed_rank": 30
+            }
+          ]
+        },
+        {
+          "player": "Jonathan Taylor",
+          "market_key": "player_rushing_yards",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 1.877,
+          "side": "under",
+          "line": 90.5,
+          "reason": "WAS run D ranks 3rd, elite.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "WAS",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 3
+            }
+          ]
+        }
+      ],
+      "mismatches": []
+    },
+    "7": {
+      "valid": true,
+      "errors": [],
+      "warnings": [
+        "3 game(s) contribute more than one leg to this parlay: ['1c79ffc934ef3e24', '5a6a506f9ff2a30f', 'b9550fb6e56e66e2']. The combined price below is a naive cross-game-style product, NOT a real same-game-parlay (SGP) quote \u2014 correlated same-game legs are not independent, and this API does not expose FanDuel's actual SGP pricing."
+      ],
+      "result": {
+        "legs": 7,
+        "combined_decimal": 82.0824,
+        "combined_american": 8108,
+        "stake": 10,
+        "payout": 820.82,
+        "profit": 810.82,
+        "same_game_legs": true
+      },
+      "legs": [
+        {
+          "player": "Jaylen Warren",
+          "market_key": "player_rushing_yards",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 1.877,
+          "side": "over",
+          "line": 67.5,
+          "reason": "Threat-confirmed vs CLE's 24th-ranked RB run D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "CLE",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 24
+            }
+          ]
+        },
+        {
+          "player": "Pat Freiermuth",
+          "market_key": "player_receiving_yards",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 1.877,
+          "side": "over",
+          "line": 28.5,
+          "reason": "CLE 24th-ranked TE D; real red-zone role.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "CLE",
+              "pos": "TE",
+              "stat": "rec_yds",
+              "role": "def",
+              "claimed_rank": 24
+            }
+          ]
+        },
+        {
+          "player": "Aaron Rodgers",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 1.877,
+          "side": "under",
+          "line": 212.5,
+          "reason": "CLE pass D ranks 10th, tougher than Rodgers' rate.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "CLE",
+              "pos": "QB",
+              "stat": "pass_yds",
+              "role": "def",
+              "claimed_rank": 10
+            }
+          ]
+        },
+        {
+          "player": "James Cook",
+          "market_key": "player_rushing_yards",
+          "canonical_event_id": "5a6a506f9ff2a30f",
+          "price": 1.877,
+          "side": "over",
+          "line": 87.5,
+          "reason": "Elite volume vs NE's mid-tier run D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "NE",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 16
+            }
+          ]
+        },
+        {
+          "player": "Josh Allen",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "5a6a506f9ff2a30f",
+          "price": 1.877,
+          "side": "under",
+          "line": 242.5,
+          "reason": "NE pass D ranks 6th, elite.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "NE",
+              "pos": "QB",
+              "stat": "pass_yds",
+              "role": "def",
+              "claimed_rank": 6
+            }
+          ]
+        },
+        {
+          "player": "Josh Downs",
+          "market_key": "player_receiving_yards",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 1.877,
+          "side": "over",
+          "line": 64.5,
+          "reason": "WAS 30th-ranked WR defense.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "WAS",
+              "pos": "WR",
+              "stat": "rec_yds",
+              "role": "def",
+              "claimed_rank": 30
+            }
+          ]
+        },
+        {
+          "player": "Jonathan Taylor",
+          "market_key": "player_rushing_yards",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 1.877,
+          "side": "under",
+          "line": 90.5,
+          "reason": "WAS run D ranks 3rd, elite.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "WAS",
+              "pos": "RB",
+              "stat": "rush_yds",
+              "role": "def",
+              "claimed_rank": 3
+            }
+          ]
+        }
+      ],
+      "mismatches": []
+    }
+  },
+  "td_parlays": {
+    "3": {
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "result": {
+        "legs": 3,
+        "combined_decimal": 5.2051,
+        "combined_american": 421,
+        "stake": 10,
+        "payout": 52.05,
+        "profit": 42.05,
+        "same_game_legs": false
+      },
+      "legs": [
+        {
+          "player": "Jonathan Taylor",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 1.345,
+          "side": "over",
+          "line": null,
+          "reason": "80% of IND's red-zone carries; WAS's RB rush-TD defense ranks 7th, tough but Taylor's workload share dominates regardless.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "WAS",
+              "pos": "RB",
+              "stat": "rush_td",
+              "role": "def",
+              "claimed_rank": 7
+            }
+          ]
+        },
+        {
+          "player": "James Cook",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "5a6a506f9ff2a30f",
+          "price": 1.8,
+          "side": "over",
+          "line": null,
+          "reason": "56.2% of BUF's red-zone carries, 2 rush TDs already; NE's RB rush-TD defense ranks a mid-tier 22nd.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "NE",
+              "pos": "RB",
+              "stat": "rush_td",
+              "role": "def",
+              "claimed_rank": 22
+            }
+          ]
+        },
+        {
+          "player": "Quinshon Judkins",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 2.15,
+          "side": "over",
+          "line": null,
+          "reason": "54.5% of CLE's red-zone carries; PIT's RB rush-TD defense ranks a moderate 14th.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "PIT",
+              "pos": "RB",
+              "stat": "rush_td",
+              "role": "def",
+              "claimed_rank": 14
+            }
+          ]
+        }
+      ],
+      "mismatches": []
+    },
+    "4": {
+      "valid": true,
+      "errors": [],
+      "warnings": [
+        "1 game(s) contribute more than one leg to this parlay: ['b9550fb6e56e66e2']. The combined price below is a naive cross-game-style product, NOT a real same-game-parlay (SGP) quote \u2014 correlated same-game legs are not independent, and this API does not expose FanDuel's actual SGP pricing."
+      ],
+      "result": {
+        "legs": 4,
+        "combined_decimal": 11.4513,
+        "combined_american": 1045,
+        "stake": 10,
+        "payout": 114.51,
+        "profit": 104.51,
+        "same_game_legs": true
+      },
+      "legs": [
+        {
+          "player": "Jonathan Taylor",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 1.345,
+          "side": "over",
+          "line": null,
+          "reason": "80% of IND's red-zone carries vs WAS's 7th-ranked rush-TD D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "WAS",
+              "pos": "RB",
+              "stat": "rush_td",
+              "role": "def",
+              "claimed_rank": 7
+            }
+          ]
+        },
+        {
+          "player": "James Cook",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "5a6a506f9ff2a30f",
+          "price": 1.8,
+          "side": "over",
+          "line": null,
+          "reason": "56.2% red-zone carry share vs NE's 22nd-ranked rush-TD D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "NE",
+              "pos": "RB",
+              "stat": "rush_td",
+              "role": "def",
+              "claimed_rank": 22
+            }
+          ]
+        },
+        {
+          "player": "Quinshon Judkins",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 2.15,
+          "side": "over",
+          "line": null,
+          "reason": "54.5% red-zone carry share vs PIT's 14th-ranked rush-TD D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "PIT",
+              "pos": "RB",
+              "stat": "rush_td",
+              "role": "def",
+              "claimed_rank": 14
+            }
+          ]
+        },
+        {
+          "player": "Jacory Croskey-Merritt",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 2.2,
+          "side": "over",
+          "line": null,
+          "reason": "29.4% red-zone carry share; IND's RB rush-TD defense ranks 30th, one of the worst in the league.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "IND",
+              "pos": "RB",
+              "stat": "rush_td",
+              "role": "def",
+              "claimed_rank": 30
+            }
+          ]
+        }
+      ],
+      "mismatches": []
+    },
+    "5": {
+      "valid": true,
+      "errors": [],
+      "warnings": [
+        "1 game(s) contribute more than one leg to this parlay: ['b9550fb6e56e66e2']. The combined price below is a naive cross-game-style product, NOT a real same-game-parlay (SGP) quote \u2014 correlated same-game legs are not independent, and this API does not expose FanDuel's actual SGP pricing."
+      ],
+      "result": {
+        "legs": 5,
+        "combined_decimal": 41.2248,
+        "combined_american": 4022,
+        "stake": 10,
+        "payout": 412.25,
+        "profit": 402.25,
+        "same_game_legs": true
+      },
+      "legs": [
+        {
+          "player": "Jonathan Taylor",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 1.345,
+          "side": "over",
+          "line": null,
+          "reason": "80% of IND's red-zone carries vs WAS's 7th-ranked rush-TD D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "WAS",
+              "pos": "RB",
+              "stat": "rush_td",
+              "role": "def",
+              "claimed_rank": 7
+            }
+          ]
+        },
+        {
+          "player": "James Cook",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "5a6a506f9ff2a30f",
+          "price": 1.8,
+          "side": "over",
+          "line": null,
+          "reason": "56.2% red-zone carry share vs NE's 22nd-ranked rush-TD D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "NE",
+              "pos": "RB",
+              "stat": "rush_td",
+              "role": "def",
+              "claimed_rank": 22
+            }
+          ]
+        },
+        {
+          "player": "Quinshon Judkins",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 2.15,
+          "side": "over",
+          "line": null,
+          "reason": "54.5% red-zone carry share vs PIT's 14th-ranked rush-TD D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "PIT",
+              "pos": "RB",
+              "stat": "rush_td",
+              "role": "def",
+              "claimed_rank": 14
+            }
+          ]
+        },
+        {
+          "player": "Jacory Croskey-Merritt",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 2.2,
+          "side": "over",
+          "line": null,
+          "reason": "29.4% red-zone carry share vs IND's 30th-ranked rush-TD D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "IND",
+              "pos": "RB",
+              "stat": "rush_td",
+              "role": "def",
+              "claimed_rank": 30
+            }
+          ]
+        },
+        {
+          "player": "Stefon Diggs",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 3.6,
+          "side": "over",
+          "line": null,
+          "reason": "4 red-zone targets, 3 TDs already (near-automatic conversion); IND's WR TD defense ranks a mid 20th.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "IND",
+              "pos": "WR",
+              "stat": "td",
+              "role": "def",
+              "claimed_rank": 20
+            }
+          ]
+        }
+      ],
+      "mismatches": []
+    },
+    "6": {
+      "valid": true,
+      "errors": [],
+      "warnings": [
+        "2 game(s) contribute more than one leg to this parlay: ['b9550fb6e56e66e2', '1c79ffc934ef3e24']. The combined price below is a naive cross-game-style product, NOT a real same-game-parlay (SGP) quote \u2014 correlated same-game legs are not independent, and this API does not expose FanDuel's actual SGP pricing."
+      ],
+      "result": {
+        "legs": 6,
+        "combined_decimal": 169.0216,
+        "combined_american": 16802,
+        "stake": 10,
+        "payout": 1690.22,
+        "profit": 1680.22,
+        "same_game_legs": true
+      },
+      "legs": [
+        {
+          "player": "Jonathan Taylor",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 1.345,
+          "side": "over",
+          "line": null,
+          "reason": "80% of IND's red-zone carries vs WAS's 7th-ranked rush-TD D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "WAS",
+              "pos": "RB",
+              "stat": "rush_td",
+              "role": "def",
+              "claimed_rank": 7
+            }
+          ]
+        },
+        {
+          "player": "James Cook",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "5a6a506f9ff2a30f",
+          "price": 1.8,
+          "side": "over",
+          "line": null,
+          "reason": "56.2% red-zone carry share vs NE's 22nd-ranked rush-TD D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "NE",
+              "pos": "RB",
+              "stat": "rush_td",
+              "role": "def",
+              "claimed_rank": 22
+            }
+          ]
+        },
+        {
+          "player": "Quinshon Judkins",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 2.15,
+          "side": "over",
+          "line": null,
+          "reason": "54.5% red-zone carry share vs PIT's 14th-ranked rush-TD D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "PIT",
+              "pos": "RB",
+              "stat": "rush_td",
+              "role": "def",
+              "claimed_rank": 14
+            }
+          ]
+        },
+        {
+          "player": "Jacory Croskey-Merritt",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 2.2,
+          "side": "over",
+          "line": null,
+          "reason": "29.4% red-zone carry share vs IND's 30th-ranked rush-TD D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "IND",
+              "pos": "RB",
+              "stat": "rush_td",
+              "role": "def",
+              "claimed_rank": 30
+            }
+          ]
+        },
+        {
+          "player": "Stefon Diggs",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 3.6,
+          "side": "over",
+          "line": null,
+          "reason": "4 red-zone targets, 3 TDs already vs IND's 20th-ranked WR TD D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "IND",
+              "pos": "WR",
+              "stat": "td",
+              "role": "def",
+              "claimed_rank": 20
+            }
+          ]
+        },
+        {
+          "player": "Denzel Boston",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 4.1,
+          "side": "over",
+          "line": null,
+          "reason": "30.8% red-zone target share, the highest of any player in this game; PIT's WR TD defense ranks a tougher 10th.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "PIT",
+              "pos": "WR",
+              "stat": "td",
+              "role": "def",
+              "claimed_rank": 10
+            }
+          ]
+        }
+      ],
+      "mismatches": []
+    },
+    "7": {
+      "valid": true,
+      "errors": [],
+      "warnings": [
+        "2 game(s) contribute more than one leg to this parlay: ['b9550fb6e56e66e2', '1c79ffc934ef3e24']. The combined price below is a naive cross-game-style product, NOT a real same-game-parlay (SGP) quote \u2014 correlated same-game legs are not independent, and this API does not expose FanDuel's actual SGP pricing."
+      ],
+      "result": {
+        "legs": 7,
+        "combined_decimal": 777.4995,
+        "combined_american": 77650,
+        "stake": 10,
+        "payout": 7774.99,
+        "profit": 7764.99,
+        "same_game_legs": true
+      },
+      "legs": [
+        {
+          "player": "Jonathan Taylor",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 1.345,
+          "side": "over",
+          "line": null,
+          "reason": "80% of IND's red-zone carries vs WAS's 7th-ranked rush-TD D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "WAS",
+              "pos": "RB",
+              "stat": "rush_td",
+              "role": "def",
+              "claimed_rank": 7
+            }
+          ]
+        },
+        {
+          "player": "James Cook",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "5a6a506f9ff2a30f",
+          "price": 1.8,
+          "side": "over",
+          "line": null,
+          "reason": "56.2% red-zone carry share vs NE's 22nd-ranked rush-TD D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "NE",
+              "pos": "RB",
+              "stat": "rush_td",
+              "role": "def",
+              "claimed_rank": 22
+            }
+          ]
+        },
+        {
+          "player": "Quinshon Judkins",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 2.15,
+          "side": "over",
+          "line": null,
+          "reason": "54.5% red-zone carry share vs PIT's 14th-ranked rush-TD D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "PIT",
+              "pos": "RB",
+              "stat": "rush_td",
+              "role": "def",
+              "claimed_rank": 14
+            }
+          ]
+        },
+        {
+          "player": "Jacory Croskey-Merritt",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 2.2,
+          "side": "over",
+          "line": null,
+          "reason": "29.4% red-zone carry share vs IND's 30th-ranked rush-TD D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "IND",
+              "pos": "RB",
+              "stat": "rush_td",
+              "role": "def",
+              "claimed_rank": 30
+            }
+          ]
+        },
+        {
+          "player": "Stefon Diggs",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 3.6,
+          "side": "over",
+          "line": null,
+          "reason": "4 red-zone targets, 3 TDs already vs IND's 20th-ranked WR TD D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "IND",
+              "pos": "WR",
+              "stat": "td",
+              "role": "def",
+              "claimed_rank": 20
+            }
+          ]
+        },
+        {
+          "player": "Denzel Boston",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 4.1,
+          "side": "over",
+          "line": null,
+          "reason": "30.8% red-zone target share vs PIT's 10th-ranked WR TD D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "PIT",
+              "pos": "WR",
+              "stat": "td",
+              "role": "def",
+              "claimed_rank": 10
+            }
+          ]
+        },
+        {
+          "player": "Pat Freiermuth",
+          "market_key": "player_anytime_td",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 4.6,
+          "side": "over",
+          "line": null,
+          "reason": "16.7% red-zone target share vs CLE's 11th-ranked TE TD D.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "CLE",
+              "pos": "TE",
+              "stat": "td",
+              "role": "def",
+              "claimed_rank": 11
+            }
+          ]
+        }
+      ],
+      "mismatches": []
+    }
+  },
+  "spread_parlays": {
+    "3": {
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "result": {
+        "legs": 3,
+        "combined_decimal": 6.7577,
+        "combined_american": 576,
+        "stake": 10,
+        "payout": 67.58,
+        "profit": 57.58,
+        "same_game_legs": false
+      },
+      "legs": [
+        {
+          "player": "Pittsburgh Steelers",
+          "market_key": "spreads",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 1.893,
+          "point": -2.5,
+          "reason": "Stronger, more stable defense and rushing-matchup edge; PIT is 58.8% ATS overall, 56.0% ATS on the road.",
+          "evidence_check": []
+        },
+        {
+          "player": "Baltimore Ravens",
+          "market_key": "spreads",
+          "canonical_event_id": "ac76e69da9802c5f",
+          "price": 1.909,
+          "point": -11.5,
+          "reason": "Statistically dominant matchup vs TEN's run funnel; BAL is 51.5% ATS overall but only 45.1% ATS at home \u2014 a real caution flag at this number.",
+          "evidence_check": []
+        },
+        {
+          "player": "Buffalo Bills",
+          "market_key": "spreads",
+          "canonical_event_id": "5a6a506f9ff2a30f",
+          "price": 1.87,
+          "point": -6.5,
+          "reason": "Top-scoring offense facing a shaky NE pass D long-term floor; BUF is 56.0% ATS overall, 56.9% ATS at home.",
+          "evidence_check": []
+        }
+      ],
+      "mismatches": []
+    },
+    "4": {
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "result": {
+        "legs": 4,
+        "combined_decimal": 12.9004,
+        "combined_american": 1190,
+        "stake": 10,
+        "payout": 129.0,
+        "profit": 119.0,
+        "same_game_legs": false
+      },
+      "legs": [
+        {
+          "player": "Pittsburgh Steelers",
+          "market_key": "spreads",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 1.893,
+          "point": -2.5,
+          "reason": "Stronger defense and rushing edge; 58.8% ATS overall, 56.0% ATS on the road.",
+          "evidence_check": []
+        },
+        {
+          "player": "Baltimore Ravens",
+          "market_key": "spreads",
+          "canonical_event_id": "ac76e69da9802c5f",
+          "price": 1.909,
+          "point": -11.5,
+          "reason": "Dominant matchup vs TEN; 51.5% ATS overall, only 45.1% ATS at home.",
+          "evidence_check": []
+        },
+        {
+          "player": "Buffalo Bills",
+          "market_key": "spreads",
+          "canonical_event_id": "5a6a506f9ff2a30f",
+          "price": 1.87,
+          "point": -6.5,
+          "reason": "Top-scoring offense; 56.0% ATS overall, 56.9% ATS at home.",
+          "evidence_check": []
+        },
+        {
+          "player": "Washington Commanders",
+          "market_key": "spreads",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 1.909,
+          "point": 3.5,
+          "reason": "Genuine game-script uncertainty (Daniels availability, IND's 30th-ranked D) argues for the points; WAS is 48.5% ATS overall, 49.0% ATS at home.",
+          "evidence_check": []
+        }
+      ],
+      "mismatches": []
+    },
+    "5": {
+      "valid": false,
+      "errors": [
+        "Parlay declared as 5-team but has 4 legs."
+      ],
+      "warnings": [],
+      "result": {
+        "legs": 4,
+        "combined_decimal": 12.9004,
+        "combined_american": 1190,
+        "stake": 10,
+        "payout": 129.0,
+        "profit": 119.0,
+        "same_game_legs": false
+      },
+      "legs": [
+        {
+          "player": "Pittsburgh Steelers",
+          "market_key": "spreads",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 1.893,
+          "point": -2.5,
+          "reason": "Stronger defense and rushing edge; 58.8% ATS overall, 56.0% ATS on the road. NOTE: only 4 real spread markets exist on this slate \u2014 no 5th independent leg is available.",
+          "evidence_check": []
+        },
+        {
+          "player": "Baltimore Ravens",
+          "market_key": "spreads",
+          "canonical_event_id": "ac76e69da9802c5f",
+          "price": 1.909,
+          "point": -11.5,
+          "reason": "Dominant matchup vs TEN; 51.5% ATS overall, only 45.1% ATS at home.",
+          "evidence_check": []
+        },
+        {
+          "player": "Buffalo Bills",
+          "market_key": "spreads",
+          "canonical_event_id": "5a6a506f9ff2a30f",
+          "price": 1.87,
+          "point": -6.5,
+          "reason": "Top-scoring offense; 56.0% ATS overall, 56.9% ATS at home.",
+          "evidence_check": []
+        },
+        {
+          "player": "Washington Commanders",
+          "market_key": "spreads",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 1.909,
+          "point": 3.5,
+          "reason": "Game-script uncertainty argues for the points; 48.5% ATS overall, 49.0% ATS at home.",
+          "evidence_check": []
+        }
+      ],
+      "mismatches": []
+    },
+    "6": {
+      "valid": false,
+      "errors": [
+        "Parlay declared as 6-team but has 4 legs."
+      ],
+      "warnings": [],
+      "result": {
+        "legs": 4,
+        "combined_decimal": 12.9004,
+        "combined_american": 1190,
+        "stake": 10,
+        "payout": 129.0,
+        "profit": 119.0,
+        "same_game_legs": false
+      },
+      "legs": [
+        {
+          "player": "Pittsburgh Steelers",
+          "market_key": "spreads",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 1.893,
+          "point": -2.5,
+          "reason": "Stronger defense and rushing edge; 58.8% ATS overall, 56.0% ATS on the road. NOTE: only 4 real spread markets exist on this slate \u2014 no 6th independent leg is available.",
+          "evidence_check": []
+        },
+        {
+          "player": "Baltimore Ravens",
+          "market_key": "spreads",
+          "canonical_event_id": "ac76e69da9802c5f",
+          "price": 1.909,
+          "point": -11.5,
+          "reason": "Dominant matchup vs TEN; 51.5% ATS overall, only 45.1% ATS at home.",
+          "evidence_check": []
+        },
+        {
+          "player": "Buffalo Bills",
+          "market_key": "spreads",
+          "canonical_event_id": "5a6a506f9ff2a30f",
+          "price": 1.87,
+          "point": -6.5,
+          "reason": "Top-scoring offense; 56.0% ATS overall, 56.9% ATS at home.",
+          "evidence_check": []
+        },
+        {
+          "player": "Washington Commanders",
+          "market_key": "spreads",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 1.909,
+          "point": 3.5,
+          "reason": "Game-script uncertainty argues for the points; 48.5% ATS overall, 49.0% ATS at home.",
+          "evidence_check": []
+        }
+      ],
+      "mismatches": []
+    },
+    "7": {
+      "valid": false,
+      "errors": [
+        "Parlay declared as 7-team but has 4 legs."
+      ],
+      "warnings": [],
+      "result": {
+        "legs": 4,
+        "combined_decimal": 12.9004,
+        "combined_american": 1190,
+        "stake": 10,
+        "payout": 129.0,
+        "profit": 119.0,
+        "same_game_legs": false
+      },
+      "legs": [
+        {
+          "player": "Pittsburgh Steelers",
+          "market_key": "spreads",
+          "canonical_event_id": "1c79ffc934ef3e24",
+          "price": 1.893,
+          "point": -2.5,
+          "reason": "Stronger defense and rushing edge; 58.8% ATS overall, 56.0% ATS on the road. NOTE: only 4 real spread markets exist on this slate \u2014 no 7th independent leg is available.",
+          "evidence_check": []
+        },
+        {
+          "player": "Baltimore Ravens",
+          "market_key": "spreads",
+          "canonical_event_id": "ac76e69da9802c5f",
+          "price": 1.909,
+          "point": -11.5,
+          "reason": "Dominant matchup vs TEN; 51.5% ATS overall, only 45.1% ATS at home.",
+          "evidence_check": []
+        },
+        {
+          "player": "Buffalo Bills",
+          "market_key": "spreads",
+          "canonical_event_id": "5a6a506f9ff2a30f",
+          "price": 1.87,
+          "point": -6.5,
+          "reason": "Top-scoring offense; 56.0% ATS overall, 56.9% ATS at home.",
+          "evidence_check": []
+        },
+        {
+          "player": "Washington Commanders",
+          "market_key": "spreads",
+          "canonical_event_id": "b9550fb6e56e66e2",
+          "price": 1.909,
+          "point": 3.5,
+          "reason": "Game-script uncertainty argues for the points; 48.5% ATS overall, 49.0% ATS at home.",
+          "evidence_check": []
+        }
+      ],
+      "mismatches": []
+    }
+  },
+  "ats_records": {
+    "BAL": {
+      "since": 2020,
+      "overall": {
+        "w": 52,
+        "l": 49,
+        "p": 3,
+        "pct": 51.5
+      },
+      "home": {
+        "w": 23,
+        "l": 28,
+        "p": 1,
+        "pct": 45.1
+      },
+      "away": {
+        "w": 29,
+        "l": 21,
+        "p": 2,
+        "pct": 58.0
+      }
+    },
+    "BUF": {
+      "since": 2020,
+      "overall": {
+        "w": 56,
+        "l": 44,
+        "p": 3,
+        "pct": 56.0
+      },
+      "home": {
+        "w": 29,
+        "l": 22,
+        "p": 2,
+        "pct": 56.9
+      },
+      "away": {
+        "w": 27,
+        "l": 22,
+        "p": 1,
+        "pct": 55.1
+      }
+    },
+    "CLE": {
+      "since": 2020,
+      "overall": {
+        "w": 44,
+        "l": 58,
+        "p": 2,
+        "pct": 43.1
+      },
+      "home": {
+        "w": 26,
+        "l": 25,
+        "p": 1,
+        "pct": 51.0
+      },
+      "away": {
+        "w": 18,
+        "l": 33,
+        "p": 1,
+        "pct": 35.3
+      }
+    },
+    "IND": {
+      "since": 2020,
+      "overall": {
+        "w": 53,
+        "l": 51,
+        "p": 0,
+        "pct": 51.0
+      },
+      "home": {
+        "w": 24,
+        "l": 29,
+        "p": 0,
+        "pct": 45.3
+      },
+      "away": {
+        "w": 29,
+        "l": 22,
+        "p": 0,
+        "pct": 56.9
+      }
+    },
+    "NE": {
+      "since": 2020,
+      "overall": {
+        "w": 49,
+        "l": 51,
+        "p": 4,
+        "pct": 49.0
+      },
+      "home": {
+        "w": 24,
+        "l": 27,
+        "p": 1,
+        "pct": 47.1
+      },
+      "away": {
+        "w": 25,
+        "l": 24,
+        "p": 3,
+        "pct": 51.0
+      }
+    },
+    "PIT": {
+      "since": 2020,
+      "overall": {
+        "w": 60,
+        "l": 42,
+        "p": 2,
+        "pct": 58.8
+      },
+      "home": {
+        "w": 32,
+        "l": 20,
+        "p": 1,
+        "pct": 61.5
+      },
+      "away": {
+        "w": 28,
+        "l": 22,
+        "p": 1,
+        "pct": 56.0
+      }
+    },
+    "TEN": {
+      "since": 2020,
+      "overall": {
+        "w": 43,
+        "l": 57,
+        "p": 4,
+        "pct": 43.0
+      },
+      "home": {
+        "w": 23,
+        "l": 27,
+        "p": 3,
+        "pct": 46.0
+      },
+      "away": {
+        "w": 20,
+        "l": 30,
+        "p": 1,
+        "pct": 40.0
+      }
+    },
+    "WAS": {
+      "since": 2020,
+      "overall": {
+        "w": 49,
+        "l": 52,
+        "p": 3,
+        "pct": 48.5
+      },
+      "home": {
+        "w": 24,
+        "l": 25,
+        "p": 2,
+        "pct": 49.0
+      },
+      "away": {
+        "w": 25,
+        "l": 27,
+        "p": 1,
+        "pct": 48.1
+      }
+    }
+  }
+}

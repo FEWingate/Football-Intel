@@ -1,0 +1,35 @@
+{
+  "generated_at": "2026-10-01T23:23:13.968129+00:00",
+  "model": "claude-sonnet-5",
+  "max_tokens": 96000,
+  "games_included": [
+    "PIT_CLE",
+    "IND_WAS",
+    "TEN_BAL",
+    "NE_BUF",
+    "NYJ_CHI",
+    "JAX_CIN",
+    "DAL_HOU",
+    "ARI_NYG",
+    "LAR_PHI",
+    "GB_TB",
+    "MIA_MIN",
+    "KC_LV",
+    "LAC_SEA",
+    "DEN_SF",
+    "DET_CAR",
+    "ATL_NO"
+  ],
+  "whole_week_parlays_only": true,
+  "batches_used": [
+    "props_parlay_report_batch4_LAC.json",
+    "props_parlay_report_batch4_LAR.json",
+    "props_parlay_report_batch4_NYJ.json",
+    "props_parlay_report_batch4_PIT.json"
+  ],
+  "user_char_count": 298951,
+  "usage": {
+    "input_tokens": 172448,
+    "output_tokens": 63920
+  }
+}
