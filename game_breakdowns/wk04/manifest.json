@@ -83,6 +83,34 @@
       "season": 2026,
       "week": 4,
       "generated_at": "2026-09-30T23:31:01.205707+00:00"
+    },
+    "LAC_SEA": {
+      "away": "LAC",
+      "home": "SEA",
+      "season": 2026,
+      "week": 4,
+      "generated_at": "2026-09-30T23:52:49.583519+00:00"
+    },
+    "DEN_SF": {
+      "away": "DEN",
+      "home": "SF",
+      "season": 2026,
+      "week": 4,
+      "generated_at": "2026-10-01T00:05:36.208487+00:00"
+    },
+    "DET_CAR": {
+      "away": "DET",
+      "home": "CAR",
+      "season": 2026,
+      "week": 4,
+      "generated_at": "2026-10-01T00:18:06.998422+00:00"
+    },
+    "ATL_NO": {
+      "away": "ATL",
+      "home": "NO",
+      "season": 2026,
+      "week": 4,
+      "generated_at": "2026-10-01T00:30:47.628111+00:00"
     }
   }
 }
