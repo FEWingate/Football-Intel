@@ -544,6 +544,268 @@ def verify_favorite_ou(raw, real_by_key, evidence_by_game=None):
     return {"overs": overs, "unders": unders}, errors
 
 
+# REAL ADDITION (2026-10-01), per Frank's direct request: Parlays, TD
+# Parlays, and Spread Parlays were being built inside the SAME per-
+# batch call as Prop Breakdown/Favorite O/U — meaning a batch's "best
+# 5-team parlay" could only ever draw legs from that one batch's 4
+# games, never genuinely the best across the whole real slate. This
+# helper is the validation logic for one parlay family (regular/TD/
+# spread), factored out so it can run identically for a normal,
+# per-batch run (see the main() loop below, left untouched) AND for
+# the new whole-week-only run (run_parlays_only() below) without
+# copy-pasting the same real checks twice and risking the two drifting
+# apart.
+def validate_parlay_family(report_text, tag_prefix, real_by_key, evidence_by_game, stake,
+                            require_td=False, require_spread=False, label="PARLAY"):
+    blocks = extract_parlay_blocks(report_text, tag_prefix=tag_prefix)
+    results = {}
+    for size in PARLAY_SIZES:
+        legs = blocks[size]
+        print(f"\n{size}-TEAM {label} VALIDATION:")
+        if legs is None:
+            print(f"  FAILED — could not find or parse a {tag_prefix}_{size}_TEAM JSON "
+                  f"block. This parlay has NOT been checked. Do not trust it.")
+            results[size] = {"valid": False, "errors": ["Could not parse this parlay's JSON block."],
+                              "warnings": [], "result": None, "legs": None, "mismatches": []}
+            continue
+        verified_legs, mismatches = verify_legs_against_source(legs, real_by_key)
+        if mismatches:
+            print(f"  {len(mismatches)} leg(s) do NOT exist in the real FanDuel data "
+                  f"provided — Coeus referenced something not actually on the board:")
+            for m in mismatches:
+                print(f"    - {m}")
+        is_valid, errors, warnings, result = validate_parlay(
+            verified_legs, expected_size=size, stake=stake,
+            require_td=require_td, require_spread=require_spread)
+        for leg in verified_legs:
+            leg_ev_mismatches = verify_evidence_check(leg.get("evidence_check"), evidence_by_game)
+            if leg_ev_mismatches:
+                for m in leg_ev_mismatches:
+                    errors.append(f"{leg.get('player')}: {m}")
+                is_valid = False
+        passed = is_valid and not mismatches
+        if passed:
+            print(f"  PASSED — {result['legs']} real legs, combined odds "
+                  f"{result['combined_decimal']} (American {result['combined_american']:+d}), "
+                  f"${stake:.0f} stake -> ${result['payout']:.2f} payout.")
+        else:
+            print(f"  FAILED:")
+            for e in errors:
+                print(f"    - {e}")
+        for w in warnings:
+            print(f"  NOTE: {w}")
+        results[size] = {
+            "valid": passed, "errors": errors, "warnings": warnings,
+            "result": result, "legs": verified_legs,
+            "mismatches": [m for m in mismatches],
+        }
+    return results
+
+
+WHOLE_WEEK_TASK_INSTRUCTION = """\
+Build ONLY real Parlays for the FULL real slate below — every game that \
+has a finished Game Breakdown and real FanDuel data this week, not a \
+subset. This is a SEPARATE, whole-week-only run: Coeus Prop Breakdown \
+and Favorite Overs/Unders have ALREADY been generated for every one of \
+these games (in earlier, separate batched runs — see the REAL PICKS \
+ALREADY MADE THIS WEEK section below) and are NOT requested here. Your \
+job is to pick the best real combinations ACROSS THE WHOLE SLATE, not \
+limited to any one batch's games.
+
+Produce exactly these three sections, each with 3/4/5/6/7-team real \
+parlays, following the Props & Parlay Report Standard's own rules for \
+each (no fabricated legs, real prices only, real same-game-overlap \
+warnings, honest caps when a market family doesn't have enough REAL, \
+non-overlapping legs to support a given size):
+1. Five real line-based Parlays (Section 6 of the Standard).
+2. Five real Anytime TD Parlays (Section 7 of the Standard).
+3. Five real Spread Parlays (Section 8 of the Standard), using the real \
+team ATS records below.
+
+Every leg must come from the real FanDuel data below, and should be \
+grounded in the real, already-made picks and reasoning below wherever \
+one exists for that player/market — you may also use any other real, \
+live FanDuel market on the slate, not only an already-picked one, since \
+a genuinely strong week-wide parlay leg might not have been anyone's \
+single favorite pick in its own 4-game batch. Lists and short entries \
+only, per the No Paragraphs Rule. Every JSON block specified for \
+Sections 6, 7, and 8 is required, not optional.
+
+=== REAL DATA COVERAGE (what you can actually trust right now) ===
+"""
+
+
+def run_parlays_only(args, games, fanduel_data, coverage, ats_records):
+    """The whole-week-only parlay run (see WHOLE_WEEK_TASK_INSTRUCTION
+    above for the real reasoning). Deliberately skips the heavy stuff
+    (full evidence packages, full Game Breakdown prose) that a normal
+    run sends — a parlay leg doesn't need a player's whole week-by-week
+    log, it needs the real odds plus the real, already-vetted analysis
+    that earlier batches already produced. `games`/`fanduel_data`/
+    `coverage`/`ats_records` are passed in from main() exactly as
+    already built there (the normal, whole-slate-by-default case, since
+    this mode refuses --games/--away/--home — see main()'s check)."""
+    real_by_key = build_real_index(fanduel_data)
+
+    # Lightweight evidence_by_game: loaded ONLY for verify_evidence_check's
+    # week/opponent resolution (a few small fields), never sent to the
+    # API and never trimmed — the full per-player log data this would
+    # otherwise carry is exactly the heavy cost this mode exists to skip.
+    evidence_by_game = {}
+    for _, away, home in games:
+        evidence, _ = load_evidence_for_game(away, home)
+        if evidence:
+            evidence_by_game[(away, home)] = evidence
+
+    # Gather every already-generated batch for this week (Prop Breakdown
+    # + Favorite O/U + their real reasoning) via the same manifest.json
+    # batch reports already write — real, already-vetted analysis to
+    # ground parlay legs in, without resending any raw evidence.
+    folders_used = {folder for folder, _, _ in games}
+    if len(folders_used) != 1:
+        sys.exit(f"FATAL: --parlays-only expects all of this week's finished Game Breakdowns "
+                  f"to share one real week folder — found {sorted(folders_used)}.")
+    out_dir = f"props_reports/{next(iter(folders_used))}"
+    manifest = load_json(f"{out_dir}/manifest.json") or {"batches": {}}
+    combined_per_game, combined_overs, combined_unders = [], [], []
+    batches_used = []
+    for filename in sorted(manifest["batches"]):
+        if filename == "props_parlay_report_WHOLEWEEK.json":
+            continue  # this run's own prior output, re-running — not a real picks batch
+        batch_report = load_json(f"{out_dir}/{filename}")
+        if not batch_report:
+            continue
+        pb = batch_report.get("prop_breakdown") or {}
+        combined_per_game.extend(pb.get("per_game") or [])
+        fou = batch_report.get("favorite_ou") or {}
+        combined_overs.extend(fou.get("overs") or [])
+        combined_unders.extend(fou.get("unders") or [])
+        batches_used.append(filename)
+    if not batches_used:
+        sys.exit(f"FATAL: no existing batch reports found in {out_dir}/manifest.json — run "
+                 f"generate_props_report.py for this week's batches first; --parlays-only "
+                 f"builds on their already-made picks rather than re-deriving them.")
+    print(f"Pulling real, already-made picks from {len(batches_used)} existing batch(es): "
+          f"{', '.join(batches_used)}")
+    already_made_picks = {
+        "per_game": combined_per_game,
+        "favorite_overs": combined_overs,
+        "favorite_unders": combined_unders,
+    }
+
+    master_prompt = load_text(MASTER_PROMPT_PATH)
+    props_standard = load_text(PROPS_STANDARD_PATH)
+    system = [
+        {"type": "text", "text": master_prompt, "cache_control": {"type": "ephemeral"}},
+        {"type": "text", "text": props_standard, "cache_control": {"type": "ephemeral"}},
+    ]
+
+    fanduel_json = json.dumps(fanduel_data, separators=(",", ":"))
+    user_content = (
+        WHOLE_WEEK_TASK_INSTRUCTION + coverage_summary_text(coverage) +
+        "\n\n=== REAL PICKS ALREADY MADE THIS WEEK (Prop Breakdown + Favorite O/U, every "
+        "game, from earlier batched runs — real, already-vetted analysis to ground parlay "
+        "legs in) ===\n" + json.dumps(already_made_picks, separators=(",", ":")) +
+        "\n\n=== REAL FANDUEL GAME LINES + PROPS DATA (every game on this week's slate) ===\n" +
+        fanduel_json +
+        "\n\n=== REAL TEAM ATS RECORDS (against the spread, real completed games with a real "
+        "closing line, every team on this slate — same data as teams.html's ATS RECORD tab) ===\n" +
+        json.dumps(ats_records, separators=(",", ":"))
+    )
+
+    out_stem = f"{out_dir}/props_parlay_report_WHOLEWEEK"
+    prompt_record = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "model": args.model, "max_tokens": args.max_tokens,
+        "games_included": [f"{a}_{h}" for _, a, h in games],
+        "whole_week_parlays_only": True,
+        "batches_used": batches_used,
+        "user_char_count": len(user_content),
+    }
+    with open(f"{out_stem}_prompt.json", "w") as f:
+        json.dump(prompt_record, f, indent=2)
+    print(f"Rough input size: ~{len(user_content) // 4:,} tokens (estimate only)")
+
+    if args.dry_run:
+        with open(f"{out_stem}_prompt_full.txt", "w") as f:
+            f.write("=== SYSTEM (Master Prompt) ===\n\n" + master_prompt +
+                     "\n\n=== SYSTEM (Props & Parlay Standard) ===\n\n" + props_standard +
+                     "\n\n=== USER MESSAGE ===\n\n" + user_content)
+        print(f"\nDRY RUN — no API call made. Prompt written to {out_stem}_prompt_full.txt")
+        return
+
+    try:
+        import anthropic
+    except ImportError:
+        sys.exit("FATAL: pip install anthropic --break-system-packages")
+    if not os.environ.get("ANTHROPIC_API_KEY"):
+        sys.exit("FATAL: ANTHROPIC_API_KEY not set.")
+
+    client = anthropic.Anthropic()
+    print(f"\nCalling {args.model} (streaming)...\n")
+    with client.messages.stream(
+        model=args.model, max_tokens=args.max_tokens, system=system,
+        messages=[{"role": "user", "content": user_content}],
+    ) as stream:
+        for text in stream.text_stream:
+            print(text, end="", flush=True)
+        response = stream.get_final_message()
+    print()
+
+    report_text = "".join(block.text for block in response.content if block.type == "text")
+    print(f"stop_reason: {response.stop_reason}")
+    if response.stop_reason == "max_tokens":
+        print("WARNING: hit the max_tokens ceiling before finishing — INCOMPLETE.")
+    if not report_text.strip():
+        sys.exit("FATAL: empty response, nothing written.")
+
+    with open(f"{out_stem}.md", "w") as f:
+        f.write(report_text)
+    usage = response.usage
+    prompt_record["usage"] = {"input_tokens": usage.input_tokens, "output_tokens": usage.output_tokens}
+    with open(f"{out_stem}_prompt.json", "w") as f:
+        json.dump(prompt_record, f, indent=2)
+    print(f"\nWrote {out_stem}.md — {usage.input_tokens:,} input / {usage.output_tokens:,} output tokens")
+
+    print("\n" + "=" * 60)
+    parlay_results = validate_parlay_family(report_text, "PARLAY", real_by_key, evidence_by_game,
+                                             args.stake, label="PARLAY")
+    print("=" * 60)
+    td_parlay_results = validate_parlay_family(report_text, "TD_PARLAY", real_by_key, evidence_by_game,
+                                                args.stake, require_td=True, label="TD PARLAY")
+    print("=" * 60)
+    spread_parlay_results = validate_parlay_family(report_text, "SPREAD_PARLAY", real_by_key, evidence_by_game,
+                                                    args.stake, require_spread=True, label="SPREAD PARLAY")
+    print("=" * 60)
+
+    report_json = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "whole_week_parlays_only": True,
+        "games_included": [f"{a}_{h}" for _, a, h in games],
+        "batches_used": batches_used,
+        "coverage": coverage,
+        "stake_used_for_payout_examples": args.stake,
+        "markdown": report_text,
+        "parlays": {str(size): parlay_results[size] for size in PARLAY_SIZES},
+        "td_parlays": {str(size): td_parlay_results[size] for size in PARLAY_SIZES},
+        "spread_parlays": {str(size): spread_parlay_results[size] for size in PARLAY_SIZES},
+        "ats_records": ats_records,
+    }
+    with open(f"{out_stem}.json", "w") as f:
+        json.dump(report_json, f)
+    print(f"Wrote {out_stem}.json (structured, for the Prop Center page)")
+
+    manifest["batches"][os.path.basename(f"{out_stem}.json")] = {
+        "games": [f"{a}_{h}" for _, a, h in games],
+        "generated_at": report_json["generated_at"],
+        "whole_week_parlays_only": True,
+    }
+    with open(f"{out_dir}/manifest.json", "w") as f:
+        json.dump(manifest, f, indent=2)
+    print(f"Wrote {out_dir}/manifest.json — {len(manifest['batches'])} real batch(es) on record "
+          f"for this week")
+
+
 def main():
     ap = argparse.ArgumentParser(description="Generate the Props & Parlay Report.")
     ap.add_argument("--model", default=DEFAULT_MODEL)
@@ -564,11 +826,22 @@ def main():
                           "a 16-game slate as two real batches of 8 to stay well under the API's "
                           "token ceiling. Comma-separated AWAY-HOME pairs, e.g. "
                           "'DET-BUF,CAR-ATL,CIN-HOU'. Mutually exclusive with --away/--home.")
+    ap.add_argument("--parlays-only", action="store_true",
+                     help="REAL ADDITION (2026-10-01), per Frank's direct request: builds ONLY "
+                          "Parlays/TD Parlays/Spread Parlays, across the WHOLE real week's slate "
+                          "at once (never just one --games batch), grounded in the real, "
+                          "already-made Prop Breakdown/Favorite O/U picks from this week's "
+                          "existing batch reports rather than resending any raw evidence. Run "
+                          "this AFTER all of this week's normal batches are done. Mutually "
+                          "exclusive with --games/--away/--home — it always covers every game.")
     args = ap.parse_args()
     if (args.away is None) != (args.home is None):
         sys.exit("FATAL: --away and --home must be given together, or not at all.")
     if args.games and (args.away or args.home):
         sys.exit("FATAL: --games can't be combined with --away/--home — use one or the other.")
+    if args.parlays_only and (args.games or args.away or args.home):
+        sys.exit("FATAL: --parlays-only always covers the whole week — it can't be combined "
+                 "with --games/--away/--home.")
 
     games = discover_all_games()
     if not games:
@@ -703,6 +976,10 @@ def main():
     if missing_ats:
         print(f"  NOTE: no real ATS record on file for {missing_ats} — run "
               f"build_matchup_stats.py all to refresh teamstats/latest.json.")
+
+    if args.parlays_only:
+        run_parlays_only(args, games, fanduel_data, coverage, ats_records)
+        return
 
     gb_texts, evidence_texts, folders_used, missing_evidence = [], [], set(), []
     evidence_by_game = {}   # REAL ADDITION (2026-09-21): retains each real

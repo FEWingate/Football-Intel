@@ -185,6 +185,16 @@ let PROPS_WEEKS = [];      // real week folders (plus 'mixed', if present) that 
 let propsWeekFilter = null;
 let PROPS_BATCHES = {};    // real batch filename -> {games, generated_at} for the selected week
 let propsBatchFilter = null;
+// REAL ADDITION (2026-10-01), per Frank's direct request: Parlays/TD
+// Parlays/Spread Parlays built per-batch could only ever pick legs from
+// that one batch's handful of games, never a genuinely best-of-the-
+// whole-week combination. WHOLE_WEEK_REPORT is the sibling
+// "props_parlay_report_WHOLEWEEK.json" generate_props_report.py
+// --parlays-only writes once all of a week's normal batches are done —
+// null until that's actually been run for the selected week, in which
+// case these three tabs fall back to the selected batch's own parlays
+// exactly as before (see renderParlays/renderAnytimeTD/renderSpreads).
+let WHOLE_WEEK_REPORT = null;
 
 const pad = n => String(n).padStart(2, '0');
 
@@ -353,6 +363,21 @@ async function applyGameLinesWeekFilter(wk){
 // Defaults to the most recently-generated real batch for this week,
 // same real "most recent, not just first" principle used for the week
 // selector itself above.
+const WHOLE_WEEK_FILENAME = 'props_parlay_report_WHOLEWEEK.json';
+
+// REAL ADDITION (2026-10-01): loads the whole-week-only Parlays/TD
+// Parlays/Spread Parlays file if generate_props_report.py --parlays-only
+// has been run for this week — a 404 just means it hasn't yet, which
+// is routine, not an error (every renderX() below already falls back
+// to the selected batch's own parlays in that case).
+async function loadWholeWeekReport(wk){
+  WHOLE_WEEK_REPORT = null;
+  try{
+    const res = await fetch(`props_reports/${wk}/${WHOLE_WEEK_FILENAME}`, { cache: 'no-store' });
+    if(res.ok) WHOLE_WEEK_REPORT = await res.json();
+  }catch(e){ /* stays null — routine, handled by callers */ }
+}
+
 async function loadManifestForWeek(wk){
   PROPS_BATCHES = {};
   try{
@@ -362,6 +387,11 @@ async function loadManifestForWeek(wk){
       PROPS_BATCHES = mf.batches || {};
     }
   }catch(e){ /* PROPS_BATCHES stays empty — handled below */ }
+  // The whole-week parlay file is a special, separate overlay for the
+  // Parlays/TD/Spread tabs only (no Prop Breakdown/Favorite O/U of its
+  // own) — never shown as a selectable "batch" in the per-batch dropdown.
+  delete PROPS_BATCHES[WHOLE_WEEK_FILENAME];
+  await loadWholeWeekReport(wk);
 
   const filenames = Object.keys(PROPS_BATCHES);
   if(!filenames.length){
@@ -780,19 +810,27 @@ function renderFavoriteOU(){
 // Parlays tab, built exclusively from player_anytime_td legs (see
 // Section 7 of the Standard and td_parlays in the report JSON).
 function renderAnytimeTD(){
-  if(!REPORT || !REPORT.td_parlays){
+  // REAL ADDITION (2026-10-01): prefer the whole-week-only file (built
+  // from the FULL slate, not just the currently-selected batch) when it
+  // exists for this week — falls back to the selected batch's own
+  // td_parlays exactly as before when --parlays-only hasn't been run yet.
+  const src = (WHOLE_WEEK_REPORT && WHOLE_WEEK_REPORT.td_parlays) ? WHOLE_WEEK_REPORT
+            : (REPORT && REPORT.td_parlays) ? REPORT : null;
+  if(!src){
     $('body').innerHTML = `<div class="empty">No Anytime TD Parlays have been generated yet.<br>
       Run <b>python3 generate_props_report.py</b> in your lab folder, then reload.</div>`;
     return;
   }
+  const isWholeWeek = src === WHOLE_WEEK_REPORT;
   const sizes = ['3','4','5','6','7'];
-  const cards = sizes.map(s => REPORT.td_parlays[s] ? parlayCard(s, REPORT.td_parlays[s]) : '').join('');
+  const cards = sizes.map(s => src.td_parlays[s] ? parlayCard(s, src.td_parlays[s]) : '').join('');
 
   $('body').innerHTML = `
     <div class="lineup-note" style="margin-bottom:14px">
-      Coeus's favorite real Anytime TD combinations for the week, at 5 sizes — every leg
+      ${isWholeWeek ? '<b>Whole-week pick</b> — ' : ''}Coeus's favorite real Anytime TD combinations for the week, at 5 sizes — every leg
       is a player_anytime_td pick, independently re-checked against real FanDuel prices.
       These never appear in the regular Parlays tab.
+      ${isWholeWeek ? ' Built from every game this week, not just the currently-selected batch.' : ''}
     </div>
     <div class="parlay-grid">${cards}</div>
     ${reportToggleHTML()}
@@ -808,19 +846,26 @@ function renderAnytimeTD(){
 // ATS record (teams.html's ATS RECORD tab data — see REPORT.ats_records)
 // as part of each pick's data-supported explanation.
 function renderSpreads(){
-  if(!REPORT || !REPORT.spread_parlays){
+  // REAL ADDITION (2026-10-01): prefer the whole-week-only file when it
+  // exists for this week — falls back to the selected batch's own
+  // spread_parlays exactly as before when --parlays-only hasn't been run.
+  const src = (WHOLE_WEEK_REPORT && WHOLE_WEEK_REPORT.spread_parlays) ? WHOLE_WEEK_REPORT
+            : (REPORT && REPORT.spread_parlays) ? REPORT : null;
+  if(!src){
     $('body').innerHTML = `<div class="empty">No Spread Parlays have been generated yet.<br>
       Run <b>python3 generate_props_report.py</b> in your lab folder, then reload.</div>`;
     return;
   }
+  const isWholeWeek = src === WHOLE_WEEK_REPORT;
   const sizes = ['3','4','5','6','7'];
-  const cards = sizes.map(s => REPORT.spread_parlays[s] ? parlayCard(s, REPORT.spread_parlays[s]) : '').join('');
+  const cards = sizes.map(s => src.spread_parlays[s] ? parlayCard(s, src.spread_parlays[s]) : '').join('');
 
   $('body').innerHTML = `
     <div class="lineup-note" style="margin-bottom:14px">
-      Coeus's favorite real spread combinations for the week, at 5 sizes — every leg is a
+      ${isWholeWeek ? '<b>Whole-week pick</b> — ' : ''}Coeus's favorite real spread combinations for the week, at 5 sizes — every leg is a
       real, current FanDuel mainline spread pick, independently re-checked against real
       FanDuel prices, with each team's real ATS record factored into the explanation.
+      ${isWholeWeek ? ' Built from every game this week, not just the currently-selected batch.' : ''}
     </div>
     <div class="parlay-grid">${cards}</div>
     ${reportToggleHTML()}
@@ -909,19 +954,29 @@ function inlineMd(s){
 }
 
 function renderParlays(){
-  if(!REPORT || !REPORT.parlays){
+  // REAL ADDITION (2026-10-01): prefer the whole-week-only file when it
+  // exists for this week — falls back to the selected batch's own
+  // parlays exactly as before when --parlays-only hasn't been run yet.
+  const src = (WHOLE_WEEK_REPORT && WHOLE_WEEK_REPORT.parlays) ? WHOLE_WEEK_REPORT
+            : (REPORT && REPORT.parlays) ? REPORT : null;
+  if(!src){
     $('body').innerHTML = `<div class="empty">No props/parlay report has been generated yet.<br>
       Run <b>python3 build_fanduel_props.py</b> then <b>python3 generate_props_report.py</b>
       in your lab folder, then reload.</div>`;
     return;
   }
+  const isWholeWeek = src === WHOLE_WEEK_REPORT;
   const sizes = ['3','4','5','6','7'];
-  const cards = sizes.map(s => REPORT.parlays[s] ? parlayCard(s, REPORT.parlays[s]) : '').join('');
+  const cards = sizes.map(s => src.parlays[s] ? parlayCard(s, src.parlays[s]) : '').join('');
+  const gameCount = isWholeWeek ? (src.batches_used ? src.batches_used.length : '') : REPORT.games_included.length;
 
   $('body').innerHTML = `
     <div class="lineup-note" style="margin-bottom:14px">
-      ${REPORT.games_included.length} game(s) · payout examples computed on a
-      $${REPORT.stake_used_for_payout_examples.toFixed(0)} stake · every parlay below has been
+      ${isWholeWeek
+        ? `<b>Whole-week pick</b> — built from every game this week (all ${gameCount ? gameCount + ' batches' : 'batches'} combined), not just the currently-selected batch.`
+        : `${REPORT.games_included.length} game(s) in this batch.`}
+      Payout examples computed on a
+      $${src.stake_used_for_payout_examples.toFixed(0)} stake · every parlay below has been
       independently re-checked against real FanDuel prices, not just Coeus's stated math.
     </div>
     <div class="parlay-grid">${cards}</div>

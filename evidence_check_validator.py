@@ -109,6 +109,35 @@ TEAM_EXTRA_STAT_MAP = {
     ("def", "red_zone_pass_pct_allowed"): "rz_def_pass",
 }
 
+# REAL BUG FIX (2026-10-01), per Frank's direct catch (Week 4 batch
+# covering LAR@PHI/GB@TB/MIA@MIN/KC@LV): every "off"-role RB rushing
+# claim tagged `stat: "rush_ypg"` came back REAL MISMATCH (Kyren
+# Williams, Bucky Irving, Aaron Jones, Ashton Jeanty, Kenneth Walker
+# III, Saquon Barkley — six separate players, same exact shape), while
+# every QB/WR claim in the identical run validated clean. Root cause:
+# build_matchup_stats.py's THREAT_CATS (threats/wkNN.json, each
+# starter's own individual per-game rank) stores this stat under the
+# key "rush_yds" (RB) / "pass_yds" (QB) — NOT the "_ypg" spelling
+# Coeus's own internal field-naming convention uses for a per-game
+# rate (POS_METRICS, matchup/wkNN.json's GROUP-level fields, which
+# really does have a separate, correctly-spelled "rush_ypg"/"pass_ypg"
+# key). A claim tagged "rush_ypg" therefore never matched any
+# individual starter's cats dict below — it silently fell through to
+# ONLY the team-wide RB-group rank (matchup.json), which is a real,
+# different number whenever a team splits carries across a committee
+# backfield (exactly why this surfaced on RBs specifically and never
+# on QBs, who are almost always a true one-starter position where the
+# group rank and the individual's own rank coincide anyway, masking
+# the identical gap). This maps a claim's "_ypg" spelling to the real
+# THREAT_CATS key so the individual starter's own entry is actually
+# found and checked, the same way group-level fields already are.
+THREAT_STAT_ALIAS = {
+    "rush_ypg": "rush_yds",
+    "rec_ypg": "rec_yds",
+    "pass_ypg": "pass_yds",
+    "pass_td": "pass_tds",
+}
+
 
 def _load_json(path):
     if not os.path.exists(path):
@@ -267,10 +296,14 @@ def live_current_opponent_ranks(live, team, pos, stat, role, opponent=None):
         # THREAT_CATS/LINEUP) — there's no "def" side in it at all, so a
         # role="def" claim is never checked against it.
         team_threat = (threats.get("teams") or {}).get(team) or {}
+        threat_stat = THREAT_STAT_ALIAS.get(stat, stat)
         for starter in (team_threat.get("starters") or []):
             if starter.get("pos") != pos:
                 continue
-            cell = (starter.get("cats") or {}).get(stat)
+            cats = starter.get("cats") or {}
+            cell = cats.get(stat)
+            if not (isinstance(cell, dict) and cell.get("r") is not None) and threat_stat != stat:
+                cell = cats.get(threat_stat)
             if isinstance(cell, dict) and cell.get("r") is not None:
                 found.add(cell["r"])
 
