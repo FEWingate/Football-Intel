@@ -103,6 +103,24 @@ FANDUEL_DATA_PATH = "fanduel_props/latest.json"
 # tab already shows, not something re-derived or guessed here.
 TEAMSTATS_PATH = "teamstats/latest.json"
 
+# REAL BUG FIX (2026-10-01), per Frank's direct catch on the first real
+# --parlays-only run: every Parlay and TD Parlay leg passed validation
+# (all grounded in already-validated player-level picks), but every
+# Spread Parlay failed on one real mismatch — Cincinnati's leg claimed
+# "JAX's passing attack (Lawrence, 23rd-ranked passer)" when the real
+# current rank is #20 or #22. Root cause: run_parlays_only() deliberately
+# sends NO team-level offense/defense data at all (by design — it's the
+# "skip the heavy stuff" lightweight pass), so a Spread Parlay leg that
+# needs a team-level rank (not a specific player's own prop, which IS
+# covered by the already-made-picks data) has nothing real to cite —
+# Coeus was estimating from general knowledge, not reading a real number,
+# and the estimate was close but wrong. matchup/wkNN.json's "teams" table
+# is exactly this data (every team's real offense/defense ranks by
+# position group) and is small — ~30K tokens for all 32 teams, confirmed
+# directly against the real Week 4 file — so there's no real cost reason
+# not to include it.
+MATCHUP_PATH_TMPL = "matchup/{week_folder}.json"
+
 DEFAULT_MODEL = "claude-sonnet-5"
 PARLAY_SIZES = [3, 4, 5, 6, 7]
 SKILL_POSITIONS = ["QB", "RB", "WR", "TE"]
@@ -121,8 +139,20 @@ suggest a specific line or alt-line threshold from the real data — \
 never an invented number.
 2. Favorite Overs and Unders for the week — your best Over picks and \
 best Under picks across the ENTIRE slate, ranked by conviction, not \
-grouped by game.
-3. Five separate parlays (3, 4, 5, 6, and 7 team).
+grouped by game. This section is ONLY for real two-sided Over/Under \
+markets (passing/rushing/receiving yards, receptions, and their alt \
+lines) — Anytime TD is a single-sided "scores or doesn't" price with \
+no real Under side to it, and must NEVER appear in this section under \
+either list, no matter how strong the conviction. A strong Anytime TD \
+pick belongs in Coeus Prop Breakdown (Section 1) or the Anytime TD \
+Parlays, not here.
+3. Five separate parlays (3, 4, 5, 6, and 7 team). Evaluate Over and \
+Under picks with EQUAL rigor across this whole report — a real edge is \
+exactly as likely to sit on the Under side as the Over side, and \
+posted lines already price in the public's own well-known lean toward \
+Overs. Do not let your own picks skew toward Overs by default; if the \
+real evidence across this slate genuinely supports more Unders than \
+Overs, say so and pick accordingly.
 
 Lists and short entries only, per the No Paragraphs Rule — never prose \
 paragraphs. Every football claim must come from the Game Breakdowns \
@@ -304,6 +334,21 @@ def trim_evidence_for_props(evidence, multi_game=False):
     for key in ("team_context", "dfs", "down_distance", "red_zone_play_calling"):
         trimmed.pop(key, None)
     return trimmed
+
+
+def load_team_ranks_table(week_folder):
+    """Real, compact team-level offense/defense rank table for every
+    team this week — matchup/wkNN.json's own "teams" dict, confirmed
+    directly at ~30K tokens for all 32 teams (see the REAL BUG FIX note
+    above MATCHUP_PATH_TMPL for why this exists). Returns {} if the
+    file is missing rather than failing the whole run — a Spread
+    Parlay leg needing team-level data that isn't here is a real,
+    reportable gap for evidence_check to catch, not something to crash
+    over."""
+    matchup = load_json(MATCHUP_PATH_TMPL.format(week_folder=week_folder))
+    if not matchup:
+        return {}
+    return matchup.get("teams") or {}
 
 
 def coverage_summary_text(coverage):
@@ -529,11 +574,30 @@ def verify_prop_breakdown(raw, real_by_key, evidence_by_game=None):
 
 
 def verify_favorite_ou(raw, real_by_key, evidence_by_game=None):
+    """REAL BUG FIX (2026-10-01), per Frank's direct catch: Favorite O/U
+    is supposed to be real two-sided Over/Under markets only, but Coeus
+    was slipping real player_anytime_td picks into the "overs" list —
+    there's no real Under side to an Anytime TD price, so it never
+    belonged in this section at all (Prop Center's Favorite O/U tab was
+    showing "Anytime TD" cards with no Over/Under badge at all, which is
+    exactly this bug surfacing in the UI). The task instruction itself
+    now says not to do this, but this filters any that slip through
+    anyway — rejected and reported as a real error, never silently
+    dropped, same as any other real mismatch this function already
+    reports."""
     if not raw:
         return None, ["Could not parse the FAVORITE_OU JSON block."]
     errors = []
-    overs, over_mismatches, over_ev_errors = verify_pick_list(raw.get("overs") or [], real_by_key, evidence_by_game)
-    unders, under_mismatches, under_ev_errors = verify_pick_list(raw.get("unders") or [], real_by_key, evidence_by_game)
+    raw_overs, raw_unders = raw.get("overs") or [], raw.get("unders") or []
+    bad_overs = [p for p in raw_overs if p.get("market_key") == "player_anytime_td"]
+    bad_unders = [p for p in raw_unders if p.get("market_key") == "player_anytime_td"]
+    raw_overs = [p for p in raw_overs if p.get("market_key") != "player_anytime_td"]
+    raw_unders = [p for p in raw_unders if p.get("market_key") != "player_anytime_td"]
+    for p in bad_overs + bad_unders:
+        errors.append(f"{p.get('player', '?')}: Anytime TD has no real Under side and does not "
+                       f"belong in Favorite O/U — excluded from this section.")
+    overs, over_mismatches, over_ev_errors = verify_pick_list(raw_overs, real_by_key, evidence_by_game)
+    unders, under_mismatches, under_ev_errors = verify_pick_list(raw_unders, real_by_key, evidence_by_game)
     if over_mismatches:
         errors.append(f"{len(over_mismatches)} favorite Over(s) don't exist in the real FanDuel data.")
     if under_mismatches:
@@ -631,6 +695,28 @@ single favorite pick in its own 4-game batch. Lists and short entries \
 only, per the No Paragraphs Rule. Every JSON block specified for \
 Sections 6, 7, and 8 is required, not optional.
 
+For Section 8 (Spread Parlays) specifically: any claim about a TEAM's \
+own offense/defense rank (not a specific player's own prop pick) MUST \
+come from the REAL TEAM OFFENSE/DEFENSE RANKINGS table below — cite the \
+real "r" rank value for that team/position-group/stat exactly as given. \
+Do not estimate, recall from memory, or round a team-level rank — if \
+the table below doesn't have the specific stat you want for a team, use \
+a different, real angle that it does cover instead. This table is large \
+(32 teams) — find the exact team's exact stat entry below and COPY its \
+"r" integer value verbatim into both your prose and your evidence_check \
+claimed_rank. A rank that is merely close (off by even one or two) is a \
+real, reportable failure once checked — it is not a rounding difference, \
+it is a different real number than the one actually in the table.
+
+Evaluate Over and Under legs (Section 6) with EQUAL rigor — a real edge \
+is exactly as likely to sit on the Under side as the Over side, and \
+posted lines already price in the public's own well-known lean toward \
+Overs. Do not let your own leg selection skew toward Overs by default; \
+if the real evidence across this slate genuinely supports an Under leg, \
+use it. Likewise, favor the Under side of a Spread Parlay leg (the \
+underdog getting points) whenever the real team-rank/ATS data below \
+genuinely supports it, not just the favorite by default.
+
 === REAL DATA COVERAGE (what you can actually trust right now) ===
 """
 
@@ -700,6 +786,11 @@ def run_parlays_only(args, games, fanduel_data, coverage, ats_records):
         {"type": "text", "text": props_standard, "cache_control": {"type": "ephemeral"}},
     ]
 
+    team_ranks = load_team_ranks_table(next(iter(folders_used)))
+    if not team_ranks:
+        print("  WARNING: no matchup/{wk}.json team-rank table found — Spread Parlay legs "
+              "needing a team-level rank will have nothing real to cite this run.")
+
     fanduel_json = json.dumps(fanduel_data, separators=(",", ":"))
     user_content = (
         WHOLE_WEEK_TASK_INSTRUCTION + coverage_summary_text(coverage) +
@@ -710,7 +801,11 @@ def run_parlays_only(args, games, fanduel_data, coverage, ats_records):
         fanduel_json +
         "\n\n=== REAL TEAM ATS RECORDS (against the spread, real completed games with a real "
         "closing line, every team on this slate — same data as teams.html's ATS RECORD tab) ===\n" +
-        json.dumps(ats_records, separators=(",", ":"))
+        json.dumps(ats_records, separators=(",", ":")) +
+        "\n\n=== REAL TEAM OFFENSE/DEFENSE RANKINGS (every team, by position group — each "
+        "entry is {\"v\": real value, \"r\": real rank 1-32}. Use ONLY this table for any "
+        "Spread Parlay claim about a team's own offense/defense rank; never estimate one) ===\n" +
+        json.dumps(team_ranks, separators=(",", ":"))
     )
 
     out_stem = f"{out_dir}/props_parlay_report_WHOLEWEEK"
