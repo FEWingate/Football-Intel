@@ -29,7 +29,6 @@ def default_season():
 
 # Override with NFL_SEASON=2025 in the environment (used for replaying old seasons).
 SEASON = int(os.environ.get("NFL_SEASON", default_season()))
-DEFAULT_WEEK = 10
 FIRST_BUILDABLE_WEEK = 3   # weeks 1-2 have too little prior data to rank
 # Weeks 1-3 of a new season have too little (or no) data of their own to
 # rank meaningfully — for those weeks, Threats/Matchup Stats rank off the
@@ -5404,7 +5403,20 @@ def archive_current_snapshot():
 
 
 if __name__ == "__main__":
-    arg = sys.argv[1] if len(sys.argv) > 1 else str(DEFAULT_WEEK)
+    # REAL BUG FIX (2026-10-03), per Frank's direct, real catch: this used
+    # to fall back to a hardcoded DEFAULT_WEEK (= 10, a stale leftover
+    # from some earlier testing session) whenever the script ran with no
+    # CLI argument — exactly what `python3 build_matchup_stats.py` does.
+    # That silently built a real, far-future week (10, with the season
+    # only in week 4) every single time, overwriting real canonical data
+    # with it, with zero error or warning — confirmed as the real cause
+    # of week 10 data mysteriously showing up in a real git diff after a
+    # perfectly ordinary no-argument rebuild. "auto" (already a real,
+    # supported value — see resolve_weeks() above) asks the script to
+    # figure out the real current week from the real schedule itself
+    # every time, so a bare rebuild can never again go stale just because
+    # nobody remembered to bump a magic number as the season moves on.
+    arg = sys.argv[1] if len(sys.argv) > 1 else "auto"
     if arg == "--career-base":
         build_career_base()
         sys.exit(0)
