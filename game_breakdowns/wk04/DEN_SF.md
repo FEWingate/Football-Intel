@@ -151,12 +151,12 @@ The broad thesis from the Pregame Briefing — that San Francisco holds the stru
 - SF: 3-0, 32.7 ppg (2nd) / 16.7 ppg allowed (5th)
 
 **Passing**
-- Bo Nix (DEN): 201.7 pass yds/gm (26th), 4 pass TD (20th), 1.0 INT/gm (23rd), 60.2% comp (24th)
-- Brock Purdy (SF): 263.0 pass yds/gm (9th), 9 pass TD / 3.0 per gm (1st), 0.33 INT/gm (12th), 72.3% comp (2nd), 0 sacks allowed (1st)
+- Bo Nix (DEN): 201.7 pass yds/gm (26th), 4 pass TD (20th), 1.0 INT/gm (23rd), 60.2% comp (24th) — opp D allows 215.0 pass yds/gm (11th)
+- Brock Purdy (SF): 263.0 pass yds/gm (9th), 9 pass TD / 3.0 per gm (1st), 0.33 INT/gm (12th), 72.3% comp (2nd), 0 sacks allowed (1st) — opp D allows 254.3 pass yds/gm (24th)
 
 **Rushing**
-- J.K. Dobbins (DEN): 40.3 rush yds/gm (team RB rank 28th), 51.5% rush share
-- Christian McCaffrey (SF): 55.3 rush yds/gm (22nd), 3 rush TD (8th), 61.5% RZ carry share
+- J.K. Dobbins (DEN): 40.3 rush yds/gm (team RB rank 28th), 51.5% rush share — opp D allows 105.7 rush yds/gm (15th)
+- Christian McCaffrey (SF): 55.3 rush yds/gm (22nd), 3 rush TD (8th), 61.5% RZ carry share — opp D allows 143.7 rush yds/gm (30th)
 
 **Receiving**
 - Courtland Sutton (DEN WR): 27.3 rec yds/gm, 18.4% target share

@@ -139,11 +139,11 @@ If Dallas's staff deviates from its season-long approach and sends extra rushers
 - HOU: 0-3 | 18.0 PPG (25th) | 25.0 PPG allowed (19th)
 
 **Passing**
-- Dak Prescott (DAL): 243.3 pass yds/gm (14th), 69.5% comp (8th), 7 TD, 0.33 INT/gm, 1.0 sacks/gm taken (2nd)
-- C.J. Stroud (HOU): 264.7 pass yds/gm (8th), 60.0% comp (26th), 3 TD, 0.0 INT/gm (2nd), 3.33 sacks/gm taken (30th)
+- Dak Prescott (DAL): 243.3 pass yds/gm (14th), 69.5% comp (8th), 7 TD, 0.33 INT/gm, 1.0 sacks/gm taken (2nd) — opp D allows 258.7 pass yds/gm (25th)
+- C.J. Stroud (HOU): 264.7 pass yds/gm (8th), 60.0% comp (26th), 3 TD, 0.0 INT/gm (2nd), 3.33 sacks/gm taken (30th) — opp D allows 207.7 pass yds/gm (9th)
 
 **Rushing**
-- Javonte Williams (DAL): 56.3 rush yds/gm, 62.3% rush share, 2 rush TD, 1.42 YBC/1.54 YAC per carry
+- Javonte Williams (DAL): 56.3 rush yds/gm, 62.3% rush share, 2 rush TD, 1.42 YBC/1.54 YAC per carry — opp D allows 86.7 rush yds/gm (5th)
 - David Montgomery (DAL... wait HOU): 34.3 rush yds/gm, 52.1% rush share, 2 rush TD, 1.65 YBC/1.04 YAC per carry
 - Woody Marks (HOU, secondary back): 21.7 rush yds/gm, 31.0% rush share
 

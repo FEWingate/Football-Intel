@@ -151,12 +151,12 @@ Both offenses arrive genuinely limited — bottom-third in scoring, bottom-3 in 
 - CLE: 2-1, 18.0 ppg scored (24th), 23.7 ppg allowed (18th)
 
 **Passing**
-- Aaron Rodgers (PIT): 233.3 pass yds/gm (16th), 4 pass TD, 0.7 INT/gm (21st)
-- Deshaun Watson (CLE): 195.7 pass yds/gm (27th), 5 pass TD, 0.3 INT/gm (9th)
+- Aaron Rodgers (PIT): 233.3 pass yds/gm (16th), 4 pass TD, 0.7 INT/gm (21st) — opp D allows 239.3 pass yds/gm (20th)
+- Deshaun Watson (CLE): 195.7 pass yds/gm (27th), 5 pass TD, 0.3 INT/gm (9th) — opp D allows 211.0 pass yds/gm (10th)
 
 **Rushing**
-- Jaylen Warren (PIT): 72.0 rush yds/gm (8th); no meaningful QB rushing role recorded for either passer
-- Quinshon Judkins (CLE): 41.3 rush yds/gm (30th)
+- Jaylen Warren (PIT): 72.0 rush yds/gm (8th); no meaningful QB rushing role recorded for either passer — opp D allows 119.3 rush yds/gm (23rd)
+- Quinshon Judkins (CLE): 41.3 rush yds/gm (30th) — opp D allows 113.0 rush yds/gm (18th)
 
 **Receiving**
 - DK Metcalf (PIT): 32.67 rec yds/gm, 22.9% target share

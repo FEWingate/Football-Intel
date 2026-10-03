@@ -163,21 +163,21 @@ The Threat Engine evaluated all ten listed starters for this matchup — Malik W
 - MIN: 3-0, 23.7 ppg (16th) / 13.7 ppg allowed (2nd)
 
 **Passing**
-- Malik Willis (MIA): 209.0 pass yds/gm (20th), 56.98% comp, 1 pass TD
+- Malik Willis (MIA): 209.0 pass yds/gm (20th), 56.98% comp, 1 pass TD — opp D allows 265.3 pass yds/gm (26th)
 - Kyler Murray (MIN, likely starter): 93.0 pass yds/gm (2 games, thin sample), 52.94% comp, 1 pass TD *(2025: 192.4 pass yds/gm, 68.3% comp)*
 - Carson Wentz (MIN, alt.): 138.0 pass yds/gm, 58.97% comp, 3 pass TD, 0 INT
 
 **Rushing**
-- De'Von Achane (MIA): 42.33 rush yds/gm (team RB rank 29th), 0 rush TD *(2025: 84.38 rush yds/gm)*
-- Aaron Jones (MIN): 67.67 rush yds/gm (RB rank 12th), 1 rush TD *(2025: 45.67 rush yds/gm)*
+- De'Von Achane (MIA): 42.33 rush yds/gm (team RB rank 29th), 0 rush TD *(2025: 84.38 rush yds/gm)* — opp D allows 85.7 rush yds/gm (4th)
+- Aaron Jones (MIN): 67.67 rush yds/gm (RB rank 12th), 1 rush TD *(2025: 45.67 rush yds/gm)* — opp D allows 104.3 rush yds/gm (12th)
 
 **Receiving**
 - Malik Washington (MIA): 50.67 rec yds/gm, 27.1% target share *(2025: 18.65 rec yds/gm, 14.1% target share)*
 - Caleb Douglas (MIA): 56.5 rec yds/gm (2 games), 20.0% target share
-- Greg Dulcich (MIA, TE): 30.0 rec yds/gm, 25.0% RZ target share
+- Greg Dulcich (MIA, TE): 30.0 rec yds/gm, 25.0% RZ target share — opp D allows 61.0 TE rec yds/gm (21st)
 - Justin Jefferson (MIN): 59.67 rec yds/gm, 25.4% target share, 57.1% RZ target share
 - Jordan Addison (MIN): 37.0 rec yds/gm, 23.9% target share
-- T.J. Hockenson (MIN, TE): 25.33 rec yds/gm, 28.6% RZ target share
+- T.J. Hockenson (MIN, TE): 25.33 rec yds/gm, 28.6% RZ target share — opp D allows 70.0 TE rec yds/gm (28th)
 
 **Team Defense**
 - MIA: 231.0 pass yds/gm allowed (18th) / 104.3 rush yds/gm allowed (12th) / 120.3 WR rec yds/gm allowed (8th) / 70.0 TE rec yds/gm allowed (28th) — man/zone coverage rate: not available in evidence package

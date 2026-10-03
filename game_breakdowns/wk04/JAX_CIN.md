@@ -171,12 +171,12 @@ No other starter on either roster generated a Threat designation, but two near-m
 - CIN: 2-1, 26.7 ppg (12th) / 21.0 ppg allowed (13th)
 
 **Passing**
-- Trevor Lawrence (JAX): 205.3 pass yds/gm (23rd), 7 pass TD (8th), 66.7% comp (13th)
-- Joe Burrow (CIN): 247.7 pass yds/gm (13th), 6 pass TD (11th), 70.9% comp (3rd)
+- Trevor Lawrence (JAX): 205.3 pass yds/gm (23rd), 7 pass TD (8th), 66.7% comp (13th) — opp D allows 287.0 pass yds/gm (29th)
+- Joe Burrow (CIN): 247.7 pass yds/gm (13th), 6 pass TD (11th), 70.9% comp (3rd) — opp D allows 246.0 pass yds/gm (22nd)
 
 **Rushing**
-- Bhayshul Tuten (JAX): 68.0 rush yds/gm, 50.6% rush share, 2 rush TD
-- Chase Brown (CIN): 65.7 rush yds/gm, 72.1% rush share, 1 rush TD
+- Bhayshul Tuten (JAX): 68.0 rush yds/gm, 50.6% rush share, 2 rush TD — opp D allows 95.7 rush yds/gm (9th)
+- Chase Brown (CIN): 65.7 rush yds/gm, 72.1% rush share, 1 rush TD — opp D allows 91.3 rush yds/gm (8th)
 - No meaningful designed QB rushing role/data available for either passer this week.
 
 **Receiving**

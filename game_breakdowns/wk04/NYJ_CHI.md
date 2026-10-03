@@ -157,15 +157,15 @@ The broad thesis from Pregame Briefing — that this profiles as tighter and mor
 - CHI: 2-1, 29.7 ppg (6th) / 17.7 ppg allowed (7th)
 
 **Passing**
-- Geno Smith (NYJ): 261.0 pass yds/gm (11th), 75.5% comp (1st), 4 TD, 0.0 int/gm (3rd)
+- Geno Smith (NYJ): 261.0 pass yds/gm (11th), 75.5% comp (1st), 4 TD, 0.0 int/gm (3rd) — opp D allows 219.0 pass yds/gm (13th)
 - Caleb Williams (CHI, 2 starts): 203.5 pass yds/gm, 65.45% comp, 2 TD, 0.5 int/gm
 - Case Keenum (CHI, 1 start): 247.0 pass yds, 70.6% comp, 2 TD, 0 int
 
 **Rushing**
 - Breece Hall (NYJ): 54.3 rush yds/gm (23rd among RBs), 1 rush TD
-- D'Andre Swift (CHI): 84.3 rush yds/gm (7th among RBs), 3 rush TD
+- D'Andre Swift (CHI): 84.3 rush yds/gm (7th among RBs), 3 rush TD — opp D allows 87.3 rush yds/gm (7th)
 - Braelon Allen (NYJ, RB2): 20.3 rush yds/gm, 22.4% rush share
-- Kyle Monangai (CHI, RB2): 59.3 rush yds/gm, 28.6% rush share
+- Kyle Monangai (CHI, RB2): 59.3 rush yds/gm, 28.6% rush share — opp D allows 87.3 rush yds/gm (7th)
 
 **Receiving**
 - Garrett Wilson (NYJ): 81.0 rec yds/gm (9th among WRs), 28.4% target share

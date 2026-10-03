@@ -142,12 +142,12 @@ No other starter on either roster cleared a Threat threshold this week. Notably,
 - LV: 3-0, 29.3 ppg (9th) / 18.0 ppg allowed (8th)
 
 **Passing**
-- Patrick Mahomes (KC): 270.7 pass yds/gm (6th), 7 pass TD, 0.7 INT/gm, 68.4% comp
-- Kirk Cousins (LV): 220.3 pass yds/gm (17th), 9 pass TD (1st), 1.0 INT/gm, 67.4% comp
+- Patrick Mahomes (KC): 270.7 pass yds/gm (6th), 7 pass TD, 0.7 INT/gm, 68.4% comp — opp D allows 222.3 pass yds/gm (15th)
+- Kirk Cousins (LV): 220.3 pass yds/gm (17th), 9 pass TD (1st), 1.0 INT/gm, 67.4% comp — opp D allows 183.7 pass yds/gm (3rd)
 
 **Rushing**
-- Kenneth Walker III (KC): 120.0 rush yds/gm (1st), 71.4% rush share, 2 rush TD
-- Ashton Jeanty (LV): 68.7 rush yds/gm, 67.7% rush share, 0 rush TD (88.2% of RZ carries)
+- Kenneth Walker III (KC): 120.0 rush yds/gm (1st), 71.4% rush share, 2 rush TD — opp D allows 116.3 rush yds/gm (20th)
+- Ashton Jeanty (LV): 68.7 rush yds/gm, 67.7% rush share, 0 rush TD (88.2% of RZ carries) — opp D allows 99.7 rush yds/gm (10th)
 
 **Receiving**
 - Rashee Rice (KC, WR1): 63.3 rec yds/gm, 18.7% target share

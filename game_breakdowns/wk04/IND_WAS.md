@@ -151,13 +151,13 @@ The absence of a Threat designation here is a Week 4, small-sample effect — it
 - WAS: 1-2, 25.0 ppg (14th) / 30.7 ppg allowed (31st)
 
 **Passing**
-- Daniel Jones (IND): 203.7 pass yds/gm (own rank 25th team-level), 66.3% comp, 1.0 TD/gm, 1.0 INT/gm
-- Jayden Daniels (WAS): 130.0 pass yds/gm (2 games), 56.9% comp, 1.5 TD/gm, 0 INT/gm — availability uncertain
-- Marcus Mariota (WAS): 147.0 pass yds/gm (2 games), 63.8% comp, 2.0 TD/gm, 0 INT/gm
+- Daniel Jones (IND): 203.7 pass yds/gm (own rank 25th team-level), 66.3% comp, 1.0 TD/gm, 1.0 INT/gm — opp D allows 291.7 pass yds/gm (31st)
+- Jayden Daniels (WAS): 130.0 pass yds/gm (2 games), 56.9% comp, 1.5 TD/gm, 0 INT/gm — availability uncertain — opp D allows 291.0 pass yds/gm (30th)
+- Marcus Mariota (WAS): 147.0 pass yds/gm (2 games), 63.8% comp, 2.0 TD/gm, 0 INT/gm — opp D allows 291.0 pass yds/gm (30th)
 
 **Rushing**
-- Jonathan Taylor (IND): 86.0 rush yds/gm (own rank 6th), 79.5% rush share, 4 rush TD
-- Jacory Croskey-Merritt (WAS): 47.3 rush yds/gm, 49.0% rush share, 1 rush TD
+- Jonathan Taylor (IND): 86.0 rush yds/gm (own rank 6th), 79.5% rush share, 4 rush TD — opp D allows 82.0 rush yds/gm (3rd)
+- Jacory Croskey-Merritt (WAS): 47.3 rush yds/gm, 49.0% rush share, 1 rush TD — opp D allows 140.3 rush yds/gm (29th)
 - QB rushing: not tracked in this evidence package for either quarterback
 
 **Receiving**

@@ -153,20 +153,20 @@ Both teams' core identities are genuinely split between a strength and a real li
 - TB: 0-3, 20.7 pts/gm (19th) / 26.3 pts/gm allowed (23rd)
 
 **Passing**
-- Jordan Love (GB): 281.3 pass yds/gm (4th), 6 pass TD, 52.4% comp (32nd) *(2025: 225.4 ypg, 66.3% comp)*
-- Baker Mayfield (TB): 205.0 pass yds/gm (24th), 2 pass TD total (29th), 63.5% comp *(2025: 217.2 ypg, 63.2% comp, 26 TD)*
+- Jordan Love (GB): 281.3 pass yds/gm (4th), 6 pass TD, 52.4% comp (32nd) *(2025: 225.4 ypg, 66.3% comp)* — opp D allows 220.0 pass yds/gm (14th)
+- Baker Mayfield (TB): 205.0 pass yds/gm (24th), 2 pass TD total (29th), 63.5% comp *(2025: 217.2 ypg, 63.2% comp, 26 TD)* — opp D allows 218.0 pass yds/gm (12th)
 
 **Rushing**
 - Green Bay RB committee: Lloyd 22.67 rush yds/gm (23 car), Johnson 12.67 (12 car, current RB1 per depth chart), Brooks 13.33 (11 car, fading role) — team total 48.7 rush yds/gm (32nd)
-- Bucky Irving (TB): 60.0 rush yds/gm (40 car), 1 rush TD, 20.3 rec yds/gm
+- Bucky Irving (TB): 60.0 rush yds/gm (40 car), 1 rush TD, 20.3 rec yds/gm — opp D allows 138.7 rush yds/gm (28th)
 
 **Receiving**
 - Christian Watson (GB): 94.67 rec yds/gm (5th), 24.2% target share, 4 TD
 - Matthew Golden (GB): 84.33 rec yds/gm (7th), 25.0% target share, 1 TD
-- Tucker Kraft (GB, TE): 35.33 rec yds/gm, 14.2% target share
+- Tucker Kraft (GB, TE): 35.33 rec yds/gm, 14.2% target share — opp D allows 61.0 TE rec yds/gm (22nd)
 - Emeka Egbuka (TB): 47.0 rec yds/gm, 21.1% target share, 1 TD
 - Chris Godwin Jr. (TB): 37.0 rec yds/gm, 11.6% target share
-- Cade Otton (TB, TE): 40.0 rec yds/gm, 17.9% target share, 93.7% snaps
+- Cade Otton (TB, TE): 40.0 rec yds/gm, 17.9% target share, 93.7% snaps — opp D allows 32.0 TE rec yds/gm (7th)
 
 **Team Defense**
 - GB: 218.0 pass yds/gm allowed (12th; WR-specific 155.7, 18th) / 138.7 rush yds/gm allowed (28th; RB-specific 126.3, 30th) / 32.0 TE rec yds/gm allowed (7th) — man/zone coverage rate: not available

@@ -92,20 +92,20 @@ No Threat designation fired for Travis Etienne, Devaughn Vele, Juwan Johnson, Dr
 **Passing**
 - Michael Penix Jr. (ATL, current starter): 256 yds, 18/25, 72.0% comp, 1 TD (Week 3 only start with ATL)
 - Cooper Rush (ATL, prior starter, Wks 1-2): 114.5 pass yds/gm, 56.4% comp, 2.0 int/gm
-- Tyler Shough (NO): 305.7 pass yds/gm (2nd), 68.9% comp (9th), 2.67 TD/gm (3rd), 1.0 int/gm (26th)
+- Tyler Shough (NO): 305.7 pass yds/gm (2nd), 68.9% comp (9th), 2.67 TD/gm (3rd), 1.0 int/gm (26th) — opp D allows 273.3 pass yds/gm (27th)
 
 **Rushing**
-- Bijan Robinson (ATL): 116.3 rush yds/gm (2nd), 63.5% rush share, 2.76 ybc/carry, 2.53 yac/carry, 2.33 broken tackles/gm
-- Travis Etienne (NO): 42.7 rush yds/gm (28th), 37.5% rush share
-- Alvin Kamara (NO): 25.5 rush yds/gm, 1.33 yac/carry, 0.33 ybc/carry
+- Bijan Robinson (ATL): 116.3 rush yds/gm (2nd), 63.5% rush share, 2.76 ybc/carry, 2.53 yac/carry, 2.33 broken tackles/gm — opp D allows 128.7 rush yds/gm (27th)
+- Travis Etienne (NO): 42.7 rush yds/gm (28th), 37.5% rush share — opp D allows 47.7 rush yds/gm (1st)
+- Alvin Kamara (NO): 25.5 rush yds/gm, 1.33 yac/carry, 0.33 ybc/carry — opp D allows 47.7 rush yds/gm (1st)
 
 **Receiving**
-- Drake London (ATL, WR): 91.3 rec yds/gm (6th), 26.0% target share
-- Jahan Dotson (ATL, WR): 13.7 rec yds/gm, 13.7% target share
-- Kyle Pitts (ATL, TE): 6.67 rec yds/gm, 8.2% target share *(2025: 54.6 rec yds/gm, 22.8% target share)*
-- Chris Olave (NO, WR): 125.0 rec yds/gm (2nd), 29.0% target share
-- Devaughn Vele (NO, WR): 57.3 rec yds/gm, 17.7% target share
-- Juwan Johnson (NO, TE): 57.7 rec yds/gm (6th), 28.6% red-zone target share, 3 TD
+- Drake London (ATL, WR): 91.3 rec yds/gm (6th), 26.0% target share — opp D allows 110.0 WR rec yds/gm (2nd)
+- Jahan Dotson (ATL, WR): 13.7 rec yds/gm, 13.7% target share — opp D allows 110.0 WR rec yds/gm (2nd)
+- Kyle Pitts (ATL, TE): 6.67 rec yds/gm, 8.2% target share *(2025: 54.6 rec yds/gm, 22.8% target share)* — opp D allows 83.3 TE rec yds/gm (30th)
+- Chris Olave (NO, WR): 125.0 rec yds/gm (2nd), 29.0% target share — opp D allows 201.3 WR rec yds/gm (32nd)
+- Devaughn Vele (NO, WR): 57.3 rec yds/gm, 17.7% target share — opp D allows 201.3 WR rec yds/gm (32nd)
+- Juwan Johnson (NO, TE): 57.7 rec yds/gm (6th), 28.6% red-zone target share, 3 TD — opp D allows 52.0 TE rec yds/gm (18th)
 
 **Team Defense**
 - Atlanta: 273.3 pass yds/gm allowed (27th) | 47.7 rush yds/gm allowed (1st) | WR: 201.3 rec yds/gm allowed (32nd) | TE: 52.0 rec yds/gm allowed (18th) | Coverage rate (man/zone): not available in this package

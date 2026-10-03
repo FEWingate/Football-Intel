@@ -20,11 +20,11 @@
 .parlay-badge.pass{color:var(--accent-green);background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.3)}
 .parlay-badge.fail{color:var(--accent-red);background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.3)}
 .parlay-legs{padding:10px 14px}
-.parlay-leg{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--hairline);
-  font-size:12.5px}
+.parlay-leg{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--hairline);
+  font-size:15px}
 .parlay-leg:last-child{border-bottom:0}
-.parlay-leg .who{color:var(--text)}
-.parlay-leg .mkt{color:var(--text-dim);font-size:11px}
+.parlay-leg .who{color:var(--text);font-weight:600}
+.parlay-leg .mkt{color:var(--text-dim);font-size:13px}
 .parlay-leg .px{font-family:var(--font-mono);color:var(--text-mid);white-space:nowrap}
 .parlay-foot{padding:10px 14px;border-top:1px solid var(--border);background:var(--surface2);
   font-family:var(--font-mono);font-size:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
@@ -70,6 +70,43 @@
   background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);cursor:pointer}
 .pc-topnav button[aria-selected="true"]{color:var(--primary);border-bottom-color:var(--primary)}
 
+/* ── Prop Builder (2026-10-02), per Frank's direct request: every real
+   line in Game Lines/Totals/ML and Player Props is clickable, adding it
+   to a real, user-built slip (not Coeus's picks) saved per-week in the
+   browser. ── */
+.pc-nav-badge{font-family:var(--font-mono);font-size:10px;color:var(--primary);margin-left:3px}
+.pc-slip-btn{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:.03em;
+  padding:2px 7px;border-radius:5px;border:1px solid var(--border);background:var(--surface2);
+  color:var(--text-dim);cursor:pointer;margin-left:6px;white-space:nowrap}
+.pc-slip-btn:hover{border-color:var(--primary);color:var(--primary)}
+.pc-slip-btn.added{border-color:var(--accent-green);color:var(--accent-green);background:rgba(74,222,128,.08)}
+.pc-slip-remove{font-family:var(--font-mono);font-size:11px;background:none;border:1px solid var(--border);
+  border-radius:4px;color:var(--text-dim);cursor:pointer;padding:2px 7px;margin-left:8px}
+.pc-slip-remove:hover{border-color:var(--accent-red);color:var(--accent-red)}
+.pc-stake-input{width:60px;background:var(--surface2);border:1px solid var(--border);color:var(--text);
+  border-radius:4px;padding:3px 6px;font-family:var(--font-mono)}
+.pc-clear-slip{margin-top:14px;color:var(--accent-red);border-color:rgba(244,63,94,.3)}
+
+/* ── Parlay Scrambler (2026-10-02), per Frank's direct request: pools
+   every real pick Coeus already made across Favorite O/U, Anytime TD,
+   Spreads, and Parlays (only legs from combinations that passed
+   validation), dedupes them, and draws a random N on demand. This
+   never generates a new pick of its own — it only reshuffles picks
+   that already exist elsewhere on this page. ── */
+.pc-scramble-controls{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.pc-scramble-sizes{display:flex;gap:6px;flex-wrap:wrap}
+.pc-scramble-sizes button{font-family:var(--font-mono);font-size:13px;font-weight:700;
+  width:36px;height:36px;border-radius:6px;border:1px solid var(--border);
+  background:var(--surface2);color:var(--text-dim);cursor:pointer}
+.pc-scramble-sizes button:hover{border-color:var(--primary);color:var(--primary)}
+.pc-scramble-sizes button.active{border-color:var(--primary);color:var(--primary);
+  background:rgba(96,165,250,.1)}
+.pc-scramble-go{background:#000;color:#4ade80;border-color:#000;font-weight:700}
+.pc-scramble-go:hover{background:#111;color:#4ade80;border-color:#111}
+.pc-scramble-go:disabled{opacity:.4;cursor:not-allowed}
+.pc-scramble-go:disabled:hover{background:#000;color:#4ade80;border-color:#000}
+.pc-scramble-pool-note{font-family:var(--font-mono);font-size:11px;color:var(--text-mid)}
+
 /* ── Game Lines cards — same shape/size as the Games page, real .gcard
    classes reused directly (defined in the shared css/fi-styles.css) so
    this looks and feels identical, not just visually similar. ── */
@@ -111,8 +148,8 @@
 .pc-pick-market{font-size:11.5px;color:var(--text-dim);margin:3px 0}
 .pc-pick-price{font-family:var(--font-mono);font-size:13px;color:var(--text-mid)}
 .pc-pick-price-row{display:flex;align-items:center;gap:8px}
-.pc-pick-side{font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;
-  font-weight:700;padding:2px 6px;border-radius:4px}
+.pc-pick-side{font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+  font-weight:700;padding:3px 7px;border-radius:4px}
 .pc-pick-side.over{background:rgba(74,222,128,.14);color:#4ade80}
 .pc-pick-side.under{background:rgba(248,113,113,.14);color:#f87171}
 .pc-pick-side.spread{background:rgba(96,165,250,.14);color:#60a5fa}
@@ -130,7 +167,7 @@
 .pc-stat-val{font-size:20px;font-weight:700}
 .pc-stat-pct{font-size:12px;color:var(--text-mid)}
 .pc-stat-ungraded{font-size:10.5px;color:var(--text-mid);margin-top:2px}
-.pc-pick-reason{font-size:11px;color:var(--text-dim);margin-top:6px;line-height:1.4}
+.pc-pick-reason{font-size:14px;color:var(--text-dim);margin-top:6px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -149,11 +186,13 @@ main.innerHTML = `
   <div class="pc-topnav" id="pcTopNav">
     <button data-s="lines" aria-selected="true">Game Lines / Totals / ML</button>
     <button data-s="props">Player Props</button>
+    <button data-s="builder">Prop Builder<span class="pc-nav-badge" id="pcSlipBadge"></span></button>
     <button data-s="breakdown">Coeus Prop Breakdown</button>
-    <button data-s="overunder">Favorite O/U</button>
-    <button data-s="anytimetd">Anytime TD</button>
-    <button data-s="spreads">Spreads</button>
-    <button data-s="parlays">Parlays</button>
+    <button data-s="overunder">Coeus Favorite O/U</button>
+    <button data-s="anytimetd">Coeus Anytime TD</button>
+    <button data-s="spreads">Coeus Spreads</button>
+    <button data-s="parlays">Coeus Parlays</button>
+    <button data-s="scrambler">Parlay Scrambler</button>
     <button data-s="results">Results</button>
   </div>
   <div id="body"></div>
@@ -195,6 +234,15 @@ let propsBatchFilter = null;
 // case these three tabs fall back to the selected batch's own parlays
 // exactly as before (see renderParlays/renderAnytimeTD/renderSpreads).
 let WHOLE_WEEK_REPORT = null;
+
+// REAL ADDITION (2026-10-02), per Frank's direct request: a Prop Builder
+// slip — real, user-picked legs from Game Lines/Totals/ML and Player
+// Props, saved per-week in the browser's own localStorage. This is
+// Frank's own slip, not Coeus's — never validated or re-checked the way
+// Coeus's own parlays are, just whatever real price was on the board
+// when he clicked it.
+let SLIP = [];
+let SLIP_STAKE = 10;
 
 const pad = n => String(n).padStart(2, '0');
 
@@ -289,6 +337,7 @@ async function load(){
   const currentWeek = await determineDefaultWeek();
   const currentWk = `wk${pad(currentWeek)}`;
   propsWeekFilter = currentWk;
+  loadSlip(propsWeekFilter);
   await loadManifestForWeek(propsWeekFilter);
   await applyGameLinesWeekFilter(propsWeekFilter);
 
@@ -302,6 +351,7 @@ async function load(){
   $('pcWeekBar').style.display = '';
   $('pcWeek').addEventListener('change', async (e) => {
     propsWeekFilter = e.target.value;
+    loadSlip(propsWeekFilter);
     fiStatus('Loading','loading');
     await loadManifestForWeek(propsWeekFilter);
     await applyGameLinesWeekFilter(propsWeekFilter);
@@ -525,24 +575,138 @@ function renderGameLines(){
 
 let lastFocus = null;
 
+/* ── PROP BUILDER — slip state, storage, and the clickable "+ Add"
+   buttons wired into Game Lines and Player Props below. A leg here is
+   always real: canonical_event_id/market_key/player/price straight off
+   the real FanDuel data already on the page, never invented. ── */
+function legId(leg){
+  return [leg.canonical_event_id, leg.market_key, leg.player, leg.side || '',
+    leg.point ?? leg.line ?? ''].join('|');
+}
+function isLegInSlip(leg){
+  const id = legId(leg);
+  return SLIP.some(l => legId(l) === id);
+}
+function slipStorageKey(wk){
+  return `footballIntel.propBuilder.${wk}`;
+}
+function loadSlip(wk){
+  SLIP = [];
+  SLIP_STAKE = 10;
+  try{
+    const raw = localStorage.getItem(slipStorageKey(wk));
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(Array.isArray(parsed.legs)) SLIP = parsed.legs;
+      if(typeof parsed.stake === 'number' && parsed.stake > 0) SLIP_STAKE = parsed.stake;
+    }
+  }catch(e){ /* corrupt or blocked storage — start with an empty slip, never crash over this */ }
+  updateSlipNavBadge();
+}
+function saveSlip(wk){
+  try{
+    localStorage.setItem(slipStorageKey(wk), JSON.stringify({ legs: SLIP, stake: SLIP_STAKE }));
+  }catch(e){ /* private window / storage blocked / quota — slip just won't persist this session */ }
+}
+function toggleSlipLeg(leg){
+  const id = legId(leg);
+  const idx = SLIP.findIndex(l => legId(l) === id);
+  if(idx >= 0) SLIP.splice(idx, 1);
+  else SLIP.push(leg);
+  saveSlip(propsWeekFilter);
+  updateSlipNavBadge();
+}
+function updateSlipNavBadge(){
+  const el = $('pcSlipBadge');
+  if(el) el.textContent = SLIP.length ? ` (${SLIP.length})` : '';
+}
+function slipToggleBtn(leg){
+  if(leg.price === null || leg.price === undefined) return '';
+  const added = isLegInSlip(leg);
+  // REAL BUG FIX (2026-10-02), per Frank's direct catch: esc() (js/fi-
+  // shell.js) only escapes & < > for safe HTML CONTENT — it was never
+  // built to escape a value going inside a quoted HTML ATTRIBUTE, so a
+  // literal " from JSON.stringify(leg) (every leg has one immediately,
+  // e.g. {"canonical_event_id":...) truncated the data-leg attribute at
+  // the very first character every time, silently corrupting it. Every
+  // click's JSON.parse then failed and the catch block quietly did
+  // nothing — exactly the "doesn't add, doesn't stay selected" Frank
+  // saw. encodeURIComponent's output never contains a raw " at all, so
+  // it's always safe inside a double-quoted attribute.
+  return `<button class="pc-slip-btn${added ? ' added' : ''}" data-leg="${encodeURIComponent(JSON.stringify(leg))}">${added ? '✓ Added' : '+ Add'}</button>`;
+}
+function wireSlipButtons(root, refreshFn){
+  if(!root) return;
+  root.querySelectorAll('.pc-slip-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      let leg;
+      try { leg = JSON.parse(decodeURIComponent(btn.dataset.leg)); } catch(err){ return; }
+      toggleSlipLeg(leg);
+      refreshFn();
+    });
+  });
+}
+function combinedDecimalOdds(legs){
+  return legs.reduce((acc, l) => acc * (l.price || 1), 1);
+}
+
 function statBlockForGame(g, statKey, label){
   const byPlayer = (g.player_props && g.player_props[statKey]) || {};
   const names = Object.keys(byPlayer);
   if(!names.length) return '';
+  const marketKey = `player_${statKey}`;
   const rows = names.map(name => {
     const p = byPlayer[name];
-    const lineHTML = p.line
-      ? `${p.line.point} — O ${priceLine(p.line.over_price)} / U ${priceLine(p.line.under_price)}`
-      : '<span class="pc-empty-inline">No plain line posted</span>';
+    let lineHTML = '<span class="pc-empty-inline">No plain line posted</span>';
+    if(p.line){
+      const overLeg = {canonical_event_id: g.canonical_event_id, market_key: marketKey, player: name, price: p.line.over_price, side: 'over', line: p.line.point};
+      const underLeg = {canonical_event_id: g.canonical_event_id, market_key: marketKey, player: name, price: p.line.under_price, side: 'under', line: p.line.point};
+      lineHTML = `${p.line.point} — O ${priceLine(p.line.over_price)} ${slipToggleBtn(overLeg)}
+        / U ${priceLine(p.line.under_price)} ${slipToggleBtn(underLeg)}`;
+    }
     const altsHTML = p.alts && p.alts.length
-      ? `<div class="pc-alts-grid">${p.alts.map(a =>
-          `<span class="pc-alt-chip">${a.threshold}+ : ${priceLine(a.over_price != null ? a.over_price : a.under_price)}</span>`).join('')}</div>`
+      ? `<div class="pc-alts-grid">${p.alts.map(a => {
+          const side = a.over_price != null ? 'over' : 'under';
+          const altKey = `player_${statKey}_milestones_${a.threshold}_or_more`;
+          const leg = {canonical_event_id: g.canonical_event_id, market_key: altKey, player: name,
+            price: a.over_price != null ? a.over_price : a.under_price, side};
+          return `<span class="pc-alt-chip">${a.threshold}+ : ${priceLine(leg.price)} ${slipToggleBtn(leg)}</span>`;
+        }).join('')}</div>`
       : '';
     return `<tr><td class="pc-player-name">${esc(name)}</td><td>${lineHTML}</td></tr>
       ${altsHTML ? `<tr><td colspan="2">${altsHTML}</td></tr>` : ''}`;
   }).join('');
   return `<div class="pc-modal-stat-sect"><h4>${esc(label)}</h4>
     <table class="pc-props-table"><tbody>${rows}</tbody></table></div>`;
+}
+
+// REAL ADDITION (2026-10-02): the Game Lines section of the per-game
+// modal — real Moneyline/Spread/Total prices, each clickable into the
+// Prop Builder slip, same real data already summarized on the Game
+// Lines card itself (just the full real board, not just the favorite
+// spread/total shown there).
+function gameLinesSectionHTML(g){
+  const h2h = g.game_lines.h2h || [];
+  const spreads = g.game_lines.spreads || [];
+  const totals = g.game_lines.totals || [];
+  if(!h2h.length && !spreads.length && !totals.length) return '';
+  const chips = [];
+  for(const o of h2h){
+    const leg = {canonical_event_id: g.canonical_event_id, market_key: 'h2h', player: o.name, price: o.price, side: null};
+    chips.push(`<div class="pc-td-chip"><span>${esc(o.name)} ML</span><span class="pc-line-px">${priceLine(o.price)} ${slipToggleBtn(leg)}</span></div>`);
+  }
+  for(const o of spreads){
+    const leg = {canonical_event_id: g.canonical_event_id, market_key: 'spreads', player: o.name, price: o.price, side: null, point: o.point};
+    const pt = o.point > 0 ? `+${o.point}` : `${o.point}`;
+    chips.push(`<div class="pc-td-chip"><span>${esc(o.name)} ${pt}</span><span class="pc-line-px">${priceLine(o.price)} ${slipToggleBtn(leg)}</span></div>`);
+  }
+  for(const o of totals){
+    const side = (o.name || '').toLowerCase() === 'over' ? 'over' : 'under';
+    const leg = {canonical_event_id: g.canonical_event_id, market_key: 'totals', player: 'Game Total', price: o.price, side, line: o.point};
+    chips.push(`<div class="pc-td-chip"><span>${esc(o.name)} ${o.point}</span><span class="pc-line-px">${priceLine(o.price)} ${slipToggleBtn(leg)}</span></div>`);
+  }
+  return `<div class="pc-modal-stat-sect"><h4>Game Lines</h4><div class="pc-td-grid">${chips.join('')}</div></div>`;
 }
 
 function openGameProps(eid, source){
@@ -554,19 +718,24 @@ function openGameProps(eid, source){
   $('mSub').textContent = t;
 
   let h = '';
+  h += gameLinesSectionHTML(g);
   h += statBlockForGame(g, 'passing_yards', 'Passing Yards');
   h += statBlockForGame(g, 'rushing_yards', 'Rushing Yards');
   h += statBlockForGame(g, 'receiving_yards', 'Receiving Yards');
   h += statBlockForGame(g, 'receptions', 'Receptions');
   if(g.anytime_td && g.anytime_td.length){
     const chips = g.anytime_td.slice().sort((a,b) => a.price - b.price)
-      .map(p => `<div class="pc-td-chip"><span>${esc(p.player)}</span><span class="pc-line-px">${priceLine(p.price)}</span></div>`).join('');
+      .map(p => {
+        const leg = {canonical_event_id: g.canonical_event_id, market_key: 'player_anytime_td', player: p.player, price: p.price, side: null};
+        return `<div class="pc-td-chip"><span>${esc(p.player)}</span><span class="pc-line-px">${priceLine(p.price)} ${slipToggleBtn(leg)}</span></div>`;
+      }).join('');
     h += `<div class="pc-modal-stat-sect"><h4>Anytime TD</h4><div class="pc-td-grid">${chips}</div></div>`;
   }
   if(!h) h = `<div class="empty">No real player props posted for this game yet.</div>`;
 
   $('mBody').innerHTML = h;
   $('scrim').classList.add('open'); $('modal').classList.add('open');
+  wireSlipButtons($('mBody'), () => openGameProps(eid, source));
   $('mClose').focus();
 }
 function closeModal(){
@@ -610,15 +779,20 @@ function renderPropsBody(){
     const cards = FDPROPS.games.map(g => {
       if(!g.anytime_td || !g.anytime_td.length) return '';
       const chips = g.anytime_td
-        .sort((a, b) => a.price - b.price)
-        .map(p => `<div class="pc-td-chip"><span>${esc(p.player)}</span>
-          <span class="pc-line-px">${priceLine(p.price)}</span></div>`).join('');
+        .slice().sort((a, b) => a.price - b.price)
+        .map(p => {
+          const leg = {canonical_event_id: g.canonical_event_id, market_key: 'player_anytime_td', player: p.player, price: p.price, side: null};
+          return `<div class="pc-td-chip"><span>${esc(p.player)}</span>
+          <span class="pc-line-px">${priceLine(p.price)} ${slipToggleBtn(leg)}</span></div>`;
+        }).join('');
       return `<div class="pc-game-card">${gameTitle(g)}<div class="pc-td-grid">${chips}</div></div>`;
     }).join('');
     $('pcPropsBody').innerHTML = cards || `<div class="empty">No real anytime-TD data for this stat yet.</div>`;
+    wireSlipButtons($('pcPropsBody'), renderPropsBody);
     return;
   }
 
+  const marketKey = `player_${activeStat}`;
   const cards = FDPROPS.games.map(g => {
     const byPlayer = (g.player_props && g.player_props[activeStat]) || {};
     const names = Object.keys(byPlayer);
@@ -626,16 +800,26 @@ function renderPropsBody(){
     const rows = names.map((name, i) => {
       const p = byPlayer[name];
       const rowId = `alts-${g.canonical_event_id}-${activeStat}-${i}`;
-      const lineHTML = p.line
-        ? `${p.line.point} — O ${priceLine(p.line.over_price)} / U ${priceLine(p.line.under_price)}`
-        : '<span class="pc-empty-inline">No plain line posted</span>';
+      let lineHTML = '<span class="pc-empty-inline">No plain line posted</span>';
+      if(p.line){
+        const overLeg = {canonical_event_id: g.canonical_event_id, market_key: marketKey, player: name, price: p.line.over_price, side: 'over', line: p.line.point};
+        const underLeg = {canonical_event_id: g.canonical_event_id, market_key: marketKey, player: name, price: p.line.under_price, side: 'under', line: p.line.point};
+        lineHTML = `${p.line.point} — O ${priceLine(p.line.over_price)} ${slipToggleBtn(overLeg)}
+          / U ${priceLine(p.line.under_price)} ${slipToggleBtn(underLeg)}`;
+      }
       const altsHTML = p.alts && p.alts.length
         ? `<button class="pc-alts-toggle" onclick="document.getElementById('${rowId}').classList.toggle('open')">
              ${p.alts.length} alt line(s) ▾</button>`
         : '<span class="pc-empty-inline">No alt lines</span>';
       const altsExpanded = p.alts && p.alts.length
         ? `<tr class="pc-alts-row" id="${rowId}"><td colspan="3"><div class="pc-alts-grid">
-             ${p.alts.map(a => `<span class="pc-alt-chip">${a.threshold}+ : ${priceLine(a.over_price != null ? a.over_price : a.under_price)}</span>`).join('')}
+             ${p.alts.map(a => {
+               const side = a.over_price != null ? 'over' : 'under';
+               const altKey = `player_${activeStat}_milestones_${a.threshold}_or_more`;
+               const leg = {canonical_event_id: g.canonical_event_id, market_key: altKey, player: name,
+                 price: a.over_price != null ? a.over_price : a.under_price, side};
+               return `<span class="pc-alt-chip">${a.threshold}+ : ${priceLine(leg.price)} ${slipToggleBtn(leg)}</span>`;
+             }).join('')}
            </div></td></tr>`
         : '';
       return `<tr>
@@ -653,10 +837,14 @@ function renderPropsBody(){
   }).join('');
 
   $('pcPropsBody').innerHTML = cards || `<div class="empty">No real ${esc(STAT_LABELS[activeStat])} data posted yet for this slate.</div>`;
+  wireSlipButtons($('pcPropsBody'), renderPropsBody);
 }
 
 /* ── COEUS PROP BREAKDOWN / FAVORITE O/U ─────────────────────────────── */
 function marketKeyLabel(key){
+  if(key === 'h2h') return 'Moneyline';
+  if(key === 'totals') return 'Game Total';
+  if(key === 'spreads') return 'Spread';
   const altMatch = key.match(/^player_(.+)_milestones_(\d+)_or_more$/);
   if(altMatch){
     const statKey = altMatch[1];
@@ -985,6 +1173,149 @@ function renderParlays(){
   wireReportToggle();
 }
 
+/* ── PARLAY SCRAMBLER (2026-10-02), per Frank's direct request: pools
+   every real pick Coeus has already made across Coeus Favorite O/U,
+   Coeus Anytime TD, Coeus Spreads, and Coeus Parlays (same sources
+   each of those tabs already shows — whole-week file preferred for
+   the three parlay tabs, exactly like those tabs do; Favorite O/U is
+   always batch-scoped since it has no whole-week version), dedupes
+   by the same legId() the Prop Builder slip uses, and draws a random
+   N of them. This never grades or re-validates anything of its own —
+   only legs from combinations that already passed validation are
+   pooled, and the Scrambler only randomizes which subset is shown
+   together. Each drawn leg can also be sent into Frank's own Prop
+   Builder slip with the same "+ Add" button used everywhere else. ── */
+let SCRAMBLE_SIZE = 5;
+let SCRAMBLE_RESULT = null;
+
+function scramblerPool(){
+  const pool = [];
+  const seen = new Set();
+  const now = new Date();
+  const addLeg = (leg) => {
+    if(!leg || leg.price === null || leg.price === undefined) return;
+    // REAL FIX (2026-10-02), per Frank's direct catch: a game that has
+    // already kicked off (PIT @ CLE, Thursday night) was still turning
+    // up in scrambled draws Friday evening — the pool never checked
+    // commence_time against the real clock. Anything whose game has
+    // already started (or has no commence_time to check at all) is
+    // excluded, same real timestamp the game cards elsewhere use.
+    const game = gameForEventId(leg.canonical_event_id);
+    if(!game || !game.commence_time) return;
+    if(new Date(game.commence_time) <= now) return;
+    const id = legId(leg);
+    if(seen.has(id)) return;
+    seen.add(id);
+    pool.push(leg);
+  };
+
+  if(REPORT && REPORT.favorite_ou){
+    (REPORT.favorite_ou.overs || []).forEach(addLeg);
+    (REPORT.favorite_ou.unders || []).forEach(addLeg);
+  }
+
+  const sizes = ['3','4','5','6','7'];
+  const addFromParlaySrc = (src, key) => {
+    if(!src || !src[key]) return;
+    sizes.forEach(s => {
+      const p = src[key][s];
+      if(p && p.valid && Array.isArray(p.legs)) p.legs.forEach(addLeg);
+    });
+  };
+  const tdSrc = (WHOLE_WEEK_REPORT && WHOLE_WEEK_REPORT.td_parlays) ? WHOLE_WEEK_REPORT
+              : (REPORT && REPORT.td_parlays) ? REPORT : null;
+  const spreadSrc = (WHOLE_WEEK_REPORT && WHOLE_WEEK_REPORT.spread_parlays) ? WHOLE_WEEK_REPORT
+              : (REPORT && REPORT.spread_parlays) ? REPORT : null;
+  const parlaySrc = (WHOLE_WEEK_REPORT && WHOLE_WEEK_REPORT.parlays) ? WHOLE_WEEK_REPORT
+              : (REPORT && REPORT.parlays) ? REPORT : null;
+  addFromParlaySrc(tdSrc, 'td_parlays');
+  addFromParlaySrc(spreadSrc, 'spread_parlays');
+  addFromParlaySrc(parlaySrc, 'parlays');
+
+  return pool;
+}
+
+function shuffledSample(arr, n){
+  const copy = arr.slice();
+  for(let i = copy.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy.slice(0, Math.min(n, copy.length));
+}
+
+function scrambleLegRowHTML(leg){
+  const game = gameForEventId(leg.canonical_event_id);
+  const gameLabel = game ? `${game.away_code} @ ${game.home_code}` : '';
+  const sideLabel = sideLineLabel(leg);
+  return `<div class="parlay-leg">
+    <div><div class="who">${esc(leg.player || leg.side || '—')} ${gradeBadgeHTML(leg.grade)}</div>
+      <div class="mkt">${esc(marketKeyLabel(leg.market_key || ''))}${gameLabel ? ' · ' + esc(gameLabel) : ''}</div>
+      ${sideLabel}
+      ${leg.reason ? `<div class="pc-pick-reason">${esc(leg.reason)}</div>` : ''}
+    </div>
+    <div class="px">${priceLine(leg.price)}${slipToggleBtn(leg)}</div>
+  </div>`;
+}
+
+function renderScrambler(){
+  const pool = scramblerPool();
+  const sizeOptions = [3,4,5,6,7,8,9,10];
+  const sizeButtons = sizeOptions.map(n =>
+    `<button class="pc-scramble-size${SCRAMBLE_SIZE === n ? ' active' : ''}" data-n="${n}">${n}</button>`
+  ).join('');
+  const canGenerate = pool.length >= 3;
+
+  let resultHTML = '';
+  if(SCRAMBLE_RESULT && SCRAMBLE_RESULT.length){
+    const rows = SCRAMBLE_RESULT.map(leg => scrambleLegRowHTML(leg)).join('');
+    const combined = combinedDecimalOdds(SCRAMBLE_RESULT);
+    const stake = 10;
+    resultHTML = `<div class="parlay-card" style="max-width:520px">
+      <div class="parlay-head">
+        <span class="parlay-size">${SCRAMBLE_RESULT.length}-Pick Scramble</span>
+        <span class="parlay-badge pass">RANDOM DRAW</span>
+      </div>
+      <div class="parlay-legs">${rows}</div>
+      <div class="parlay-foot">
+        <span>Combined: <b>${combined.toFixed(2)}</b> (${priceLine(combined)})</span>
+        <span>$${stake} → <b>$${(stake * combined).toFixed(2)}</b></span>
+      </div>
+    </div>`;
+  }
+
+  $('body').innerHTML = `
+    <div class="lineup-note" style="margin-bottom:14px">
+      Pools every real pick Coeus has already made across Coeus Favorite O/U, Coeus Anytime TD,
+      Coeus Spreads, and Coeus Parlays — only legs from combinations that passed validation, and
+      each pick counted once even if it shows up in more than one tab.
+      <span class="pc-scramble-pool-note">${pool.length} unique pick${pool.length === 1 ? '' : 's'} in the pool right now.</span>
+      Pick a size, hit Generate, and get that many drawn at random. This only reshuffles Coeus's
+      existing picks — it never makes a new one of its own.
+    </div>
+    <div class="pc-scramble-controls">
+      <div class="pc-scramble-sizes">${sizeButtons}</div>
+      <button class="toggle-report pc-scramble-go" id="pcScrambleGo"${canGenerate ? '' : ' disabled'}>Generate</button>
+    </div>
+    ${!canGenerate ? '<div class="empty">Not enough picks in the pool yet (need at least 3) — generate Coeus\'s reports first.</div>' : ''}
+    ${resultHTML}
+  `;
+
+  $('body').querySelectorAll('.pc-scramble-sizes button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      SCRAMBLE_SIZE = parseInt(btn.dataset.n, 10);
+      renderScrambler();
+    });
+  });
+  if(canGenerate){
+    $('pcScrambleGo').addEventListener('click', () => {
+      SCRAMBLE_RESULT = shuffledSample(scramblerPool(), SCRAMBLE_SIZE);
+      renderScrambler();
+    });
+  }
+  wireSlipButtons($('body'), renderScrambler);
+}
+
 // REAL ADDITION (2026-09-28), per Frank's direct request: a Results
 // tab showing the real season-to-date W/L/P record (results/
 // season_record.json, written by grade_props_report.py) plus every
@@ -1074,14 +1405,92 @@ function renderResults(){
   $('body').innerHTML = h;
 }
 
+// REAL ADDITION (2026-10-02), per Frank's direct request: a real
+// user-built parlay slip, assembled by clicking "+ Add" next to any
+// real line in Game Lines/Totals/ML or Player Props. This is Frank's
+// own slip, not Coeus's — never independently re-checked against real
+// data the way Coeus's own Parlays/TD Parlays/Spread Parlays are
+// (those stay exactly as they were); it's exactly what he clicked, at
+// the real price shown at the time.
+function slipLegRowHTML(leg){
+  const game = gameForEventId(leg.canonical_event_id);
+  const gameLabel = game ? `${game.away_code} @ ${game.home_code}` : '';
+  const sideLabel = sideLineLabel(leg);
+  return `<div class="parlay-leg">
+    <div><div class="who">${esc(leg.player)}</div>
+      <div class="mkt">${esc(marketKeyLabel(leg.market_key))}${gameLabel ? ' · ' + esc(gameLabel) : ''}</div>
+      ${sideLabel}
+    </div>
+    <div class="px">${priceLine(leg.price)}
+      <button class="pc-slip-remove" data-legid="${encodeURIComponent(legId(leg))}" title="Remove from slip">✕</button>
+    </div>
+  </div>`;
+}
+
+function renderPropBuilder(){
+  if(!SLIP.length){
+    $('body').innerHTML = `<div class="empty">Your slip is empty.<br>
+      Click <b>+ Add</b> next to any real line in <b>Game Lines / Totals / ML</b> or
+      <b>Player Props</b> to build your own parlay here.</div>`;
+    return;
+  }
+  const rows = SLIP.map(leg => slipLegRowHTML(leg)).join('');
+  const combined = combinedDecimalOdds(SLIP);
+  const payout = SLIP_STAKE * combined;
+
+  $('body').innerHTML = `
+    <div class="lineup-note" style="margin-bottom:14px">
+      ${SLIP.length} leg(s) in your own slip — these are your picks, not Coeus's, and are never
+      independently re-checked against real data the way the Parlays tab's picks are. Exactly what
+      you clicked, at the real FanDuel price shown at the time.
+    </div>
+    <div class="parlay-card" style="max-width:520px">
+      <div class="parlay-head">
+        <span class="parlay-size">Your Slip</span>
+        <span class="parlay-badge pass">${SLIP.length} LEG${SLIP.length === 1 ? '' : 'S'}</span>
+      </div>
+      <div class="parlay-legs">${rows}</div>
+      <div class="parlay-foot">
+        <span>Combined: <b>${combined.toFixed(2)}</b> (${priceLine(combined)})</span>
+        <span>Stake $<input type="number" id="pcStakeInput" class="pc-stake-input" value="${SLIP_STAKE}" min="1" step="1">
+          → <b>$${payout.toFixed(2)}</b></span>
+      </div>
+    </div>
+    <button class="toggle-report pc-clear-slip" id="pcClearSlip">Clear slip</button>
+  `;
+
+  $('body').querySelectorAll('.pc-slip-remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      SLIP = SLIP.filter(l => legId(l) !== decodeURIComponent(btn.dataset.legid));
+      saveSlip(propsWeekFilter);
+      updateSlipNavBadge();
+      renderPropBuilder();
+    });
+  });
+  $('pcStakeInput').addEventListener('change', (e) => {
+    const v = parseFloat(e.target.value);
+    SLIP_STAKE = (isFinite(v) && v > 0) ? v : 10;
+    saveSlip(propsWeekFilter);
+    renderPropBuilder();
+  });
+  $('pcClearSlip').addEventListener('click', () => {
+    SLIP = [];
+    saveSlip(propsWeekFilter);
+    updateSlipNavBadge();
+    renderPropBuilder();
+  });
+}
+
 function render(){
   if(activeSection === 'lines') return renderGameLines();
   if(activeSection === 'props') return renderPlayerProps();
+  if(activeSection === 'builder') return renderPropBuilder();
   if(activeSection === 'breakdown') return renderPropBreakdown();
   if(activeSection === 'overunder') return renderFavoriteOU();
   if(activeSection === 'anytimetd') return renderAnytimeTD();
   if(activeSection === 'spreads') return renderSpreads();
   if(activeSection === 'parlays') return renderParlays();
+  if(activeSection === 'scrambler') return renderScrambler();
   if(activeSection === 'results') return renderResults();
 }
 

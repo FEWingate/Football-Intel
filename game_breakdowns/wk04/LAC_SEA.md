@@ -146,14 +146,14 @@ No other player came close. Herbert's passing categories don't threaten a Threat
 - SEA: 2-1 | 25.0 ppg (13th) / 16.7 ppg allowed (4th)
 
 **Passing**
-- Justin Herbert (LAC): 209.0 pass yds/gm (20th), 59.1% comp (27th), 3 TD, 1.33 INT/gm (28th)
+- Justin Herbert (LAC): 209.0 pass yds/gm (20th), 59.1% comp (27th), 3 TD, 1.33 INT/gm (28th) — opp D allows 152.0 pass yds/gm (1st)
 - Drew Lock (SEA, Wks 1-2): 211.0 pass yds/gm, 72.92% comp, 4 TD, 0 INT
 - Sam Darnold (SEA, likely current starter): 196.0 pass yds/gm, 68.09% comp, 4 TD, 1.0 INT/gm
 
 **Rushing**
-- Omarion Hampton (LAC): 64.3 rush yds/gm, 16.7 car/gm, 2 rush TD, 61.7% rush share
-- Emanuel Wilson (SEA): 36.3 rush yds/gm, 40.0% rush share (trending up last 2 games)
-- Jadarian Price (SEA): 39.7 rush yds/gm, 35.0% rush share, listed RB1 on depth chart
+- Omarion Hampton (LAC): 64.3 rush yds/gm, 16.7 car/gm, 2 rush TD, 61.7% rush share — opp D allows 87.0 rush yds/gm (6th)
+- Emanuel Wilson (SEA): 36.3 rush yds/gm, 40.0% rush share (trending up last 2 games) — opp D allows 116.3 rush yds/gm (19th)
+- Jadarian Price (SEA): 39.7 rush yds/gm, 35.0% rush share, listed RB1 on depth chart — opp D allows 116.3 rush yds/gm (19th)
 
 **Receiving**
 - Ladd McConkey (LAC): 61.0 rec yds/gm, 17.4% target share

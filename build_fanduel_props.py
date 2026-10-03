@@ -191,23 +191,55 @@ def _get(path, params=None):
         sys.exit("FATAL: PARLAY_API_KEY not set. Add `export PARLAY_API_KEY=...` "
                  "to ~/.bashrc, then `source ~/.bashrc`.")
     url = f"{BASE_URL}/{path}"
-    for attempt in range(3):
-        resp = requests.get(
-            url,
-            headers={AUTH_HEADER: PARLAY_API_KEY},
-            params=params or {},
-            timeout=45,
-        )
+    resp = None
+    MAX_ATTEMPTS = 8
+    for attempt in range(MAX_ATTEMPTS):
+        try:
+            resp = requests.get(
+                url,
+                headers={AUTH_HEADER: PARLAY_API_KEY},
+                params=params or {},
+                timeout=90,
+            )
+        except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError) as error:
+            # REAL FIX (2026-10-02): a ReadTimeout/ConnectionError never produces a
+            # `resp`, so it used to fall straight through this retry loop and crash
+            # the whole run on the FIRST attempt, even though parlay-api.com was
+            # just being slow, not down (confirmed: 3 consecutive real runs each
+            # died on a timeout, never once reaching the "retrying in Ns" path
+            # below, which only ever fired for actual HTTP 429/5xx responses).
+            # Now a timeout gets the same retry treatment as a 5xx.
+            delay = min(2 ** attempt, 30)
+            print(f"  WARNING: {path} timed out ({error.__class__.__name__}); retrying in {delay}s "
+                  f"(attempt {attempt + 1}/{MAX_ATTEMPTS})")
+            time.sleep(delay)
+            continue
         if resp.status_code == 200:
             break
         if resp.status_code == 429 or 500 <= resp.status_code < 600:
-            delay = min(int(resp.headers.get("Retry-After", 2 ** attempt)), 30)
-            print(f"  WARNING: {path} returned HTTP {resp.status_code}; retrying in {delay}s")
+            # REAL FIX (2026-10-02): parlay-api.com's own "props_temporarily_busy"
+            # error (seen live: "The props board is being rebuilt under load")
+            # sends Retry-After: 2 every single time, even while still busy several
+            # retries in a row. Honoring that literally meant 4 attempts only ever
+            # spanned ~8 real seconds — not enough to outlast a board rebuild.
+            # Now we take the LARGER of the server's suggested wait and our own
+            # growing backoff, so later attempts wait longer even if the server
+            # keeps asking for just "2s", and we get 8 attempts instead of 4
+            # (worst case ~2+4+8+16+30+30+30=120s of total waiting before giving up).
+            server_delay = int(resp.headers.get("Retry-After", 2))
+            delay = min(max(server_delay, 2 ** attempt), 30)
+            print(f"  WARNING: {path} returned HTTP {resp.status_code} "
+                  f"({resp.text[:120]}); retrying in {delay}s (attempt {attempt + 1}/{MAX_ATTEMPTS})")
             time.sleep(delay)
             continue
         sys.exit(f"FATAL: {url} returned HTTP {resp.status_code}: {resp.text[:300]}")
     else:
-        sys.exit(f"FATAL: {url} did not recover after three attempts: {resp.text[:300]}")
+        if resp is None:
+            sys.exit(f"FATAL: {url} kept timing out after {MAX_ATTEMPTS} attempts — parlay-api.com "
+                      f"looks genuinely degraded right now, not just one slow request. "
+                      f"Try again in a few minutes.")
+        sys.exit(f"FATAL: {url} did not recover after {MAX_ATTEMPTS} attempts "
+                  f"(~2 minutes of retrying): {resp.text[:300]}")
     print(
         f"  {path} -> HTTP 200 (last-cost={resp.headers.get('x-requests-last')}, "
         f"remaining={resp.headers.get('x-requests-remaining')}, "

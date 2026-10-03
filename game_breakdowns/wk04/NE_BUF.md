@@ -149,20 +149,20 @@ Every structural indicator in this matchup — scoring, total offense, third-dow
 - BUF: 3-0, 33.7 ppg (1st) / 26.0 ppg allowed (22nd)
 
 **Passing**
-- Drake Maye (NE): 195.0 pass yds/gm, 1 TD (season, 32nd-ranked as a group), 2.0 INT/gm (32nd)
-- Josh Allen (BUF): 262.0 pass yds/gm (10th), 5 TD (season), 0.7 INT/gm (14th)
+- Drake Maye (NE): 195.0 pass yds/gm, 1 TD (season, 32nd-ranked as a group), 2.0 INT/gm (32nd) — opp D allows 275.7 pass yds/gm (28th)
+- Josh Allen (BUF): 262.0 pass yds/gm (10th), 5 TD (season), 0.7 INT/gm (14th) — opp D allows 189.7 pass yds/gm (6th)
 
 **Rushing**
-- Rhamondre Stevenson (NE, RB1): 38.67 rush yds/gm, 36.5% rush share
-- TreVeyon Henderson (NE, RB2): 49.5 rush yds/gm, 44.4% rush share (2 games)
-- James Cook (BUF, RB1): 115.33 rush yds/gm (team RB group 6th), 64.4% rush share, 2 rush TD
+- Rhamondre Stevenson (NE, RB1): 38.67 rush yds/gm, 36.5% rush share — opp D allows 107.0 rush yds/gm (16th)
+- TreVeyon Henderson (NE, RB2): 49.5 rush yds/gm, 44.4% rush share (2 games) — opp D allows 107.0 rush yds/gm (16th)
+- James Cook (BUF, RB1): 115.33 rush yds/gm (team RB group 6th), 64.4% rush share, 2 rush TD — opp D allows 108.3 rush yds/gm (17th)
 
 **Receiving**
-- Mack Hollins (NE, WR): 52.0 rec yds/gm, 19.5% target share
+- Mack Hollins (NE, WR): 52.0 rec yds/gm, 19.5% target share — opp D allows 192.0 WR rec yds/gm (31st)
 - Romeo Doubs (NE, WR1 by depth chart): 48.33 rec yds/gm, 13.4% target share
 - Hunter Henry (NE, TE1): 23.67 rec yds/gm, 12.2% target share
-- DJ Moore (BUF, WR1): 55.67 rec yds/gm, 22.0% target share
-- Khalil Shakir (BUF, WR2): 31.33 rec yds/gm, 18.3% target share
+- DJ Moore (BUF, WR1): 55.67 rec yds/gm, 22.0% target share — opp D allows 125.7 WR rec yds/gm (9th)
+- Khalil Shakir (BUF, WR2): 31.33 rec yds/gm, 18.3% target share — opp D allows 125.7 WR rec yds/gm (9th)
 - Dalton Kincaid (BUF, TE1): 87.67 rec yds/gm, 20.7% target share
 
 **Team Defense**

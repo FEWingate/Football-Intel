@@ -53,6 +53,80 @@ def load_json(path):
         return json.load(f)
 
 
+# ── Down/Distance + Red Zone Play Calling (2026-10-02), per Frank's direct
+# catch: a regenerated LAR@PHI Game Breakdown was missing both sections that
+# an earlier version of the same report had. Root cause: this script loads
+# teamstats_json (below) but never actually used it to compute these two
+# evidence fields — build_evidence_package_bootstrap.py (the sibling script
+# for not-yet-played games) has this exact logic, with its own docstrings
+# pointing back here ("See build_evidence_package.py for full explanation"),
+# meaning this script is the one that's supposed to carry it, not the other
+# way around. teamstats_json was being loaded and silently going completely
+# unused for this purpose — a real gap, not a data problem; matchup/wkNN.json
+# itself never carried these fields at all, they come from teamstats/latest.json
+# instead. Ported directly from build_evidence_package_bootstrap.py, unchanged.
+DOWN_DIST_KEY = "Down/Distance"  # matches DOWN_DIST_SUBGROUP_NAME in build_matchup_stats.py
+RED_ZONE_KEY = "Red Zone Play Calling"  # matches RED_ZONE_SUBGROUP_NAME in build_matchup_stats.py
+
+def rank_teams_by(teamstats_json, side, field, subgroup=DOWN_DIST_KEY, ascending=False):
+    """Computes league ranks locally since teamstats/latest.json stores raw
+    values with no rank included."""
+    if not teamstats_json:
+        return {}
+    vals = {}
+    for team, t in teamstats_json.get("teams", {}).items():
+        v = t.get(side, {}).get(subgroup, {}).get(field, {}).get("avg")
+        if v is not None:
+            vals[team] = v
+    ordered = sorted(vals, key=lambda t: vals[t], reverse=not ascending)
+    return {team: {"v": vals[team], "r": i + 1} for i, team in enumerate(ordered)}
+
+def down_distance_for_team(teamstats_json, team, off_ranks, def_ranks):
+    if not teamstats_json or team not in teamstats_json.get("teams", {}):
+        return None
+    t = teamstats_json["teams"][team]
+    off_dd = t.get("offense", {}).get(DOWN_DIST_KEY, {})
+    def_dd = t.get("defense", {}).get(DOWN_DIST_KEY, {})
+    def v(d, k): return d.get(k, {}).get("avg")
+    return {
+        "offense": {
+            "third_down_attempts_per_game": v(off_dd, "d3_att"),
+            "third_down_conversion_pct": off_ranks.get(team, {}),
+            "fourth_down_situations_per_game": v(off_dd, "d4_situations"),
+            "fourth_down_go_for_it_pct": v(off_dd, "d4_go_pct"),
+            "fourth_down_conversion_pct": v(off_dd, "d4_conv_pct"),
+        },
+        "defense": {
+            "third_down_attempts_faced_per_game": v(def_dd, "d3_att_faced"),
+            "third_down_pct_allowed": def_ranks.get(team, {}),
+            "third_down_stop_pct": v(def_dd, "d3_stop_pct"),
+            "fourth_down_situations_faced_per_game": v(def_dd, "d4_situations_faced"),
+            "fourth_down_go_for_it_pct_faced": v(def_dd, "d4_go_pct_faced"),
+            "fourth_down_stop_pct": v(def_dd, "d4_stop_pct"),
+        },
+    }
+
+def red_zone_for_team(teamstats_json, team, off_run_ranks, off_pass_ranks, def_run_ranks, def_pass_ranks):
+    if not teamstats_json or team not in teamstats_json.get("teams", {}):
+        return None
+    t = teamstats_json["teams"][team]
+    off_rz = t.get("offense", {}).get(RED_ZONE_KEY, {})
+    def_rz = t.get("defense", {}).get(RED_ZONE_KEY, {})
+    def v(d, k): return d.get(k, {}).get("avg")
+    return {
+        "offense": {
+            "red_zone_plays_per_game": v(off_rz, "rz_plays"),
+            "red_zone_run_pct": off_run_ranks.get(team, {}),
+            "red_zone_pass_pct": off_pass_ranks.get(team, {}),
+        },
+        "defense": {
+            "red_zone_plays_faced_per_game": v(def_rz, "rz_plays_faced"),
+            "red_zone_run_pct_allowed": def_run_ranks.get(team, {}),
+            "red_zone_pass_pct_allowed": def_pass_ranks.get(team, {}),
+        },
+    }
+
+
 # ── Threat System classification, ported EXACTLY from fi-shell.js's
 # FI_TIERS / fiClassify() so Coeus receives the same tier labels the site
 # itself shows — never raw numbers for Coeus to classify on its own. ──────
@@ -137,6 +211,25 @@ def main():
     if dfs_json is None:
         global_notes.append(f"No dfs/{wk}.json found — run build_dfs.py before this "
                              f"script for DFS evidence to be available.")
+    if teamstats_json is None:
+        global_notes.append(f"No teamstats/latest.json found — Down/Distance evidence "
+                             f"(3rd/4th down conversion rates) and Red Zone Play Calling "
+                             f"will be unavailable for every game this week.")
+
+    # League-wide ranks for Down/Distance + Red Zone Play Calling, computed once
+    # (not per-game) since these are each team's own season-long self-stat, not
+    # opponent-tagged — see the functions' own definitions above for why this
+    # script is the one that's supposed to carry this logic.
+    dd_off_ranks = rank_teams_by(teamstats_json, "offense", "d3_pct", ascending=False)
+    dd_def_ranks = rank_teams_by(teamstats_json, "defense", "d3_pct_allowed", ascending=True)
+    rz_off_run_ranks = rank_teams_by(teamstats_json, "offense", "rz_run_pct",
+                                      subgroup=RED_ZONE_KEY, ascending=False)
+    rz_off_pass_ranks = rank_teams_by(teamstats_json, "offense", "rz_pass_pct",
+                                       subgroup=RED_ZONE_KEY, ascending=False)
+    rz_def_run_ranks = rank_teams_by(teamstats_json, "defense", "rz_run_pct_faced",
+                                      subgroup=RED_ZONE_KEY, ascending=False)
+    rz_def_pass_ranks = rank_teams_by(teamstats_json, "defense", "rz_pass_pct_faced",
+                                       subgroup=RED_ZONE_KEY, ascending=False)
 
     os.makedirs(f"evidence/{wk}", exist_ok=True)
     manifest_games = []
@@ -244,6 +337,16 @@ def main():
             "game": game_info,
             "matchup": matchup_block,
             "team_context": context_block,
+            "down_distance": {
+                "away": down_distance_for_team(teamstats_json, away, dd_off_ranks, dd_def_ranks),
+                "home": down_distance_for_team(teamstats_json, home, dd_off_ranks, dd_def_ranks),
+            },
+            "red_zone_play_calling": {
+                "away": red_zone_for_team(teamstats_json, away, rz_off_run_ranks, rz_off_pass_ranks,
+                                           rz_def_run_ranks, rz_def_pass_ranks),
+                "home": red_zone_for_team(teamstats_json, home, rz_off_run_ranks, rz_off_pass_ranks,
+                                           rz_def_run_ranks, rz_def_pass_ranks),
+            },
             "threats": threats_block,
             "players": players_block,
             "hidden_intelligence": hidden_intel,

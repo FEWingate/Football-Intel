@@ -132,12 +132,12 @@ A season-long Threat designation reflects statistical stability, not a guarantee
 - NYG: 2-1 (3 GP) | 15.3 ppg (28th) / 18.3 ppg allowed (9th)
 
 **Passing**
-- Jacoby Brissett (ARI): 217.3 pass yds/gm (18th), 70.1% comp (6th), 4 pass TD (3 gm), 0.3 INT/gm (5th)
-- Jameis Winston (NYG): 114.5 pass yds/gm (2 starts), 51.0% comp, 0 pass TD, 0.5 INT/gm
+- Jacoby Brissett (ARI): 217.3 pass yds/gm (18th), 70.1% comp (6th), 4 pass TD (3 gm), 0.3 INT/gm (5th) — opp D allows 227.7 pass yds/gm (16th)
+- Jameis Winston (NYG): 114.5 pass yds/gm (2 starts), 51.0% comp, 0 pass TD, 0.5 INT/gm — opp D allows 247.0 pass yds/gm (23rd)
 
 **Rushing**
-- Jeremiyah Love (ARI): 53.33 rush yds/gm, 52.6% rush share
-- Cam Skattebo (NYG): 59.0 rush yds/gm, 54.9% rush share, 69.2% RZ carry share
+- Jeremiyah Love (ARI): 53.33 rush yds/gm, 52.6% rush share — opp D allows 104.3 rush yds/gm (13th)
+- Cam Skattebo (NYG): 59.0 rush yds/gm, 54.9% rush share, 69.2% RZ carry share — opp D allows 127.7 rush yds/gm (26th)
 
 **Receiving**
 - Michael Wilson (ARI): 54.33 rec yds/gm, 27.4% target share

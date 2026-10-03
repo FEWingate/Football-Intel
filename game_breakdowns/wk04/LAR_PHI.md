@@ -1,66 +1,92 @@
 # GAME BREAKDOWN: Los Angeles Rams @ Philadelphia Eagles
-### Week 4, 2026 Season | Scheduled 10/04/2026, 1:00 PM ET
+### Week 4, 2026 Season | Sunday, 10/04/2026, 1:00 PM ET | Lincoln Financial Field (outdoors, grass)
 
-**EVIDENCE PACKAGE NOTE:** This game has not been played — there is no box score or result for this LAR@PHI pairing. The supplied evidence is technically labeled a "bootstrap" package (a flag normally reserved for previews built on a prior season's final numbers when no current-season sample exists yet). That label does not match the actual contents here: every team and player figure below reflects **real, in-season 2026 data** — both teams have already played three real 2026 games (LAR against SF, NYG, and DEN; Philadelphia against WAS, TEN, and CHI), and the season averages, logs, and splits throughout this report are drawn from that real three-game sample, not from 2025 final totals. Where 2025 numbers are cited below, they are explicitly labeled as 2025 comparisons for context — never presented as this season's production. Treat this as a genuine, if still-thin (n=3), current-season evidence base for an upcoming Week 4 matchup, not a prior-season bootstrap in the traditional sense. No official injury/status feed was available for this game (see Section 2) and no NFLverse DFS/props pricing data is present, consistent with this being a purely football-analytical, market-neutral breakdown.
+*Market-neutral football analysis. No betting lines, salaries, or DFS role labels appear below; this report exists purely to explain the football.*
 
 ---
 
 ## 1. PREGAME BRIEFING
 
-Los Angeles arrives at 1-2, but that record undersells how the offense has actually performed: the Rams lead the entire NFL in total yards per game (428.7, ranked 1st) and rank 3rd in passing offense (295.0 pass yds/gm) behind Matthew Stafford, who is pushing an aggressive, downfield-oriented attack — Rams receivers rank 2nd in the league in yards per reception (18.8) and the offense ranks top-3 in both 20-plus and 40-plus yard completions per game. Yet Los Angeles ranks just 20th in points per game (20.3) — a real and unusual gap between how much ground this offense covers and how often it actually scores. Part of the explanation is visible immediately: Rams quarterbacks are throwing 1.3 interceptions per game, 29th-worst in the league. The results have been extreme in both directions — a 7-6 loss to San Francisco in Week 1 in which the offense gained 290 total yards but scored only one touchdown, a 28-6 blowout win over the Giants in Week 2, and a 26-30 shootout loss to Denver in Week 3 despite 506 total yards and 390 passing yards from Stafford.
+Los Angeles enters 1-2 (LWL): a 7-27 road loss at San Francisco in Week 1, a 28-6 home win over the Giants in Week 2, and a 26-30 road loss at Denver in Week 3. Philadelphia enters 2-1 (WWL): a 24-22 home win over Washington in Week 1, a 24-20 road win at Tennessee in Week 2, and a 7-27 road loss at Chicago in Week 3. These teams have not met this season, and this is not a division game (`div_game: false`), so there is no head-to-head evidence — current or prior-meeting — to draw on anywhere in this report. No weather data (temperature, wind, precipitation) was present in the evidence package for this outdoor, grass-surface game, and none could be independently verified for this writeup; treat the environment as a genuine unknown rather than assume a neutral setting.
 
-Philadelphia sits at 2-1 with almost the inverse profile. The Eagles rank in the bottom third of the league in scoring (18.3 ppg, 23rd), total offense (317.3 ypg, 22nd), and passing offense (206.7 ypg, 22nd) behind Jalen Hurts, yet they've still won two of three by playing disciplined situational football: a top-10 third-down offense (46.3%, 8th) and a defense that, while unremarkable overall, ranks 7th in the league in pass yards allowed (198.0/gm). Both wins came by four points or fewer (24-22 over Washington, 24-20 over Tennessee); the one loss was a total collapse — a 7-27 defeat in Chicago in which neither the run game nor the pass game did anything.
+A scheduling note worth flagging early: Los Angeles is on a standard seven-day turnaround (`away_rest: 7`), while Philadelphia is on a slightly shorter six-day rest (`home_rest: 6`), suggesting the Eagles' Week 3 loss at Chicago likely fell outside the typical Sunday-to-Sunday window.
 
-This profiles, broadly, as a game where Los Angeles brings the more explosive, higher-ceiling offense and the better defensive numbers across the board, but also brings the more obvious flaw — a turnover rate that has already cost it games this season — against a Philadelphia team that has made a habit of winning ugly, low-margin football. How each team's known tendencies actually interact this week — and which side's flaw proves more costly — is the real question this report works toward answering in the sections that follow.
+Both offenses arrive with a real, documented turnover problem at the quarterback position — Matthew Stafford's interception rate and Jalen Hurts' interception rate both rank in the bottom three leaguewide — and both defenses, despite being respectable against the pass by yardage, have generated almost no pressure on opposing quarterbacks all season. That shared profile is the broad shape of this matchup: this looks like a game where which quarterback's mistakes get turned into points — rather than which offense is simply more talented — ends up mattering more than the box score of total yardage might suggest. The deeper levers behind that broad read (where the turnover risk actually gets exploited, and why) are developed through the rest of this report and resolved in the Coeus Final Read.
+
+*(Note: no `home_road_split` or `tier_home_road_split` data was present anywhere in this evidence package for either roster — that four-level home/road-and-tier progression the Standard calls for could not be built for any player this week. Likewise, no `season_2025` comparison field was present for any player, so thin-2026-sample players below are flagged honestly rather than padded with career-blended numbers.)*
 
 ---
 
 ## 2. INJURY & AVAILABILITY REPORT
 
-**No official injury/status feed was available for this game.** The evidence package's own injury source note states plainly: *"injuries/wk04.json exists but reports zero teams league-wide — the real practice-week injury data for this week likely hadn't been published yet when this file was built. Genuinely unavailable, not confirmed-healthy."* There is also no DraftKings slate/Status-column data present in this package (DFS data is flagged unavailable). No live web search was performed in producing this report, so no externally-sourced injury confirmation can be offered either — this section is built entirely from what real 2026 usage and depth-chart data can infer, not from any confirmed official status.
+**Source: DraftKings slate Status column** (the evidence package's only validated availability source for this game) **— the players list under this field came back empty.** No player on either roster carries a non-healthy designation in the evidence package as frozen. No supplementary live injury report could be sourced for this writeup, so this section should be read as "no validated absences" rather than "a clean bill of health confirmed" — a meaningful difference the reader should keep in mind heading into kickoff-week news.
 
-Two real, meaningful availability questions stand out from the data itself:
-
-- **Puka Nacua (LAR, WR1 by depth chart, pos_rank 1)** has played in only **one** of Los Angeles's three real 2026 games (Week 1 vs. SF: 5 catches, 74 yards, 9 targets, a 33.3% target share, 70% snap share). He has no Week 2 or Week 3 log entry. The depth chart (dated 2026-09-29, five days before this game) still lists him atop the WR room, which is a real signal he may be considered available or trending back — but with no confirmed status anywhere in Football Intel's data, his game-day availability for Week 4 should be treated as **genuinely uncertain, LOW confidence** either way. In his absence, Davante Adams has functioned as the clear WR1 (27.4% target share across all three games).
-- **Dallas Goedert (PHI, TE1 by depth chart, pos_rank 1)** has no Week 3 log entry despite playing Weeks 1-2. Zach Ertz (1 game, Week 3 only) and Johnny Mundt (snap share jumped to 52% in Week 3, up from 25% in Week 2) absorbed the Week 3 tight end work. No reason for Goedert's absence is confirmed in available data. If active this week, Goedert projects as the clear TE1 given his real per-game role (40.5 rec yds/gm, 2 TDs in 2 games, 28.6% red-zone target share); if out, expect Ertz and Mundt to split the work as they did in Week 3.
-
-Beyond these two, several roster players show minimal-to-zero snaps or are marked `roster_only` with no 2026 games played (LAR: Ty Simpson, CJ Daniels, Max Klare; PHI: Cole Payton, Tanner McKee, Elijah Moore) — none carry plausible starter-caliber roles for this game based on current usage, and none are discussed further below.
+Two roster notes worth flagging regardless of injury status:
+- **Andy Dalton (PHI, QB)** appeared for exactly one pass in Week 3 (an interception, per his log) while Jalen Hurts played 92% of snaps that same game — this was mop-up/situational, not a QB competition signal. Hurts has played 97%, 100%, and 92% of offensive snaps across the three games logged this season; there is no competition at the position.
+- **Elijah Moore (PHI, WR)** is on the roster (`roster_only: true`) with a real prior career profile (67 games, 33.94 rec yds/gm through 2025) but zero 2026 snaps logged and no target share recorded — he does not appear to have an established role in this offense through three weeks and is not treated as a factor below.
+- **Puka Nacua (LAR, WR)** has played in only 1 of LAR's 3 games this season and is flagged `unranked: true` in the Threat Engine's own evidence (insufficient sample). This is a real, material absence from two full games that materially affects how much confidence to place in projecting his workload — see Section 4.
 
 ---
 
 ## 3. MATCHUP STATISTICS
 
-### LAR Offense
-Los Angeles's offense is the most productive in football by total yardage: **428.7 total yds/gm (1st)**, built on a genuinely explosive passing attack — **295.0 pass yds/gm (3rd)**, a 60.5% completion rate (23rd, middling control for the volume), but elite chunk-play production (12.8 yards per completion, 6th) and a strong **20.3 first downs/gm (7th)**. The one glaring weakness is ball security: **1.3 interceptions/gm, 29th**-worst in the league. The running game is more middle-of-the-pack by raw output (**133.7 rush yds/gm, 7th** is actually solid) but split across a two-back committee (see Section 4).
+### Los Angeles Rams Offense (3 games)
+- Points per game: 20.3 (ranked 20th)
+- Total yards per game: 428.7 (ranked **1st** in the NFL)
+- Pass yards per game: 295.0 (ranked 3rd)
+- Rush yards per game: 133.7 (ranked 7th)
+- First downs per game: 20.3 (ranked 7th)
+- QB production (effectively Stafford): 885 pass yds (295.0/gm, ranked 3rd), 60.5% completion (ranked 23rd), 6 TD (ranked 13th), 12.8 yds/completion (ranked 6th), 1.33 INT/gm (ranked **29th** — a real problem), 1.7 sacks/gm taken (ranked 10th, good protection), 4.33 completions of 20+ yards per game (ranked 2nd) and 1.33 of 40+ per game (ranked 3rd) — an offense generating explosive plays at an elite rate.
+- RB production: 127.0 rush yds/gm (ranked 4th), 41.3 rec yds/gm (ranked 7th) — a legitimately dual-threat backfield by committee volume.
+- WR production: 188.0 rec yds/gm (ranked 5th) on only 10.0 catches/gm (ranked 21st) — 18.8 yards per reception (ranked 2nd), reflecting a vertical, low-volume/high-explosiveness receiving corps rather than a possession-based one.
+- TE production: 65.7 rec yds/gm (ranked 10th) on a heavy 11.7 targets/gm (ranked 3rd) but only 8.2 yards per reception (ranked 28th) — a high-volume, short-area role.
 
-**Down/Distance:** LAR converts third downs at **42.9% (10th)** on 11.7 attempts/gm — a real offensive strength that hasn't yet translated to points at the same rate.
+### Los Angeles Rams Defense (3 games)
+- Points allowed per game: 21.0 (ranked 14th)
+- Total yards allowed per game: 275.3 (ranked 3rd)
+- Pass yards allowed per game: 174.0 (ranked 2nd)
+- Rush yards allowed per game: 101.3 (ranked 11th)
+- First downs allowed per game: 16.0 (ranked 11th)
+- Against the QB: 174.0 pass yds/gm allowed (ranked 2nd), 56.0% completion allowed (ranked 3rd, elite), 9.3 yds/completion allowed (ranked 3rd) — but only 1.0 sack/gm (ranked **28th**, minimal pressure) and 1.0 INT/gm forced (ranked 10th, respectable but not special).
+- Against the RB: 80.3 rush yds/gm allowed (ranked 11th), but **8.0 targets/gm allowed to running backs, ranked 32nd — dead last in the NFL** in targets conceded to the position, and 6.0 catches/gm allowed to RBs (ranked 31st).
+- Against the WR: 115.7 rec yds/gm allowed (ranked 6th), only 9.0 catches/gm allowed (ranked 2nd) — stingy by both yardage and catch volume.
+- Against the TE: 24.0 rec yds/gm allowed (ranked 2nd), 3.3 catches/gm allowed (ranked 2nd) — elite.
 
-**Red Zone Play Calling (tendency, not quality):** LAR runs on just **44.4% of red-zone plays (22nd)**, passing the rest of the time (55.6%, 12th) — a more pass-heavy red-zone identity than most teams, consistent with the offense's overall aerial approach.
+### Philadelphia Eagles Offense (3 games)
+- Points per game: 18.3 (ranked 23rd)
+- Total yards per game: 317.3 (ranked 22nd)
+- Pass yards per game: 206.7 (ranked 22nd)
+- Rush yards per game: 110.7 (ranked 13th)
+- First downs per game: 14.7 (ranked 26th)
+- QB production (Hurts): 620 pass yds (206.7/gm, ranked 21st), 64.4% completion (ranked 17th), 5 TD (ranked 16th), 1.3 INT/gm (ranked **30th**), 2.7 sacks/gm taken (ranked 23rd, below-average protection).
+- RB production: 79.3 rush yds/gm (ranked 22nd), and only **13.3 rec yds/gm, ranked 32nd — dead last in the league** in receiving production from the position.
+- WR production: 159.3 rec yds/gm (ranked 10th) on 12.3 catches/gm (ranked 11th) — a more traditional volume-based receiving corps than LAR's.
+- TE production: 34.0 rec yds/gm (ranked 26th) on only 4.3 targets/gm (ranked 30th) — a clearly secondary piece of the passing game.
 
-**Contextual Statistics:** Across LAR's three games, scoring output has varied enormously by opponent: the Rams' splits show just **17.5 points/gm against their two toughest defensive matchups** (n=2) against **26.0 points/gm (n=1)** against their one weaker matchup — with passing output following the same shape (247.5 pass yds/gm against mid-tier competition, n=2, jumping to 390.0 against the one bottom-tier defense faced, n=1, Denver in Week 3).
+### Philadelphia Eagles Defense (3 games)
+- Points allowed per game: 23.0 (ranked 16th)
+- Total yards allowed per game: 325.3 (ranked 10th)
+- Pass yards allowed per game: 198.0 (ranked 7th)
+- Rush yards allowed per game: 127.3 (ranked 25th)
+- First downs allowed per game: 17.7 (ranked 15th)
+- Against the QB: 198.0 pass yds/gm allowed (ranked 7th), 62.5% completion allowed (ranked 11th) — solid, but 1.0 sack/gm (ranked 29th) and **zero interceptions forced all season (ranked 32nd — dead last in the NFL)**.
+- Against the RB: 110.3 rush yds/gm allowed (ranked 26th) despite facing the **most carries of any defense in the league (27.3/gm, ranked 30th)** — but only 10.7 rec yds/gm allowed to backs (ranked **1st**) and 3.0 targets/gm allowed to the position (ranked **1st**), elite in coverage against receiving backs specifically.
+- Against the WR: 157.7 rec yds/gm allowed (ranked 21st), 4 TD allowed (ranked 28th), and 56.0 yards after catch per game allowed (ranked 27th) — a real soft spot.
+- Against the TE: 29.7 rec yds/gm allowed (ranked 6th) — strong.
 
-### LAR Defense
-This is a genuinely strong all-around unit, not a unit with one standout category and holes elsewhere. LAR ranks **3rd in total yards allowed (275.3/gm)**, **2nd in pass yards allowed (174.0/gm)**, and a solid **11th against the run (101.3/gm)**. The pass defense is particularly stingy in two areas that matter directly for this matchup: **6th in receiving yards allowed to wide receivers (115.7/gm)** and **2nd in receiving yards allowed to tight ends (24.0/gm)** — Los Angeles is genuinely elite against both perimeter and seam targets. Takeaways have been solid but not spectacular: **1.0 interceptions/gm forced, 10th**.
+### Down & Distance
+- LAR offense: 42.9% third-down conversion (ranked 10th) on 11.7 attempts/gm.
+- LAR defense: 43.6% third-down conversion allowed (ranked 22nd) on 13.0 attempts faced/gm.
+- PHI offense: 46.3% third-down conversion (ranked 8th) on 13.7 attempts/gm.
+- PHI defense: 39.0% third-down conversion allowed (ranked 14th) on 13.7 attempts faced/gm, but only a **16.7% fourth-down stop rate** on the (admittedly small sample of) fourth-down situations it has faced — opponents are converting the large majority of the fourth downs they've tried against Philadelphia this season.
 
-**Down/Distance:** LAR allows third-down conversions at **43.6% (22nd)** — a real gap between this defense's yardage numbers and its actual down-to-down resistance, worth watching against a Philadelphia offense that has otherwise struggled on money downs of its own.
+### Red Zone Play Calling (tendency, not quality — see Section 4)
+- LAR offense: 44.4% run / 55.6% pass once inside the 20 (run ranked 22nd, pass ranked 12th) — a pass-leaning red-zone identity relative to the league.
+- LAR defense: opponents have run just 32.3% of red-zone snaps against LAR (ranked 28th in run rate faced) and passed 67.7% (ranked 5th in pass rate faced) — LAR's red-zone opponents have, as a pattern, chosen to throw far more than run.
+- PHI offense: 57.7% run / 42.3% pass in the red zone (run ranked 5th, pass ranked 28th) — a clearly run-leaning identity.
+- PHI defense: opponents have run 59.2% of red-zone snaps faced (ranked 5th) and passed only 40.8% (ranked 28th) — the Eagles' red-zone opponents have also leaned run-heavy, the inverse pattern from LAR's defense.
 
-**Red Zone Play Calling (tendency):** Opponents have passed on **67.7% of red-zone snaps against LAR (5th-highest pass rate faced)**, running just 32.3% of the time (28th) — teams are choosing to attack this defense through the air once inside the 20, not on the ground.
-
-### PHI Offense
-Philadelphia's offense ranks in the bottom third of the league across the board: **18.3 points/gm (23rd)**, **317.3 total yds/gm (22nd)**, **206.7 pass yds/gm (22nd)** on a healthier 63.6% completion rate (17th) but a concerning **1.3 interceptions/gm (30th)** — nearly as turnover-prone as LAR's own passing attack, just producing far less yardage for the risk. The running game is more middling than dominant by raw output (**110.7 rush yds/gm, 13th**), but the red-zone identity leans hard on it (see below). Protection has been shaky: **2.7 sacks/gm allowed (23rd)**.
-
-**Down/Distance:** Despite the modest overall numbers, PHI's third-down offense is a real strength — **46.3% conversion (8th)** on 13.7 attempts/gm, the clearest situational bright spot on this side of the ball. Fourth-down conversion, by contrast, is weak (33.3% on a low 15.0% go-for-it rate).
-
-**Red Zone Play Calling (tendency):** Philadelphia is one of the most run-heavy red-zone offenses in the league — **57.7% run plays once inside the 20 (5th-highest)**, passing just 42.3% of the time (28th, one of the lowest pass rates in football). This is a clear, deliberate offensive identity, not incidental.
-
-**Contextual Statistics:** PHI's splits reveal something genuinely counterintuitive, expanded on fully in Section 6 — the offense's single best rushing game (136 yds, Week 1 vs. Washington) came alongside its single worst passing game (203 yds), while its best passing game (264 yds, Week 2 vs. Tennessee) came alongside one of its worst rushing games (89 yds).
-
-### PHI Defense
-Philadelphia's defense is a genuinely split personality rather than one consistent grade. It ranks **7th in pass yards allowed (198.0/gm)** and, more specifically, is excellent against tight ends (**29.7 rec yds/gm allowed, 6th**) and has been nearly impossible for running backs to beat through the air (**10.7 rec yds/gm allowed to RBs, 1st in the league**, on just **3.0 targets/gm allowed to the position, also 1st**). But against the run broadly, this defense is a real weakness — **127.3 rush yds/gm allowed, 25th**, and specifically **110.3 rush yds/gm allowed to running backs, 26th**. Takeaways have been essentially nonexistent: **0 interceptions forced all season, 32nd** (last in the league), though the pass rush has generated some pressure (sacks_pg not elite at 1.0/gm, 29th — see Section 6 for why this matters against LAR specifically). Against wide receivers specifically, PHI is closer to average (**157.7 rec yds/gm allowed, 21st**).
-
-**Down/Distance:** PHI's third-down defense (**39.0% allowed, 14th**) is a solid, middle-of-the-pack number. Fourth down is a real problem area: opponents have converted **83.3% of the time (a 16.7% stop rate)** when they've gone for it against this defense, albeit on a small sample (8.3 situations faced/gm, only 24.0% go-for-it rate faced).
-
-**Red Zone Play Calling (tendency):** PHI has allowed a heavily run-oriented approach once opponents reach the red zone — **59.2% run plays allowed (5th-highest)**, just 40.8% pass (28th) — a defense that, by tendency at least, has been run at rather than thrown at in scoring territory.
+**Team coverage rate (man%/zone%) was not available in this evidence package for either defense** (`team_coverage_rate` field absent, and the player-level `coverage_qb`/`coverage_wr`/`coverage_te` splits all returned empty). No man/zone scheme framing can be offered this week; coverage discussion below is limited to pressure (blitz) data, which was available.
 
 ---
 
@@ -68,79 +94,71 @@ Philadelphia's defense is a genuinely split personality rather than one consiste
 
 ### Quarterbacks
 
-**Matthew Stafford (LAR).** Individually ranks 3rd in the NFL in pass yards per game (290.7) across three starts, with a 60.4% completion rate and 13.0 yards per completion — an offense built on verticality rather than high-percentage underneath work *(2025: 276.9 pass yds/gm, 63.4% completion, 11.6 ypc)* — a modest but real uptick in both volume and explosiveness from last season. His floor has been inconsistent: 155 yards in a Week 1 loss to San Francisco, 327 in a Week 2 blowout win, and 390 in a Week 3 shootout loss to a Denver defense that graded out as a bottom-tier matchup in pass yards allowed (ranked 24th that week). Stafford's home/road profile is thin so far — his only road start this season (Week 3 at Denver) produced 390 yards, but that came against a bottom-tier pass defense; no road sample yet exists against a top-tier unit like Philadelphia's (7th in pass yards allowed), so his season average (290.7) is the more reliable baseline to lean on this week, not his one road data point. Confidence: **MEDIUM**.
+**Matthew Stafford (LAR)** is averaging 290.7 pass yds/gm (ranked 3rd) with an explosive-play profile matched by almost no one in the league — 4.33 completions of 20+ yards per game (ranked 2nd) and 1.33 of 40+ yards per game (ranked 3rd) — but his 60.5% completion rate (ranked 23rd) and 1.33 INT/gm (ranked 29th) show this is a volatile, boom-or-bust operation rather than a surgical one. Notably, his own week-by-week log shows **zero games this season against a "top"-tier pass defense** (his splits carry n=0 in that bucket) — his three opponents so far ranked 11th (San Francisco, Week 1), 16th (New York Giants, Week 2), and 24th (Denver, Week 3) against the pass, all mid-to-bottom tier. Philadelphia's defense (7th against the pass, 198.0 yds/gm allowed) represents the toughest pass-defense test Stafford has faced this season by raw rank — a genuine unknown given the absence of a direct sample, and reason for LOW-to-MEDIUM confidence in simply extrapolating his season averages forward. Confidence: MEDIUM.
 
-The more actionable individual signal on Stafford is pressure sensitivity: across his tracked snaps this season, he's meaningfully worse when blitzed (44.7% completion, 6.24 yds/play, **-0.221 EPA/play** on 38 blitzed dropbacks) than when rushed with a standard four (66.7% completion, 8.03 yds/play, **+0.193 EPA/play** on 75 dropbacks). This is a real, sizable gap — expanded on in Section 6.
-
-**Jalen Hurts (PHI).** Averaging 206.7 pass yds/gm (64.4% completion, 11.1 yards per completion) across three starts *(2025: 201.5 pass yds/gm, 64.8% completion)* — essentially flat production year over year. His week-to-week variance has been extreme and tied directly to opponent quality: 203 yards in Week 1 against a Washington pass defense that graded as a bottom-tier matchup (ranked 30th in pass yards allowed that week), 264 yards in Week 2 against a Tennessee defense that graded as a genuine top-tier matchup (ranked 8th), and just 153 yards in Week 3 in a blowout loss to Chicago (a mid-tier matchup, rank 13). His lone home start this season (Week 1 vs. Washington) produced 203 pass yards, 3 touchdowns, and a 122.2 rating — but that came against a weak pass defense; Los Angeles's defense (2nd in pass yards allowed) is a dramatically tougher home test than his only available home sample, so his season average is again the more defensible number to lean on. Confidence: **MEDIUM**.
-
-Hurts shows a real "boom under pressure" profile that inverts the more common pattern: he's actually been *better* when blitzed (57.1% completion, 4.67 yds/play, **+0.161 EPA/play** on 21 snaps) than when rushed with four (59.5% completion, 6.45 yds/play, **-0.107 EPA/play** on 74 snaps) — a meaningfully positive split under pressure that Philadelphia's offense may need to lean on if its run game struggles to get going (see Section 6).
-
-*(Evidence note: this package's player record for Hurts contains only passing statistics — no rushing yards, attempts, or touchdowns are tracked for him individually here, despite his well-known real-world rushing role. No rushing claim about Hurts can be supported by this evidence, and none is made.)*
+**Jalen Hurts (PHI)** is averaging 206.7 pass yds/gm (ranked 21st) with a 64.4% completion rate (ranked 17th) but a concerning 1.3 INT/gm (ranked 30th, worse even than Stafford's rate). His week-by-week results have been inconsistent relative to opponent quality: his best game (264 yards) came in Week 2 against a Tennessee defense that itself ranked 8th against the pass that week (a "top" tier opponent by his own log), while his worst output of the season (153 yards) came against a Chicago defense ranked a more modest 13th (a "mid" tier matchup), and a weak Washington defense (ranked 30th, "bottom" tier) only yielded 203 yards. That is a genuinely noisy, non-predictive pattern this season (n=1 in each tier) — it should not be read as "Hurts performs better against tough defenses," just as evidence that his tier splits carry essentially no signal yet. What is a clean signal, covered below, is his performance specifically under pressure. Confidence: LOW on tier-based projection, MEDIUM on the pressure read.
 
 ### Running Backs
 
-**Kyren Williams (LAR).** The clear lead back — 63.3% snap share, 47.5% rush share, averaging 71.3 rush yds/gm (individually ranked 9th in the league) and a real receiving role (35.3 rec yds/gm, individually ranked 4th among backs, on 4.0 targets/gm) *(2025: 73.65 rush yds/gm, 16.53 rec yds/gm — essentially the same rushing workload, but a notably lighter receiving role last year)*. His contact-efficiency profile: **2.13 yards after contact per carry, 3.35 yards before contact** — more of his production is currently coming from blocking than self-created yardage, with zero broken tackles logged this season. His one true road game (Week 3 at Denver) produced 88 rush yards and 70 receiving yards on 6 catches — and that game happened to come against a bottom-tier run defense, the exact tier Philadelphia's run defense (110.3 rush yds/gm allowed to RBs, ranked 26th) falls into. That's a single data point (n=1), but every layer of the available sample points the same direction: this profiles as a genuine opportunity spot for Williams on the ground. His individual Threat designation is covered fully in Section 5. Confidence: **MEDIUM**.
+**Kyren Williams (LAR)** is the clear lead back — 47.5% rush share, 63.3% snap share — averaging 71.3 rush yds/gm (ranked 9th) and 35.3 rec yds/gm (ranked 4th) on 3.7 catches/gm (ranked 6th). His contact-efficiency split favors blocking over individual tackle-breaking: 3.47 yards before contact per carry against 2.16 after contact, with 0.33 broken tackles per game — a back converting what his line creates more than he's creating extra yardage himself. Philadelphia's run defense has allowed 110.3 rush yds/gm to the RB position specifically (ranked 26th), a real weakness Williams' own Threat designation is built on (see Section 5). His backup, **Blake Corum**, carries a smaller but real complementary share (35.0% rush share, 49.33 rush ypg across 3 games) with a notably different contact profile — 3.82 yards before contact but just 1.46 after, an even more blocking-dependent runner so far.
 
-**Blake Corum (LAR)** is a real complementary piece, not a passing-down afterthought — 35.0% rush share on the season, with a notably stronger before-contact number (4.32 ybc) but less after-contact production (1.73 yac) than Williams, the inverse contact profile. Expect a continued committee, with Williams handling more of the workload in neutral/favorable scripts.
-
-**Saquon Barkley (PHI).** The clear starter (53.0% snap share, 44.7% rush share) averaging 58.0 rush yds/gm across three games *(2025: 71.25 rush yds/gm — a real, meaningful step down in per-game production from last season, worth flagging)*. His contact profile is notable: just **1.37 yards before contact per carry** — meaning Philadelphia's blocking has given him almost nothing to work with — against a strong **3.47 yards after contact per carry** and 0.5 broken tackles/gm, indicating nearly all of his production is self-created rather than scheme-driven. His one home game this season (Week 1 vs. Washington) produced 83 rush yards against a run defense that graded as a genuine top-tier matchup (ranked 3rd) — a real accomplishment given the level of competition — but Los Angeles's run defense this week grades as a mid-tier matchup (11th), not the top-tier test his only home sample reflects; his season average (58.0) is the more applicable baseline. His receiving role remains minimal (2.0 rec yds/gm). Confidence: **MEDIUM**.
-
-**Tank Bigsby (PHI)** is a clear complementary back (18.4% rush share) with real red-zone usage (1 rushing TD on 3 red-zone carries) but a substantially weaker contact profile than Barkley (1.07 ybc, 1.5 yac). **Will Shipley (PHI)** is the clear passing-down piece (6.2% target share, 8.0 rec yds/gm) with almost no rushing role.
+**Saquon Barkley (PHI)** anchors a genuine three-way committee rather than a workhorse role — 44.7% rush share, 53.0% snap share — averaging 58.0 rush yds/gm (ranked 19th, not a standout number) on 174 yards across 34 carries. His own contact-efficiency split is the inverse of Williams': 2.68 yards after contact per carry against 2.44 before contact, meaning Barkley is creating more of his own yardage independent of blocking despite the lower overall per-game average. His receiving role has been almost nonexistent early (2.0 rec yds/gm, 1.0 catch/gm) despite a real pass-catching pedigree, running into a Rams defense that is historically generous to backs through the air — LAR has allowed the most targets to running backs in the NFL this season (8.0/gm, ranked 32nd) — a real mismatch opportunity that Philadelphia's early-season usage pattern simply hasn't tapped into yet. Backups **Tank Bigsby** (18.4% rush share, 1 rushing TD on a 3-carry Week 2 red-zone sequence) and **Will Shipley** (11.8% rush share, more pass-down usage at 1.67 targets/gm) round out a true committee; red-zone touches this season have been split Barkley 33.3%, Shipley 26.7%, Bigsby 20.0% — no back has a dominant goal-line role.
 
 ### Wide Receivers / Tight Ends
 
-**Davante Adams (LAR).** Individually ranks 3rd in the league in receiving yards per game (119.3) across three games on a massive 27.4% target share *(2025: 56.36 rec yds/gm — more than double last season's pace, one of the most significant year-over-year role jumps in this evidence set, almost certainly tied to Puka Nacua's limited availability — see below)*. His lone road game this season (Week 3 at Denver) produced 137 yards on 7 catches (13 targets) — and that game graded as a mid-tier matchup in receiving yards allowed (Denver ranked 16th), the same tier Philadelphia's own WR defense (157.7 rec yds/gm allowed, ranked 21st) falls into, a reasonably clean match for projecting his floor this week. Confidence: **MEDIUM-HIGH** given the target-share volume, tempered by the thin three-game sample.
+**Davante Adams (LAR)** is the clear focal point — 27.4% target share, 9.67 targets/gm — averaging 119.3 rec yds/gm (ranked 3rd) at an explosive 19.89 yards per reception, against a Philadelphia defense that has allowed 157.7 rec yds/gm to wideouts (ranked 21st) and 4 receiving touchdowns (ranked 28th) with notably loose tackling after the catch (56.0 YAC/gm allowed, ranked 27th) — a real, favorable matchup by raw numbers.
 
-**Puka Nacua (LAR).** The nominal WR1 by depth chart, but has played only one game this season (Week 1: 5 catches, 74 yards, 9 targets, a 33.3% target share, 70% snap share) *(2025: 107.19 rec yds/gm across 16 games — an elite, star-level season last year)*. His availability for this game is genuinely unconfirmed (see Section 2); if active, his 2025 track record says he's a legitimate high-target-share threat, but the current-season evidence is too thin to project with confidence. Confidence: **LOW**.
+**Puka Nacua (LAR)** produced 74 rec yds on 5 catches (9 targets, a 33.3% target share) in his lone appearance this season (Week 1) — clearly a focal-point receiver when healthy, but having missed Weeks 2 and 3 entirely, there is no reliable in-season sample to project a workload from, and no 2025 season-final rate was present in the evidence package to lean on instead. Treat any projection here as genuinely LOW confidence. **Konata Mumpfield** has stepped into a complementary role in Nacua's absence (10.4% target share, 35.0 rec yds/gm, one 93-yard, 4-catch Week 3 explosion against Denver).
 
-**Konata Mumpfield (LAR)** has emerged as a real complementary piece in Nacua's absence — 10.4% target share, 35.0 rec ypg, and the only receiving touchdown outside Adams among LAR's non-RB pass-catchers.
+**DeVonta Smith (PHI)** is PHI's clear WR1 — 33.3% target share, 9.0 targets/gm — averaging 78.3 rec yds/gm (ranked 10th) at 6.3 catches/gm (ranked 6th), against a Rams defense that ranks 6th against the position (115.7 rec yds/gm allowed) and 2nd in catches allowed (9.0/gm) — a tougher individual matchup than Adams draws on the other side. **Dontayvion Wicks** is the clear second option (18.5% target share, 59.7 rec yds/gm) with real red-zone volume (36.4% red-zone target share, 4 red-zone targets on the season already).
 
-**Colby Parkinson (LAR, TE1 by depth chart).** Leads the position in snap share (63.7%) but has produced almost nothing so far — just 7.0 rec yds/gm on a 4.7% target share *(2025: 29.14 rec yds/gm — a real, sharp decline from a much more productive complementary role last season)*. His one road game (Week 3 at Denver) produced zero yards on zero catches, and came against a bottom-tier matchup (Denver ranked 25th in TE yards allowed) — meaning even a favorable matchup didn't move the needle. **Terrance Ferguson** (11.3% target share, 21.0 rec ypg, 1 TD) and **Tyler Higbee** (2 games played, 37.0 rec ypg with a strong 62-yard, 8-catch Week 3) have actually out-produced Parkinson individually despite less snap volume — this is a genuinely muddled tight end room with no clear go-to weapon. Confidence: **LOW** on any individual Rams tight end this week.
+**Tight ends** play modest roles for both offenses this season: **Colby Parkinson (LAR)** holds the higher snap share (63.7%) but minimal production (7.0 rec yds/gm), while **Tyler Higbee**, despite a lower 39.0% snap share across just 2 games, has produced at a much higher per-game clip (37.0 rec yds/gm) including a 62-yard, 8-target game against Denver — a name worth watching if his role expands. **Dallas Goedert (PHI)** has played only 2 of 3 games (60.0% snap share when active) but carries real red-zone equity (28.6% red-zone target share, 2 touchdowns on just 7 targets this season) against a Rams defense that is nonetheless elite against the position (24.0 rec yds/gm allowed, ranked 2nd).
 
-**DeVonta Smith (PHI).** The clear WR1 — a massive 33.3% target share, 94.3% snap share, averaging 78.3 rec yds/gm *(2025: 59.29 rec yds/gm — a real step up in target share and production from last year, 24.4% to 33.3%)*. His lone home game this season (Week 1 vs. Washington, 53 yards on 3 catches) came against a bottom-tier matchup (Washington ranked 30th in WR yards allowed) — a much easier test than this week's, given Los Angeles's WR defense ranks a strong 6th in the league. No home-and-elite-opponent combination exists yet in his sample; his season average (78.3) is the more defensible baseline, with real downside risk given the caliber of defense he's about to face. Confidence: **MEDIUM**.
+### Pressure Profile (Coverage-rate data unavailable — see Section 3)
 
-**Dontayvion Wicks (PHI).** The clear WR2 — 18.5% target share, 80.3% snap share, averaging 59.7 rec yds/gm with an explosive 19.89 yards per reception *(2025: 25.54 rec yds/gm — more than double last year's production, another significant role jump on this offense)*. Like Smith, his only home sample (73 yards in Week 1) came against a bottom-tier pass defense; this week's LAR defense (6th against WRs) is a considerably tougher, unmatched test. Confidence: **MEDIUM**.
+Both quarterbacks are measurably worse under pressure, but the degree and the supporting detail differ meaningfully. **Stafford** posts a 44.7% completion rate and -0.221 EPA/play when blitzed (n=38) against 66.7% and +0.193 when not blitzed (n=75) — a real but fairly standard pressure penalty. Philadelphia blitzes at a middling 27.6% rate (ranked 17th) and, critically, has one of the league's **least effective blitzes when it does send extra rushers — a 36.4% blitz success rate, ranked 30th** — suggesting the volume of pressure Stafford will see, and the quality of that pressure, both work in his favor relative to a typical week.
 
-**Dallas Goedert (PHI, TE1).** When available, the clear focal tight end — 12.5% target share, 40.5 rec yds/gm, 2 touchdowns in 2 games *(2025: 39.4 rec yds/gm — essentially identical production, a stable role year over year)*. His one home game (77 yards, 2 TDs in Week 1) came against a bottom-tier matchup (Washington ranked 26th against TEs); Los Angeles's TE defense (2nd in the league) is a dramatically tougher, unmatched test if he plays. See Section 2 for his real availability question this week. Confidence: **LOW-MEDIUM** pending his status.
+**Hurts** shows the same directional pattern but with a cleaner, more concerning in-season trail: 52.8% completion and -0.187 EPA/play under blitz (n=36) against 62.7% and +0.038 with no blitz (n=59). His two lowest-yardage games this season — 203 yards in Week 1 and 153 yards in Week 3 — both came in his two highest-blitz-rate games of the season (42.9% and 55.6% respectively), and both involved blitzes that worked unusually well against him (75% and 80% blitz success rates in those specific games). Los Angeles' defense, while only a middling blitzer by rate (27.6%, ranked 17th), has been **one of the league's most effective blitzing units when it does bring pressure — a 65.5% blitz success rate, ranked 7th**. That combination — a documented in-season vulnerability meeting a defense that executes pressure well when deployed — is a legitimate schematic concern for Philadelphia this week, independent of either team's broader yardage profile. Confidence: MEDIUM-HIGH (consistent direction across both the career-level splits and the specific in-season log).
+
+### Red Zone Scheme Tension
+
+A notable identity clash sits underneath the raw red-zone numbers: Philadelphia is one of the most run-heavy red-zone offenses in the league (57.7% run rate, ranked 5th), but the Rams' defense has, as a pattern, mostly faced (and perhaps encouraged) opponents to throw once inside the 20 — LAR's red-zone opponents have passed on 67.7% of snaps faced there, ranked 5th-highest in the league, while running on just 32.3% (ranked 28th-lowest). Whether Philadelphia sticks to its preferred ground-and-pound approach in the red zone against a defense that other teams have mostly abandoned the run against is a real decision point worth tracking as the game unfolds — it directly affects how much goal-line equity Barkley's committee actually sees.
 
 ---
 
 ## 5. THREAT INTELLIGENCE
 
-Football Intel's deterministic Threat Engine flags a player when their own **season** rank in a specific statistical category and the upcoming opponent's defensive rank in that **same category** both clear a tier's exact threshold — the convergence of individually elite production and a genuinely soft matchup in the same specific stat, not either signal in isolation. The three tiers use fixed, non-negotiable thresholds (player rank is 1st-best; defense rank is 1st-toughest, so a high defense-rank number means a weak unit):
+Football Intel's deterministic Threat Engine flags a player when their own **season rank** in a specific statistical category AND the upcoming opponent's **defensive rank in that same category** both clear a fixed threshold — the convergence of individually strong production and a genuinely exploitable matchup in the same stat, not either signal in isolation. The three tiers use these exact, fixed thresholds (player rank is 1st-best; defense rank is 1st-toughest, so a high defense-rank number signals a weak unit):
 
-- **Nuclear** — player ranks top 3 in the category AND the opponent's defense ranks 30th or worse in that same category
+- **Nuclear** — player ranks top 3 in the category AND the opponent's defense ranks 30th or worse in that category
 - **Elite** — player ranks top 5 AND opponent defense ranks 28th or worse
 - **Standard** — player ranks top 10 AND opponent defense ranks 23rd or worse
 
-A "Double" designation means one category met both thresholds; "Triple" adds a second category where the player's own rank alone clears the threshold even though the defense side doesn't; "Quadruple" means two or more categories fully converged on both sides.
+A "Double" designation reflects one category where both sides of that threshold converge; "Triple" adds a second category where the player's own rank alone clears the player-side threshold even though the defense side doesn't converge; "Quadruple" reflects two or more categories fully converging on both sides.
 
-**One Threat fired for this matchup: Kyren Williams (LAR, RB) — Standard tier, Triple type, converged on rush yards.** Williams individually ranks 9th in the league in rush yards per game (71.3) — comfortably inside the top-10 threshold — against a Philadelphia defense that ranks 26th against the run specifically to running backs (110.3 rush yds/gm allowed), clearing the Standard tier's 23rd-or-worse threshold. That's the core convergence: a genuinely good runner against a genuinely soft run defense.
+**One designation fired in this matchup: Kyren Williams (LAR, RB) — Standard tier, Triple type.**
 
-The "Triple" label comes from two additional categories where Williams' own production clears a qualifying threshold even though Philadelphia's defense doesn't: his receiving yards (35.3/gm, individually ranked 4th among backs) and receptions (individually ranked 6th) both sit well inside top-10/top-5 territory on his own side. But these do **not** fully converge into their own Threats, because Philadelphia's pass defense against running backs specifically is the best in the league — 10.7 rec yds/gm allowed (1st) on just 3.0 targets/gm allowed (also 1st). That's a real, worth-stating tension: the same Threat Engine that flags Williams' rushing as a clear individual edge is simultaneously telling you his receiving production, however real, runs straight into the single most shut-down role in Philadelphia's entire defense. Practically, this argues for treating Williams' rushing workload as the significantly higher-confidence lever this week, and his receiving role as a real weapon in general but not one this specific matchup favors. Confidence: **MEDIUM-HIGH** on the rushing edge specifically, given it holds up across his own season rate, his lone road/bottom-tier sample, and Philadelphia's season-long run defense numbers all pointing the same direction.
+The converged category is **rush_yds**: Williams ranks 9th in the league in rush yards per game (71.3), and Philadelphia's defense ranks 26th against the run specifically allowed to running backs (110.3 rush yds/gm) — both sides clear the Standard threshold (top 10 / 23rd-or-worse), producing the core designation.
 
-No other listed starter on either roster cleared a Threat threshold this week — not because nothing else is happening in this matchup (Sections 4 and 6 identify real, evidence-backed edges elsewhere), but because no other player/opponent-category combination met this specific convergence system's exact thresholds. Notably, Davante Adams (individually ranked 3rd in receiving yards) did not trigger anything despite his elite production, because Philadelphia's WR defense (21st) isn't weak enough to clear even the Standard tier's 23rd-or-worse bar.
+Two additional categories extend it to "Triple" without fully converging on the defensive side: Williams ranks 4th in receiving yards per game (35.3) and 6th in catches per game (3.7) among backs — both comfortably clearing his own top-10 threshold — but Philadelphia's defense against pass-catching running backs is **elite, not weak** (10.7 rec yds/gm allowed, ranked 1st; 3.0 targets/gm allowed, ranked 1st). This is worth stating plainly rather than treating the Triple label as three independent edges: the receiving-side categories reflect genuine individual quality on Williams' part, but they do **not** represent additional matchup advantage this week — if anything, they run into the single toughest pass-catching-back defense in the league. The real, actionable edge here is specifically the ground-game number, not the full receiving profile. Confidence in the rushing edge itself: MEDIUM (strong rank convergence, but Philadelphia's defense faces an unusually high carry volume leaguewide — 27.3/gm, ranked 30th — which may simply reflect volume rather than a true per-carry weakness).
+
+**No other starter on either roster triggered a designation.** Matthew Stafford, despite ranking 3rd in pass yards, faces a Philadelphia pass defense ranked 7th against the position — far too strong to clear even the Standard threshold (needs 23rd-or-worse). Davante Adams ranks 3rd in receiving yards but Philadelphia's defense against wideouts (ranked 21st) also falls short of the threshold. DeVonta Smith and Dontayvion Wicks rank outside the top 10 in their category, and Saquon Barkley and Jalen Hurts rank outside the top 10 in theirs. Puka Nacua and Dallas Goedert carry no classification at all because their sample size (1 and 2 games respectively) was too thin for the engine to rank them. The absence of additional designations does not mean the absence of real matchup edges elsewhere — the blitz-vulnerability and red-zone tension notes in Section 4 are real, evidence-backed angles that simply sit outside what this specific convergence system screens for.
 
 ---
 
 ## 6. HIDDEN INTELLIGENCE & CONTEXTUAL ANALYSIS
 
-**Finding 1: Philadelphia's run game and pass game move in opposite directions, not together — a real structural tension for how this offense should be built each week.**
+**Finding 1: The two backfields' rushing production correlates with their own passing games in opposite directions — and this week's matchup is positioned to activate exactly the side of that pattern each team doesn't want.**
 
-The relationship: across Hurts' and Barkley's tracked games, when Philadelphia's rushing attack has been "hot" (above its own baseline), Hurts' passing hit rate has actually been *lower* (25.0% on n=8 relevant games) than when the run game has been cold (63.6% hit rate on n=11). The running-back-level data confirms the same pattern from the other direction: Barkley's own hit rate is lower when Hurts is hot (28.6%, n=7) than when Hurts is cold (60.0%, n=10). Two independently-computed analytics — one anchored to the quarterback, one to the running back — point the same direction, which is why this rises above a coincidence in a small sample.
+Los Angeles' running back production and Stafford's passing production move *together*: across the broader cross-referenced sample, Kyren Williams hits his rushing average 66.7% of the time when Stafford is having a hot passing game (n=9) versus just 40.0% when Stafford is cold (n=10) — and in all three games logged this season, Williams' rushing "hit" and Stafford's passing "hit" moved in lockstep (both true in Weeks 2 and 3, both false in Week 1). Philadelphia's pattern runs the opposite direction: Barkley's rushing "hit" rate is actually *higher* when Hurts is cold (60.0%, n=10) than when Hurts is hot (28.6%, n=7), and Hurts' own passing-hit rate is likewise higher when Barkley is cold (55.6%, n=9) than when Barkley is hot (25.0%, n=8) — a clear game-script-driven, compensatory relationship rather than a shared-success one. This is not obvious from either team's season averages alone; it only emerges by cross-referencing the two stat lines together. The consequence for this specific game: Stafford faces Philadelphia's defense (7th against the pass) — a tougher test than any he's seen this season (Section 4) — meaning if his passing game struggles, Los Angeles' own historical pattern says Williams' rushing production is *more* likely to struggle alongside it, not compensate for it. Philadelphia runs the opposite risk in the other direction — Hurts faces LAR's 2nd-ranked pass defense, and if that test suppresses his numbers (plausible given it's the toughest pass defense he's faced this year), Philadelphia's own pattern says Barkley's workload and rushing efficiency are more likely to *rise* in response, not fall with it. Confidence: LOW-MEDIUM (directionally consistent across both the larger cross-referenced sample and this season's small in-season log, but n=7-10 on the broader splits and n=2-3 in-season are both genuinely thin).
 
-Why it isn't obvious: the default assumption in football analysis is that a good game script lifts everything together — a team that's moving the ball well on the ground is usually also throwing efficiently, because both reflect the same underlying good day. Philadelphia's own three games this season argue the opposite. **Context Expansion:** the team's own game logs show it directly — Philadelphia's best rushing game of the season (136 yards, Week 1 vs. Washington) came alongside its *worst* passing game (203 yards); its best passing game (264 yards, Week 2 vs. Tennessee) came alongside one of its worst rushing games (89 yards). And this isn't simply an opponent-quality artifact: Washington's pass defense that week graded as a bottom-tier matchup (rank 30) yet Hurts had his worst game, while Tennessee's pass defense graded as a genuine top-tier matchup (rank 8) yet Hurts had his best — the opposite of what facing a tougher or weaker pass defense alone would predict. That argues the driver is Philadelphia's own play-calling identity (a run-first team that only leans fully into the pass when the ground game isn't working), not simply matchup quality.
+**Finding 2: Philadelphia's team-wide blitz vulnerability does not extend to its top target — a split invisible unless the QB-level and WR-level pressure data are read together.**
 
-What changes because of it: the conventional read heading into this game — "Philadelphia needs to establish Saquon Barkley against a shaky LAR run defense (26th) to control the clock" — may actually work against Hurts' own passing efficiency if this season's pattern holds. Conversely, if Barkley struggles early (a live possibility given how little push his own blocking has provided — see Section 4), Hurts' own splits say that's historically been *his* greener light, not a sign the offense is in trouble. Confidence: **MEDIUM** — the aggregate hit-rate splits are reasonably sized (n=7-10) and agree at both the QB and RB level, though this season's three-game sample alone shows some inconsistency worth acknowledging rather than hiding.
+Section 4 established that Hurts is measurably worse when blitzed (52.8% completion, -0.187 EPA/play) than when not (62.7%, +0.038). DeVonta Smith's own blitz splits run in the *opposite* direction: 80.0% completion and +0.431 EPA/play on throws to him against the blitz (n=10), compared to just 64.7% and -0.177 EPA/play when not blitzed (n=17). Read in isolation, a casual viewer watching Los Angeles bring extra rushers would reasonably assume the entire Philadelphia passing attack — Smith included — gets worse. The data says the opposite for Smith specifically: he appears to function as Hurts' answer *to* pressure, likely via a quick, pre-determined hot route rather than a developing downfield concept, even while the offense as a whole suffers under the same pressure. Given Los Angeles executes blitzes well when it chooses to (65.5% blitz success rate, ranked 7th), this creates a real tension worth watching: if the Rams bring extra rushers to exploit Hurts' documented weakness, the same pressure may be funneling the ball toward the one receiver whose own numbers actually improve in that situation. Confidence: MEDIUM (two separate, specific statistical categories, consistent logical football mechanism, but neither sample is large — n=10 and n=17).
 
-**Finding 2: Los Angeles' best individual defensive lever against Stafford's own real weakness doesn't come from Philadelphia's base pass rush — it comes from blitz frequency, a tool Philadelphia's season-long sack numbers suggest it hasn't needed much.**
+**Finding 3: Los Angeles' No. 1-ranked total offense and its 20th-ranked scoring offense are reconciled by the same evidence that explains its interception problem, not by red-zone inefficiency alone.**
 
-The relationship: Stafford's own tracked splits show a real, sizable efficiency collapse when blitzed — **-0.221 EPA/play, 44.7% completion** on 38 blitzed dropbacks, versus **+0.193 EPA/play, 66.7% completion** when rushed with a standard four (75 dropbacks). That's not a marginal gap; it's the difference between a clearly negative and a clearly positive quarterback on a per-play basis. Separately, and on its face unrelated, Philadelphia's defense has generated pressure at one of the lowest rates in the league this season — just 1.0 sacks/gm allowed by opposing offenses, ranked 29th, meaning its base four-man rush has not been getting home.
-
-Why it isn't obvious: these are two entirely different evidence categories — one is a quarterback's own situational splits against pressure type, the other is a team's season-long sack production — that would never be compared side-by-side without deliberately cross-referencing them. Individually, neither says much about this specific matchup; Philadelphia's weak sack rate alone might suggest Stafford should be comfortable, while Stafford's blitz splits alone say nothing about whether Philadelphia is positioned to exploit them.
-
-What changes because of it: together, they suggest Philadelphia's most effective path to disrupting LAR's most explosive weapon (a passing offense that ranks 3rd in the league and 2nd in yards per reception) is not more of what it's already doing on early downs — it's dialing up blitz frequency specifically, even though that hasn't been this defense's approach this season. That's a real schematic lever worth watching on game day (via pre-snap disguise and extra rushers), separate from and in addition to anything the raw sack-rate number tells you on its own. Confidence: **MEDIUM** — Stafford's own split sample (n=38 blitzed dropbacks) is reasonably sized and directionally clean, but the connection to Philadelphia's likely actual blitz rate against this specific opponent is inferential rather than directly evidenced (Football Intel's cross-tabulated blitz-rate-by-opponent field for this exact pairing was not reliably available in this evidence package).
+The Rams rank 1st in the NFL in total yards per game (428.7) and 3rd in passing yards per game (295.0), yet sit a modest 20th in points per game (20.3) — on its face, a stark disconnect between moving the ball and finishing drives. The down-and-distance evidence rules out third-down failure as the explanation: Los Angeles actually converts at a strong 42.9% clip on third down (ranked 10th), so stalled drives aren't the primary culprit. The more direct explanation sits with ball security and shot selection: Stafford's 1.33 INT/gm (ranked 29th) is one of the worst marks in the league, and the team has turned the ball over 4 times through 3 games. Layered on top of that, Los Angeles' red-zone identity leans pass-heavy (55.6% pass rate once inside the 20, ranked 12th) on a quarterback completing just 60.5% of his throws overall (ranked 23rd) — even as Kyren Williams, who already carries 66.7% of the team's red-zone carry share, has shown he can produce in that area (a Week 1 red-zone rushing touchdown on 4 red-zone carries). The combination — turnovers plus a pass-tilted red-zone approach riding a low-accuracy passer, rather than a dominant ground-game option that's being underused — is the more complete explanation for why the NFL's best yardage offense isn't scoring like one. Confidence: MEDIUM (the rankings themselves are directly cited evidence; the causal combination is a reasoned inference from them, not a single labeled stat).
 
 ---
 
@@ -148,66 +166,68 @@ What changes because of it: together, they suggest Philadelphia's most effective
 
 **Keys to the Game**
 
-- **If Los Angeles turns the ball over at anything close to its season rate (1.3 INT/gm, 29th) against a Philadelphia defense that has actually generated takeaways at a respectable clip (1.0 INT/gm forced, 10th), Philadelphia's path to a win despite its own middling offense becomes considerably clearer** — this is the single most direct way the Rams' biggest statistical weakness could decide the game outright.
-- **If Philadelphia leans on Saquon Barkley early to control the clock, this season's own evidence says that approach has historically come at the cost of Jalen Hurts' passing efficiency, not in support of it** (Section 6) — watch whether Philadelphia sticks with its run-heavy red-zone identity (57.7% run plays, 5th-highest) even if it's actively suppressing its own passing game.
-- **If Philadelphia increases its blitz rate against Stafford beyond its season-long baseline, his own splits say that's a real lever against LAR's passing attack** that the team's modest sack production (29th) alone wouldn't suggest is coming.
-- **Kyren Williams' rushing workload against Philadelphia's leaky run defense (26th against backs) is the cleanest individual matchup edge in this game**, confirmed independently by both his own season rate and the deterministic Threat Engine (Section 5) — how much LAR leans into it, particularly on early downs, is worth tracking as a signal of game plan.
+- *If Los Angeles' defense brings extra pressure on early downs,* its own history (65.5% blitz success rate, ranked 7th) says it's likely to work — but Finding 2 says the ball is still likely to find DeVonta Smith specifically when it does, so a blitz-heavy plan disrupts Philadelphia's offense broadly without necessarily taking away its top target.
+- *If Philadelphia abandons its preferred run-heavy red-zone approach* (57.7% run rate, ranked 5th) because Los Angeles' red-zone defense has mostly faced — and not been punished much for inviting — the pass (67.7% pass rate faced, ranked 5th-highest), that's a real signal worth tracking as a mid-game adjustment, not a given.
+- *If Stafford's interception rate (ranked 29th) shows up against a Philadelphia defense that has forced zero interceptions all season (ranked 32nd, dead last),* Los Angeles may be able to absorb its own turnover risk more cheaply than it has against other opponents — a real, if counterintuitive, point in the Rams' favor given how costly those mistakes have looked against sharper takeaway units.
+- *If Hurts' passing game struggles against LAR's 2nd-ranked pass defense* — the toughest test he's faced this season by raw rank — Finding 1 says Barkley's rushing workload and efficiency are more likely to rise in response than fade with it, giving Philadelphia a built-in answer that Los Angeles' own correlation pattern does not offer Stafford in the mirror situation.
 
 **The Verdict**
 
-Nothing in this evidence set points toward a lopsided outcome in either direction. Los Angeles is the more talented, more explosive offense by every yardage measure available and fields the better defense across almost every category — but its season-long inability to protect the football (29th in interceptions) is not a minor footnote; it has already directly cost the team at least one and arguably two of its three games this season. Philadelphia, by contrast, has built its 2-1 record on the back of situational discipline rather than explosiveness — a top-10 third-down offense and a pass defense that, while thin on takeaways of its own (0 interceptions forced all season, last in the league), has been genuinely hard to throw on and historically tough on running backs through the air. If the game plays out close to form, the deciding factor is less likely to be which offense gains more yards — Los Angeles almost certainly will — and more likely to be which offense protects the ball and finishes drives. On that specific axis, Philadelphia's season-long profile (better situational third-down execution, a real takeaway threat if Stafford's turnover tendency shows up again) gives the home team a real, evidence-grounded case in a game that otherwise looks competitive on paper. Confidence: **MEDIUM**.
+The broad thesis from the Pregame Briefing — that turnover risk, not raw talent, would decide which offense actually converts its advantages into points — holds up under the deeper evidence, but with an important wrinkle neither team's season averages reveal on their own. Los Angeles owns the larger underlying advantages on paper: the league's best total-yardage offense, a defense that is elite against both wideouts and tight ends, and an opponent (Philadelphia) that has forced zero interceptions all season despite facing a demonstrably turnover-prone passer. The one real, evidence-backed edge pulling the other way is structural rather than statistical: Philadelphia's offense is built to lean on Barkley precisely when Hurts is struggling (Finding 1), which is the expected scenario this week given he's facing the toughest pass defense on his schedule so far — while Los Angeles' own backfield has shown no such safety valve, with Kyren Williams' rushing production historically rising and falling *with* Stafford's passing success rather than compensating for it. That combination — a talent and yardage edge for Los Angeles, offset by a game-script answer only Philadelphia's offense has shown it possesses — is what makes this closer than the raw rankings alone would suggest. Confidence: MEDIUM.
+
+---
 
 ### Coeus Cheat Sheet
 
 **Team**
-- LAR: 1-2, 20.3 ppg (20th) / 21.0 ppg allowed (14th)
-- PHI: 2-1, 18.3 ppg (23rd) / 23.0 ppg allowed (16th)
+- LAR: 1-2 | 20.3 PPG (20th) / 21.0 PPG allowed (14th)
+- PHI: 2-1 | 18.3 PPG (23rd) / 23.0 PPG allowed (16th)
 
 **Passing**
-- Matthew Stafford (LAR): 290.7 pass yds/gm (team rank 3rd), 6 pass TD, 1.3 INT/gm (29th)
-- Jalen Hurts (PHI): 206.7 pass yds/gm (team rank 22nd), 5 pass TD, 1.3 INT/gm (30th)
+- Matthew Stafford (LAR): 295.0 pass yds/gm (3rd), 6 TD, 1.33 INT/gm (29th) — vs. PHI pass defense: 198.0 yds/gm allowed (7th) — opp D allows 198.0 pass yds/gm (7th)
+- Jalen Hurts (PHI): 206.7 pass yds/gm (22nd), 5 TD, 1.3 INT/gm (30th) — vs. LAR pass defense: 174.0 yds/gm allowed (2nd) — opp D allows 174.0 pass yds/gm (2nd)
 
 **Rushing**
-- Kyren Williams (LAR): 71.3 rush yds/gm (individual rank 9th); LAR RB group 127.0 rush yds/gm (4th)
-- Saquon Barkley (PHI): 58.0 rush yds/gm; PHI RB group 79.3 rush yds/gm (22nd)
-- QB rushing: not tracked in this evidence package for either quarterback
+- Kyren Williams (LAR): 71.3 rush yds/gm (9th) — vs. PHI run defense (RB-specific): 110.3 yds/gm allowed (26th) — opp D allows 127.3 rush yds/gm (25th)
+- Saquon Barkley (PHI): 58.0 rush yds/gm (19th) — vs. LAR run defense (RB-specific): 80.3 yds/gm allowed (11th) — opp D allows 101.3 rush yds/gm (11th)
 
 **Receiving**
-- Davante Adams (LAR WR1): 119.3 rec yds/gm (individual rank 3rd), 27.4% target share
-- Konata Mumpfield (LAR WR): 35.0 rec yds/gm, 10.4% target share
-- Colby Parkinson (LAR TE1): 7.0 rec yds/gm, 4.7% target share
-- DeVonta Smith (PHI WR1): 78.3 rec yds/gm, 33.3% target share
-- Dontayvion Wicks (PHI WR2): 59.7 rec yds/gm, 18.5% target share
-- Dallas Goedert (PHI TE1): 40.5 rec yds/gm (2 games), 12.5% target share
+- Davante Adams (LAR, WR): 119.3 rec yds/gm (3rd) — vs. PHI WR defense: 157.7 yds/gm allowed (21st) — opp D allows 157.7 WR rec yds/gm (21st)
+- Puka Nacua (LAR, WR): 74.0 rec yds in lone game played — vs. PHI WR defense: 157.7 yds/gm allowed (21st) — opp D allows 157.7 WR rec yds/gm (21st)
+- Colby Parkinson (LAR, TE): 7.0 rec yds/gm — vs. PHI TE defense: 29.7 yds/gm allowed (6th) — opp D allows 29.7 TE rec yds/gm (6th)
+- DeVonta Smith (PHI, WR): 78.3 rec yds/gm (10th) — vs. LAR WR defense: 115.7 yds/gm allowed (6th) — opp D allows 115.7 WR rec yds/gm (6th)
+- Dontayvion Wicks (PHI, WR): 59.7 rec yds/gm (22nd) — vs. LAR WR defense: 115.7 yds/gm allowed (6th) — opp D allows 115.7 WR rec yds/gm (6th)
+- Dallas Goedert (PHI, TE): 40.5 rec yds/gm (2 games) — vs. LAR TE defense: 24.0 yds/gm allowed (2nd) — opp D allows 24.0 TE rec yds/gm (2nd)
 
 **Team Defense**
-- LAR def: 174.0 pass yds/gm allowed (2nd), 101.3 rush yds/gm allowed (11th), 115.7 WR rec yds/gm allowed (6th), 24.0 TE rec yds/gm allowed (2nd); team coverage rate (man%/zone%) — not available this week
-- PHI def: 198.0 pass yds/gm allowed (7th), 127.3 rush yds/gm allowed (25th), 157.7 WR rec yds/gm allowed (21st), 29.7 TE rec yds/gm allowed (6th), 10.7 RB rec yds/gm allowed (1st); team coverage rate (man%/zone%) — not available this week
+- LAR: 174.0 pass yds/gm allowed (2nd) | 101.3 rush yds/gm allowed (11th) | 115.7 WR yds/gm allowed (6th) | 24.0 TE yds/gm allowed (2nd) | team coverage rate not available
+- PHI: 198.0 pass yds/gm allowed (7th) | 127.3 rush yds/gm allowed (25th) | 157.7 WR yds/gm allowed (21st) | 29.7 TE yds/gm allowed (6th) | team coverage rate not available
 
 **Down/Distance**
-- LAR offense 3rd-down: 42.9% (10th) | LAR defense 3rd-down allowed: 43.6% (22nd)
-- PHI offense 3rd-down: 46.3% (8th) | PHI defense 3rd-down allowed: 39.0% (14th)
+- LAR offense: 42.9% third-down conv. (10th) | LAR defense: 43.6% allowed (22nd)
+- PHI offense: 46.3% third-down conv. (8th) | PHI defense: 39.0% allowed (14th)
 
 **Red Zone Play Calling**
-- LAR offense: 44.4% run / 55.6% pass (22nd / 12th) | LAR defense allowed: 32.3% run / 67.7% pass (28th / 5th)
-- PHI offense: 57.7% run / 42.3% pass (5th / 28th) | PHI defense allowed: 59.2% run / 40.8% pass (5th / 28th)
+- LAR offense: 44.4% run / 55.6% pass (run 22nd, pass 12th) | LAR defense faced: 32.3% run / 67.7% pass (run-faced 28th, pass-faced 5th)
+- PHI offense: 57.7% run / 42.3% pass (run 5th, pass 28th) | PHI defense faced: 59.2% run / 40.8% pass (run-faced 5th, pass-faced 28th)
 
-**Head-to-Head**
-- No meeting between these two teams has occurred yet this season (LAR: SF/NYG/DEN; PHI: WAS/TEN/CHI) — no prior-game data to cite.
+**Head-to-head**
+- No meeting between these two teams this season; not a division matchup.
 
 ---
 
 EVIDENCE_CHECK
 {"claims": [
 {"type":"current_opponent","team":"LAR","pos":"TEAM","stat":"total_ypg","role":"off","claimed_rank":1},
+{"type":"current_opponent","team":"LAR","pos":"TEAM","stat":"ppg","role":"off","claimed_rank":20},
 {"type":"current_opponent","team":"LAR","pos":"TEAM","stat":"pass_ypg","role":"off","claimed_rank":3},
 {"type":"current_opponent","team":"LAR","pos":"TEAM","stat":"rush_ypg","role":"off","claimed_rank":7},
-{"type":"current_opponent","team":"LAR","pos":"TEAM","stat":"ppg","role":"off","claimed_rank":20},
 {"type":"current_opponent","team":"LAR","pos":"TEAM","stat":"fd_pg","role":"off","claimed_rank":7},
-{"type":"current_opponent","team":"LAR","pos":"TEAM","stat":"pass_ypg","role":"def","claimed_rank":2},
-{"type":"current_opponent","team":"LAR","pos":"TEAM","stat":"total_ypg","role":"def","claimed_rank":3},
-{"type":"current_opponent","team":"LAR","pos":"TEAM","stat":"rush_ypg","role":"def","claimed_rank":11},
 {"type":"current_opponent","team":"LAR","pos":"TEAM","stat":"ppg","role":"def","claimed_rank":14},
+{"type":"current_opponent","team":"LAR","pos":"TEAM","stat":"total_ypg","role":"def","claimed_rank":3},
+{"type":"current_opponent","team":"LAR","pos":"TEAM","stat":"pass_ypg","role":"def","claimed_rank":2},
+{"type":"current_opponent","team":"LAR","pos":"TEAM","stat":"rush_ypg","role":"def","claimed_rank":11},
+{"type":"current_opponent","team":"LAR","pos":"TEAM","stat":"fd_pg","role":"def","claimed_rank":11},
 {"type":"current_opponent","team":"PHI","pos":"TEAM","stat":"ppg","role":"off","claimed_rank":23},
 {"type":"current_opponent","team":"PHI","pos":"TEAM","stat":"total_ypg","role":"off","claimed_rank":22},
 {"type":"current_opponent","team":"PHI","pos":"TEAM","stat":"pass_ypg","role":"off","claimed_rank":22},
@@ -218,38 +238,53 @@ EVIDENCE_CHECK
 {"type":"current_opponent","team":"PHI","pos":"TEAM","stat":"pass_ypg","role":"def","claimed_rank":7},
 {"type":"current_opponent","team":"PHI","pos":"TEAM","stat":"rush_ypg","role":"def","claimed_rank":25},
 {"type":"current_opponent","team":"PHI","pos":"TEAM","stat":"fd_pg","role":"def","claimed_rank":15},
+{"type":"current_opponent","team":"LAR","pos":"QB","stat":"pass_yds","role":"off","claimed_rank":3},
 {"type":"current_opponent","team":"LAR","pos":"QB","stat":"comp_pct","role":"off","claimed_rank":23},
 {"type":"current_opponent","team":"LAR","pos":"QB","stat":"int_pg","role":"off","claimed_rank":29},
 {"type":"current_opponent","team":"LAR","pos":"QB","stat":"sacks_pg","role":"off","claimed_rank":10},
 {"type":"current_opponent","team":"LAR","pos":"QB","stat":"ypc","role":"off","claimed_rank":6},
+{"type":"current_opponent","team":"LAR","pos":"QB","stat":"p20_pg","role":"off","claimed_rank":2},
+{"type":"current_opponent","team":"LAR","pos":"QB","stat":"p40_pg","role":"off","claimed_rank":3},
+{"type":"current_opponent","team":"PHI","pos":"QB","stat":"pass_ypg","role":"off","claimed_rank":21},
 {"type":"current_opponent","team":"PHI","pos":"QB","stat":"comp_pct","role":"off","claimed_rank":17},
 {"type":"current_opponent","team":"PHI","pos":"QB","stat":"int_pg","role":"off","claimed_rank":30},
 {"type":"current_opponent","team":"PHI","pos":"QB","stat":"sacks_pg","role":"off","claimed_rank":23},
 {"type":"current_opponent","team":"LAR","pos":"QB","stat":"comp_pct","role":"def","claimed_rank":3},
 {"type":"current_opponent","team":"LAR","pos":"QB","stat":"sacks_pg","role":"def","claimed_rank":28},
 {"type":"current_opponent","team":"LAR","pos":"QB","stat":"int_pg","role":"def","claimed_rank":10},
-{"type":"current_opponent","team":"PHI","pos":"QB","stat":"int_pg","role":"def","claimed_rank":32},
 {"type":"current_opponent","team":"PHI","pos":"QB","stat":"sacks_pg","role":"def","claimed_rank":29},
-{"type":"current_opponent","team":"PHI","pos":"QB","stat":"comp_pct","role":"def","claimed_rank":11},
+{"type":"current_opponent","team":"PHI","pos":"QB","stat":"int_pg","role":"def","claimed_rank":32},
 {"type":"current_opponent","team":"LAR","pos":"RB","stat":"rush_ypg","role":"off","claimed_rank":4},
+{"type":"current_opponent","team":"LAR","pos":"RB","stat":"rec_ypg","role":"off","claimed_rank":7},
 {"type":"current_opponent","team":"PHI","pos":"RB","stat":"rush_ypg","role":"off","claimed_rank":22},
+{"type":"current_opponent","team":"PHI","pos":"RB","stat":"rec_ypg","role":"off","claimed_rank":32},
 {"type":"current_opponent","team":"LAR","pos":"RB","stat":"rush_ypg","role":"def","claimed_rank":11},
+{"type":"current_opponent","team":"LAR","pos":"RB","stat":"tgt_pg","role":"def","claimed_rank":32},
+{"type":"current_opponent","team":"LAR","pos":"RB","stat":"rec_pg","role":"def","claimed_rank":31},
 {"type":"current_opponent","team":"PHI","pos":"RB","stat":"rush_ypg","role":"def","claimed_rank":26},
 {"type":"current_opponent","team":"PHI","pos":"RB","stat":"rec_ypg","role":"def","claimed_rank":1},
 {"type":"current_opponent","team":"PHI","pos":"RB","stat":"tgt_pg","role":"def","claimed_rank":1},
-{"type":"current_opponent","team":"LAR","pos":"RB","stat":"rec_ypg","role":"def","claimed_rank":19},
-{"type":"current_opponent","team":"LAR","pos":"WR","stat":"ypr","role":"off","claimed_rank":2},
+{"type":"current_opponent","team":"PHI","pos":"RB","stat":"car_pg","role":"def","claimed_rank":30},
 {"type":"current_opponent","team":"LAR","pos":"WR","stat":"rec_ypg","role":"off","claimed_rank":5},
+{"type":"current_opponent","team":"LAR","pos":"WR","stat":"ypr","role":"off","claimed_rank":2},
+{"type":"current_opponent","team":"LAR","pos":"WR","stat":"rec_pg","role":"off","claimed_rank":21},
 {"type":"current_opponent","team":"PHI","pos":"WR","stat":"rec_ypg","role":"off","claimed_rank":10},
+{"type":"current_opponent","team":"PHI","pos":"WR","stat":"rec_pg","role":"off","claimed_rank":11},
 {"type":"current_opponent","team":"LAR","pos":"WR","stat":"rec_ypg","role":"def","claimed_rank":6},
+{"type":"current_opponent","team":"LAR","pos":"WR","stat":"rec_pg","role":"def","claimed_rank":2},
 {"type":"current_opponent","team":"PHI","pos":"WR","stat":"rec_ypg","role":"def","claimed_rank":21},
+{"type":"current_opponent","team":"PHI","pos":"WR","stat":"td","role":"def","claimed_rank":28},
+{"type":"current_opponent","team":"PHI","pos":"WR","stat":"yac_pg","role":"def","claimed_rank":27},
 {"type":"current_opponent","team":"LAR","pos":"TE","stat":"rec_pg","role":"off","claimed_rank":3},
-{"type":"current_opponent","team":"PHI","pos":"TE","stat":"rec_ypg","role":"def","claimed_rank":6},
+{"type":"current_opponent","team":"LAR","pos":"TE","stat":"tgt_pg","role":"off","claimed_rank":3},
+{"type":"current_opponent","team":"LAR","pos":"TE","stat":"ypr","role":"off","claimed_rank":28},
+{"type":"current_opponent","team":"PHI","pos":"TE","stat":"rec_ypg","role":"off","claimed_rank":26},
+{"type":"current_opponent","team":"PHI","pos":"TE","stat":"tgt_pg","role":"off","claimed_rank":30},
 {"type":"current_opponent","team":"LAR","pos":"TE","stat":"rec_ypg","role":"def","claimed_rank":2},
-{"type":"current_opponent","team":"PHI","pos":"TE","stat":"ypr","role":"off","claimed_rank":6},
+{"type":"current_opponent","team":"PHI","pos":"TE","stat":"rec_ypg","role":"def","claimed_rank":6},
 {"type":"current_opponent","team":"LAR","pos":"TEAM","stat":"third_down_conversion_pct","role":"off","claimed_rank":10},
-{"type":"current_opponent","team":"LAR","pos":"TEAM","stat":"third_down_pct_allowed","role":"def","claimed_rank":22},
 {"type":"current_opponent","team":"PHI","pos":"TEAM","stat":"third_down_conversion_pct","role":"off","claimed_rank":8},
+{"type":"current_opponent","team":"LAR","pos":"TEAM","stat":"third_down_pct_allowed","role":"def","claimed_rank":22},
 {"type":"current_opponent","team":"PHI","pos":"TEAM","stat":"third_down_pct_allowed","role":"def","claimed_rank":14},
 {"type":"current_opponent","team":"LAR","pos":"TEAM","stat":"red_zone_run_pct","role":"off","claimed_rank":22},
 {"type":"current_opponent","team":"LAR","pos":"TEAM","stat":"red_zone_pass_pct","role":"off","claimed_rank":12},
@@ -259,15 +294,10 @@ EVIDENCE_CHECK
 {"type":"current_opponent","team":"PHI","pos":"TEAM","stat":"red_zone_pass_pct","role":"off","claimed_rank":28},
 {"type":"current_opponent","team":"PHI","pos":"TEAM","stat":"red_zone_run_pct_allowed","role":"def","claimed_rank":5},
 {"type":"current_opponent","team":"PHI","pos":"TEAM","stat":"red_zone_pass_pct_allowed","role":"def","claimed_rank":28},
-{"type":"log_opponent","player":"Matthew Stafford","week":3,"stat":"pass_yds","claimed_rank":24},
 {"type":"log_opponent","player":"Jalen Hurts","week":1,"stat":"pass_yds","claimed_rank":30},
 {"type":"log_opponent","player":"Jalen Hurts","week":2,"stat":"pass_yds","claimed_rank":8},
-{"type":"log_opponent","player":"Saquon Barkley","week":1,"stat":"rush_yds","claimed_rank":3},
-{"type":"log_opponent","player":"Saquon Barkley","week":3,"stat":"rush_yds","claimed_rank":17},
-{"type":"log_opponent","player":"Davante Adams","week":3,"stat":"rec_yds","claimed_rank":16},
-{"type":"log_opponent","player":"DeVonta Smith","week":1,"stat":"rec_yds","claimed_rank":30},
-{"type":"log_opponent","player":"Dontayvion Wicks","week":1,"stat":"rec_yds","claimed_rank":30},
-{"type":"log_opponent","player":"Dallas Goedert","week":1,"stat":"rec_yds","claimed_rank":26},
-{"type":"log_opponent","player":"Colby Parkinson","week":3,"stat":"rec_yds","claimed_rank":25},
-{"type":"log_opponent","player":"Kyren Williams","week":3,"stat":"rush_yds","claimed_rank":31}
+{"type":"log_opponent","player":"Jalen Hurts","week":3,"stat":"pass_yds","claimed_rank":13},
+{"type":"log_opponent","player":"Matthew Stafford","week":1,"stat":"pass_yds","claimed_rank":11},
+{"type":"log_opponent","player":"Matthew Stafford","week":2,"stat":"pass_yds","claimed_rank":16},
+{"type":"log_opponent","player":"Matthew Stafford","week":3,"stat":"pass_yds","claimed_rank":24}
 ]}

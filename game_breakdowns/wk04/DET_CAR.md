@@ -146,8 +146,8 @@ If Carolina's own seesaw tendency holds — Young hot, Hubbard colder, or vice v
 - CAR: 1-2 | 29.7 ppg (5th) | 27.7 ppg allowed (26th)
 
 **Passing**
-- Jared Goff (DET): 267.3 pass yds/gm (7th), 8 pass TD, 0 INT
-- Bryce Young (CAR): 313.0 pass yds/gm (1st), 7 pass TD, 0.67 INT/gm
+- Jared Goff (DET): 267.3 pass yds/gm (7th), 8 pass TD, 0 INT — opp D allows 186.0 pass yds/gm (5th)
+- Bryce Young (CAR): 313.0 pass yds/gm (1st), 7 pass TD, 0.67 INT/gm — opp D allows 326.3 pass yds/gm (32nd)
 
 **Rushing**
 - Jahmyr Gibbs (DET): 102.3 rush yds/gm, 3.16 YBC/carry, 1.47 YAC/carry, 3.0 broken tackles/gm
