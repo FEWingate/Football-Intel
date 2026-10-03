@@ -40,3 +40,18 @@ game_breakdowns/**/*_prompt_full.txt
 # *_prompt.json/*_prompt_full.txt debug siblings, matching the pattern
 # already used for game_breakdowns/dfs_breakdowns above.
 dfs_weekly/
+
+# Patch-script backups — never meant to be committed, just a local safety
+# copy while testing a patch run.
+*.bak
+
+# Ad-hoc one-off diagnostic/check scripts — not part of the real pipeline,
+# never imported or referenced by anything else. Moved here instead of
+# deleted so nothing's lost, but kept out of the tracked repo root.
+scratch/
+
+# Props Reports — same debug/audit-sibling treatment as dfs_breakdowns/
+# and game_breakdowns/ above: the real reports are tracked, only the full
+# prompt+evidence dumps used for pre-publish review are excluded.
+props_reports/**/*_prompt.json
+props_reports/**/*_prompt_full.txt
