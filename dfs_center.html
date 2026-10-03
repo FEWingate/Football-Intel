@@ -403,6 +403,14 @@ async function discoverDfsWeeks(){
 let PLAYERSTATS = null;
 let NAME_INDEX = { exact: {}, lastname: {} };
 let unmatchedRelevant = [];
+// Current real starter per team at the QB position, gsis_id-keyed — same
+// depth-chart + Out/IR-aware signal already fixing this exact problem in
+// Intel Reports (build_matchup_stats.py's build_intel_reports()). Without
+// it, a healthy backup who simply isn't starting anymore (Drew Lock once
+// Sam Darnold is back, say) still shows up ranked like a real option here,
+// because nothing before this distinguished "this team's real current QB1"
+// from "any QB on this team's roster with a salary row."
+let STARTER_QB_GSIS_BY_TEAM = {};
 
 function normalizeName(name){
   return String(name).toLowerCase().trim()
@@ -559,8 +567,52 @@ async function renderWeeklyReport(){
   }
 }
 
+// Same real signal used to fix this exact bug in build_intel_reports():
+// depth_charts/latest.json's own current QB ranking, with this week's
+// injuries/wkNN.json "Out" + rosters/latest.json non-ACT status (an IR
+// move drops a player off the weekly injury report entirely, so a
+// multi-week injury needs the roster-status check too — a single "Out"
+// check alone isn't enough) both skipping a QB who shouldn't be treated
+// as this week's real starter.
+async function loadStarterGsisByTeam(weekStr){
+  STARTER_QB_GSIS_BY_TEAM = {};
+  let depthChart = null, outGsis = new Set();
+  try{
+    const r = await fetch(`depth_charts/latest.json`, { cache: 'no-store' });
+    if(r.ok) depthChart = await r.json();
+  }catch(e){ /* falls back to raw CSV ranking below without it */ }
+  if(weekStr){
+    try{
+      const r = await fetch(`injuries/wk${weekStr}.json`, { cache: 'no-store' });
+      if(r.ok){
+        const inj = await r.json();
+        (inj.players || []).forEach(p => {
+          if(p.gsis_id && String(p.report_status || '').trim().toLowerCase() === 'out') outGsis.add(p.gsis_id);
+        });
+      }
+    }catch(e){ /* same-week inactives just won't be excluded */ }
+  }
+  try{
+    const r = await fetch(`rosters/latest.json`, { cache: 'no-store' });
+    if(r.ok){
+      const rosters = await r.json();
+      Object.values(rosters.teams || {}).forEach(team => team.forEach(rp => {
+        if(rp.gsis_id && String(rp.status || 'ACT').trim().toUpperCase() !== 'ACT') outGsis.add(rp.gsis_id);
+      }));
+    }
+  }catch(e){ /* IR/reserve moves just won't be excluded */ }
+  if(!depthChart) return;
+  Object.entries(depthChart.teams || {}).forEach(([team, entries]) => {
+    const qbs = entries.filter(e => e.pos_abb === 'QB' && e.gsis_id)
+      .sort((a,b) => (a.pos_rank ?? 99) - (b.pos_rank ?? 99));
+    const available = qbs.find(e => !outGsis.has(e.gsis_id));
+    if(available) STARTER_QB_GSIS_BY_TEAM[team] = available.gsis_id;
+  });
+}
+
 async function load(){
   fiStatus("Loading","loading");
+  let currentWeekStr = null;
   try{
     // Never hardcode a week here — matchup/current.json is written by the
     // build script from what it ACTUALLY built this run, so it correctly
@@ -570,8 +622,8 @@ async function load(){
     const ptrRes = await fetch(`matchup/current.json`);
     if(ptrRes.ok){
       const ptr = await ptrRes.json();
-      const wk = String(ptr.week).padStart(2, '0');
-      const res = await fetch(`matchup/wk${wk}.json`);
+      currentWeekStr = String(ptr.week).padStart(2, '0');
+      const res = await fetch(`matchup/wk${currentWeekStr}.json`);
       if(res.ok) MATCHUP = await res.json();
     }
   }catch(e){ /* opponent grading unavailable without it */ }
@@ -579,6 +631,7 @@ async function load(){
     const res = await fetch(`players/latest.json`);
     if(res.ok){ PLAYERSTATS = await res.json(); NAME_INDEX = buildNameIndex(PLAYERSTATS); }
   }catch(e){ /* matchup history / ceiling modes unavailable without it */ }
+  await loadStarterGsisByTeam(currentWeekStr);
 
   const saved = loadSavedSlate();
   if(saved && saved.raw && saved.raw.length){
@@ -759,6 +812,12 @@ function computeAll(players){
     p.opp = opponentOf(p.team, p.gameInfo);
     p.value = p.salary ? (p.avgPts / (p.salary / 1000)) : 0;
     p.siteData = (PLAYERSTATS && p.pos !== 'DST') ? matchSiteData(p) : null;
+    // Only ever flips true when we positively know a different QB on this
+    // same team is the real current starter — missing depth-chart data, a
+    // team with no current starter resolved at all, or no site match for
+    // this specific player never excludes anyone (no real signal either way).
+    const realStarterGsis = p.pos === 'QB' ? STARTER_QB_GSIS_BY_TEAM[p.team] : null;
+    p.isBackupQB = !!(realStarterGsis && p.siteData?.gsis_id && p.siteData.gsis_id !== realStarterGsis);
   });
 
   unmatchedRelevant = players.filter(p =>
@@ -874,7 +933,7 @@ function buildStackBasisTabs(){
 
 function computeStacks(size){
   const field = STACK_BASIS_FIELDS[stackBasis];
-  const eligible = CSV_PLAYERS.filter(p => p.status !== 'OUT' && p.status !== 'IR');
+  const eligible = CSV_PLAYERS.filter(p => p.status !== 'OUT' && p.status !== 'IR' && !p.isBackupQB);
   // One QB per team — the highest-salary one, the best available proxy for
   // "starter" without depth-chart data. Without this, a backup/third-string
   // QB (same team, same matchup) produces a near-duplicate stack entry.
@@ -892,8 +951,19 @@ function computeStacks(size){
   });
   const stacks = [];
   Object.values(qbsByTeam).forEach(qb => {
-    const catchers = eligible
+    // Role floor: only a team's top 3 pass-catchers by season avgPts (its
+    // real WR1/WR2/TE1, roughly) are even eligible to appear in a stack.
+    // Without this, a bench WR3/TE2 with no real target share could win a
+    // slot purely on a skewed single-metric sort below — e.g. a cheap TE
+    // whose opponent happens to rank poorly against TEs specifically
+    // (oppScore), or a min-salary player with one inflated cheap game
+    // (valueScore) — neither of which means that player actually plays
+    // enough to be a viable stack partner.
+    const roleEligible = eligible
       .filter(p => p.team === qb.team && (p.pos === 'WR' || p.pos === 'TE'))
+      .sort((a,b) => b.avgPts - a.avgPts)
+      .slice(0, 3);
+    const catchers = roleEligible
       .filter(p => p[field] != null)
       .sort((a,b) => b[field] - a[field])
       .slice(0, size);
@@ -1040,7 +1110,7 @@ function renderBuilderSearch(){
   const scoreField = SCORE_FIELDS[scoringMode] || STACK_BASIS_FIELDS[stackBasis] || 'quality';
 
   const base = CSV_PLAYERS
-    .filter(p => p.status !== 'OUT' && p.status !== 'IR')
+    .filter(p => p.status !== 'OUT' && p.status !== 'IR' && !p.isBackupQB)
     .filter(p => !placedNames.has(p.name))
     .filter(p => !excludedNames.has(p.name));
 
@@ -1117,7 +1187,7 @@ let lastGeneratedPids = null;
 function generateRestOfLineup(){
   if(typeof solver === 'undefined') return;
   const pool = CSV_PLAYERS
-    .filter(p => p.status !== 'OUT' && p.status !== 'IR')
+    .filter(p => p.status !== 'OUT' && p.status !== 'IR' && !p.isBackupQB)
     .filter(p => !excludedNames.has(p.name));
   pool.forEach((p,i) => { p.__pid = i; });
   const pinned = builderSlots.filter(s=>s.player).map(s => pool.find(p => p.name === s.player.name)).filter(Boolean);
@@ -1225,7 +1295,7 @@ function statusPill(status){
 }
 
 function renderBestPlays(){
-  const pool = CSV_PLAYERS.filter(p => p.pos === bestPos && p.status !== 'OUT' && p.status !== 'IR');
+  const pool = CSV_PLAYERS.filter(p => p.pos === bestPos && p.status !== 'OUT' && p.status !== 'IR' && !p.isBackupQB);
   pool.sort((a,b) => b.composite - a.composite);
   const top = pool.slice(0, 6);
 
@@ -1545,7 +1615,7 @@ function generateLineups(){
   const exposureCap = EXPOSURE_CAPS[numLineups];
   const teFlexCap = TE_FLEX_CAPS[numLineups];
 
-  const pool = CSV_PLAYERS.filter(p => p.status !== 'OUT' && p.status !== 'IR');
+  const pool = CSV_PLAYERS.filter(p => p.status !== 'OUT' && p.status !== 'IR' && !p.isBackupQB);
   pool.forEach((p, i) => { p.__pid = i; }); // stable id, survives per-iteration filtering
 
   const exposureCount = {};

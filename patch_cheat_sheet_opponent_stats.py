@@ -61,6 +61,43 @@ RANK_RE = r'\(\s*(\d+)[a-z]{2}[^)]*\)'
 # wording isn't byte-identical between generations, so all of these are
 # tolerated below rather than assuming one canonical format.
 TEAM_DEF_LINE_RE = re.compile(r'^[-*]\s*(?P<team>[A-Za-z][A-Za-z .]*?)(?:\s+def)?:\s*(?P<rest>.+)$')
+
+# REAL FORMAT VARIANT (2026-10-03), per Frank's direct catch that WR never
+# got an opponent figure even though IND_WAS.md's Team Defense section
+# plainly has the data: some real files split Team Defense into TWO
+# bullets per team — one with pass/rush ("IND def: 291.0 pass yds/gm
+# allowed (30th), 140.3 rush yds/gm allowed (29th)"), and a SEPARATE
+# follow-up bullet with the position-specific receiving breakdown ("IND
+# def vs. WR: 179.3 rec yds/gm allowed (28th) | vs. RB rush: 114.0
+# yds/gm allowed (27th), ..."). The old TEAM_DEF_LINE_RE technically
+# "matched" that second line too, but swallowed "def vs. WR" whole as
+# part of the team name (since its colon comes after "WR", not right
+# after the team code), which resolve_team_token correctly refused to
+# resolve — so the whole line, and the WR data in it, was silently
+# dropped. This is matched and parsed separately, before the generic
+# line gets a chance to mis-capture it.
+AUX_DEF_LINE_RE = re.compile(r'^[-*]\s*(?P<team>[A-Za-z][A-Za-z .]*?)\s+def\s+vs\.?\s*(?P<rest>.+)$',
+                              re.IGNORECASE)
+
+
+def parse_aux_def_segments(rest):
+    """Parses the pipe-separated segments of an AUX_DEF_LINE_RE match, e.g.
+    'WR: 179.3 rec yds/gm allowed (28th) | vs. RB rush: 114.0 yds/gm
+    allowed (27th), 4 rush TD allowed (30th)'. Only WR/TE receiving-allowed
+    figures are extracted — an RB segment here is rushing yards allowed to
+    running backs specifically, a different (and already-covered-by-the-
+    main-line) stat from the team-wide rush figure the Rushing section
+    actually cites, so it's deliberately left alone rather than guessed
+    into the wrong bucket. Returns a dict like {'rec_wr': (val, rank)}."""
+    found = {}
+    for seg in rest.split('|'):
+        seg = re.sub(r'^\s*vs\.?\s*', '', seg.strip(), flags=re.IGNORECASE)
+        for pos, key in (('WR', 'rec_wr'), ('TE', 'rec_te')):
+            m = re.match(re.escape(pos) + r'\s*:\s*([\d.]+)\s+(?:rec\s+)?yds/gm allowed\s*' + RANK_RE,
+                         seg, re.IGNORECASE)
+            if m:
+                found[key] = (float(m.group(1)), int(m.group(2)))
+    return found
 PLAYER_LINE_RE = re.compile(
     # REAL BUG FIX (2026-10-02), caught in testing: a position tag with no
     # trailing digit ("LAR WR" rather than "LAR WR1" — a real, confirmed
@@ -262,19 +299,33 @@ def parse_team_defense(block_lines, expected_teams):
     source line used a full team name."""
     out = {}
     for line in block_lines:
-        m = TEAM_DEF_LINE_RE.match(line.strip())
+        stripped = line.strip()
+
+        # Check the "TEAM def vs. POS: ..." auxiliary shape FIRST — it's a
+        # more specific match than TEAM_DEF_LINE_RE, which would otherwise
+        # swallow "def vs. WR" into the team name and silently fail to
+        # resolve it (see AUX_DEF_LINE_RE's comment above).
+        aux = AUX_DEF_LINE_RE.match(stripped)
+        if aux:
+            team = resolve_team_token(aux.group("team"), expected_teams)
+            if team is not None:
+                extra = parse_aux_def_segments(aux.group("rest"))
+                if extra:
+                    out.setdefault(team, {}).update(extra)
+            continue
+
+        m = TEAM_DEF_LINE_RE.match(stripped)
         if not m:
             continue
         team_token, rest = m.group("team"), m.group("rest")
         team = resolve_team_token(team_token, expected_teams)
         if team is None:
             continue
-        stats = {}
+        stats = out.setdefault(team, {})
         for key in STAT_TAGS:
             v = extract_stat(rest, key)
-            if v:
+            if v and key not in stats:
                 stats[key] = v
-        out[team] = stats
     return out
 
 

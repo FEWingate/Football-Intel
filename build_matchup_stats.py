@@ -4344,16 +4344,105 @@ def build_intel_reports(week=None):
     def rate(sub):
         return (round(100 * sub["qb_hot"].mean(), 1), len(sub)) if len(sub) else (None, 0)
 
+    # REAL BUG FIX (2026-10-03), per Frank's direct, real catch: "most
+    # starts this season" is a structurally broken signal the moment an
+    # incumbent QB comes back from injury — the games he missed are
+    # exactly the games his fill-in started, so the fill-in can never be
+    # out-voted by start count alone, no matter how obviously current the
+    # real depth chart already is (Lock/Darnold, Rush/Penix, Wentz's real
+    # replacement all hit this). depth_charts/latest.json is a real, daily
+    # snapshot — it already reflects today's real pos_rank 1 QB — so it's
+    # used as the real override: walk each team's real QB depth chart in
+    # rank order and take the first name who (a) isn't ruled Out on this
+    # real week's real injury report (the depth chart itself is a default/
+    # healthy ranking and doesn't move for a single-week game-status
+    # injury like Mayfield's) and (b) actually has a real row in this
+    # team's real sample to report on — falling back to the old "most
+    # starts" winner only when no depth-chart QB qualifies (missing depth
+    # chart data, or a real rank-1 rookie with zero real starts logged
+    # yet, nothing real to show a hot/cold pattern for).
+    current_starter_by_team = {}
+    try:
+        with open("depth_charts/latest.json") as f:
+            dc_json = json.load(f)
+        for dc_team, entries in (dc_json.get("teams") or {}).items():
+            dc_qbs = [e for e in entries if e.get("pos_abb") == "QB" and e.get("gsis_id")]
+            dc_qbs.sort(key=lambda e: (e.get("pos_rank") is None, e.get("pos_rank")))
+            if dc_qbs:
+                current_starter_by_team[dc_team] = [e["gsis_id"] for e in dc_qbs]
+    except FileNotFoundError:
+        print("  WARNING: depth_charts/latest.json not found — starter selection falls back "
+              "to 'most starts this season' for every team, which can't reflect an incumbent "
+              "QB who's back from injury this week if his fill-in started more games while he "
+              "was out. Run build_depth_charts() first for real current-week accuracy.")
+
+    out_this_week_gsis = set()
+    try:
+        with open(f"injuries/wk{as_of_week:02d}.json") as f:
+            inj_json = json.load(f)
+        out_this_week_gsis = {p["gsis_id"] for p in inj_json.get("players", [])
+                               if p.get("gsis_id")
+                               and (p.get("report_status") or "").strip().lower() == "out"}
+    except FileNotFoundError:
+        print(f"  WARNING: injuries/wk{as_of_week:02d}.json not found — can't exclude a QB "
+              f"who's officially Out this week from starter selection. Run build_injuries() "
+              f"first for real current-week accuracy.")
+
+    # REAL BUG FIX (2026-10-03), same real catch, second half: a multi-
+    # week injury (Mayfield going on IR for 4 weeks, per Frank's real,
+    # live DraftKings screenshot) is a real ROSTER move, not just a
+    # single week's game-status tag — nflverse drops a player off the
+    # WEEKLY injury report entirely once he's on IR/reserve, so
+    # out_this_week_gsis above would never catch him even though he's
+    # obviously not the real starter to preview. rosters/latest.json's
+    # own "status" field (ACT/RES/INA/DEV/CUT/etc.) is the real,
+    # authoritative "is this guy even on the active roster right now"
+    # signal, independent of the weekly injury-report mechanism — so any
+    # depth-chart QB whose real roster status isn't "ACT" is treated as
+    # unavailable here too.
+    inactive_roster_gsis = set()
+    try:
+        with open("rosters/latest.json") as f:
+            roster_json = json.load(f)
+        for roster_team, roster_players in (roster_json.get("teams") or {}).items():
+            for rp in roster_players:
+                if rp.get("gsis_id") and (rp.get("status") or "ACT").strip().upper() != "ACT":
+                    inactive_roster_gsis.add(rp["gsis_id"])
+    except FileNotFoundError:
+        print("  WARNING: rosters/latest.json not found — can't exclude a QB who's on IR/"
+              "reserve this week from starter selection. Run build_rosters() first for real "
+              "current-week accuracy.")
+    out_this_week_gsis |= inactive_roster_gsis
+
     out = {}
     for team, g_full in merged_extended.groupby("team"):
-        # the real starter = most starts this season, not whoever played most
-        # recently — a late-season rest game for a backup shouldn't hijack
-        # the report, and shouldn't blend into the primary QB's sample either
-        # REAL CHANGE: "most starts" is decided from the real 2026 rows
-        # only — a real 2025 backup-turned-2026-starter (or vice versa)
-        # shouldn't out-vote the real, current, actual 2026 starter just
-        # because their own blended 2025 games add extra rows here.
-        primary_pid = g_full[g_full["src"] == "2026"].groupby("player_id").size().idxmax()
+        season_2026 = g_full[g_full["src"] == "2026"]
+        # The "most starts" fallback must also skip a QB who's Out/on
+        # reserve this week — otherwise an injured starter the depth-chart
+        # walk below correctly rejects can still win right back here (he
+        # likely still has the plain highest start count), which is the
+        # exact real bug being fixed, just reintroduced through the back
+        # door. Only drop back to the unfiltered winner if literally every
+        # QB with any real sample this team has is unavailable — showing
+        # a wrong-but-inactive name is still better than showing nothing.
+        available_2026 = season_2026[~season_2026["player_id"].isin(out_this_week_gsis)]
+        if len(available_2026):
+            most_starts_pid = available_2026.groupby("player_id").size().idxmax()
+        elif len(season_2026):
+            most_starts_pid = season_2026.groupby("player_id").size().idxmax()
+        else:
+            most_starts_pid = None
+
+        primary_pid = most_starts_pid
+        for dc_gsis_id in current_starter_by_team.get(team, []):
+            if dc_gsis_id in out_this_week_gsis:
+                continue  # real depth-chart QB1 (or 2) ruled Out this real week — skip him
+            if dc_gsis_id in g_full["player_id"].values:
+                primary_pid = dc_gsis_id
+                break
+        if primary_pid is None:
+            continue  # no QB at all with a real row for this real team
+
         g_full = g_full[g_full["player_id"] == primary_pid].sort_values("week")
         # REAL FIX (2026-09-23), per Frank's direct, real catch: the
         # correlation itself (qb_rate_hot etc. below) now runs over
