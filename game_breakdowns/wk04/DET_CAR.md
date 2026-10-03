@@ -150,8 +150,8 @@ If Carolina's own seesaw tendency holds — Young hot, Hubbard colder, or vice v
 - Bryce Young (CAR): 313.0 pass yds/gm (1st), 7 pass TD, 0.67 INT/gm — opp D allows 326.3 pass yds/gm (32nd)
 
 **Rushing**
-- Jahmyr Gibbs (DET): 102.3 rush yds/gm, 3.16 YBC/carry, 1.47 YAC/carry, 3.0 broken tackles/gm
-- Chuba Hubbard (CAR): 61.3 rush yds/gm, 3.41 YBC/carry, 1.23 YAC/carry, 1.5 broken tackles/gm
+- Jahmyr Gibbs (DET): 102.3 rush yds/gm, 3.16 YBC/carry, 1.47 YAC/carry, 3.0 broken tackles/gm — opp D allows 144.7 rush yds/gm (32nd)
+- Chuba Hubbard (CAR): 61.3 rush yds/gm, 3.41 YBC/carry, 1.23 YAC/carry, 1.5 broken tackles/gm — opp D allows 87.0 rush yds/gm (13th)
 
 **Receiving**
 - Amon-Ra St. Brown (DET): 76.0 rec yds/gm, 32.4% target share

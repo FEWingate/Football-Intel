@@ -159,11 +159,11 @@ Both offenses arrive genuinely limited — bottom-third in scoring, bottom-3 in 
 - Quinshon Judkins (CLE): 41.3 rush yds/gm (30th) — opp D allows 113.0 rush yds/gm (18th)
 
 **Receiving**
-- DK Metcalf (PIT): 32.67 rec yds/gm, 22.9% target share
-- Michael Pittman Jr. (PIT): 37.0 rec yds/gm (2 games), 11.8% target share
+- DK Metcalf (PIT): 32.67 rec yds/gm, 22.9% target share — opp D allows 152.7 WR rec yds/gm (17th)
+- Michael Pittman Jr. (PIT): 37.0 rec yds/gm (2 games), 11.8% target share — opp D allows 152.7 WR rec yds/gm (17th)
 - Pat Freiermuth (PIT, TE): 36.0 rec yds/gm, 13.3% target share
-- Denzel Boston (CLE): 65.0 rec yds/gm, 18.3% target share
-- KC Concepcion (CLE): 26.67 rec yds/gm, 24.4% target share
+- Denzel Boston (CLE): 65.0 rec yds/gm, 18.3% target share — opp D allows 134.3 WR rec yds/gm (12th)
+- KC Concepcion (CLE): 26.67 rec yds/gm, 24.4% target share — opp D allows 134.3 WR rec yds/gm (12th)
 - Harold Fannin Jr. (CLE, TE): 42.0 rec yds/gm, 22.0% target share
 
 **Team Defense**

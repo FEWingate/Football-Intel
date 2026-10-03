@@ -34,6 +34,7 @@ import os
 import re
 import sys
 import glob
+import json
 
 STAT_TAGS = {
     "pass": "pass",
@@ -68,11 +69,80 @@ PLAYER_LINE_RE = re.compile(
     # fail to match (not just the tag), so that player was silently
     # skipped with no report line at all. The digit is now optional.
     # Also made the bullet character tolerant of both `-` and `*` (real
-    # format drift confirmed in Frank's actual regenerated files), and the
-    # separator before the position tag tolerant of a space OR a comma
-    # (e.g. "(LAR WR1)" vs "(LAR, WR)").
-    r'^[-*]\s*(?P<name>[^(]+?)\s*\((?P<team>[A-Z]{2,3})(?:[\s,]+(?P<postag>WR\d?|TE\d?|RB\d?))?\):\s*(?P<rest>.+)$'
+    # format drift confirmed in Frank's actual regenerated files).
+    #
+    # SECOND REAL BUG FIX (2026-10-02): the team parenthetical can carry
+    # OTHER trailing text that isn't a position tag at all — e.g.
+    # "(CHI, 2 starts)", "(CHI, 1 start)" (confirmed in Frank's real
+    # NYJ@CHI file, for a backup QB who started partway through the
+    # season). The old pattern required ')' immediately after an optional
+    # WR/TE/RB tag, so ANY other trailing text made the whole line fail to
+    # match — and a failed match is invisible (no SKIP line is printed for
+    # it), so those players silently got no opponent-stat addition with no
+    # way to notice. Now the whole parenthetical is captured loosely and
+    # the position tag (if any) is pulled out of it separately in Python,
+    # so unrelated trailing text no longer breaks the match.
+    r'^[-*]\s*(?P<name>[^(]+?)\s*\((?P<team>[A-Z]{2,3})(?P<paren_rest>[^)]*)\):\s*(?P<rest>.+)$'
 )
+POSTAG_RE = re.compile(r'\b(WR\d?|TE\d?|RB\d?)\b')
+
+
+def extract_postag(paren_rest):
+    """Pull a WR/TE/RB position tag out of a player line's trailing
+    parenthetical text (e.g. ', WR' or ', RB2' or ' WR1'), ignoring any
+    other text in there (e.g. ', 2 starts'). Returns None if no tag."""
+    m = POSTAG_RE.search(paren_rest or "")
+    return m.group(1) if m else None
+
+
+# REAL ENHANCEMENT (2026-10-02), per Frank's direct question ("why did it
+# skip Receiving when the opponent number is right there in Team
+# Defense?"): a lot of Cheat Sheet Receiving lines just don't carry a
+# WR/TE/RB tag at all (confirmed widespread across real Week 4 files), so
+# the script had no safe way to know which opponent figure applied and
+# correctly declined to guess. But the project already has a canonical
+# roster file with every player's real position — using that instead of
+# guessing is a real lookup, not a guess, so it's used as a fallback
+# whenever the line itself has no tag.
+ROSTER_PATH = "rosters/latest.json"
+NAME_SUFFIXES = {"jr", "sr", "ii", "iii", "iv", "v"}
+_roster_index = None
+
+
+def _normalize_player_name(name):
+    name = re.sub(r'[.,]', '', name.lower())
+    words = [w for w in name.split() if w not in NAME_SUFFIXES]
+    return "".join(words)
+
+
+def load_roster_index():
+    """Lazily loads rosters/latest.json into a {(team, normalized_name):
+    position} index. Returns {} (not an error) if the file isn't present
+    or isn't readable — the roster lookup is a bonus, never a requirement,
+    so its absence just means fewer tag-less lines get resolved."""
+    global _roster_index
+    if _roster_index is not None:
+        return _roster_index
+    _roster_index = {}
+    try:
+        with open(ROSTER_PATH, encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return _roster_index
+    for team, players in data.get("teams", {}).items():
+        for p in players:
+            name, pos = p.get("name"), p.get("position")
+            if name and pos:
+                _roster_index[(team, _normalize_player_name(name))] = pos
+    return _roster_index
+
+
+def roster_position_for(team, player_name):
+    """Returns the player's real position (e.g. 'WR') from the roster
+    file, or None if not found. Only ever used as a fallback when the
+    Cheat Sheet line itself has no WR/TE/RB tag — never overrides a tag
+    that's actually present in the text."""
+    return load_roster_index().get((team, _normalize_player_name(player_name)))
 
 # Full team names seen in place of abbreviations in Team Defense lines
 # (e.g. "Atlanta: ..." instead of "ATL def: ..."). City-only names like
@@ -153,13 +223,29 @@ def extract_stat(rest, key):
         # "WR: 201.3 rec yds/gm allowed (32nd)" — tag prefix before the
         # number (real format drift confirmed in ATL_NO.md).
         candidates.append(tag + r':\s*([\d.]+)\s+(?:rec\s+)?yds/gm allowed\s*' + RANK_RE)
+        # "115.0 rec yds/gm allowed to WR (5th)" — tag comes AFTER "allowed
+        # to", not next to the number at all (real format drift confirmed
+        # in NYJ_CHI.md). Also covers "allowed to RB" for rec_rb.
+        candidates.append(r'([\d.]+)\s+(?:rec\s+)?yds/gm allowed\s+to\s+' + tag + r'\s*' + RANK_RE)
     else:
-        candidates.append(r'([\d.]+)\s+' + tag + r'\s+yds/gm allowed\s*' + RANK_RE)
+        # Plain "87.3 rush yds/gm allowed (7th)", and also "95.3 rush
+        # yds/gm allowed to RB (17th)" — a "to <POS>" qualifier sometimes
+        # appears between "allowed" and the rank (real format drift
+        # confirmed in NYJ_CHI.md, CHI's own rush-allowed line).
+        candidates.append(r'([\d.]+)\s+' + tag + r'\s+yds/gm allowed(?:\s+to\s+\w+)?\s*' + RANK_RE)
     for pat in candidates:
         m = re.search(pat, rest)
         if m:
             return float(m.group(1)), int(m.group(2))
     return None
+
+
+def looks_like_player_bullet(stripped_line):
+    """Heuristic: does this line look like it was MEANT to be a player
+    bullet (so a PLAYER_LINE_RE failure is worth flagging), vs. a header,
+    blank line, or other non-player content? A bullet with a parenthetical
+    team tag and a colon is the giveaway shape."""
+    return bool(re.match(r'^[-*]\s*\S.*\([A-Z]{2,3}.*\):', stripped_line))
 
 
 def ordinal(n):
@@ -249,8 +335,12 @@ def patch_file(path, apply_changes):
         if s is None:
             continue
         for i in range(s, e):
-            m = PLAYER_LINE_RE.match(lines[i].strip())
+            stripped = lines[i].strip()
+            m = PLAYER_LINE_RE.match(stripped)
             if not m:
+                if looks_like_player_bullet(stripped):
+                    report_lines.append(f"  UNMATCHED (couldn't parse name/team at all — "
+                                         f"not just a missing stat): {stripped[:70]}")
                 continue
             team = m.group("team")
             if team not in team_defense:
@@ -275,11 +365,15 @@ def patch_file(path, apply_changes):
     s, e = find_section(lines, HEADERS["receiving"], ALL_HEADER_PATTERNS)
     if s is not None:
         for i in range(s, e):
-            m = PLAYER_LINE_RE.match(lines[i].strip())
+            stripped = lines[i].strip()
+            m = PLAYER_LINE_RE.match(stripped)
             if not m:
+                if looks_like_player_bullet(stripped):
+                    report_lines.append(f"  UNMATCHED (couldn't parse name/team at all — "
+                                         f"not just a missing stat): {stripped[:70]}")
                 continue
             team = m.group("team")
-            postag = m.group("postag")  # e.g. WR1, TE1, RB2
+            postag = extract_postag(m.group("paren_rest"))  # e.g. WR1, TE1, RB2
             if team not in team_defense:
                 report_lines.append(f"  SKIP line (unrecognized team {team!r}): {lines[i].strip()[:70]}")
                 continue
@@ -288,9 +382,15 @@ def patch_file(path, apply_changes):
                 continue
             opp_stats = team_defense[opp[0]]
             if not postag:
-                report_lines.append(f"  SKIP (no WR/TE/RB tag to match against opponent defense): "
-                                     f"{lines[i].strip()[:70]}")
-                continue
+                # No tag in the line itself — fall back to the real roster
+                # (a lookup, not a guess) before giving up.
+                roster_pos = roster_position_for(team, m.group("name"))
+                if roster_pos in ("WR", "TE", "RB"):
+                    postag = roster_pos
+                else:
+                    report_lines.append(f"  SKIP (no WR/TE/RB tag in the line, and no WR/TE/RB match in "
+                                         f"rosters/latest.json either): {lines[i].strip()[:70]}")
+                    continue
             pos = postag[:2]  # 'WR', 'TE', or 'RB'
             rec_key = {"WR": "rec_wr", "TE": "rec_te", "RB": "rec_rb"}.get(pos)
             if rec_key not in opp_stats:

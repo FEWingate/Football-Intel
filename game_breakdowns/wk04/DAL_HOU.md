@@ -144,15 +144,15 @@ If Dallas's staff deviates from its season-long approach and sends extra rushers
 
 **Rushing**
 - Javonte Williams (DAL): 56.3 rush yds/gm, 62.3% rush share, 2 rush TD, 1.42 YBC/1.54 YAC per carry — opp D allows 86.7 rush yds/gm (5th)
-- David Montgomery (DAL... wait HOU): 34.3 rush yds/gm, 52.1% rush share, 2 rush TD, 1.65 YBC/1.04 YAC per carry
-- Woody Marks (HOU, secondary back): 21.7 rush yds/gm, 31.0% rush share
+- David Montgomery (DAL... wait HOU): 34.3 rush yds/gm, 52.1% rush share, 2 rush TD, 1.65 YBC/1.04 YAC per carry — opp D allows 86.7 rush yds/gm (5th)
+- Woody Marks (HOU, secondary back): 21.7 rush yds/gm, 31.0% rush share — opp D allows 179.7 rush yds/gm (31st)
 
 **Receiving**
-- CeeDee Lamb (DAL): 103.0 rec yds/gm, 24.8% target share, 3 TD — Standard-tier Threat
-- George Pickens (DAL): 50.0 rec yds/gm, 24.8% target share, 0 TD
+- CeeDee Lamb (DAL): 103.0 rec yds/gm, 24.8% target share, 3 TD — Standard-tier Threat — opp D allows 176.3 WR rec yds/gm (27th)
+- George Pickens (DAL): 50.0 rec yds/gm, 24.8% target share, 0 TD — opp D allows 176.3 WR rec yds/gm (27th)
 - Jake Ferguson (DAL, TE): 24.0 rec yds/gm, 20% RZ target share, 3 TD
-- Xavier Hutchinson (HOU): 40.0 rec yds/gm, 18.8% target share
-- Nico Collins (HOU, 1 game only): 75.0 rec yds/gm, 27.0% target share
+- Xavier Hutchinson (HOU): 40.0 rec yds/gm, 18.8% target share — opp D allows 129.3 WR rec yds/gm (10th)
+- Nico Collins (HOU, 1 game only): 75.0 rec yds/gm, 27.0% target share — opp D allows 129.3 WR rec yds/gm (10th)
 - Dalton Schultz (HOU, TE): 68.3 rec yds/gm, 22.3% target share, 4th in league among TEs in rec yds
 
 **Team Defense**

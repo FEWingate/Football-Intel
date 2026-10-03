@@ -158,21 +158,21 @@ The broad thesis from Pregame Briefing — that this profiles as tighter and mor
 
 **Passing**
 - Geno Smith (NYJ): 261.0 pass yds/gm (11th), 75.5% comp (1st), 4 TD, 0.0 int/gm (3rd) — opp D allows 219.0 pass yds/gm (13th)
-- Caleb Williams (CHI, 2 starts): 203.5 pass yds/gm, 65.45% comp, 2 TD, 0.5 int/gm
-- Case Keenum (CHI, 1 start): 247.0 pass yds, 70.6% comp, 2 TD, 0 int
+- Caleb Williams (CHI, 2 starts): 203.5 pass yds/gm, 65.45% comp, 2 TD, 0.5 int/gm — opp D allows 184.7 pass yds/gm (4th)
+- Case Keenum (CHI, 1 start): 247.0 pass yds, 70.6% comp, 2 TD, 0 int — opp D allows 184.7 pass yds/gm (4th)
 
 **Rushing**
-- Breece Hall (NYJ): 54.3 rush yds/gm (23rd among RBs), 1 rush TD
+- Breece Hall (NYJ): 54.3 rush yds/gm (23rd among RBs), 1 rush TD — opp D allows 95.3 rush yds/gm (17th)
 - D'Andre Swift (CHI): 84.3 rush yds/gm (7th among RBs), 3 rush TD — opp D allows 87.3 rush yds/gm (7th)
-- Braelon Allen (NYJ, RB2): 20.3 rush yds/gm, 22.4% rush share
+- Braelon Allen (NYJ, RB2): 20.3 rush yds/gm, 22.4% rush share — opp D allows 95.3 rush yds/gm (17th)
 - Kyle Monangai (CHI, RB2): 59.3 rush yds/gm, 28.6% rush share — opp D allows 87.3 rush yds/gm (7th)
 
 **Receiving**
-- Garrett Wilson (NYJ): 81.0 rec yds/gm (9th among WRs), 28.4% target share
-- Adonai Mitchell (NYJ): 61.5 rec yds/gm, 25.4% target share (2 games)
+- Garrett Wilson (NYJ): 81.0 rec yds/gm (9th among WRs), 28.4% target share — opp D allows 138.3 WR rec yds/gm (13th)
+- Adonai Mitchell (NYJ): 61.5 rec yds/gm, 25.4% target share (2 games) — opp D allows 138.3 WR rec yds/gm (13th)
 - Kenyon Sadiq (NYJ, TE): 47.67 rec yds/gm, 14.7% target share
-- Luther Burden III (CHI): 52.0 rec yds/gm, 25.6% target share
-- Kalif Raymond (CHI): 71.3 rec yds/gm, 23.3% target share
+- Luther Burden III (CHI): 52.0 rec yds/gm, 25.6% target share — opp D allows 115.0 WR rec yds/gm (5th)
+- Kalif Raymond (CHI): 71.3 rec yds/gm, 23.3% target share — opp D allows 115.0 WR rec yds/gm (5th)
 - Colston Loveland (CHI, TE): 11.33 rec yds/gm, 10.0% target share
 
 **Team Defense**

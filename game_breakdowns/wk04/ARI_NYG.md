@@ -140,9 +140,9 @@ A season-long Threat designation reflects statistical stability, not a guarantee
 - Cam Skattebo (NYG): 59.0 rush yds/gm, 54.9% rush share, 69.2% RZ carry share — opp D allows 127.7 rush yds/gm (26th)
 
 **Receiving**
-- Michael Wilson (ARI): 54.33 rec yds/gm, 27.4% target share
+- Michael Wilson (ARI): 54.33 rec yds/gm, 27.4% target share — opp D allows 155.7 WR rec yds/gm (19th)
 - Trey McBride (ARI, TE): 70.33 rec yds/gm, 30.1% target share
-- Malik Nabers (NYG): 32.0 rec yds/gm, 23.2% target share
+- Malik Nabers (NYG): 32.0 rec yds/gm, 23.2% target share — opp D allows 167.7 WR rec yds/gm (23rd)
 - Isaiah Likely (NYG, TE): 41.33 rec yds/gm, 28.0% target share
 
 **Team Defense**

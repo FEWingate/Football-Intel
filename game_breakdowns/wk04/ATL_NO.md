@@ -90,8 +90,8 @@ No Threat designation fired for Travis Etienne, Devaughn Vele, Juwan Johnson, Dr
 - New Orleans: 1-2 | 27.0 ppg (11th) | 27.7 ppg allowed (27th)
 
 **Passing**
-- Michael Penix Jr. (ATL, current starter): 256 yds, 18/25, 72.0% comp, 1 TD (Week 3 only start with ATL)
-- Cooper Rush (ATL, prior starter, Wks 1-2): 114.5 pass yds/gm, 56.4% comp, 2.0 int/gm
+- Michael Penix Jr. (ATL, current starter): 256 yds, 18/25, 72.0% comp, 1 TD (Week 3 only start with ATL) — opp D allows 229.7 pass yds/gm (17th)
+- Cooper Rush (ATL, prior starter, Wks 1-2): 114.5 pass yds/gm, 56.4% comp, 2.0 int/gm — opp D allows 229.7 pass yds/gm (17th)
 - Tyler Shough (NO): 305.7 pass yds/gm (2nd), 68.9% comp (9th), 2.67 TD/gm (3rd), 1.0 int/gm (26th) — opp D allows 273.3 pass yds/gm (27th)
 
 **Rushing**

@@ -159,7 +159,7 @@ Every structural indicator in this matchup — scoring, total offense, third-dow
 
 **Receiving**
 - Mack Hollins (NE, WR): 52.0 rec yds/gm, 19.5% target share — opp D allows 192.0 WR rec yds/gm (31st)
-- Romeo Doubs (NE, WR1 by depth chart): 48.33 rec yds/gm, 13.4% target share
+- Romeo Doubs (NE, WR1 by depth chart): 48.33 rec yds/gm, 13.4% target share — opp D allows 192.0 WR rec yds/gm (31st)
 - Hunter Henry (NE, TE1): 23.67 rec yds/gm, 12.2% target share
 - DJ Moore (BUF, WR1): 55.67 rec yds/gm, 22.0% target share — opp D allows 125.7 WR rec yds/gm (9th)
 - Khalil Shakir (BUF, WR2): 31.33 rec yds/gm, 18.3% target share — opp D allows 125.7 WR rec yds/gm (9th)

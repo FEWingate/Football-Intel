@@ -147,8 +147,8 @@ No other player came close. Herbert's passing categories don't threaten a Threat
 
 **Passing**
 - Justin Herbert (LAC): 209.0 pass yds/gm (20th), 59.1% comp (27th), 3 TD, 1.33 INT/gm (28th) — opp D allows 152.0 pass yds/gm (1st)
-- Drew Lock (SEA, Wks 1-2): 211.0 pass yds/gm, 72.92% comp, 4 TD, 0 INT
-- Sam Darnold (SEA, likely current starter): 196.0 pass yds/gm, 68.09% comp, 4 TD, 1.0 INT/gm
+- Drew Lock (SEA, Wks 1-2): 211.0 pass yds/gm, 72.92% comp, 4 TD, 0 INT — opp D allows 244.7 pass yds/gm (21st)
+- Sam Darnold (SEA, likely current starter): 196.0 pass yds/gm, 68.09% comp, 4 TD, 1.0 INT/gm — opp D allows 244.7 pass yds/gm (21st)
 
 **Rushing**
 - Omarion Hampton (LAC): 64.3 rush yds/gm, 16.7 car/gm, 2 rush TD, 61.7% rush share — opp D allows 87.0 rush yds/gm (6th)
@@ -156,11 +156,11 @@ No other player came close. Herbert's passing categories don't threaten a Threat
 - Jadarian Price (SEA): 39.7 rush yds/gm, 35.0% rush share, listed RB1 on depth chart — opp D allows 116.3 rush yds/gm (19th)
 
 **Receiving**
-- Ladd McConkey (LAC): 61.0 rec yds/gm, 17.4% target share
-- Tre Harris (LAC): 49.7 rec yds/gm, 18.6% target share, role expanding
+- Ladd McConkey (LAC): 61.0 rec yds/gm, 17.4% target share — opp D allows 95.0 WR rec yds/gm (1st)
+- Tre Harris (LAC): 49.7 rec yds/gm, 18.6% target share, role expanding — opp D allows 95.0 WR rec yds/gm (1st)
 - David Njoku (LAC, TE): 33.5 rec yds/gm across 2 games
-- Jaxon Smith-Njigba (SEA): 135.0 rec yds/gm (1st), 37.9% target share, 6 TD
-- Rashid Shaheed (SEA): 17.7 rec yds/gm, role eroding
+- Jaxon Smith-Njigba (SEA): 135.0 rec yds/gm (1st), 37.9% target share, 6 TD — opp D allows 159.3 WR rec yds/gm (22nd)
+- Rashid Shaheed (SEA): 17.7 rec yds/gm, role eroding — opp D allows 159.3 WR rec yds/gm (22nd)
 - AJ Barner (SEA, TE): 30.0 rec yds/gm, 86.3% snap share, rising usage
 
 **Team Defense**
