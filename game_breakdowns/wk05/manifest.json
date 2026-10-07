@@ -1,0 +1,39 @@
+{
+  "games": {
+    "TB_DAL": {
+      "away": "TB",
+      "home": "DAL",
+      "season": 2026,
+      "week": 5,
+      "generated_at": "2026-10-07T14:46:44.840247+00:00"
+    },
+    "PHI_JAX": {
+      "away": "PHI",
+      "home": "JAX",
+      "season": 2026,
+      "week": 5,
+      "generated_at": "2026-10-07T15:03:16.984874+00:00"
+    },
+    "CHI_GB": {
+      "away": "CHI",
+      "home": "GB",
+      "season": 2026,
+      "week": 5,
+      "generated_at": "2026-10-07T15:14:46.106150+00:00"
+    },
+    "CIN_MIA": {
+      "away": "CIN",
+      "home": "MIA",
+      "season": 2026,
+      "week": 5,
+      "generated_at": "2026-10-07T15:26:28.998335+00:00"
+    },
+    "LV_NE": {
+      "away": "LV",
+      "home": "NE",
+      "season": 2026,
+      "week": 5,
+      "generated_at": "2026-10-07T15:42:57.195317+00:00"
+    }
+  }
+}
