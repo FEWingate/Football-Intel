@@ -1361,7 +1361,7 @@ function renderScrambler(){
 // one of the currently-selected week's picks with a real ✓/✗/Push
 // badge — reuses pickCardHTML/parlayCard as-is (see gradeBadgeHTML)
 // rather than a second, separate rendering path.
-function seasonStatTile(label, t, showUnits){
+function seasonStatTile(label, t, showUnits, legs){
   if(!t) return '';
   const decided = t.w + t.l;
   const pct = decided ? Math.round(t.w / decided * 100) : null;
@@ -1375,6 +1375,7 @@ function seasonStatTile(label, t, showUnits){
     <div class="pc-stat-label">${esc(label)}</div>
     <div class="pc-stat-val">${t.w}-${t.l}${t.p ? '-' + t.p : ''}</div>
     ${pct !== null ? `<div class="pc-stat-pct">${pct}% hit rate</div>` : ''}
+    ${legs && (legs.w + legs.l) ? `<div class="pc-stat-pct">legs: ${legs.w}-${legs.l}${legs.p ? '-' + legs.p : ''} (${Math.round(legs.w / (legs.w + legs.l) * 100)}%)</div>` : ''}
     ${hasUnits ? `<div class="pc-stat-pct ${unitsCls}">${t.units > 0 ? '+' : ''}${t.units.toFixed(2)}u</div>` : ''}
     ${t.ungraded ? `<div class="pc-stat-ungraded">${t.ungraded} ungraded</div>` : ''}
   </div>`;
@@ -1389,20 +1390,19 @@ function renderResults(){
   }
   const season = SEASON_RECORD.season_totals || {};
   const sectionLabels = {
-    overall: 'Overall', unique: 'Unique Picks', best_10: 'Best 10', prop_breakdown: 'Prop Breakdown',
-    favorite_ou: 'Favorite O/U', parlays: 'Parlays', td_parlays: 'Anytime TD Parlays',
-    spread_parlays: 'Spread Parlays',
+    overall: 'Overall (unique picks)', best_10: 'Best 10', prop_breakdown: 'Prop Breakdown',
+    favorite_ou: 'Favorite O/U', parlays: 'Parlays (whole)', td_parlays: 'Anytime TD Parlays (whole)',
+    spread_parlays: 'Spread Parlays (whole)',
   };
   let h = `<div class="lineup-note" style="margin-bottom:14px">
-    Season-to-date record across every real, graded Coeus pick. <b>Overall</b> counts a pick
-    once per place it appears (a pick that's in the Prop Breakdown, Favorite O/U and a parlay
-    is three entries), so it overstates how many separate picks there were.
-    <b>Unique Picks</b> counts each real pick once. Units are flat 1-unit stakes at each pick's
-    real price (a parlay uses its real combined price) — at typical -113 odds, break-even is
-    about 53%. A parlay counts once as a whole combination in the Parlays/Anytime TD/Spread tiles.
+    Season-to-date record of Coeus's real, graded picks. <b>Overall</b> counts each separate pick
+    once, however many places it appears. Units are flat 1-unit stakes at each pick's real price
+    (a parlay uses its real combined price); at typical -113 odds break-even is about 53%.
+    Parlay tiles show whole parlays (every leg must hit) with the hit rate of the distinct
+    <b>legs</b> inside them underneath.
   </div>`;
   h += `<div class="pc-stat-row">${Object.keys(sectionLabels)
-    .map(k => seasonStatTile(sectionLabels[k], season[k], k !== 'overall')).join('')}</div>`;
+    .map(k => seasonStatTile(sectionLabels[k], season[k], true, season[k + '_legs'])).join('')}</div>`;
 
   if(!REPORT_GRADED){
     h += `<div class="empty" style="margin-top:18px">This week's report hasn't been graded yet.<br>

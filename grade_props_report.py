@@ -378,6 +378,21 @@ def unique_tally(graded_reports):
     return t
 
 
+def legs_tally(graded_reports, section):
+    """Unique legs inside one parlay section (e.g. spread_parlays): each
+    distinct pick counted once however many parlays it sits in."""
+    seen = {}
+    for graded in graded_reports:
+        for parlay in (graded.get(section) or {}).values():
+            for leg in (parlay or {}).get("legs") or []:
+                if "grade" in leg:
+                    seen.setdefault(unique_pick_key(leg), leg)
+    t = blank_tally()
+    for p in seen.values():
+        tally(t, p["grade"], pick_units(p["grade"], p.get("price")))
+    return t
+
+
 def merge_tallies(a, b):
     out = {}
     for key in set(a) | set(b):
@@ -440,18 +455,31 @@ def main():
 
     season_record = load_json(SEASON_RECORD_PATH) or {"weeks": {}}
     week_totals["unique"] = unique_tally(graded_reports)
+    # v4 (2026-10-07): the headline "Overall" is the real-pick record (each
+    # pick once), not a count of every place a pick appears. The old
+    # multi-count figure is kept as "entries" for reference only.
+    week_totals["entries"] = week_totals["overall"]
+    week_totals["overall"] = dict(week_totals["unique"])
+    for sec in ("parlays", "td_parlays", "spread_parlays"):
+        week_totals[sec + "_legs"] = legs_tally(graded_reports, sec)
     season_record["weeks"][week_folder] = week_totals
     season_record["season_totals"] = {s: blank_tally() for s in SECTIONS}
     season_record["season_totals"]["overall"] = blank_tally()
     season_record["season_totals"]["unique"] = blank_tally()
+    season_record["season_totals"]["entries"] = blank_tally()
+    for sec in ("parlays", "td_parlays", "spread_parlays"):
+        season_record["season_totals"][sec + "_legs"] = blank_tally()
     for wk_totals in season_record["weeks"].values():
         season_record["season_totals"] = merge_tallies(season_record["season_totals"], wk_totals)
     season_record["generated_at"] = datetime.now(timezone.utc).isoformat()
     write_json_atomic(season_record, SEASON_RECORD_PATH)
 
     overall = week_totals["overall"]
-    print(f"\nWeek {args.week} overall: {overall['w']}-{overall['l']}-{overall['p']} "
+    print(f"\nWeek {args.week} overall (unique picks): {overall['w']}-{overall['l']}-{overall['p']} "
           f"({overall['ungraded']} ungraded)")
+    for sec in ("parlays", "td_parlays", "spread_parlays"):
+        lg = week_totals[sec + "_legs"]; wp = week_totals[sec]
+        print(f"  {sec}: whole parlays {wp['w']}-{wp['l']}, unique legs {lg['w']}-{lg['l']}-{lg['p']}")
     uq = week_totals["unique"]
     print(f"Week {args.week} UNIQUE picks: {uq['w']}-{uq['l']}-{uq['p']}  {uq['units']:+.2f}u")
     season = season_record["season_totals"]["overall"]
