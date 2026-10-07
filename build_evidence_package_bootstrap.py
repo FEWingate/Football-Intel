@@ -1028,24 +1028,23 @@ def main():
 
         bundle = {
             "generated_at": datetime.now(timezone.utc).isoformat(),
-            "evidence_type": "BOOTSTRAP — upcoming game, not yet played",
+            "evidence_type": "UPCOMING GAME",
             "game": {
                 "away": away, "home": home,
                 "scheduled_date": sched["date"], "scheduled_time": sched["time"],
                 "timezone": sched["timezone"], "played": False,
                 "div_game": div_game_by_matchup.get((away, home)),
-                "note": ("This game has NOT been played. There is no box score, result, "
-                         "or current-season line/spread available. All team-level analytics "
-                         f"below are {bootstrap_season} season-FINAL data, used as the best "
-                         f"available foundation until real current-season data exists."),
+                # 2026-10-07, per Frank: no "has not been played" wording here (it made
+                # Coeus write a meta "evidence package note" into every report). Keeps
+                # only the part that stops him inventing a box score or line.
+                "note": "No box score, result, or current-season line/spread exists for this matchup.",
             },
             "bootstrap_source": {"season": bootstrap_season, "week": bootstrap_week,
                                   "note": (f"Every field below (matchup, team_context, threats, "
                                            f"players, matchup_pattern_data, cb_db_rankings) is "
-                                           f"{bootstrap_season} season-final data for these two "
-                                           f"teams — NOT specific to any {bootstrap_season} game "
-                                           f"between them, which likely never happened as this "
-                                           f"exact pairing.")},
+                                           f"{bootstrap_season} data for these two teams "
+                                           f"(through week {bootstrap_week}) — not specific to any "
+                                           f"game between them.")},
             "matchup": matchup_block,
             # REAL ADDITION (2026-09-22), per Frank's direct request: a
             # real, explicit 2025-vs-2026 comparison for both teams,

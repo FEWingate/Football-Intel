@@ -78,7 +78,7 @@ MARKET_STAT_COL = {
 ALT_MARKET_RE = re.compile(r"^player_(.+)_milestones_(\d+)_or_more$")
 
 # Which report sections hold picks/legs, and how to walk each one.
-SECTIONS = ["prop_breakdown", "favorite_ou", "parlays", "td_parlays", "spread_parlays"]
+SECTIONS = ["best_10", "prop_breakdown", "favorite_ou", "parlays", "td_parlays", "spread_parlays"]
 
 
 def load_json(path):
@@ -239,7 +239,7 @@ def grade_parlay_sizes(parlay_by_size, player_stats, scores):
     return out
 
 
-def tally(counter, grade):
+def tally(counter, grade, units=None):
     if grade == "W":
         counter["w"] += 1
     elif grade == "L":
@@ -248,10 +248,25 @@ def tally(counter, grade):
         counter["p"] += 1
     else:
         counter["ungraded"] += 1
+    if units is not None:
+        counter["units"] = round(counter.get("units", 0.0) + units, 2)
 
 
 def blank_tally():
-    return {"w": 0, "l": 0, "p": 0, "ungraded": 0}
+    return {"w": 0, "l": 0, "p": 0, "ungraded": 0, "units": 0.0}
+
+
+def pick_units(grade, price):
+    """Flat 1-unit stake at the pick's own stored decimal price: a win
+    returns price-1, a loss -1, a push 0. None when ungraded or when no
+    real price is on file — never guessed."""
+    if grade == "L":
+        return -1.0
+    if grade == "P":
+        return 0.0
+    if grade == "W" and isinstance(price, (int, float)):
+        return price - 1.0
+    return None
 
 
 def grade_report(report, player_stats, scores):
@@ -269,7 +284,7 @@ def grade_report(report, player_stats, scores):
         for game in (pb.get("per_game") or []):
             picks = grade_pick_list(game.get("picks") or [], player_stats, scores)
             for p in picks:
-                tally(tallies["prop_breakdown"], p["grade"])
+                tally(tallies["prop_breakdown"], p["grade"], pick_units(p["grade"], p.get("price")))
                 tally(tallies["overall"], p["grade"])
             new_per_game.append({**game, "picks": picks})
         new_pb["per_game"] = new_per_game
@@ -281,17 +296,25 @@ def grade_report(report, player_stats, scores):
             if reason:
                 entry["ungraded_reason"] = reason
             new_per_position[pos] = entry
-            tally(tallies["prop_breakdown"], grade)
+            tally(tallies["prop_breakdown"], grade, pick_units(grade, pick.get("price")))
             tally(tallies["overall"], grade)
         new_pb["per_position"] = new_per_position
         graded["prop_breakdown"] = new_pb
+
+    b10 = report.get("best_10")
+    if b10 and b10.get("picks"):
+        b10_picks = grade_pick_list(b10["picks"], player_stats, scores)
+        for p in b10_picks:
+            tally(tallies["best_10"], p["grade"], pick_units(p["grade"], p.get("price")))
+            tally(tallies["overall"], p["grade"])
+        graded["best_10"] = {**b10, "picks": b10_picks}
 
     fou = report.get("favorite_ou")
     if fou:
         overs = grade_pick_list(fou.get("overs") or [], player_stats, scores)
         unders = grade_pick_list(fou.get("unders") or [], player_stats, scores)
         for p in overs + unders:
-            tally(tallies["favorite_ou"], p["grade"])
+            tally(tallies["favorite_ou"], p["grade"], pick_units(p["grade"], p.get("price")))
             tally(tallies["overall"], p["grade"])
         graded["favorite_ou"] = {**fou, "overs": overs, "unders": unders}
 
@@ -303,11 +326,56 @@ def grade_report(report, player_stats, scores):
                 if p and p.get("legs"):
                     for leg in p["legs"]:
                         tally(tallies["overall"], leg["grade"])
-                    tally(tallies[section], p.get("overall_grade"))
+                    # A whole parlay's own units: a win pays its real
+                    # combined decimal price minus the stake, a loss is -1.
+                    combined = (p.get("result") or {}).get("combined_decimal")
+                    tally(tallies[section], p.get("overall_grade"),
+                          pick_units(p.get("overall_grade"), combined))
             graded[section] = graded_block
 
     graded["graded_at"] = datetime.now(timezone.utc).isoformat()
     return graded, tallies
+
+
+def iter_graded_picks(graded):
+    """Every individual graded pick/leg in one graded report, regardless
+    of which section it sits in."""
+    pb = graded.get("prop_breakdown") or {}
+    for game in pb.get("per_game") or []:
+        for p in game.get("picks") or []:
+            yield p
+    for p in (pb.get("per_position") or {}).values():
+        yield p
+    for p in (graded.get("best_10") or {}).get("picks") or []:
+        yield p
+    fou = graded.get("favorite_ou") or {}
+    for p in (fou.get("overs") or []) + (fou.get("unders") or []):
+        yield p
+    for section in ("parlays", "td_parlays", "spread_parlays"):
+        for parlay in (graded.get(section) or {}).values():
+            for leg in (parlay or {}).get("legs") or []:
+                yield leg
+
+
+def unique_pick_key(p):
+    return (p.get("player"), p.get("market_key"), p.get("side"),
+            p.get("line", p.get("threshold", p.get("point"))))
+
+
+def unique_tally(graded_reports):
+    """W/L/P and units over UNIQUE real picks — the same pick appearing in
+    several sections (Prop Breakdown, Favorite O/U, a parlay leg...) is one
+    real result, counted once. Units are flat 1-unit stakes at each pick's
+    own stored price."""
+    seen = {}
+    for graded in graded_reports:
+        for p in iter_graded_picks(graded):
+            if "grade" in p:
+                seen.setdefault(unique_pick_key(p), p)
+    t = blank_tally()
+    for p in seen.values():
+        tally(t, p["grade"], pick_units(p["grade"], p.get("price")))
+    return t
 
 
 def merge_tallies(a, b):
@@ -315,6 +383,7 @@ def merge_tallies(a, b):
     for key in set(a) | set(b):
         ta, tb = a.get(key, blank_tally()), b.get(key, blank_tally())
         out[key] = {k: ta.get(k, 0) + tb.get(k, 0) for k in ("w", "l", "p", "ungraded")}
+        out[key]["units"] = round(ta.get("units", 0.0) + tb.get("units", 0.0), 2)
     return out
 
 
@@ -333,6 +402,11 @@ def main():
     report_paths = sorted(
         p for p in glob.glob(f"{report_dir}/*.json")
         if not p.endswith("_prompt.json") and not p.endswith("manifest.json")
+        # REAL BUG FIX (2026-10-07): this glob also matched the *_graded.json files
+        # a previous run wrote into the same folder, so every rerun graded its own
+        # earlier output (creating *_graded_graded.json) and merged those picks into
+        # the week's tallies again — inflating the Results tab with each rerun.
+        and not p.endswith("_graded.json")
     )
     if not report_paths:
         sys.exit(f"FATAL: no real report files in {report_dir}.")
@@ -352,9 +426,11 @@ def main():
     week_totals = {s: blank_tally() for s in SECTIONS}
     week_totals["overall"] = blank_tally()
 
+    graded_reports = []
     for path in report_paths:
         report = load_json(path)
         graded, tallies = grade_report(report, player_stats, scores)
+        graded_reports.append(graded)
         week_totals = merge_tallies(week_totals, tallies)
         out_path = path[:-len(".json")] + "_graded.json"
         write_json_atomic(graded, out_path)
@@ -363,9 +439,11 @@ def main():
               f"({overall['ungraded']} ungraded) -> wrote {os.path.basename(out_path)}")
 
     season_record = load_json(SEASON_RECORD_PATH) or {"weeks": {}}
+    week_totals["unique"] = unique_tally(graded_reports)
     season_record["weeks"][week_folder] = week_totals
     season_record["season_totals"] = {s: blank_tally() for s in SECTIONS}
     season_record["season_totals"]["overall"] = blank_tally()
+    season_record["season_totals"]["unique"] = blank_tally()
     for wk_totals in season_record["weeks"].values():
         season_record["season_totals"] = merge_tallies(season_record["season_totals"], wk_totals)
     season_record["generated_at"] = datetime.now(timezone.utc).isoformat()
@@ -374,6 +452,8 @@ def main():
     overall = week_totals["overall"]
     print(f"\nWeek {args.week} overall: {overall['w']}-{overall['l']}-{overall['p']} "
           f"({overall['ungraded']} ungraded)")
+    uq = week_totals["unique"]
+    print(f"Week {args.week} UNIQUE picks: {uq['w']}-{uq['l']}-{uq['p']}  {uq['units']:+.2f}u")
     season = season_record["season_totals"]["overall"]
     print(f"Season to date: {season['w']}-{season['l']}-{season['p']} "
           f"({season['ungraded']} ungraded) — wrote {SEASON_RECORD_PATH}")

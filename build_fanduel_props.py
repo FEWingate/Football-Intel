@@ -101,6 +101,21 @@ def current_week_game_codes():
     /odds endpoint happens to return (confirmed real gap: that endpoint
     returned 27 games spanning two full weeks, not just this one)."""
     pairs = set()
+    # REAL FIX (2026-10-07), per Frank's question: evidence_bootstrap/ keeps every
+    # earlier week's {AWAY}_{HOME}.json files, so globbing the folder reported
+    # weeks-old games as "this week's slate" (79 "games" when the week has 15).
+    # manifest.json is rewritten on every bootstrap run and lists only the games
+    # of the week it was last built for, so it is the real source of truth; the
+    # old glob stays only as a fallback if the manifest is missing or unreadable.
+    try:
+        with open("evidence_bootstrap/manifest.json", encoding="utf-8") as mf:
+            for g in (json.load(mf).get("games") or []):
+                if g.get("away") and g.get("home"):
+                    pairs.add((g["away"], g["home"]))
+    except (OSError, ValueError):
+        pairs = set()
+    if pairs:
+        return pairs
     for path in glob.glob("evidence_bootstrap/*.json"):
         stem = os.path.splitext(os.path.basename(path))[0]
         if stem == "manifest":
@@ -161,6 +176,32 @@ ANYTIME_TD_KEY = "player_anytime_td"
 PROPS_ROW_LIMIT = 5000
 
 
+# REAL FIX (2026-10-07): confirmed with a live probe that parlay-api.com now
+# lists FanDuel's yardage props under SHORT key names (player_pass_yds,
+# player_rush_yds, player_rec_yds) and no longer lists the long names
+# (player_passing_yards etc.) for FanDuel at all — so discovery found
+# "nothing" even though /props returns the full, real FanDuel rows under the
+# short names (118 rows across 10 events in the probe). Everything downstream
+# (the report, Prop Center, the validators) keys off the CANONICAL long names
+# via the stat family, so only discovery needs to learn the aliases.
+KEY_ALIASES = {
+    "player_pass_yds": "passing_yards",
+    "player_rush_yds": "rushing_yards",
+    "player_rec_yds": "receiving_yards",
+}
+
+
+# Confirmed from a live /props sample (2026-10-07): the provider now sends alt
+# ladders as ONE MARKET KEY PER PLAYER (e.g. player_ceedee_lamb___alt_receiving_yds),
+# one row per rung, with the rung in the player field ("CeeDee Lamb 100+ Yards"),
+# line 0.0, over_price only (no under). Mapped back onto the same {threshold,
+# over_price, under_price} alt shape the rest of the project already uses.
+ALT_KEY_RE = re.compile(r"___alt_(passing|rushing|receiving)_yds$")
+ALT_ROW_RE = re.compile(r"^(?P<name>.+?)\s+(?P<threshold>\d+)\+\s+Yards$")
+ALT_STAT = {"passing": "passing_yards", "rushing": "rushing_yards", "receiving": "receiving_yards"}
+ALT_FETCH_CHUNK = 20
+
+
 def discover_fanduel_markets():
     """Real, current FanDuel market keys per stat family, discovered fresh
     via the free /props/markets endpoint (0 credits) — confirmed real
@@ -172,6 +213,10 @@ def discover_fanduel_markets():
         if not isinstance(m, dict) or "fanduel" not in (m.get("bookmakers") or []):
             continue
         key = m.get("key") or ""
+        if key in KEY_ALIASES and not result[KEY_ALIASES[key]]["plain"]:
+            result[KEY_ALIASES[key]]["plain"] = key
+        if "___alt_" in key:
+            result.setdefault("_per_player_alts", []).append(key)
         for stat in STAT_FAMILIES:
             if key == f"player_{stat}":
                 result[stat]["plain"] = key
@@ -306,6 +351,19 @@ def reshape_props_rows(rows, market_to_stat_kind):
         market_key = row.get("market_key")
         if not eid or not name or not market_key or name == "Defense":
             continue
+        alt_match = ALT_KEY_RE.search(market_key)
+        if alt_match:
+            row_match = ALT_ROW_RE.match(name)
+            if not row_match:
+                continue
+            stat = ALT_STAT[alt_match.group(1)]
+            name = row_match.group("name")
+            players.setdefault(eid, {s: {} for s in STAT_FAMILIES})
+            bucket = players[eid][stat].setdefault(name, {"line": None, "alts": []})
+            bucket["alts"].append({"threshold": int(row_match.group("threshold")),
+                                    "over_price": row.get("over_price"),
+                                    "under_price": row.get("under_price")})
+            continue
         classification = market_to_stat_kind.get(market_key)
         if classification is None:
             continue
@@ -438,6 +496,22 @@ def write_json_atomic(payload, path):
 
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--games", default=None,
+                    help="Only write these games, e.g. 'TB-DAL' or 'TB-DAL,PHI-JAX' (AWAY-HOME). "
+                         "The provider calls are the same either way; this just narrows what is "
+                         "saved. NOTE: it overwrites fanduel_props/latest.json, so rerun without "
+                         "it to get the full week back.")
+    args = ap.parse_args()
+    only_games = None
+    if args.games:
+        only_games = set()
+        for pair in args.games.split(","):
+            if "-" not in pair:
+                sys.exit(f"FATAL: '{pair}' isn't an AWAY-HOME pair like 'TB-DAL'.")
+            a, h = pair.strip().upper().split("-", 1)
+            only_games.add((a, h))
     generated_at = datetime.now(timezone.utc).isoformat()
     print(f"Building FanDuel game lines + player props - {generated_at}")
 
@@ -471,6 +545,7 @@ def main():
     print("Discovering real, current FanDuel prop market keys (free)...")
     market_map = discover_fanduel_markets()
 
+    per_player_alts = market_map.pop("_per_player_alts", [])
     market_to_stat_kind = {}
     for stat, info in market_map.items():
         if info["plain"]:
@@ -490,6 +565,15 @@ def main():
         print(f"Fetching {stat} props ({len(markets_for_stat)} real market key(s), confirmed FanDuel)...")
         all_rows.extend(fetch_props(markets_for_stat))
 
+    alt_keys = sorted(k for k in per_player_alts if ALT_KEY_RE.search(k))
+    if alt_keys:
+        print(f"Fetching per-player alt-line ladders ({len(alt_keys)} real market key(s), "
+              f"{(len(alt_keys) + ALT_FETCH_CHUNK - 1) // ALT_FETCH_CHUNK} call(s))...")
+        for i in range(0, len(alt_keys), ALT_FETCH_CHUNK):
+            all_rows.extend(fetch_props(alt_keys[i:i + ALT_FETCH_CHUNK]))
+    else:
+        print("  NOTE: no per-player alt-line market keys listed right now — no alt ladders this run.")
+
     print("Fetching anytime TD props...")
     all_rows.extend(fetch_props([ANYTIME_TD_KEY]))
 
@@ -505,6 +589,8 @@ def main():
         if (away_code, home_code) not in week_codes:
             excluded += 1
             continue
+        if only_games is not None and (away_code, home_code) not in only_games:
+            continue
         games.append({
             "canonical_event_id": eid, "away_team": e["away_team"], "home_team": e["home_team"],
             "away_code": away_code, "home_code": home_code,
@@ -516,7 +602,12 @@ def main():
     if excluded:
         print(f"  Excluded {excluded} real event(s) outside this week's slate (confirmed against "
               f"evidence_bootstrap/*.json) — a later week's lines had already opened for betting.")
-    if len(games) != len(week_codes):
+    if only_games is not None:
+        got = {(g["away_code"], g["home_code"]) for g in games}
+        for pair in sorted(only_games - got):
+            print(f"  WARNING: --games asked for {pair[0]}@{pair[1]} but it has no live line "
+                  f"or isn't on this week's slate.")
+    if only_games is None and len(games) != len(week_codes):
         missing = week_codes - {(TEAM_NAME_TO_CODE.get(g["away_team"]), TEAM_NAME_TO_CODE.get(g["home_team"]))
                                  for g in games}
         print(f"  {len(week_codes) - len(games)} of this week's {len(week_codes)} real game(s) have no live "

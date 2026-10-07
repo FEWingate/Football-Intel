@@ -166,6 +166,9 @@
   color:var(--text-mid);margin-bottom:4px}
 .pc-stat-val{font-size:20px;font-weight:700}
 .pc-stat-pct{font-size:12px;color:var(--text-mid)}
+.pc-pick-proj{font-size:12.5px;font-weight:600;color:var(--primary);margin-top:6px}
+.pc-units-pos{color:#2e9e5b;font-weight:600}
+.pc-units-neg{color:#d64545;font-weight:600}
 .pc-stat-ungraded{font-size:10.5px;color:var(--text-mid);margin-top:2px}
 .pc-pick-reason{font-size:14px;color:var(--text-dim);margin-top:6px;line-height:1.5}
 </style>
@@ -904,6 +907,27 @@ function gradeBadgeHTML(grade){
   return `<span class="grade-badge pending">Pending</span>`;
 }
 
+const RETIRED_NOTE = label => `<div class="empty">${esc(label)} are retired as a separate product for new weeks.
+  Anytime TD and spread plays can now appear in the weekly Best 10 and in the 2/3/4-leg parlays built from it
+  (see the Parlays tab). Earlier weeks' ${esc(label.toLowerCase())} are still graded in the Results tab.</div>`;
+
+function projectionLineHTML(pick){
+  if(typeof pick.projection !== 'number') return '';
+  let txt;
+  if(pick.market_key === 'player_anytime_td'){
+    const p = pick.projection > 1 ? pick.projection : pick.projection * 100;
+    txt = `Coeus projects ${Math.round(p)}% to score`;
+  } else if(pick.market_key === 'spreads'){
+    txt = `Coeus projects a ${pick.projection > 0 ? '+' : ''}${pick.projection} margin`;
+  } else {
+    const edge = typeof pick.projection_edge === 'number'
+      ? ` (${pick.projection_edge > 0 ? '+' : ''}${pick.projection_edge} vs line)` : '';
+    txt = `Coeus projects ${pick.projection}${edge}`;
+  }
+  const n = Number.isInteger(pick.games_2026) ? ` · ${pick.games_2026} games in 2026` : '';
+  return `<div class="pc-pick-proj">${esc(txt + n)}</div>`;
+}
+
 function pickCardHTML(pick, badge){
   const game = gameForEventId(pick.canonical_event_id);
   const gameLabel = game ? `${game.away_code} @ ${game.home_code}` : '';
@@ -914,6 +938,7 @@ function pickCardHTML(pick, badge){
     <div class="pc-pick-player">${esc(pick.player)}</div>
     <div class="pc-pick-market">${esc(marketKeyLabel(pick.market_key))}${gameLabel ? ' · ' + esc(gameLabel) : ''}</div>
     <div class="pc-pick-price-row">${sideLabel}<span class="pc-pick-price">${priceLine(pick.price)}</span></div>
+    ${projectionLineHTML(pick)}
     ${pick.reason ? `<div class="pc-pick-reason">${esc(pick.reason)}</div>` : ''}
   </div>`;
 }
@@ -1010,8 +1035,9 @@ function renderAnytimeTD(){
     return;
   }
   const isWholeWeek = src === WHOLE_WEEK_REPORT;
-  const sizes = ['3','4','5','6','7'];
-  const cards = sizes.map(s => src.td_parlays[s] ? parlayCard(s, src.td_parlays[s]) : '').join('');
+  const sizes = ['2','3','4','5','6','7'];
+  let cards = sizes.map(s => src.td_parlays[s] ? parlayCard(s, src.td_parlays[s]) : '').join('');
+  if(!cards) cards = RETIRED_NOTE('Anytime TD parlays');
 
   $('body').innerHTML = `
     <div class="lineup-note" style="margin-bottom:14px">
@@ -1045,8 +1071,9 @@ function renderSpreads(){
     return;
   }
   const isWholeWeek = src === WHOLE_WEEK_REPORT;
-  const sizes = ['3','4','5','6','7'];
-  const cards = sizes.map(s => src.spread_parlays[s] ? parlayCard(s, src.spread_parlays[s]) : '').join('');
+  const sizes = ['2','3','4','5','6','7'];
+  let cards = sizes.map(s => src.spread_parlays[s] ? parlayCard(s, src.spread_parlays[s]) : '').join('');
+  if(!cards) cards = RETIRED_NOTE('Spread parlays');
 
   $('body').innerHTML = `
     <div class="lineup-note" style="margin-bottom:14px">
@@ -1154,7 +1181,7 @@ function renderParlays(){
     return;
   }
   const isWholeWeek = src === WHOLE_WEEK_REPORT;
-  const sizes = ['3','4','5','6','7'];
+  const sizes = ['2','3','4','5','6','7'];
   const cards = sizes.map(s => src.parlays[s] ? parlayCard(s, src.parlays[s]) : '').join('');
   const gameCount = isWholeWeek ? (src.batches_used ? src.batches_used.length : '') : REPORT.games_included.length;
 
@@ -1167,10 +1194,22 @@ function renderParlays(){
       $${src.stake_used_for_payout_examples.toFixed(0)} stake · every parlay below has been
       independently re-checked against real FanDuel prices, not just Coeus's stated math.
     </div>
+    ${best10HTML(src)}
+    <div class="subsect" style="margin-top:14px">Parlays built from the Best 10</div>
     <div class="parlay-grid">${cards}</div>
     ${reportToggleHTML()}
   `;
   wireReportToggle();
+}
+
+function best10HTML(src){
+  const picks = src && src.best_10 && src.best_10.picks;
+  if(!picks || !picks.length) return '';
+  const sorted = picks.slice().sort((a,b) => (a.rank || 99) - (b.rank || 99));
+  const errs = (src.best_10.errors || []).map(e => `<div class="parlay-error">✗ ${esc(e)}</div>`).join('');
+  return `<div class="subsect">Coeus's Best 10 This Week</div>
+    <div class="pc-pick-grid">${sorted.map((p,i) => pickCardHTML(p, '#' + (p.rank || i + 1))).join('')}</div>
+    ${errs}`;
 }
 
 /* ── PARLAY SCRAMBLER (2026-10-02), per Frank's direct request: pools
@@ -1214,7 +1253,7 @@ function scramblerPool(){
     (REPORT.favorite_ou.unders || []).forEach(addLeg);
   }
 
-  const sizes = ['3','4','5','6','7'];
+  const sizes = ['2','3','4','5','6','7'];
   const addFromParlaySrc = (src, key) => {
     if(!src || !src[key]) return;
     sizes.forEach(s => {
@@ -1322,14 +1361,21 @@ function renderScrambler(){
 // one of the currently-selected week's picks with a real ✓/✗/Push
 // badge — reuses pickCardHTML/parlayCard as-is (see gradeBadgeHTML)
 // rather than a second, separate rendering path.
-function seasonStatTile(label, t){
+function seasonStatTile(label, t, showUnits){
   if(!t) return '';
   const decided = t.w + t.l;
   const pct = decided ? Math.round(t.w / decided * 100) : null;
+  // Units are flat 1-unit stakes at each pick's own real price (a whole
+  // parlay's units use its real combined price). Hidden for Overall, which
+  // counts every parlay leg alongside the single picks, so a units total
+  // there would double-count. Hidden too when an older record has none.
+  const hasUnits = showUnits && typeof t.units === 'number' && decided > 0;
+  const unitsCls = hasUnits ? (t.units > 0 ? 'pc-units-pos' : t.units < 0 ? 'pc-units-neg' : '') : '';
   return `<div class="pc-stat-tile">
     <div class="pc-stat-label">${esc(label)}</div>
     <div class="pc-stat-val">${t.w}-${t.l}${t.p ? '-' + t.p : ''}</div>
     ${pct !== null ? `<div class="pc-stat-pct">${pct}% hit rate</div>` : ''}
+    ${hasUnits ? `<div class="pc-stat-pct ${unitsCls}">${t.units > 0 ? '+' : ''}${t.units.toFixed(2)}u</div>` : ''}
     ${t.ungraded ? `<div class="pc-stat-ungraded">${t.ungraded} ungraded</div>` : ''}
   </div>`;
 }
@@ -1343,16 +1389,20 @@ function renderResults(){
   }
   const season = SEASON_RECORD.season_totals || {};
   const sectionLabels = {
-    overall: 'Overall', prop_breakdown: 'Prop Breakdown', favorite_ou: 'Favorite O/U',
-    parlays: 'Parlays', td_parlays: 'Anytime TD Parlays', spread_parlays: 'Spread Parlays',
+    overall: 'Overall', unique: 'Unique Picks', best_10: 'Best 10', prop_breakdown: 'Prop Breakdown',
+    favorite_ou: 'Favorite O/U', parlays: 'Parlays', td_parlays: 'Anytime TD Parlays',
+    spread_parlays: 'Spread Parlays',
   };
   let h = `<div class="lineup-note" style="margin-bottom:14px">
-    Season-to-date record across every real, graded Coeus pick. A parlay counts once as a
-    whole combination (Parlays/Anytime TD/Spread tiles); its individual legs also count
-    toward the Overall tile, same as every other individual pick.
+    Season-to-date record across every real, graded Coeus pick. <b>Overall</b> counts a pick
+    once per place it appears (a pick that's in the Prop Breakdown, Favorite O/U and a parlay
+    is three entries), so it overstates how many separate picks there were.
+    <b>Unique Picks</b> counts each real pick once. Units are flat 1-unit stakes at each pick's
+    real price (a parlay uses its real combined price) — at typical -113 odds, break-even is
+    about 53%. A parlay counts once as a whole combination in the Parlays/Anytime TD/Spread tiles.
   </div>`;
   h += `<div class="pc-stat-row">${Object.keys(sectionLabels)
-    .map(k => seasonStatTile(sectionLabels[k], season[k])).join('')}</div>`;
+    .map(k => seasonStatTile(sectionLabels[k], season[k], k !== 'overall')).join('')}</div>`;
 
   if(!REPORT_GRADED){
     h += `<div class="empty" style="margin-top:18px">This week's report hasn't been graded yet.<br>
@@ -1381,6 +1431,13 @@ function renderResults(){
     }
   }
 
+  const b10 = REPORT_GRADED.best_10;
+  if(b10 && (b10.picks || []).length){
+    h += `<div class="subsect" style="margin-top:14px">Best 10</div>
+      <div class="pc-pick-grid">${b10.picks.slice().sort((a,b) => (a.rank||99)-(b.rank||99))
+        .map((p,i) => pickCardHTML(p, '#' + (p.rank || i + 1))).join('')}</div>`;
+  }
+
   const fou = REPORT_GRADED.favorite_ou;
   if(fou){
     h += `<div class="subsect" style="margin-top:14px">Favorite Overs</div>
@@ -1391,7 +1448,7 @@ function renderResults(){
         '<div class="empty">None</div>'}</div>`;
   }
 
-  const sizes = ['3', '4', '5', '6', '7'];
+  const sizes = ['2', '3', '4', '5', '6', '7'];
   const parlaySection = (title, block) => {
     if(!block) return '';
     const cards = sizes.map(s => block[s] ? parlayCard(s, block[s]) : '').join('');
@@ -1481,7 +1538,25 @@ function renderPropBuilder(){
   });
 }
 
+// 2026-10-07: Anytime TD and Spreads are retired as separate products. Their
+// tabs only show for a week that actually has that data (e.g. Week 4's old
+// reports); new weeks hide them. TD and spread plays live in the Best 10 now.
+function syncLegacyTabs(){
+  const has = key => [REPORT, WHOLE_WEEK_REPORT].some(r => r && r[key] && Object.keys(r[key]).length);
+  const show = { anytimetd: has('td_parlays'), spreads: has('spread_parlays') };
+  Object.keys(show).forEach(k => {
+    const b = $('pcTopNav').querySelector(`button[data-s="${k}"]`);
+    if(b) b.style.display = show[k] ? '' : 'none';
+  });
+  if(activeSection in show && !show[activeSection]){
+    activeSection = 'lines';
+    $('pcTopNav').querySelectorAll('button').forEach(x =>
+      x.setAttribute('aria-selected', String(x.dataset.s === 'lines')));
+  }
+}
+
 function render(){
+  syncLegacyTabs();
   if(activeSection === 'lines') return renderGameLines();
   if(activeSection === 'props') return renderPlayerProps();
   if(activeSection === 'builder') return renderPropBuilder();

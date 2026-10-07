@@ -1,1 +1,1 @@
-{"season": 2026, "week": 4, "players": []}
+{"season": 2026, "week": 4, "players": [{"player_id": 3122840, "name": "Deshaun Watson", "team": "CLE", "qbr_total": 53.0, "pts_added": 0.2, "epa_total": 4.6, "pass_epa": 5.4, "run_epa": -0.9, "rank": 1.0, "qualified": true}, {"player_id": 8439, "name": "Aaron Rodgers", "team": "PIT", "qbr_total": 49.0, "pts_added": -2.5, "epa_total": 2.8, "pass_epa": 1.1, "run_epa": 0.2, "rank": 2.0, "qualified": true}]}

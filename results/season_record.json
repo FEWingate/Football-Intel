@@ -1,0 +1,121 @@
+{
+  "weeks": {
+    "wk04": {
+      "best_10": {
+        "w": 0,
+        "l": 0,
+        "p": 0,
+        "ungraded": 0,
+        "units": 0.0
+      },
+      "overall": {
+        "w": 186,
+        "l": 188,
+        "p": 1,
+        "ungraded": 0,
+        "units": 0.0
+      },
+      "spread_parlays": {
+        "w": 0,
+        "l": 14,
+        "p": 0,
+        "ungraded": 0,
+        "units": -14.0
+      },
+      "favorite_ou": {
+        "w": 14,
+        "l": 17,
+        "p": 0,
+        "ungraded": 0,
+        "units": -4.61
+      },
+      "parlays": {
+        "w": 4,
+        "l": 21,
+        "p": 0,
+        "ungraded": 0,
+        "units": 3.92
+      },
+      "prop_breakdown": {
+        "w": 27,
+        "l": 34,
+        "p": 0,
+        "ungraded": 0,
+        "units": -10.13
+      },
+      "td_parlays": {
+        "w": 3,
+        "l": 17,
+        "p": 0,
+        "ungraded": 0,
+        "units": -9.2
+      },
+      "unique": {
+        "w": 41,
+        "l": 50,
+        "p": 1,
+        "ungraded": 0,
+        "units": -12.41
+      }
+    }
+  },
+  "season_totals": {
+    "best_10": {
+      "w": 0,
+      "l": 0,
+      "p": 0,
+      "ungraded": 0,
+      "units": 0.0
+    },
+    "unique": {
+      "w": 41,
+      "l": 50,
+      "p": 1,
+      "ungraded": 0,
+      "units": -12.41
+    },
+    "overall": {
+      "w": 186,
+      "l": 188,
+      "p": 1,
+      "ungraded": 0,
+      "units": 0.0
+    },
+    "spread_parlays": {
+      "w": 0,
+      "l": 14,
+      "p": 0,
+      "ungraded": 0,
+      "units": -14.0
+    },
+    "favorite_ou": {
+      "w": 14,
+      "l": 17,
+      "p": 0,
+      "ungraded": 0,
+      "units": -4.61
+    },
+    "parlays": {
+      "w": 4,
+      "l": 21,
+      "p": 0,
+      "ungraded": 0,
+      "units": 3.92
+    },
+    "prop_breakdown": {
+      "w": 27,
+      "l": 34,
+      "p": 0,
+      "ungraded": 0,
+      "units": -10.13
+    },
+    "td_parlays": {
+      "w": 3,
+      "l": 17,
+      "p": 0,
+      "ungraded": 0,
+      "units": -9.2
+    }
+  },
+  "generated_at": "2026-10-07T16:06:11.302633+00:00"
+}

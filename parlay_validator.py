@@ -52,7 +52,8 @@ def leg_key(leg):
             leg.get("market_key"), leg.get("player") or leg.get("side"))
 
 
-def validate_parlay(legs, expected_size, stake=100, require_td=False, require_spread=False):
+def validate_parlay(legs, expected_size, stake=100, require_td=False, require_spread=False,
+                    allow_mixed=False, forbid_same_game=False):
     """legs: list of dicts, each with at least market_key, price
     (decimal), canonical_event_id (or event_id). expected_size: the
     declared N for this parlay (3, 4, 5, 6, or 7) — a real, checked
@@ -91,7 +92,11 @@ def validate_parlay(legs, expected_size, stake=100, require_td=False, require_sp
     # key, the same one FanDuel's own closing-line data and each team's
     # real ATS record are both measured against), not an alternate-line
     # or player-prop leg mixed in.
-    if require_td:
+    if allow_mixed:
+        # 2026-10-07: parlays are built from the weekly Best 10, which may mix
+        # yardage props, Anytime TDs and spreads — no market-purity rule.
+        pass
+    elif require_td:
         non_td_legs = [i + 1 for i, l in enumerate(legs) if l.get("market_key") != "player_anytime_td"]
         if non_td_legs:
             errors.append(f"Leg(s) {non_td_legs} do NOT use the player_anytime_td market — "
@@ -125,7 +130,10 @@ def validate_parlay(legs, expected_size, stake=100, require_td=False, require_sp
 
     event_ids = [leg.get("canonical_event_id") or leg.get("event_id") for leg in legs]
     same_game_groups = [eid for eid, n in Counter(event_ids).items() if eid and n > 1]
-    if same_game_groups:
+    if same_game_groups and forbid_same_game:
+        errors.append(f"{len(same_game_groups)} game(s) contribute more than one leg — every "
+                       f"leg must come from a different game: {same_game_groups}.")
+    elif same_game_groups:
         warnings.append(
             f"{len(same_game_groups)} game(s) contribute more than one leg to "
             f"this parlay: {same_game_groups}. The combined price below is a "

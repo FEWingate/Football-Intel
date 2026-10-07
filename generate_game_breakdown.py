@@ -404,11 +404,14 @@ def main():
     ]
     task = TASK_INSTRUCTION
     if args.bootstrap:
-        task += ("\n\nIMPORTANT: this is a BOOTSTRAP evidence package for an UPCOMING game "
-                 "that has NOT been played (see the 'game' and 'bootstrap_source' blocks "
-                 "below). All team/player analytics are from the most recent completed "
-                 "season, used as the best available foundation — this is NOT a review of "
-                 "a past game.\n")
+        task += ("\n\nThis report previews an UPCOMING game (see the 'game' and "
+                 "'bootstrap_source' blocks below for what the data covers). It is not a "
+                 "review of a past game. Do NOT write any note, preface, or commentary about "
+                 "the evidence package itself — what it is called, how it was assembled, "
+                 "what season or week it covers, or whether the game has been played. Begin "
+                 "directly with Section 1, Pregame Briefing. Where a required check has "
+                 "nothing to report (for example a division game with no prior meeting this "
+                 "season), say so briefly inside that section, not in a separate note.\n")
     user_content = task + json.dumps(evidence, separators=(",", ":"))
 
     os.makedirs(out_dir, exist_ok=True)

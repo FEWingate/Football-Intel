@@ -122,7 +122,14 @@ TEAMSTATS_PATH = "teamstats/latest.json"
 MATCHUP_PATH_TMPL = "matchup/{week_folder}.json"
 
 DEFAULT_MODEL = "claude-sonnet-5"
-PARLAY_SIZES = [3, 4, 5, 6, 7]
+# REAL CHANGE (2026-10-07), per Frank's decisions after Week 4 grading: the
+# only parlays are now 2/3/4-leg parlays built from the weekly BEST 10 (see
+# props_standard_addendum.md, A4/A5). Per-game batch runs build NO parlays.
+PARLAY_SIZES = [2, 3, 4]
+BATCH_PARLAY_SIZES = []
+BEST_N = 10
+MAX_QB_PASSING_OVERS_IN_BEST = 2
+ADDENDUM_PATH = "props_standard_addendum.md"
 SKILL_POSITIONS = ["QB", "RB", "WR", "TE"]
 STAT_LABELS = {"passing_yards": "Passing Yards", "rushing_yards": "Rushing Yards",
                "receiving_yards": "Receiving Yards", "receptions": "Receptions",
@@ -144,15 +151,22 @@ markets (passing/rushing/receiving yards, receptions, and their alt \
 lines) — Anytime TD is a single-sided "scores or doesn't" price with \
 no real Under side to it, and must NEVER appear in this section under \
 either list, no matter how strong the conviction. A strong Anytime TD \
-pick belongs in Coeus Prop Breakdown (Section 1) or the Anytime TD \
-Parlays, not here.
-3. Five separate parlays (3, 4, 5, 6, and 7 team). Evaluate Over and \
-Under picks with EQUAL rigor across this whole report — a real edge is \
-exactly as likely to sit on the Under side as the Over side, and \
-posted lines already price in the public's own well-known lean toward \
-Overs. Do not let your own picks skew toward Overs by default; if the \
-real evidence across this slate genuinely supports more Unders than \
-Overs, say so and pick accordingly.
+pick belongs in Coeus Prop Breakdown (Section 1), not here.
+Do NOT build any parlays in this run — parlays are built later, in a \
+separate whole-week run, only from the week's Best 10 plays. Skip \
+Sections 6, 7 and 8 entirely and write no PARLAY, TD_PARLAY or \
+SPREAD_PARLAY blocks.
+
+Follow the Standard's Addendum v2.1 (it governs wherever it conflicts \
+with the Standard): 2026 data ONLY — never cite a 2025 number or a \
+2025-vs-2026 rank shift; every pick carries your OWN numeric \
+`projection` (agreeing with its side) and an integer `games_2026` sample \
+size, both stated per the Addendum; passing-yardage picks must cite the \
+game's real total and spread. Evaluate Over and Under picks with EQUAL \
+rigor across this whole report — a real edge is exactly as likely to sit \
+on the Under side as the Over side, and posted lines already price in \
+the public's own well-known lean toward Overs. Do not let your own picks \
+skew toward Overs by default.
 
 Lists and short entries only, per the No Paragraphs Rule — never prose \
 paragraphs. Every football claim must come from the Game Breakdowns \
@@ -162,8 +176,8 @@ come from the real FanDuel data below — never invent one. The REAL \
 DATA COVERAGE section below tells you which stat families are live, \
 which are stale, and which have no real data at all right now — a \
 stat family with no real data (live or stale) gets no pick; say so \
-plainly rather than skipping it silently or guessing. Every JSON block \
-specified in the Standard is required, not optional — a real program \
+plainly rather than skipping it silently or guessing. The PROP_BREAKDOWN \
+and FAVORITE_OU JSON blocks are required, not optional — a real program \
 checks every one of them after you finish.
 
 === REAL DATA COVERAGE (what you can actually trust right now) ===
@@ -331,8 +345,21 @@ def trim_evidence_for_props(evidence, multi_game=False):
                         p["log"] = final_log
                     if multi_game and isinstance(p, dict):
                         p.pop("career", None)
-    for key in ("team_context", "dfs", "down_distance", "red_zone_play_calling"):
+    for key in ("team_context", "dfs", "down_distance", "red_zone_play_calling",
+                "rank_shifts"):
         trimmed.pop(key, None)
+    # REAL CHANGE (2026-10-07), per Frank: props are 2026-only. The per-game
+    # logs are already real 2026 games; the remaining 2025 carriers are each
+    # player's "season_2025" and "career" blocks and the 2025-vs-2026
+    # "rank_shifts" block above — all removed for props regardless of slate
+    # size. (Game Breakdown generation is untouched.)
+    if isinstance(players, dict):
+        for side in players.values():
+            if isinstance(side, list):
+                for p in side:
+                    if isinstance(p, dict):
+                        p.pop("season_2025", None)
+                        p.pop("career", None)
     return trimmed
 
 
@@ -485,6 +512,61 @@ def extract_parlay_blocks(report_text, tag_prefix="PARLAY"):
 
 
 
+def check_pick_quality(pick):
+    """REAL ADDITION (2026-10-07), per Frank's decisions: every pick must
+    (1) carry Coeus's own numeric projection that AGREES with its own side,
+    (2) state how many 2026 games it rests on, and (3) not cite 2025. Runs on
+    a pick that already has its REAL line/threshold/point merged in (so the
+    comparison is against the real posted number, not Coeus's transcription).
+    Returns (messages, edge) — messages are reportable errors; edge is
+    projection minus line for yardage/reception picks (signed so positive
+    always means the projection favors the pick's own side), else None."""
+    msgs, edge = [], None
+    name = pick.get("player", "?")
+    proj = pick.get("projection")
+    try:
+        proj = float(proj)
+    except (TypeError, ValueError):
+        proj = None
+    if proj is None:
+        msgs.append("no numeric projection stated (required on every pick).")
+    g = pick.get("games_2026")
+    if isinstance(g, bool) or not isinstance(g, int) or g < 1:
+        msgs.append("games_2026 missing or not a positive integer (required on every pick).")
+    if re.search(r"\b2025\b", pick.get("reason") or ""):
+        msgs.append("reason cites 2025 data — props are 2026-only.")
+    if proj is None:
+        return msgs, edge
+    mk = pick.get("market_key")
+    side = pick.get("side")
+    if mk == "player_anytime_td":
+        p = proj / 100.0 if proj > 1 else proj
+        price = pick.get("price")
+        if not (0 < p < 1):
+            msgs.append(f"TD projection {proj} is not a probability between 0 and 1.")
+        elif isinstance(price, (int, float)) and price > 1 and p <= 1.0 / price:
+            msgs.append(f"TD projection {p:.0%} does not exceed the price's implied "
+                        f"{1.0/price:.0%} — not a positive-edge pick by its own number.")
+    elif mk == "spreads":
+        point = pick.get("point", pick.get("line"))
+        if isinstance(point, (int, float)) and proj + point <= 0:
+            msgs.append(f"projected margin {proj:+g} does not cover the {point:+g} spread.")
+    else:
+        line = pick.get("line", pick.get("threshold"))
+        if isinstance(line, (int, float)):
+            if "milestones" in (mk or "") or side == "over":
+                edge = proj - line
+                if proj < line or (proj == line and "milestones" not in (mk or "")):
+                    msgs.append(f"projection {proj:g} is not above the {line:g} line, "
+                                f"but the pick is an Over.")
+            else:
+                edge = line - proj
+                if proj >= line:
+                    msgs.append(f"projection {proj:g} is not below the {line:g} line, "
+                                f"but the pick is an Under.")
+    return msgs, edge
+
+
 def verify_pick(pick, real_by_key, evidence_by_game=None):
     """Cross-checks one proposed pick (player/market_key/canonical_event_id)
     against the real source data — same principle as
@@ -524,10 +606,15 @@ def verify_pick(pick, real_by_key, evidence_by_game=None):
         merged["line"] = real.get("point")
     elif real.get("threshold") is not None:
         merged["threshold"] = real.get("threshold")
+    mismatches = []
     if evidence_by_game is not None:
-        ev_mismatches = verify_evidence_check(pick.get("evidence_check"), evidence_by_game)
-        if ev_mismatches:
-            merged["evidence_mismatches"] = ev_mismatches
+        mismatches.extend(verify_evidence_check(pick.get("evidence_check"), evidence_by_game))
+    q_msgs, edge = check_pick_quality(merged)
+    mismatches.extend(q_msgs)
+    if edge is not None:
+        merged["projection_edge"] = round(edge, 2)
+    if mismatches:
+        merged["evidence_mismatches"] = mismatches
     return merged, True
 
 
@@ -608,6 +695,50 @@ def verify_favorite_ou(raw, real_by_key, evidence_by_game=None):
     return {"overs": overs, "unders": unders}, errors
 
 
+def full_pick_key(p):
+    """Identity of one real pick including its side and number — what a
+    parlay leg must match exactly to count as 'one of the Best 10'."""
+    return (leg_key(p), p.get("side"),
+            p.get("line", p.get("threshold", p.get("point"))))
+
+
+def verify_best_10(raw, real_by_key, evidence_by_game):
+    """REAL ADDITION (2026-10-07): validates the weekly BEST_10 block.
+    Same real-data / evidence_check / projection checks as every other pick,
+    plus: exactly BEST_N unique plays, and a cap on QB passing-yardage Overs.
+    Returns (picks_or_None, errors)."""
+    if not raw or not isinstance(raw.get("picks"), list):
+        return None, ["Could not parse the BEST_10 JSON block."]
+    errors = []
+    verified, mismatches = verify_legs_against_source(raw["picks"], real_by_key)
+    for m in mismatches:
+        errors.append(f"{m.get('player', '?')}: not found in the real FanDuel data provided.")
+    picks = []
+    for i, p in enumerate(verified):
+        q_msgs, edge = check_pick_quality(p)
+        ev = verify_evidence_check(p.get("evidence_check"), evidence_by_game)
+        out = dict(p)
+        if edge is not None:
+            out["projection_edge"] = round(edge, 2)
+        probs = q_msgs + ev
+        if probs:
+            out["evidence_mismatches"] = probs
+        for m in probs:
+            errors.append(f"{p.get('player', '?')}: {m}")
+        picks.append(out)
+    if len(picks) != BEST_N:
+        errors.append(f"Best 10 has {len(picks)} plays, expected exactly {BEST_N}.")
+    keys = [full_pick_key(p) for p in picks]
+    if len(set(keys)) != len(keys):
+        errors.append("Best 10 contains a duplicated play.")
+    qb_overs = [p for p in picks if p.get("side") == "over" and
+                (p.get("market_key") or "").startswith("player_passing_yards")]
+    if len(qb_overs) > MAX_QB_PASSING_OVERS_IN_BEST:
+        errors.append(f"Best 10 has {len(qb_overs)} QB passing-yardage Overs; the cap is "
+                      f"{MAX_QB_PASSING_OVERS_IN_BEST}.")
+    return picks, errors
+
+
 # REAL ADDITION (2026-10-01), per Frank's direct request: Parlays, TD
 # Parlays, and Spread Parlays were being built inside the SAME per-
 # batch call as Prop Breakdown/Favorite O/U — meaning a batch's "best
@@ -620,7 +751,8 @@ def verify_favorite_ou(raw, real_by_key, evidence_by_game=None):
 # copy-pasting the same real checks twice and risking the two drifting
 # apart.
 def validate_parlay_family(report_text, tag_prefix, real_by_key, evidence_by_game, stake,
-                            require_td=False, require_spread=False, label="PARLAY"):
+                            require_td=False, require_spread=False, label="PARLAY",
+                            allow_mixed=False, forbid_same_game=False, allowed_keys=None):
     blocks = extract_parlay_blocks(report_text, tag_prefix=tag_prefix)
     results = {}
     for size in PARLAY_SIZES:
@@ -640,8 +772,19 @@ def validate_parlay_family(report_text, tag_prefix, real_by_key, evidence_by_gam
                 print(f"    - {m}")
         is_valid, errors, warnings, result = validate_parlay(
             verified_legs, expected_size=size, stake=stake,
-            require_td=require_td, require_spread=require_spread)
+            require_td=require_td, require_spread=require_spread,
+            allow_mixed=allow_mixed, forbid_same_game=forbid_same_game)
+        if allowed_keys is not None:
+            outside = [l.get("player") for l in verified_legs if full_pick_key(l) not in allowed_keys]
+            if outside:
+                errors.append(f"Leg(s) not in this week's Best 10: {outside} — every parlay leg "
+                              f"must be one of the 10 plays.")
+                is_valid = False
         for leg in verified_legs:
+            q_msgs, _ = check_pick_quality(leg)
+            for m in q_msgs:
+                errors.append(f"{leg.get('player')}: {m}")
+                is_valid = False
             leg_ev_mismatches = verify_evidence_check(leg.get("evidence_check"), evidence_by_game)
             if leg_ev_mismatches:
                 for m in leg_ev_mismatches:
@@ -667,55 +810,35 @@ def validate_parlay_family(report_text, tag_prefix, real_by_key, evidence_by_gam
 
 
 WHOLE_WEEK_TASK_INSTRUCTION = """\
-Build ONLY real Parlays for the FULL real slate below — every game that \
-has a finished Game Breakdown and real FanDuel data this week, not a \
-subset. This is a SEPARATE, whole-week-only run: Coeus Prop Breakdown \
-and Favorite Overs/Unders have ALREADY been generated for every one of \
-these games (in earlier, separate batched runs — see the REAL PICKS \
-ALREADY MADE THIS WEEK section below) and are NOT requested here. Your \
-job is to pick the best real combinations ACROSS THE WHOLE SLATE, not \
-limited to any one batch's games.
+This is the SEPARATE whole-week run for the FULL real slate below. Coeus \
+Prop Breakdown and Favorite Overs/Unders were ALREADY generated for every \
+game in earlier batched runs (see REAL PICKS ALREADY MADE THIS WEEK below) \
+and are NOT requested here. Follow the Standard AND its Addendum v2.1 \
+(the Addendum governs wherever they conflict). Produce exactly:
 
-Produce exactly these three sections, each with 3/4/5/6/7-team real \
-parlays, following the Props & Parlay Report Standard's own rules for \
-each (no fabricated legs, real prices only, real same-game-overlap \
-warnings, honest caps when a market family doesn't have enough REAL, \
-non-overlapping legs to support a given size):
-1. Five real line-based Parlays (Section 6 of the Standard).
-2. Five real Anytime TD Parlays (Section 7 of the Standard).
-3. Five real Spread Parlays (Section 8 of the Standard), using the real \
-team ATS records below.
+1. THE BEST 10 — the 10 plays you most believe in this week across the \
+whole slate, ranked 1 to 10. A play may be any real market on the board \
+(yardage/reception Over or Under, alt line, Anytime TD, or a mainline \
+spread) and may reuse an already-made pick or be a better one you find in \
+the real data. Every play carries your own numeric `projection`, its \
+`games_2026` sample size, `rank`, and the full pick JSON. JSON block: \
+BEST_10 (an object with a "picks" array).
+2. THREE PARLAYS — a 2-leg, a 3-leg and a 4-leg parlay (PARLAY_2_TEAM, \
+PARLAY_3_TEAM, PARLAY_4_TEAM), built ONLY from the 10 plays above, every \
+leg from a DIFFERENT game, legs copied exactly as they appear in BEST_10.
 
-Every leg must come from the real FanDuel data below, and should be \
-grounded in the real, already-made picks and reasoning below wherever \
-one exists for that player/market — you may also use any other real, \
-live FanDuel market on the slate, not only an already-picked one, since \
-a genuinely strong week-wide parlay leg might not have been anyone's \
-single favorite pick in its own 4-game batch. Lists and short entries \
-only, per the No Paragraphs Rule. Every JSON block specified for \
-Sections 6, 7, and 8 is required, not optional.
-
-For Section 8 (Spread Parlays) specifically: any claim about a TEAM's \
-own offense/defense rank (not a specific player's own prop pick) MUST \
-come from the REAL TEAM OFFENSE/DEFENSE RANKINGS table below — cite the \
-real "r" rank value for that team/position-group/stat exactly as given. \
-Do not estimate, recall from memory, or round a team-level rank — if \
-the table below doesn't have the specific stat you want for a team, use \
-a different, real angle that it does cover instead. This table is large \
-(32 teams) — find the exact team's exact stat entry below and COPY its \
-"r" integer value verbatim into both your prose and your evidence_check \
-claimed_rank. A rank that is merely close (off by even one or two) is a \
-real, reportable failure once checked — it is not a rounding difference, \
-it is a different real number than the one actually in the table.
-
-Evaluate Over and Under legs (Section 6) with EQUAL rigor — a real edge \
-is exactly as likely to sit on the Under side as the Over side, and \
-posted lines already price in the public's own well-known lean toward \
-Overs. Do not let your own leg selection skew toward Overs by default; \
-if the real evidence across this slate genuinely supports an Under leg, \
-use it. Likewise, favor the Under side of a Spread Parlay leg (the \
-underdog getting points) whenever the real team-rank/ATS data below \
-genuinely supports it, not just the favorite by default.
+No Anytime TD parlay section and no Spread parlay section exist anymore — \
+a TD or spread play can simply be one of the 10 and appear as a parlay \
+leg. 2026 data only: never cite a 2025 number. Real prices and lines \
+only, from the real FanDuel data below. For any spread play, any claim \
+about a TEAM's own offense/defense rank MUST come from the REAL TEAM \
+OFFENSE/DEFENSE RANKINGS table below — copy the "r" value verbatim into \
+both prose and evidence_check claimed_rank; a rank that is merely close \
+is a reportable failure. For any QB passing-yardage play, state the \
+game's real total and spread (Addendum A3); at most two QB passing \
+Overs may be among the 10. Evaluate Overs and Unders with equal rigor. \
+Lists and short entries only, per the No Paragraphs Rule. Every JSON \
+block above is required, not optional.
 
 === REAL DATA COVERAGE (what you can actually trust right now) ===
 """
@@ -781,9 +904,11 @@ def run_parlays_only(args, games, fanduel_data, coverage, ats_records):
 
     master_prompt = load_text(MASTER_PROMPT_PATH)
     props_standard = load_text(PROPS_STANDARD_PATH)
+    addendum = load_text(ADDENDUM_PATH)
     system = [
         {"type": "text", "text": master_prompt, "cache_control": {"type": "ephemeral"}},
         {"type": "text", "text": props_standard, "cache_control": {"type": "ephemeral"}},
+        {"type": "text", "text": addendum, "cache_control": {"type": "ephemeral"}},
     ]
 
     team_ranks = load_team_ranks_table(next(iter(folders_used)))
@@ -825,6 +950,7 @@ def run_parlays_only(args, games, fanduel_data, coverage, ats_records):
         with open(f"{out_stem}_prompt_full.txt", "w") as f:
             f.write("=== SYSTEM (Master Prompt) ===\n\n" + master_prompt +
                      "\n\n=== SYSTEM (Props & Parlay Standard) ===\n\n" + props_standard +
+                     "\n\n=== SYSTEM (Standard Addendum v2.1) ===\n\n" + addendum +
                      "\n\n=== USER MESSAGE ===\n\n" + user_content)
         print(f"\nDRY RUN — no API call made. Prompt written to {out_stem}_prompt_full.txt")
         return
@@ -863,14 +989,19 @@ def run_parlays_only(args, games, fanduel_data, coverage, ats_records):
     print(f"\nWrote {out_stem}.md — {usage.input_tokens:,} input / {usage.output_tokens:,} output tokens")
 
     print("\n" + "=" * 60)
+    best_raw = extract_json_block(report_text, "BEST_10")
+    best_picks, best_errors = verify_best_10(best_raw, real_by_key, evidence_by_game)
+    print("\nBEST 10 VALIDATION:")
+    if best_errors:
+        for e in best_errors:
+            print(f"  ISSUE: {e}")
+    else:
+        print("  PASSED — 10 real plays, every one verified against real FanDuel data.")
+    best_keys = {full_pick_key(p) for p in (best_picks or [])}
+    print("=" * 60)
     parlay_results = validate_parlay_family(report_text, "PARLAY", real_by_key, evidence_by_game,
-                                             args.stake, label="PARLAY")
-    print("=" * 60)
-    td_parlay_results = validate_parlay_family(report_text, "TD_PARLAY", real_by_key, evidence_by_game,
-                                                args.stake, require_td=True, label="TD PARLAY")
-    print("=" * 60)
-    spread_parlay_results = validate_parlay_family(report_text, "SPREAD_PARLAY", real_by_key, evidence_by_game,
-                                                    args.stake, require_spread=True, label="SPREAD PARLAY")
+                                             args.stake, label="PARLAY", allow_mixed=True,
+                                             forbid_same_game=True, allowed_keys=best_keys)
     print("=" * 60)
 
     report_json = {
@@ -881,9 +1012,10 @@ def run_parlays_only(args, games, fanduel_data, coverage, ats_records):
         "coverage": coverage,
         "stake_used_for_payout_examples": args.stake,
         "markdown": report_text,
+        "best_10": {"picks": best_picks, "errors": best_errors},
         "parlays": {str(size): parlay_results[size] for size in PARLAY_SIZES},
-        "td_parlays": {str(size): td_parlay_results[size] for size in PARLAY_SIZES},
-        "spread_parlays": {str(size): spread_parlay_results[size] for size in PARLAY_SIZES},
+        "td_parlays": {},
+        "spread_parlays": {},
         "ats_records": ats_records,
     }
     with open(f"{out_stem}.json", "w") as f:
@@ -921,7 +1053,7 @@ def main():
                           "a 16-game slate as two real batches of 8 to stay well under the API's "
                           "token ceiling. Comma-separated AWAY-HOME pairs, e.g. "
                           "'DET-BUF,CAR-ATL,CIN-HOU'. Mutually exclusive with --away/--home.")
-    ap.add_argument("--parlays-only", action="store_true",
+    ap.add_argument("--parlays-only", "--best-10", dest="parlays_only", action="store_true",
                      help="REAL ADDITION (2026-10-01), per Frank's direct request: builds ONLY "
                           "Parlays/TD Parlays/Spread Parlays, across the WHOLE real week's slate "
                           "at once (never just one --games batch), grounded in the real, "
@@ -1109,9 +1241,11 @@ def main():
 
     master_prompt = load_text(MASTER_PROMPT_PATH)
     props_standard = load_text(PROPS_STANDARD_PATH)
+    addendum = load_text(ADDENDUM_PATH)
     system = [
         {"type": "text", "text": master_prompt, "cache_control": {"type": "ephemeral"}},
         {"type": "text", "text": props_standard, "cache_control": {"type": "ephemeral"}},
+        {"type": "text", "text": addendum, "cache_control": {"type": "ephemeral"}},
     ]
 
     fanduel_json = json.dumps(fanduel_data, separators=(",", ":"))
@@ -1200,6 +1334,7 @@ def main():
         with open(f"{out_stem}_prompt_full.txt", "w") as f:
             f.write("=== SYSTEM (Master Prompt) ===\n\n" + master_prompt +
                      "\n\n=== SYSTEM (Props & Parlay Standard) ===\n\n" + props_standard +
+                     "\n\n=== SYSTEM (Standard Addendum v2.1) ===\n\n" + addendum +
                      "\n\n=== USER MESSAGE ===\n\n" + user_content)
         print(f"\nDRY RUN — no API call made. Prompt written to {out_stem}_prompt_full.txt")
         return
@@ -1259,7 +1394,7 @@ def main():
 
     parlays = extract_parlay_blocks(report_text)
     parlay_results = {}
-    for size in PARLAY_SIZES:
+    for size in BATCH_PARLAY_SIZES:
         legs = parlays[size]
         print(f"\n{size}-TEAM PARLAY VALIDATION:")
         if legs is None:
@@ -1312,7 +1447,7 @@ def main():
     # so every leg MUST be player_anytime_td instead of forbidding it.
     td_parlays = extract_parlay_blocks(report_text, tag_prefix="TD_PARLAY")
     td_parlay_results = {}
-    for size in PARLAY_SIZES:
+    for size in BATCH_PARLAY_SIZES:
         legs = td_parlays[size]
         print(f"\n{size}-TEAM TD PARLAY VALIDATION:")
         if legs is None:
@@ -1362,7 +1497,7 @@ def main():
     # player_anytime_td.
     spread_parlays = extract_parlay_blocks(report_text, tag_prefix="SPREAD_PARLAY")
     spread_parlay_results = {}
-    for size in PARLAY_SIZES:
+    for size in BATCH_PARLAY_SIZES:
         legs = spread_parlays[size]
         print(f"\n{size}-TEAM SPREAD PARLAY VALIDATION:")
         if legs is None:
@@ -1411,9 +1546,7 @@ def main():
         "markdown": report_text,
         "prop_breakdown": prop_breakdown, "prop_breakdown_errors": pb_errors,
         "favorite_ou": favorite_ou, "favorite_ou_errors": fou_errors,
-        "parlays": {str(size): parlay_results[size] for size in PARLAY_SIZES},
-        "td_parlays": {str(size): td_parlay_results[size] for size in PARLAY_SIZES},
-        "spread_parlays": {str(size): spread_parlay_results[size] for size in PARLAY_SIZES},
+        "parlays": {}, "td_parlays": {}, "spread_parlays": {},
         "ats_records": ats_records,
     }
     with open(f"{out_stem}.json", "w") as f:
