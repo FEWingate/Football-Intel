@@ -5,241 +5,247 @@
 
 ## 1. PREGAME BRIEFING
 
-**A note on this evidence package.** This game has not been played — there is no box score, result, or market line available. The package is labeled "bootstrap," and its own generic language describes bootstrap evidence as a prior-season foundation. That description does not match what's actually inside it here: every team and player figure in this package is genuine 2026 season-to-date data, four games deep for each team, matching each team's actual 2026 record (Tampa Bay 0-4, Dallas 2-2). The real meaning of "bootstrap" in this specific case is narrower — these two teams simply haven't played each other yet in 2026, so there is no head-to-head log to draw on, and the game-level rank fields noted in a few spots (blitz rate/blitz success tier for each quarterback and receiver) are still tagged to each team's actual Week 1-4 opponents rather than recomputed for this TB-DAL pairing specifically — those specific fields are flagged in evidence and excluded below. Everything else — season stats, player logs, tiered splits, down/distance, red zone tendencies, injuries — is current, real, and usable. There is no division history between these teams (`div_game: false`) and no 2026 meeting to recap.
+Tampa Bay arrives at 0-4, but the record understates how competitive these four losses have actually been: 27-33 at Cincinnati, 19-23 against Cleveland, 16-23 against Minnesota, and 14-17 against Green Bay — a combined four-game scoring margin of just 20 points, all one-score-or-two-score losses. The profile behind that is unusual: Tampa Bay's defense ranks 3rd in the NFL in total yards allowed (292.8/gm) and 3rd against the run (78.5 rush yds/gm allowed), yet the offense has been one of the least productive units in football — 25th in scoring (19.0 ppg), 26th in passing yards (190.8/gm), and saddled with the NFL's worst sack rate allowed (4.0/gm, 32nd). That combination — a stout, yardage-efficient defense paired with an offense that can't sustain drives or protect the passer — is the core tension on Tampa Bay's side of this matchup, and it now arrives with an added complication: starting quarterback Baker Mayfield is out (thumb), handing the job to Jalon Daniels, who has all of one real NFL start on his résumé.
 
-**Season identity.** Tampa Bay is 0-4, and the box score explains why: a bottom-third scoring offense (19.0 ppg, 25th) that has turned the ball over at one of the league's worst rates (1.2 int/gm, 28th) behind the league's worst sack rate allowed (4.0 sacks/gm, 32nd). What the record obscures is that Tampa Bay's defense has actually played well by the underlying numbers — 3rd in total yards allowed (292.8 ypg), 3rd against the run (78.5 ypg), 2nd against wide receivers (105.8 rec yds/gm) — even though its points-allowed rank (24.0 ppg, 20th) is far more pedestrian. That gap matters and is explored in Hidden Intelligence below. Dallas is 2-2, carried by one of the NFL's most prolific offenses (30.5 ppg, 2nd; the league's No. 1 wide receiver group at 213.5 rec yds/gm) but paired with a defense that is genuinely struggling in specific, identifiable ways — 31st against the run at 150.2 yds/gm allowed, and dead last on third down (52.3% allowed).
+Dallas is 2-2, and its profile is close to the inverse: the Cowboys rank 2nd in the NFL in scoring (30.5 ppg) behind a passing attack that ranks 7th in yardage (266.2/gm) and features the league's single most productive wide receiver room (213.5 rec yds/gm, 1st in the NFL), but the defense has been genuinely poor — 29th in total yards allowed, 31st against the run (150.2 rush yds/gm allowed), and dead last in third-down defense (52.3% allowed, 31st). Dallas has won by outscoring people (37-20 over Washington, 34-30 at Houston) and lost in shootouts (28-20 at the Giants, 31-34 against Baltimore) — four games, four different point totals north of 20 allowed.
 
-**Broad thesis — not the final verdict.** On paper this reads as a mismatch skewed toward Dallas: a top-2 scoring offense against a winless opponent that may not even have its starting quarterback on the field (see Injury & Availability below). But the deeper numbers complicate that read on both sides — Tampa Bay's defense is a legitimately stout unit playing behind one of the league's worst offenses, and Dallas's defense has real, exploitable leaks that go beyond what its raw record suggests. Which version of this game actually shows up — a comfortable Dallas walkover, or a tighter, lower-event game kept close by Tampa Bay's defense and a limited, protective offensive approach — is the question the rest of this report works through. The verdict comes in Coeus Final Read.
+These two teams have not met this season — Tampa Bay and Dallas are not division opponents, and this is their only scheduled meeting in 2026, so there is no head-to-head evidence to draw on.
+
+Broadly, this profiles as a game shaped by which team's identity bends the other's: can Tampa Bay's defense, which has been good enough on a per-yard basis to keep every game within one score, finally turn that into a win against a Dallas offense built to score in bunches — or does Dallas's firepower, and a Tampa Bay offense now breaking in a first-time starter at quarterback, push this toward the kind of high-scoring, inefficient-defense environment Dallas has lived in all season. The deeper matchup work below works through exactly which of those forces is more likely to win out.
 
 ---
 
 ## 2. INJURY & AVAILABILITY REPORT
 
-**Source:** nflverse real injury report (status policy: final designation or limited practice participation) — a more reliable, directly-sourced feed than the DraftKings status column used elsewhere, and the primary evidence source for this section.
+Source: nflverse real injury report (status policy: final designation or limited practice participation) — a more reliable, name-level source than a DraftKings status column, and used as such below.
 
 **Tampa Bay:**
-- **Baker Mayfield (QB) — Pending, Did Not Participate in Practice, thumb.** This is the single most important injury note in this report. Mayfield has a thumb injury serious enough to keep him out of practice entirely heading into Thursday night, and his own 2026 game log stops at Week 3 — he has no Week 4 entry at all. Backup Jalon Daniels logged a full 100% snap share in Week 4 (see below), meaning Mayfield already missed a game before this current DNP designation. Treat Tampa Bay's starting quarterback as a genuine game-time question, not a formality — see Pregame Briefing/Matchup Intelligence for how both scenarios are covered. Confidence on who actually starts: LOW.
-- **Antoine Winfield Jr. (S) — Pending, DNP, rib.** Tampa Bay's top defensive back. His absence is a real risk to the secondary performance detailed in Matchup Statistics/Intelligence below (2nd in the league in WR yards allowed, best in the league in WR first downs allowed) — those numbers were built with him on the field.
-- **Benjamin Morrison (CB) — Pending, DNP, quadricep.** Rookie corner; adds to secondary uncertainty alongside Winfield.
-- **SirVocea Dennis (LB) — Pending, DNP, ankle/foot.**
-- **Anthony Nelson (LB) — Pending, Limited Participation, illness.**
-- **Ko Kieft (TE) — Pending, Limited Participation, elbow.** Minimal statistical role (0 targets this season); low practical impact.
-- **Chase McLaughlin (K) — Pending, DNP, groin/hip.** Worth monitoring given this is likely to be a lower-scoring game for Tampa Bay specifically, raising the importance of a reliable kicking operation in short-field situations.
+- **Baker Mayfield (QB) — Out, thumb, did not participate in practice.** This is the headline move of the week. Mayfield started and played the full workload in three of Tampa Bay's four games (98% snap share), posting a 205.0 pass yds/gm average with a brutal 4.33 sacks/gm taken and a 0.67 TD/gm rate. With him out, **Jalon Daniels is confirmed as this week's starter** — consistent with Tampa Bay's own depth chart (Mayfield listed pos-rank 1, Daniels pos-rank 2, as of October 8) combined with the Out designation, and consistent with Daniels already having made a spot start in Week 4 (100% snap share, 148 yards, 19/27, 1 TD against Green Bay).
+- **Antoine Winfield Jr. (S) — Out, rib, did not participate in practice.** A significant loss. Winfield is Tampa Bay's top defensive back, and his absence lands in the same week the Buccaneers face the NFL's most productive wide receiver group (Dallas, 213.5 rec yds/gm, 1st) and its leading individual producer, CeeDee Lamb. Tampa Bay's defense currently ranks 2nd in the NFL in wide receiver yards allowed (105.8/gm) — that ranking reflects a roster that no longer includes its best coverage safety, a real tension worth weighing against the raw number (see Matchup Intelligence).
+- **Benjamin Morrison (CB) — Out, quadricep, did not participate in practice.** A second meaningful secondary absence in the same game Dallas trots out its top two wide receivers plus a red-zone-heavy tight end. Combined with Winfield, Tampa Bay's pass defense numbers should be read with real caution this week.
+- **SirVocea Dennis (LB) — Out, ankle/foot, did not participate in practice.** Linebacker depth loss on a defense that already generates pressure at a below-average rate (1.5 sacks/gm, 27th).
+- **Anthony Nelson (LB) — Pending, illness, limited practice participation.** A game-time-type situation; not yet resolved as of this evidence freeze.
 
 **Dallas:**
-- **Tyler Smith (G) — Pending, Limited Participation, thumb.** A starting offensive lineman protecting Dak Prescott; limited practice suggests a likely play, but worth monitoring given Prescott's own elevated sack rate when pressured is covered below.
-- **Cobie Durant (CB) — Pending, DNP, hamstring.** Likely absence in the secondary facing Tampa Bay's receiving corps.
-- **DeMarvion Overshown (LB) — Pending, DNP, hamstring.** A starting linebacker. His absence is a reasonable, if not certain, contributing factor to watch given Dallas's defense already ranks 31st against the run (150.2 yds/gm) and dead last on third down (52.3% allowed) — both areas where interior linebacker play matters. Confidence on the specific causal link: LOW (role/snap data isn't available to confirm the magnitude of his impact, but the directional logic is sound).
-- **Drew Shelton (T) — Pending, DNP, hamstring.** Offensive line depth piece.
+- **Drew Shelton (T) — Out, hamstring, did not participate in practice.** Offensive tackle depth loss for a Dallas offensive line that has otherwise protected Dak Prescott exceptionally well (1.5 sacks/gm allowed, 5th-best in the NFL) — worth monitoring given Tampa Bay still generates some pressure (1.5 sacks/gm, tied for 27th, modest but not nothing).
+- **Cobie Durant (CB) — Out, hamstring, did not participate in practice.** Secondary depth loss for a Dallas pass defense that is already middling (21st in pass yards allowed, 24th in yards allowed to wide receivers).
+- **DeMarvion Overshown (LB) — Out, hamstring, did not participate in practice.** Front-seven loss for a run defense that is already the league's worst by total yardage (150.2 rush yds/gm allowed, 31st) — see Hidden Intelligence for the more precise read on exactly where that vulnerability actually sits.
+- **Tyler Smith (G) — Questionable, thumb, full practice participation.** Full practice participation suggests he is on track to play; worth noting but not a serious expected-availability concern based on practice status alone.
+- **Jonathan Mingo (WR) — Questionable, illness, did not participate in practice.** Tampa Bay's WR5 by role (4.1% target share on the season) — minimal practical impact on Dallas's passing-game outlook regardless of status.
 
-No weather data was available in the evidence package for this game.
+No weather or additional non-nflverse information was available in the evidence package for this game.
 
 ---
 
 ## 3. MATCHUP STATISTICS
 
 ### Tampa Bay Offense
-- Team: 19.0 ppg (25th), 296.8 total yds/gm (26th), 190.8 pass yds/gm (26th), 106.0 rush yds/gm (17th), 15.0 first downs/gm (28th)
-- QB: 190.8 pass yds/gm (26th), 63.5% completion (18th), 3 pass TD total through 4 games (30th), 4.0 sacks/gm allowed (32nd, worst in the league), 1.2 int/gm (28th)
-- RB: 69.2 rush yds/gm (27th), 26.2 rec yds/gm (18th), 5.2 rec/gm (10th), 2 rush TD (22nd)
-- WR: 125.2 rec yds/gm (27th), 11.0 rec/gm (19th), 2 TD (28th), 11.4 yds/reception (30th)
-- TE: 39.2 rec yds/gm (23rd), 0 TD (30th)
+Tampa Bay's offense ranks 25th in scoring (19.0 ppg), 26th in total yards (296.8/gm), and 26th in passing offense (190.8 pass yds/gm) — bottom-third in nearly every major category. The deeper numbers explain why: a league-worst 4.0 sacks/gm allowed (32nd), a 1.2 INT/gm rate (28th), and just 3 passing touchdowns across four games (30th). The rushing attack is more respectable at 106.0 yds/gm (17th), and first downs per game sit at 15.0 (28th).
 
-### Tampa Bay Defense
-- Team: 24.0 ppg allowed (20th), 292.8 total yds/gm allowed (3rd), 214.2 pass yds/gm allowed (8th), 78.5 rush yds/gm allowed (3rd), 14.8 first downs/gm allowed (5th)
-- QB allowed: 214.2 pass yds/gm (8th), 69.4% completion allowed (28th), 10.0 yds/completion allowed (6th, limits big completions well), 1.5 sacks/gm generated (27th, weak pass rush), 0.8 int/gm (18th)
-- RB allowed: 62.5 rush yds/gm (3rd), 40.2 rec yds/gm (26th), 6.2 rec/gm allowed (30th, worst in the league), 1 rush TD (8th), 3.0 first downs/gm allowed (2nd)
-- WR allowed: 105.8 rec yds/gm (2nd), 8.8 rec/gm (2nd), 3 TD (16th), 4.5 first downs/gm allowed (1st, best in the league)
-- TE allowed: 68.2 rec yds/gm (27th), 3 TD (27th)
+**Down/Distance:** Tampa Bay converts just 34.5% of third downs (24th) on 13.8 attempts per game, with an 18.2% fourth-down go-for-it rate and a 33.3% conversion rate when it does.
 
-### Dallas Offense
-- Team: 30.5 ppg (2nd), 355.8 total yds/gm (14th), 266.2 pass yds/gm (7th), 89.5 rush yds/gm (25th), 20.8 first downs/gm (8th)
-- QB: 266.2 pass yds/gm (7th), 70.0% completion (4th), 8 pass TD (8th), 1.5 sacks/gm allowed (5th, elite protection), 0.2 int/gm (5th, elite ball security)
-- RB: 72.0 rush yds/gm (24th), 18.5 rec yds/gm (28th), 5 rush TD (5th)
-- WR: 213.5 rec yds/gm (1st in the NFL), 17.8 rec/gm (1st), 25.8 targets/gm (1st), 4 TD (14th), 12.2 first downs/gm (1st)
-- TE: 34.2 rec yds/gm (25th), 3 TD (7th, efficient despite low volume)
+**Red Zone Play Calling:** Tampa Bay runs a pass-leaning red-zone identity — 55.9% pass vs. 44.1% run once inside the 20 (ranked 13th in pass rate, 20th in run rate) — a tendency, not a quality measure, worth remembering when evaluating red-zone efficiency separately.
+
+**Contextual Statistics:** Tampa Bay's team-wide rushing production has scaled sharply with opponent run-defense quality this season — 73.0 rush yds/gm against top-tier run defenses (n=2), 137.0 against mid-tier (n=1), and 141.0 against bottom-tier (n=1). Scoring output has been noisier across tiers (16.0 top-tier n=1, 23.0 mid-tier n=2, 14.0 bottom-tier n=1) and should be treated as a small, LOW-confidence sample rather than a clean trend.
 
 ### Dallas Defense
-- Team: 28.0 ppg allowed (28th), 392.8 total yds/gm allowed (29th), 242.5 pass yds/gm allowed (21st), 150.2 rush yds/gm allowed (31st), 20.8 first downs/gm allowed (29th)
-- QB allowed: 242.5 pass yds/gm (21st), 71.7% completion allowed (30th), 1.0 sacks/gm generated (28th), 0.0 int/gm (32nd — zero interceptions through four games, last in the league)
-- RB allowed: 97.2 rush yds/gm (18th), 21.5 rec yds/gm (6th, strong), 3.0 rec/gm allowed (4th, strong), 4 rush TD (26th)
-- WR allowed: 168.2 rec yds/gm (24th), 12.0 rec/gm (21st), 5 TD (22nd), 14.0 yds/reception (23rd)
-- TE allowed: 52.8 rec yds/gm (19th), 3 TD (26th)
+Dallas's defense ranks 28th in points allowed (28.0 ppg), 29th in total yards allowed (392.8/gm), 21st against the pass (242.5 yds/gm), and a league-worst 31st against the run (150.2 yds/gm allowed). The third-down numbers confirm the overall softness: 52.3% allowed, 31st in the NFL, a stop rate of just 47.7%.
 
-### Down/Distance
-- TB offense: 34.5% third-down conversion (24th) on 13.8 attempts/gm; 33.3% fourth-down conversion on an 18.2% go-for-it rate.
-- TB defense: 32.7% third-down allowed (6th, strong) — 67.3% stop rate.
-- DAL offense: 51.0% third-down conversion (4th, excellent) on 12.2 attempts/gm; 66.7% fourth-down conversion on a 13.0% go-for-it rate.
-- DAL defense: 52.3% third-down allowed (31st, worst-in-class) — only a 47.7% stop rate.
+**Down/Distance:** Dallas's defense faces 11.0 third-down attempts per game and allows conversion at that 52.3% clip (31st) — among the worst situational defenses in the league this season.
 
-### Red Zone Play Calling (tendency, not quality)
-- TB offense: 44.1% run (20th) / 55.9% pass (13th) once inside the 20.
-- TB defense: 50.0% run allowed (15th) / 50.0% pass allowed (19th).
-- DAL offense: 52.0% run (12th) / 48.0% pass (21st) — a run-leaning red-zone identity.
-- DAL defense: 54.3% run allowed (11th) / 45.7% pass allowed (22nd).
+**Red Zone Play Calling:** Opponents have called 54.3% run plays against Dallas in the red zone (11th-highest run rate allowed) versus 45.7% pass (22nd) — a tendency that reflects what opposing offenses are choosing to do against Dallas specifically, not a verdict on how well Dallas defends either play type.
+
+### Dallas Offense
+Dallas ranks 2nd in the NFL in scoring (30.5 ppg) on the strength of a passing attack that ranks 7th in yardage (266.2/gm) with an excellent 70.0% completion rate (4th) and outstanding protection (1.5 sacks/gm allowed, 5th) and ball security (0.2 INT/gm, 5th). First downs per game rank 8th (20.8). The running game is the weaker complementary piece at 89.5 yds/gm (25th).
+
+**Down/Distance:** Dallas converts third downs at an elite 51.0% clip (4th in the NFL) on 12.2 attempts per game — one of the best situational offenses in football this season.
+
+**Red Zone Play Calling:** Dallas leans run once inside the 20 — 52.0% run vs. 48.0% pass (12th-highest run rate, 21st in pass rate) — again a tendency rather than an efficiency grade.
+
+**Contextual Statistics:** Dallas has not yet faced a top-tier pass defense this season — its splits show 98.5 pass yds/gm against mid-tier opponents (n=1) and 307.0 against bottom-tier (n=2), with no top-tier sample at all. That absence matters directly this week: Tampa Bay's pass defense (8th in the league, 214.2 yds/gm allowed) would be Dallas's first real top-tier pass-defense test of the season.
+
+### Tampa Bay Defense
+Tampa Bay's defense is the best statistical unit in this game by total yardage — 3rd in the NFL (292.8 yds/gm allowed), 3rd against the run (78.5 yds/gm allowed), and 8th against the pass (214.2 yds/gm allowed). Against wide receivers specifically, it ranks 2nd in the league (105.8 rec yds/gm allowed); against tight ends, a much softer 27th (68.2 rec yds/gm allowed). Points allowed, however, rank only 20th (24.0 ppg) — a real gap from the yardage ranking explored in Hidden Intelligence below. The pass rush is below-average (1.5 sacks/gm generated, 27th) and takeaways have been rare (0.8 INT/gm generated, 18th).
+
+**Down/Distance:** Tampa Bay allows third-down conversions at just 32.7% (6th-best in the NFL) on 13.0 attempts faced per game — one of the stingiest situational defenses in football.
+
+**Red Zone Play Calling:** Opponents have split roughly evenly against Tampa Bay in the red zone — 50.0% run allowed (15th) and 50.0% pass allowed (19th).
 
 ---
 
 ## 4. MATCHUP INTELLIGENCE
 
-### Quarterbacks — and a genuine question mark
+### Quarterbacks
 
-**Baker Mayfield (TB)**, if he plays, brings a modest statistical season: 205.0 pass yds/gm across three starts (19th), 2 TD against an overall team interception rate of 1.2/gm (28th), and the league's worst sack rate behind him (4.0/gm, 32nd). His tiered splits are thin (n=1 in the "top" tier, from a Week 3 outing against Minnesota: 217 yards), but his road splits — relevant since TB travels to Dallas — show one game at 216 pass yds/gm, 82.1% completion, on 28 attempts (Week 1 at Cincinnati). Dallas's pass defense ranks 21st (242.5 pass yds/gm allowed) — a middle-tier matchup, not a daunting one, if Mayfield is upright. But the practice absence this week, combined with a Week 4 game he didn't play at all, makes his availability the swing factor for this entire offense. Confidence in him starting: LOW.
+**Jalon Daniels (TB)** takes over for the injured Baker Mayfield with a profile the evidence package can barely yet describe — two career appearances total, one of which (Week 3 at Minnesota) was three mop-up attempts on 6% of snaps. His one real sample is the Week 4 spot start against Green Bay: 148 yards, 19-of-27, 1 TD, a 70.4% completion rate, and a 13.4 DraftKings-point output. His season (and career) average sits at 74.0 pass yds/gm across those two appearances, which is not representative of what to expect from a full workload. He has no 2025 season to compare against — his career record begins this season. No home/road split exists for him yet either. One number worth flagging: in his limited sample, Daniels has been sacked at a 1.5/gm rate — far better than Mayfield's league-worst 4.33/gm — though with only two games (one of them token snaps) this is far too thin to treat as an established improvement in pass protection or play-extension ability. This week's opponent context (recomputed specifically for this matchup) tags Dallas's run defense as Daniels's most favorable matchup dimension (31st, "bottom" tier) and its pass defense as a middling "mid"-tier draw (21st). Confidence: LOW across the board — this is a genuinely unknown quantity.
 
-**Jalon Daniels (TB)**, the likely alternative, has thrown in exactly two games (both tiered "top" opponents, Minnesota and Green Bay — 148.0 air yds/gm and no 2025 season to compare against; he's a true first-year passer with zero prior-season sample). His Week 4 spot start against Green Bay (a tier-top opponent) produced 148 yards, 19-of-27 passing (70.4%), and a touchdown on 100% of the offensive snaps — a competent, not catastrophic, spot start, though the sample is a single real game. His Week 3 relief appearance (3 attempts, 0 yards) was mop-up duty and tells us little. If Daniels starts, expect a more conservative, shorter-field passing approach than Mayfield's season averages would otherwise suggest. Confidence: LOW, purely due to sample size.
-
-**Dak Prescott (DAL)** has been excellent and fully available: 266.2 pass yds/gm (7th), a 70.0% completion rate (4th), 8 TD, and an elite 0.2 int/gm (5th) behind the league's 5th-best protection (1.5 sacks/gm allowed). His home splits (2 games) show 277.5 pass yds/gm, a 118.0 rating, and 29.8 DK-pace output in his best outing (Week 2 vs. Washington, a tier-bottom pass defense). He has not yet faced a tier-top pass defense at home this season — his only tier-top matchup came on the road in Week 1 (175 yards vs. the Giants) — so there's no direct precedent for how he performs against a genuinely tough pass defense in Dallas specifically. That's relevant because Tampa Bay's pass defense, while ranked only 8th overall, is driven by a specific strength (limiting yards after the catch and explosive completions, 10.0 yds/completion allowed, 6th) without much pass rush behind it (1.5 sacks/gm generated, 27th) — meaning Prescott, who is excellent against the blitz (0.136 EPA/play blitzed, 64.0% completion) and even better unblitzed (0.345 EPA/play, 68.2% completion, 7.17 yds/play), should have a clean pocket to throw from regardless of pressure scheme. Confidence: HIGH that Dallas's passing attack functions efficiently; MEDIUM on the exact scale given no precedent against a defense built like Tampa Bay's.
+**Dak Prescott (DAL)** has started and played every offensive snap this season, averaging 266.3 pass yds/gm (7th in the NFL) with an excellent 70.0% completion rate (4th), 8 touchdowns against just 1 interception across four games (0.2 INT/gm, 5th), and a clean pocket behind him (1.5 sacks/gm allowed, 5th). At home, his average climbs to 277.5 pass yds/gm (n=2) — but the more relevant number this week comes from his tiered splits: in his lone game against a top-10-caliber pass defense this season (Week 1 at the Giants, a road game), Prescott was held to 175 yards, his lowest total of the year, well off his 307.0 yds/gm average against the two bottom-tier pass defenses he's otherwise faced. He has no home sample yet against a top-tier pass defense — this week, against a Tampa Bay unit ranked 8th in the NFL in pass yards allowed (214.2/gm), represents his first such test at home. That one road data point (175 yards against a comparable-tier defense) is a small but real signal to expect a number closer to his floor than his ceiling. Confidence: MEDIUM — directionally clear, but built on an n=1 tiered sample.
 
 ### Running Backs
 
-**Bucky Irving (TB)**, the clear lead back (57.7% rush share, 62.5% snap share), is averaging 60.2 rush yds/gm (15th among backs) and 15.2 rec yds/gm across four games, with a real receiving role (3.75 targets/gm, 12.4% target share). His contact-efficiency numbers show more yardage created after contact (1.73 yds after contact/carry) relative to a modest 2.57 yards before contact — a back who's creating some of his own yardage rather than relying purely on blocking, with 0.5 broken tackles/gm. His road split (his side this week) is one game — Week 1 at Cincinnati — where he posted a monster 45 rush yds on 8 carries plus 7 catches for 48 yards (21.3 DK-pace, his season ceiling). Dallas's run defense is a genuinely layered matchup to evaluate: the team-wide number (150.2 rush yds/gm allowed, 31st) looks like a disaster funnel, but the RB-specific split tells a more moderate story — 97.2 rush yds/gm allowed to running backs specifically (18th, middling), and Dallas actually limits long RB runs well (10+-yard runs allowed rank 6th, 12+-yard runs rank 4th). The gap between the team-wide number and the RB-specific number — roughly 53 rush yds/gm — is not explained by anything in this evidence package tied to running backs; it's most likely coming from scrambles or non-RB rushing that isn't broken out here. The honest takeaway: this is a favorable but not as lopsided a matchup for Irving as the headline team defensive rank alone would suggest. Confidence: MEDIUM.
+**Bucky Irving (TB)** is Tampa Bay's clear lead back (TB's RB1 by depth chart, 57.7% rush share, 62.5% snap share on the season), averaging 60.2 rush yds/gm with real receiving involvement (15.2 rec yds/gm, 3.2 rec/gm) and a modest rushing-efficiency profile — 1.73 yards after contact per carry and 2.57 yards before contact, with 0.5 broken tackles per game (his 2025 season rates were similar: 1.64 YAC, 1.76 YBC, 1.0 broken tackles/gm across 10 games, for context). His one career road game this season (Week 1 at Cincinnati) produced 45 rush yards and 48 receiving yards on 7 targets — his best game of the year by DraftKings output (21.3). Against bottom-tier run defenses specifically, Irving has averaged 75.0 rush yds/gm (n=2) — well above his season mark — but he has no recorded sample yet in the specific combination of "road game against a bottom-tier run defense" that would most precisely describe this week. This week's pre-tagged matchup context classifies Dallas's run defense as Irving's most favorable matchup of the season (31st overall, "bottom" tier) — but see Hidden Intelligence below for an important wrinkle in that read specific to running backs. Confidence: MEDIUM.
 
-**Kenny Gainwell (TB)** is the clear complementary piece — 13.4% rush share, but a real pass-catching role (3.0 tgt/gm, 9.9% target share) with a notably low 0.38 yards-before-contact average (almost no blocking help on his touches, 1.62 yards after contact), consistent with a change-of-pace, scramble-drill usage pattern rather than a schemed role.
-
-**Javonte Williams (DAL)** is the clear workhorse (66.0% rush share, 73.1% red-zone carry share, all 5 of his rushing touchdowns coming in the red zone) and the only player on either roster to carry a real Threat designation this week (see Section 5). His season averages are 57.8 rush yds/gm (18th) and 19.2 rec yds/gm (16th) on 4.25 targets/gm. His home splits are a clean, complete four-level read: 57.8 rush yds/gm season-wide, climbing to 64.0 rush yds/gm in his two home games this season (both of which happened to be against tier-top run defenses), which exactly matches his broader tier-top-matchup average regardless of site (63.3 rush yds/gm across 3 such games, with 4 of his 5 rushing touchdowns coming in that bucket) — a back who has actually produced better, not worse, against tough run defenses this season, against a Tampa Bay run defense that ranks 3rd in the league (78.5 rush yds/gm allowed). That's a real tension worth sitting with: Tampa Bay's run defense is legitimately elite, yet Williams's own history says tough run funnels haven't been where he struggles. His contact numbers (2.27 yards before contact, 1.45 after, 0.75 broken tackles/gm) show more blocking-created than self-created yardage — a scheme-and-push runner more than an elusive one, which may matter against Tampa Bay's physical front. Confidence: MEDIUM.
+**Javonte Williams (DAL)** is Dallas's clear lead back and primary red-zone weapon — a 66.0% rush share, and remarkably, 73.1% of Dallas's red-zone carries and all five of his rushing touchdowns have come from inside the 20 (21 red-zone touches, 19 red-zone carries). His season average is 57.75 rush yds/gm, climbing to 64.0 at home (n=2) — and in a genuinely precise match for this week's exact circumstances, those same two home games both came against top-10-caliber run defenses, the identical combination Tampa Bay (3rd against the run, 78.5 yds/gm allowed) represents this week. In that specific home-and-top-tier-opponent sample (n=2), Williams has still produced 64.0 rush yds/gm — a genuinely useful, directly comparable data point given how rare it is to have the exact matchup type already represented. His broader "vs. top-tier run defense" career sample (n=3, including one road game) sits at 63.3 rush yds/gm with 4 of his 5 rushing touchdowns. Confidence: MEDIUM-HIGH — this is about as clean a precedent as this kind of citation gets.
 
 ### Wide Receivers / Tight Ends
 
-**Emeka Egbuka (TB)** is Tampa Bay's clear WR1 (85.0% snap share, 19.8% target share), averaging 38.5 rec yds/gm on 6.0 targets/gm. His road split (Week 1 at Cincinnati) shows 63 yards on 5 catches (6 targets, 22.2% target share) — his season-best outing. Dallas's pass defense specifically against wide receivers ranks 24th (168.2 rec yds/gm allowed) — a bottom-tier, favorable matchup. Whichever quarterback plays for Tampa Bay, Egbuka projects as the first read. Confidence: MEDIUM (tempered entirely by the QB uncertainty above, not by the matchup itself).
+**CeeDee Lamb (DAL)** is the focal point of the league's most productive wide receiver room — a 31.9% target share, 11.5 targets/gm, and 124.5 rec yds/gm across four games, with 7 red-zone targets and 3 red-zone touchdowns. His home average climbs to 132.5 rec yds/gm (n=2). Notably, Lamb has not yet faced a top-tier pass defense this season in any context — his tiered splits show 98.5 rec yds/gm against mid-tier opponents (n=2) and 150.5 against bottom-tier (n=2), with no top-tier sample at all, at home or on the road. Tampa Bay represents his first real top-tier defensive test of 2026, and it's a particularly tough one on paper: Tampa Bay ranks 2nd in the NFL in wide receiver yards allowed (105.8/gm). The complicating factor is personnel, not scheme — Tampa Bay's top two defensive backs, Antoine Winfield Jr. and Benjamin Morrison, are both out this week (see Injury Report), meaning that 2nd-ranked number reflects a unit that will not be fully intact on Monday night. Confidence: LOW-MEDIUM — the raw matchup says tough test, the shorthanded secondary says don't assume the full statistical strength holds.
 
-**Chris Godwin Jr. (TB)** remains a real secondary target (14.9% target share, 80.8% snap share), averaging 35.5 rec yds/gm; his Week 4 game (31 yards on 6 catches, a 26.9% target share) shows he can still be the lead read in a given week.
+**George Pickens (DAL)** is Dallas's clear WR2 — 19.4% target share, 56.25 rec yds/gm, 4.5 rec/gm — but has yet to score a touchdown this season despite 3 red-zone targets. His production has been fairly stable across opponent tiers (34.0 mid-tier avg n=2, 78.5 bottom-tier avg n=2, driven heavily by a 75-yard, 37.5 yards-per-catch outlier against Houston).
 
-**CeeDee Lamb (DAL)** is the engine of this entire offense — a staggering 31.9% target share (11.5 targets/gm) producing 124.5 rec yds/gm (and a 44.3 DK-pace, 17-catch, 21-target explosion in Week 4 against Houston). His home splits (2 games) show 132.5 rec yds/gm. The genuinely useful piece of context here: Lamb has not faced a single tier-top pass defense all season (zero games in that bucket) — his toughest-ranked opponent to date was only middle-of-the-pack (Week 1 at the Giants, a 13th-ranked unit). Tampa Bay's pass defense specifically against wide receivers ranks 2nd in the league (105.8 rec yds/gm allowed) and 1st in limiting WR first downs (4.5/gm) — by a clear margin, the toughest individual WR matchup Lamb has seen this season, and there's no precedent in his own 2026 log for how he performs against a unit this good. Given his volume, some production is close to guaranteed, but the version of Lamb that's torched bottom-tier defenses (150+ yards in two of his last three games) is not the version this specific matchup profile would predict. Confidence: MEDIUM — his talent and target share are evidence enough for a real floor, but the specific defensive quality argues against assuming a repeat of his recent ceiling games.
+**Jake Ferguson (DAL)** has quietly been one of the most red-zone-efficient weapons in this game — all 3 of his touchdowns this season have come on red-zone targets (4 red-zone targets, 4 red-zone receptions, 3 touchdowns — essentially automatic once targeted inside the 20), despite modest overall volume (20.75 rec yds/gm, 3.75 targets/gm, 10.4% target share). Tampa Bay's tight end defense is a real soft spot — 27th in the NFL, allowing 68.2 rec yds/gm to the position — in sharp contrast to Tampa Bay's elite wide receiver defense. That gap (2nd vs. WR, 27th vs. TE) is a notable funnel for Dallas to target with Ferguson, particularly near the goal line. Confidence: MEDIUM-HIGH.
 
-**George Pickens (DAL)** is averaging 56.25 rec yds/gm (19.4% target share), with his two best games (82 and 75 yards) both coming against bottom-tier pass defenses (Baltimore, Houston) — his home average sits at 61.0 rec yds/gm across two games, both against middle-or-worse units, so there's similarly no precedent yet for how he performs against Tampa Bay's specific strength.
+**Emeka Egbuka (TB)** is Tampa Bay's clear WR1 (19.8% target share, 85% snap share, Tampa Bay's RB1-equivalent among pass-catchers), averaging 38.5 rec yds/gm on 6.0 targets/gm. His lone career road game this season (Week 1 at Cincinnati, also his only game against a top-tier opponent) produced 63.0 rec yds/gm on 5 catches — his best output of the year — while his one game against a bottom-tier defense (Week 2 at Cleveland) produced just 16.0 yards, a reminder that his small samples don't yet point cleanly in either direction. Dallas's defense ranks 24th against wide receivers (168.2 rec yds/gm allowed) — a favorable, bottom-tier matchup on paper, though no tier-and-site-matched sample exists yet to confirm how Egbuka performs specifically on the road against a defense this generous. Confidence: MEDIUM.
 
-**Cade Otton (TB)**, Tampa Bay's clear TE1 (94.0% snap share, 19.0% target share), is averaging 39.25 rec yds/gm; his Week 4 game against a tier-top opponent (Green Bay) still produced 37 yards on 4 catches, suggesting a stable floor regardless of opponent quality. Dallas's TE defense ranks 19th (52.8 rec yds/gm allowed) — a roughly middle-of-the-pack matchup.
+**Chris Godwin Jr. (TB)** remains a real complementary target (14.9% target share, 35.5 rec ypg across four games) with his own best game this season also coming in that same Week 1 road game (40.0 rec yds, 4/4 targets).
 
-**Jake Ferguson (DAL)** is the more interesting tight end story: a modest overall receiving line (20.75 rec yds/gm) that masks a real, concentrated red-zone role — all 3 of his touchdowns this season have come in the red zone (16.7% red-zone target share), and his home splits show exactly that identity: 33.0 rec yds/gm and all 3 touchdowns in his two home games, a 77.8% catch rate. Tampa Bay's tight end defense is a clear soft spot — 27th in the league (68.2 rec yds/gm allowed) and 27th in touchdowns allowed to the position. This is a genuinely favorable, name-specific matchup for a player whose value is concentrated almost entirely near the goal line. Confidence: MEDIUM-HIGH.
+**Cade Otton (TE, TB)** is a high-floor, high-target TE1 (19.0% target share, 94% snap share, 39.25 rec yds/gm) without a touchdown yet this season despite 2 red-zone targets. Dallas's tight end defense sits in the middle of the pack (19th, 52.8 rec yds/gm allowed) — a more neutral matchup than Tampa Bay's own tight end weakness on the other side of the ball.
 
-**Ryan Flournoy (DAL)** is worth a brief flag as a red-zone-target afterthought — a real 20.8% red-zone target share (5 targets) but zero red-zone catches or touchdowns to show for it, a real inefficiency rather than a role Tampa Bay needs to specifically game-plan around.
+### Coverage & Scheme
 
-### Coverage, Scheme, and What's Not Available
-
-This evidence package does not include team-level man/zone coverage-rate data (`team_coverage_rate`), individual quarterback or receiver man/zone performance splits (`coverage_qb`/`coverage_wr`/`coverage_te`), or any individual CB/DB performance rankings (`cb_db_rankings`) for either team this week — all three fields came back empty in evidence. That means no man-vs-zone scheme read and no individual secondary-matchup detail (e.g., which cornerback travels with which receiver) can be responsibly offered this week; stating otherwise would be fabrication. What the evidence does support, at the quarterback and receiver level specifically, is blitz performance (noted with the caveat that the opponent's own blitz rate/rank fields are tagged to each team's *actual* prior opponents, not recomputed for this Tampa Bay-Dallas pairing, and are excluded below — only each player's own opponent-independent blitz splits are used):
-
-- **Baker Mayfield** is below replacement both blitzed and unblitzed (-0.39 EPA/play blitzed, 33.3% success rate, on 39 pass plays; -0.245 EPA/play unblitzed, 35.7% success, on 70 plays) — a tough season regardless of pressure look.
-- **Dak Prescott** is efficient either way but far more explosive unblitzed (0.345 EPA/play, 68.2% completion, 7.17 yds/play on 107 plays) than blitzed (0.136 EPA/play, 64.0% completion, 5.34 yds/play on 50 plays) — still positive value facing pressure, just less explosive.
-- **Emeka Egbuka** shows a real split — 78.6% completion and 0.543 EPA/target unblitzed (14 targets) collapsing to 40.0% completion and -0.934 EPA/target blitzed (10 targets) — a legitimate vulnerability if Tampa Bay's quarterback, whoever it is, faces pressure looks.
-- **CeeDee Lamb** is elite in both circumstances but dramatically more explosive unblitzed (84.8% completion, 12.03 yds/play, 1.052 EPA/target on 33 targets) than blitzed (64.3% completion, 7.36 yds/play, 0.494 EPA/target on 14 targets) — still a strong target even under pressure looks, just not his ceiling form.
+No man/zone coverage splits, team coverage-rate data, or CB/DB ranking data are available in this week's evidence package for either team — this evidence category came back empty for this matchup, and no coverage-shell-level analysis can be responsibly produced as a result. The blitz data that is available (Dak Prescott and the Tampa Bay quarterback's own career blitz/no-blitz splits) carries an explicit flag in the evidence that its opponent-context fields (blitz rate faced, blitz-rate rank) are tied to each team's prior opponent, not recomputed for this specific matchup, and are therefore not used here. Dak Prescott's own career splits do show he remains efficient when blitzed (64.0% completion, +0.136 EPA/play, n=50) relative to unblitzed snaps (68.2%, +0.345 EPA/play, n=107) — a real but modest gap, included here only as a general scouting note rather than a claim about how often Tampa Bay specifically will blitz him.
 
 ---
 
 ## 5. THREAT INTELLIGENCE
 
-Football Intel's deterministic Threat Engine flags a player when their own season rank in a specific statistical category AND the upcoming opponent's defensive rank in that *same* category both clear a tier's threshold at the same time — Nuclear requires the player ranked top 3 and the opposing defense ranked 30th or worse in that category; Elite requires top 5 and a defense ranked 28th or worse; Standard requires top 10 and a defense ranked 23rd or worse. "Double," "Triple," and "Quadruple" describe how many categories converged — Double means one category cleared both thresholds.
+Football Intel's deterministic Threat Engine flags a player when their own season rank in a specific statistical category AND the upcoming opponent's defensive rank in that same category both clear a tier's threshold — the convergence of individually elite production and a genuinely exploitable matchup in the same stat, not either signal in isolation. The three tiers use these exact thresholds (player rank is 1st-best; defense rank is 1st-toughest, so a high defense-rank number means a weak defense): **Nuclear** — player ranks top 3 in the category AND the opponent ranks 30th or worse in that same category; **Elite** — player top 5 AND opponent 28th or worse; **Standard** — player top 10 AND opponent 23rd or worse. A "Double" designation means one category converged on both thresholds; "Triple" and "Quadruple" reflect additional categories converging.
 
-**Javonte Williams (DAL, RB) — Standard tier, Double, converged on receptions.** Williams ranks 7th in the league in receptions per game among backs (3.75/gm, well inside the top-10 threshold), and Tampa Bay's defense ranks 30th against running back receptions (6.2 rec/gm allowed, the single weakest number in this entire evidence package) — comfortably clearing the Standard tier's 23rd-or-worse threshold. This is specifically a reception-volume signal, not a rushing or touchdown signal: Williams's rushing profile (18th, not top-10) and receiving-yardage profile (16th) don't clear any threshold on their own, and the category that does converge sits against a Tampa Bay run defense that is otherwise genuinely elite (3rd in the league team-wide, 18th specifically against backs). The honest read: this designation says Williams is a likely target for a handful of checkdown receptions regardless of how Tampa Bay's front performs against the run itself — a real, evidence-backed signal, but a narrow one that shouldn't be read as "Williams's whole workload is a smash spot." Confidence: MEDIUM.
+**One Threat fired for this matchup: Javonte Williams (DAL RB), Standard tier, Double type, in the receiving category.** Williams ranks 7th among all NFL running backs in receptions per game (3.75), and Tampa Bay's defense ranks 30th in the league in receptions per game allowed to running backs (6.2/gm) — both thresholds for Standard tier are cleared (player top 10, defense 23rd-or-worse). This is a real, evidence-supported convergence, and it connects cleanly to Matchup Intelligence above: Tampa Bay's run defense is genuinely tough on the ground (3rd against the run, and specifically difficult for lead backs — see Hidden Intelligence for more detail), which argues against expecting Williams's workload to come from between-the-tackles rushing volume. The receiving thread is a different, less-defended avenue, and one Dallas already leans on (Williams carries real receiving usage — 3.75 targets/gm, 1 receiving touchdown already this season). The Threat reflects season-long statistical tendency, not a guarantee independent of game script — if Dallas trails and leans pass-heavy, or if Williams's snap share is challenged by Tyler Goodson/Emari Demercado in passing situations, this designation's practical impact narrows. Confidence: MEDIUM.
 
-No other player on either roster cleared a Threat designation this week. That includes both Tampa Bay quarterbacks (neither ranks inside the top-10 in any qualifying category this season) and Tampa Bay's wide receivers, despite a favorable matchup against Dallas's 24th-ranked WR defense — the convergence specifically requires a player's own rank to clear the threshold too, and no Tampa Bay receiver's individual season ranking (19th for Egbuka, 20th-plus for others) is high enough on its own. The absence of a Threat here does not mean the absence of a real matchup edge — Section 4 above identifies several (Ferguson's red-zone role against Tampa Bay's weak TE defense, in particular) that simply don't meet this specific convergence system's thresholds.
+No other starter for either team — Jalon Daniels, Bucky Irving, Emeka Egbuka, Cade Otton, Dak Prescott, George Pickens, CeeDee Lamb, or Jake Ferguson — cleared a Threat threshold in any category this week. That absence does not mean nothing interesting is happening with those players; Matchup Intelligence above identifies real, evidence-backed edges (Ferguson's red-zone funnel, Lamb's first top-tier test, Williams's rushing precedent) that simply don't meet this specific system's convergence bar.
 
 ---
 
 ## 6. HIDDEN INTELLIGENCE & CONTEXTUAL ANALYSIS
 
-**Finding 1: Tampa Bay's own opponent-quality splits argue the team should lean harder into the run this week than its season rushing average suggests — and the quarterback situation may force exactly that.** Tampa Bay's own contextual data shows its rushing output nearly doubles against weaker run defenses: 73.0 rush yds/gm as a team against tier-top run defenses (2 games) versus 141.0 rush yds/gm against tier-bottom run defenses (1 game) — almost exactly the bucket Dallas's defense falls into this week (31st against the run team-wide). Layered on top of that, Tampa Bay's own week-to-week pattern this season has shown a real inverse relationship between Baker Mayfield's passing performance and the team's rushing output: Week 1 (Mayfield hit his passing mark, team rush output was below-mark), Week 2 (reversed — Mayfield missed his mark, rushing hit), Week 3 (reversed again — Mayfield hit, rushing missed). That's a small sample (n=3), but it's a consistent, game-script-driven pattern in every game logged. The practical implication for this specific matchup: if Mayfield is out or limited by his thumb injury and Jalon Daniels starts, Tampa Bay's own history says the offense is more likely to lean on the ground game by both game-script necessity and matchup logic — positioning Bucky Irving for a real workload bump against a defense that, by Tampa Bay's own team-wide splits, is exactly the kind of opponent this offense runs well against. Confidence: MEDIUM (the opponent-quality logic is strong; the QB-health contingency and small sample size keep this from HIGH).
+**Finding 1: Dallas's league-worst run defense ranking is driven disproportionately by non-running-back rushing, which meaningfully tempers how favorable this matchup actually is for Bucky Irving specifically.** Dallas's team-wide run defense ranks 31st in the NFL, allowing 150.2 rush yards per game — on the surface, one of the two or three worst run defenses in football, and the matchup system's own pre-computed tag classifies this as a "bottom"-tier run-defense matchup for Irving using exactly that number. But broken down by position, Dallas's defense against running backs specifically ranks a far more ordinary 18th, allowing 97.2 rush yards per game — more than 50 yards per game better than the team-wide figure implies. The gap (53.0 yards/gm) means roughly a third of what Dallas allows on the ground is coming from non-running-back sources: quarterback scrambles, designed quarterback runs, and similar play types, not traditional backfield carries. By contrast, Tampa Bay's own run defense shows no such gap — 3rd overall (78.5 yds/gm) and 3rd specifically against running backs (62.5 yds/gm), a consistent number either way. This matters directly for how to read Irving's outlook: the eye-catching "31st-ranked" Dallas run defense is not the smash-spot for a traditional between-the-tackles back that the team-wide number suggests; a run defense that ranks 18th against running backs specifically is a middling, not a dominant, matchup. If anyone on Tampa Bay's side benefits disproportionately from this specific split, it's more likely to be Jalon Daniels's own scrambling tendency as a new, less experienced starter than Irving's traditional carries. Confidence: MEDIUM — the underlying team-vs-position rank gap is real and large, though the inference about which player benefits is reasoning rather than a directly labeled data point.
 
-**Finding 2: Tampa Bay's defense allows far more points than its yardage numbers predict — and the team's own offense is the more likely explanation than the defense itself.** Tampa Bay ranks 3rd in the league in total defense (292.8 ypg allowed), 3rd against the run, and 6th in third-down defense (32.7% allowed) — by any normal measure, an excellent unit. Yet it ranks just 20th in points allowed per game (24.0). The evidence points to the offense, not the defense, as the bridge: Tampa Bay's offense carries the league's 28th-ranked interception rate (1.2/gm) and, more tellingly, its own contextual splits show the offense scoring *no better* against weak opponents than strong ones — 16.0 points/gm against tier-top defenses (1 game) versus just 14.0 points/gm against tier-bottom defenses (1 game), actually the *lowest* of the three tiers it has faced. That's a small sample, but it's a specific, real signal that Tampa Bay's offensive dysfunction isn't a product of facing good defenses — it's happening regardless of matchup quality, which is exactly the kind of chronic issue that hands opposing offenses short fields and inflates a defense's points-allowed number independent of how well that defense is actually playing snap-to-snap. The implication for Dallas: even against a defense that profiles as elite by yardage, Dallas's own offense (2nd in scoring) should not be discouraged by Tampa Bay's name-brand defensive numbers — the scoreboard history says those numbers haven't actually translated to stopping teams from scoring, and the likely reason sits with Tampa Bay's own offense, not its defense. Confidence: MEDIUM (the turnover-rate connection is well-supported; the point about Tampa Bay's flat scoring-by-tier split is directionally compelling but rests on an n=1/n=2/n=1 sample).
+**Finding 2: Tampa Bay's ground game — and Irving specifically — has shown a pattern of being used more, and hitting his number more often, when the passing game is cold rather than hot, the inverse of the usual "run game feeds off play-action success" script.** Across his broader sample, Irving has hit his own rushing average in 71.4% of games where Tampa Bay's quarterback was below his own passing average (n=7), compared to just 50.0% of games where the quarterback was hot (n=6). The relationship runs the other way too: Tampa Bay's quarterback has hit his own passing average in only 37.5% of games where Irving was rushing well (n=8), versus 60.0% when Irving was having a quiet day (n=5). Read together, this suggests Tampa Bay's rushing attack functions more as a changeup when the passing game stalls than as a complementary piece that rides alongside passing success — relevant this week specifically because Tampa Bay is turning to a first-time-starter-caliber quarterback (Jalon Daniels) behind an offense that already ranks 26th in passing yardage and allows the league's worst sack rate. If Daniels struggles early, as the broader profile would suggest is plausible, this pattern argues Tampa Bay is more likely — not less — to lean further into Irving and the ground game rather than abandon it, somewhat independent of whether Dallas's defense is specifically the type of run-funnel defense Finding 1 above complicates. Confidence: LOW — both sides of this split rest on single-digit sample sizes spanning more than this season alone.
+
+**Finding 3: Tampa Bay's defense ranks dramatically better against the yard (3rd in the NFL) than it does against the scoreboard (20th in points allowed) — a 17-spot gap that is the single largest disconnect between a yardage rank and a scoring rank for either unit in this game, and it points toward a real risk that this game runs higher-scoring than the defensive statistics alone would suggest.** A unit this stingy by total yardage would typically also rank near the top in points allowed; Tampa Bay's defense does not. The most likely contributing factor sits on the other side of the ball: Tampa Bay's own offense carries the league's highest sack rate allowed (4.0/gm, 32nd) and a well-below-average 1.2 INT/gm giveaway rate (28th) — both the kind of events that hand an opponent a short field and inflate points allowed independent of how many total yards the defense actually surrenders on long, methodical drives. Context Expansion: Tampa Bay's own point-differential-by-tier split (16.0 points allowed... [context: these are TB's own points scored splits, used here for the broader picture] combined with the sack/turnover profile) supports a defense that is frequently playing from a compromised field-position starting point rather than one that is simply bad at finishing drives. This matters directly for this matchup: Dallas already ranks 2nd in the NFL in scoring (30.5 ppg); if Tampa Bay's offense — now breaking in a new starting quarterback — turns the ball over or takes sacks at anything close to its season rate, Tampa Bay's genuinely good defense could be placed in exactly the kind of short-field, high-scoring-environment spots that have inflated its own points-allowed number all season, working against the "defensive slog" read that Tampa Bay's yardage numbers alone would suggest. Confidence: MEDIUM — the yardage-vs-points gap is a real, verifiable number; the turnover/field-position mechanism behind it is a reasonable but unconfirmed inference.
 
 ---
 
 ## 7. COEUS FINAL READ
 
-**Keys to the Game.**
+**Keys to the Game:**
 
-*If Baker Mayfield cannot play* (a real, LOW-confidence but live possibility given his DNP status and missing Week 4 game log), expect Tampa Bay to lean further into exactly the run-funnel identity described in Hidden Intelligence Finding 1 — a conservative, Jalon Daniels-led approach built around Bucky Irving against a Dallas run defense that ranks 31st in the league team-wide.
+- If Jalon Daniels struggles to move the offense through the air in his first real start, Tampa Bay's own tendencies (Finding 2) suggest a heavier-than-average reliance on Bucky Irving and the ground game — watch early-down run rate as the tell, bearing in mind (Finding 1) that Dallas's run defense is a more ordinary, mid-tier matchup against a traditional back than its team-wide 31st ranking implies.
+- If Dallas's offense sustains anywhere close to its 51.0% third-down conversion rate (4th in the NFL) against a Tampa Bay defense that allows just 32.7% (6th-best), that collision alone could decide the game regardless of how the individual skill-position matchups break — this is arguably the single most lopsided statistical pairing in this preview.
+- If Tampa Bay's offense turns the ball over or absorbs sacks at anything close to its season rate (1.2 INT/gm, 4.0 sacks/gm allowed, both among the league's worst), expect the short-field consequences described in Finding 3 to push this toward a higher-scoring game than Tampa Bay's genuinely strong defensive yardage numbers would otherwise suggest.
+- If Jake Ferguson sees red-zone volume, his season-long conversion rate there (3 touchdowns on 4 red-zone targets) paired with Tampa Bay's 27th-ranked tight end defense is one of the cleaner individual mismatches in this game.
 
-*If Dallas's offense operates at its season-long third-down level* (51.0% conversion, 4th in the league) against a Tampa Bay third-down defense that is genuinely strong (32.7% allowed, 6th), that's the most contested individual matchup in this game and a real check on whether Dallas's offense functions as smoothly as its box-score darling (CeeDee Lamb) would suggest. If Dallas's offense instead performs to its *defense's* third-down level — the 52.3%-allowed number that makes this Dallas unit so leaky — that's a sign the whole game is trending toward a track meet rather than a Dallas-controlled walkover.
-
-*If Tampa Bay's banged-up secondary (Antoine Winfield Jr. and Benjamin Morrison both held out of practice) is further compromised on Thursday*, the league's 2nd-ranked WR pass defense is the single most fragile strength in this entire report, and CeeDee Lamb's volume alone (31.9% target share) could be enough to erase the matchup disadvantage his own tier splits otherwise suggest.
-
-**The Verdict.** The broad-strokes case for Dallas — a top-2 scoring offense against a winless team with a genuinely uncertain starting quarterback — is real and should not be dismissed. But this is not as lopsided a game as the records alone imply. Tampa Bay's defense has quietly been one of the better units in football by the numbers that actually predict future performance (total yardage, third down, run defense), even if its own offense's turnovers have inflated its points-allowed number; and Dallas's defense carries two specific, well-documented weaknesses — the run (31st) and the third down (dead last, 52.3% allowed) — that Tampa Bay, even in a diminished offensive state, is capable of testing. The single biggest swing factor in this game is not a scheme matchup or a tendency — it's whether Baker Mayfield's thumb allows him to play. If he's out, lean toward a lower-scoring, run-centric version of this game where Tampa Bay's defense keeps it competitive longer than the box score projects. If he's in, Dallas's offensive advantage is real enough, and Tampa Bay's turnover-prone, worst-protection-in-football offense is live enough, that Dallas should be comfortably favored to control the game from the first quarter on. Confidence in that conditional framework: MEDIUM.
+**The Verdict:** The broad framing from Pregame Briefing — a stout Tampa Bay defense against a potent Dallas offense, with the deciding factor being whether Tampa Bay's defense can finally convert its yardage efficiency into a result — holds up, but the deeper work sharpens it in Dallas's favor. Dallas's third-down offense and Tampa Bay's third-down defense represent a genuine strength-on-strength collision Tampa Bay actually wins on paper, but it's largely canceled out by two factors working against Tampa Bay specifically this week: a true change at quarterback (Daniels making his first real start, in an offense that already can't protect the passer) and a shorthanded secondary (Winfield and Morrison both out) facing the league's best wide receiver room. Add Finding 3's yardage-vs-points gap — a Tampa Bay defense that has allowed more points than its yardage efficiency implies all season, likely tied to its own offense's giveaways — and the more probable shape of this game is a competitive first half that tilts toward Dallas as the game wears on, with Tampa Bay's defense keeping it from getting fully out of hand rather than controlling it outright. Confidence: MEDIUM.
 
 ---
 
 ### COEUS CHEAT SHEET
 
 **Team**
-- TB: 0-4, 19.0 ppg (25th) / 24.0 ppg allowed (20th)
-- DAL: 2-2, 30.5 ppg (2nd) / 28.0 ppg allowed (28th)
+- TB: 0-4, 19.0 ppg scored (25th) / 24.0 ppg allowed (20th)
+- DAL: 2-2, 30.5 ppg scored (2nd) / 28.0 ppg allowed (28th)
 
 **Passing**
-- Baker Mayfield (TB, Pending/DNP-thumb): 205.0 pass yds/gm (19th) — vs. DAL def: 242.5 pass yds/gm allowed (21st)
-- Jalon Daniels (TB, likely fill-in): 74.0 pass yds/gm (2 games, no 2025 season to compare) — vs. DAL def: 242.5 pass yds/gm allowed (21st)
-- Dak Prescott (DAL): 266.2 pass yds/gm (7th), 8 TD — vs. TB def: 214.2 pass yds/gm allowed (8th)
+- Jalon Daniels (TB, projected starter): 74.0 pass yds/gm career avg (n=2, thin sample) — vs. DAL pass defense: 242.5 yds/gm allowed (21st)
+- Dak Prescott (DAL): 266.2 pass yds/gm (7th), 8 TD, 0.2 INT/gm (5th) — vs. TB pass defense: 214.2 yds/gm allowed (8th)
 
 **Rushing**
-- Bucky Irving (TB RB1): 60.2 rush yds/gm (15th among backs) — vs. DAL def: 97.2 RB rush yds/gm allowed (18th); DAL team-wide rush D ranks 31st (150.2 yds/gm)
-- Javonte Williams (DAL RB1, Standard-tier Threat on receptions): 57.8 rush yds/gm (18th) — vs. TB def: 62.5 rush yds/gm allowed (3rd)
+- Bucky Irving (TB RB1): 60.2 rush yds/gm — vs. DAL rush defense: 150.2 yds/gm allowed (31st)
+- Javonte Williams (DAL RB1): 57.8 rush yds/gm, 5 rush TD — vs. TB rush defense: 78.5 yds/gm allowed (3rd)
 
 **Receiving**
-- Emeka Egbuka (TB WR1): 38.5 rec yds/gm, 19.8% target share — vs. DAL def: 168.2 WR rec yds/gm allowed (24th)
-- Chris Godwin Jr. (TB WR2): 35.5 rec yds/gm, 14.9% target share — vs. DAL def: 168.2 WR rec yds/gm allowed (24th)
-- Cade Otton (TB TE1): 39.25 rec yds/gm, 19.0% target share — vs. DAL def: 52.8 TE rec yds/gm allowed (19th)
-- CeeDee Lamb (DAL WR1): 124.5 rec yds/gm, 31.9% target share — vs. TB def: 105.8 WR rec yds/gm allowed (2nd)
-- George Pickens (DAL WR2): 56.25 rec yds/gm, 19.4% target share — vs. TB def: 105.8 WR rec yds/gm allowed (2nd)
-- Jake Ferguson (DAL TE1): 20.75 rec yds/gm, all 3 TD in the red zone — vs. TB def: 68.2 TE rec yds/gm allowed (27th)
+- Emeka Egbuka (TB WR1): 38.5 rec yds/gm, 19.8% target share — vs. DAL WR defense: 168.2 yds/gm allowed (24th)
+- Chris Godwin Jr. (TB WR2): 35.5 rec yds/gm, 14.9% target share — vs. DAL WR defense: 168.2 yds/gm allowed (24th)
+- Cade Otton (TB TE1): 39.25 rec yds/gm, 19.0% target share — vs. DAL TE defense: 52.8 yds/gm allowed (19th)
+- CeeDee Lamb (DAL WR1): 124.5 rec yds/gm, 31.9% target share — vs. TB WR defense: 105.8 yds/gm allowed (2nd)
+- George Pickens (DAL WR2): 56.25 rec yds/gm, 19.4% target share — vs. TB WR defense: 105.8 yds/gm allowed (2nd)
+- Jake Ferguson (DAL TE1): 20.75 rec yds/gm, 3/4 red-zone targets for TDs — vs. TB TE defense: 68.2 yds/gm allowed (27th)
 
 **Team Defense**
-- TB def: 214.2 pass yds/gm allowed (8th) / 78.5 rush yds/gm allowed (3rd) / 105.8 WR rec yds/gm allowed (2nd) / 68.2 TE rec yds/gm allowed (27th). Team coverage rate (man%/zone%): not available in evidence this week.
-- DAL def: 242.5 pass yds/gm allowed (21st) / 150.2 rush yds/gm allowed (31st) / 168.2 WR rec yds/gm allowed (24th) / 52.8 TE rec yds/gm allowed (19th). Team coverage rate: not available in evidence this week.
+- TB: pass 214.2 yds/gm allowed (8th) / rush 78.5 yds/gm allowed (3rd) / WR rec 105.8 yds/gm allowed (2nd) / TE rec 68.2 yds/gm allowed (27th)
+- DAL: pass 242.5 yds/gm allowed (21st) / rush 150.2 yds/gm allowed (31st) / WR rec 168.2 yds/gm allowed (24th) / TE rec 52.8 yds/gm allowed (19th)
+- Man/zone coverage rate: not available in this week's evidence package for either defense
 
 **Down/Distance**
 - TB offense: 34.5% third-down conversion (24th) | TB defense: 32.7% allowed (6th)
 - DAL offense: 51.0% third-down conversion (4th) | DAL defense: 52.3% allowed (31st)
 
 **Red Zone Play Calling**
-- TB offense: 44.1% run / 55.9% pass (20th/13th) | TB defense allowed: 50.0% run / 50.0% pass (15th/19th)
-- DAL offense: 52.0% run / 48.0% pass (12th/21st) | DAL defense allowed: 54.3% run / 45.7% pass (11th/22nd)
+- TB offense: 44.1% run / 55.9% pass (20th / 13th) | TB defense allows: 50.0% run / 50.0% pass (15th / 19th)
+- DAL offense: 52.0% run / 48.0% pass (12th / 21st) | DAL defense allows: 54.3% run / 45.7% pass (11th / 22nd)
 
 **Head-to-head**
-- No 2026 meeting between these teams; not a division matchup.
+- No meeting this season; Tampa Bay and Dallas are not division opponents and this is their only scheduled 2026 matchup.
 
 ---
 
 EVIDENCE_CHECK
 {"claims": [
-{"type":"log_opponent","player":"Bucky Irving","week":1,"stat":"rush_yds","claimed_rank":9},
-{"type":"log_opponent","player":"Bucky Irving","week":3,"stat":"rush_yds","claimed_rank":8},
-{"type":"log_opponent","player":"Baker Mayfield","week":3,"stat":"pass_yds","claimed_rank":10},
-{"type":"log_opponent","player":"Jalon Daniels","week":4,"stat":"pass_yds","claimed_rank":4},
-{"type":"log_opponent","player":"Dak Prescott","week":1,"stat":"pass_yds","claimed_rank":7},
-{"type":"log_opponent","player":"Dak Prescott","week":2,"stat":"pass_yds","claimed_rank":24},
-{"type":"log_opponent","player":"CeeDee Lamb","week":1,"stat":"rec_yds","claimed_rank":13},
-{"type":"log_opponent","player":"CeeDee Lamb","week":4,"stat":"rec_yds","claimed_rank":31},
-{"type":"log_opponent","player":"Javonte Williams","week":2,"stat":"rush_yds","claimed_rank":5},
-{"type":"log_opponent","player":"Javonte Williams","week":3,"stat":"rush_yds","claimed_rank":10},
-{"type":"log_opponent","player":"Javonte Williams","week":4,"stat":"rush_yds","claimed_rank":6},
-{"type":"log_opponent","player":"Javonte Williams","week":1,"stat":"rush_yds","claimed_rank":23},
-{"type":"log_opponent","player":"Jake Ferguson","week":3,"stat":"rec_yds","claimed_rank":8},
-{"type":"current_opponent","team":"DAL","pos":"QB","stat":"pass_ypg","role":"def","claimed_rank":21},
-{"type":"current_opponent","team":"DAL","pos":"RB","stat":"rush_ypg","role":"def","claimed_rank":18},
-{"type":"current_opponent","team":"DAL","pos":"TEAM","stat":"rush_ypg","role":"def","claimed_rank":31},
-{"type":"current_opponent","team":"DAL","pos":"WR","stat":"rec_ypg","role":"def","claimed_rank":24},
-{"type":"current_opponent","team":"DAL","pos":"TE","stat":"rec_ypg","role":"def","claimed_rank":19},
-{"type":"current_opponent","team":"DAL","pos":"RB","stat":"r10_pg","role":"def","claimed_rank":6},
-{"type":"current_opponent","team":"DAL","pos":"RB","stat":"r12_pg","role":"def","claimed_rank":4},
-{"type":"current_opponent","team":"TB","pos":"QB","stat":"pass_ypg","role":"def","claimed_rank":8},
-{"type":"current_opponent","team":"TB","pos":"RB","stat":"rush_ypg","role":"def","claimed_rank":3},
-{"type":"current_opponent","team":"TB","pos":"RB","stat":"rec_pg","role":"def","claimed_rank":30},
-{"type":"current_opponent","team":"TB","pos":"WR","stat":"rec_ypg","role":"def","claimed_rank":2},
-{"type":"current_opponent","team":"TB","pos":"WR","stat":"fd_pg","role":"def","claimed_rank":1},
-{"type":"current_opponent","team":"TB","pos":"TE","stat":"rec_ypg","role":"def","claimed_rank":27},
-{"type":"current_opponent","team":"TB","pos":"TE","stat":"td","role":"def","claimed_rank":27},
-{"type":"current_opponent","team":"TB","pos":"TEAM","stat":"total_ypg","role":"def","claimed_rank":3},
-{"type":"current_opponent","team":"TB","pos":"TEAM","stat":"third_down_pct_allowed","role":"def","claimed_rank":6},
-{"type":"current_opponent","team":"DAL","pos":"TEAM","stat":"third_down_pct_allowed","role":"def","claimed_rank":31},
-{"type":"current_opponent","team":"DAL","pos":"TEAM","stat":"third_down_conversion_pct","role":"off","claimed_rank":4},
-{"type":"current_opponent","team":"TB","pos":"TEAM","stat":"int_pg","role":"off","claimed_rank":28},
-{"type":"current_opponent","team":"TB","pos":"TEAM","stat":"sacks_pg","role":"off","claimed_rank":32},
 {"type":"current_opponent","team":"TB","pos":"TEAM","stat":"ppg","role":"off","claimed_rank":25},
+{"type":"current_opponent","team":"TB","pos":"TEAM","stat":"total_ypg","role":"off","claimed_rank":26},
+{"type":"current_opponent","team":"TB","pos":"TEAM","stat":"pass_ypg","role":"off","claimed_rank":26},
+{"type":"current_opponent","team":"TB","pos":"TEAM","stat":"rush_ypg","role":"off","claimed_rank":17},
+{"type":"current_opponent","team":"TB","pos":"TEAM","stat":"fd_pg","role":"off","claimed_rank":28},
 {"type":"current_opponent","team":"TB","pos":"TEAM","stat":"ppg","role":"def","claimed_rank":20},
+{"type":"current_opponent","team":"TB","pos":"TEAM","stat":"total_ypg","role":"def","claimed_rank":3},
+{"type":"current_opponent","team":"TB","pos":"TEAM","stat":"pass_ypg","role":"def","claimed_rank":8},
+{"type":"current_opponent","team":"TB","pos":"TEAM","stat":"rush_ypg","role":"def","claimed_rank":3},
+{"type":"current_opponent","team":"TB","pos":"TEAM","stat":"fd_pg","role":"def","claimed_rank":5},
 {"type":"current_opponent","team":"DAL","pos":"TEAM","stat":"ppg","role":"off","claimed_rank":2},
+{"type":"current_opponent","team":"DAL","pos":"TEAM","stat":"total_ypg","role":"off","claimed_rank":14},
+{"type":"current_opponent","team":"DAL","pos":"TEAM","stat":"pass_ypg","role":"off","claimed_rank":7},
+{"type":"current_opponent","team":"DAL","pos":"TEAM","stat":"rush_ypg","role":"off","claimed_rank":25},
+{"type":"current_opponent","team":"DAL","pos":"TEAM","stat":"fd_pg","role":"off","claimed_rank":8},
+{"type":"current_opponent","team":"DAL","pos":"TEAM","stat":"ppg","role":"def","claimed_rank":28},
+{"type":"current_opponent","team":"DAL","pos":"TEAM","stat":"total_ypg","role":"def","claimed_rank":29},
+{"type":"current_opponent","team":"DAL","pos":"TEAM","stat":"pass_ypg","role":"def","claimed_rank":21},
+{"type":"current_opponent","team":"DAL","pos":"TEAM","stat":"rush_ypg","role":"def","claimed_rank":31},
+{"type":"current_opponent","team":"DAL","pos":"TEAM","stat":"fd_pg","role":"def","claimed_rank":29},
+{"type":"current_opponent","team":"TB","pos":"TEAM","stat":"third_down_conversion_pct","role":"off","claimed_rank":24},
+{"type":"current_opponent","team":"TB","pos":"TEAM","stat":"third_down_pct_allowed","role":"def","claimed_rank":6},
+{"type":"current_opponent","team":"DAL","pos":"TEAM","stat":"third_down_conversion_pct","role":"off","claimed_rank":4},
+{"type":"current_opponent","team":"DAL","pos":"TEAM","stat":"third_down_pct_allowed","role":"def","claimed_rank":31},
+{"type":"current_opponent","team":"TB","pos":"TEAM","stat":"red_zone_run_pct","role":"off","claimed_rank":20},
+{"type":"current_opponent","team":"TB","pos":"TEAM","stat":"red_zone_pass_pct","role":"off","claimed_rank":13},
+{"type":"current_opponent","team":"TB","pos":"TEAM","stat":"red_zone_run_pct_allowed","role":"def","claimed_rank":15},
+{"type":"current_opponent","team":"TB","pos":"TEAM","stat":"red_zone_pass_pct_allowed","role":"def","claimed_rank":19},
+{"type":"current_opponent","team":"DAL","pos":"TEAM","stat":"red_zone_run_pct","role":"off","claimed_rank":12},
+{"type":"current_opponent","team":"DAL","pos":"TEAM","stat":"red_zone_pass_pct","role":"off","claimed_rank":21},
+{"type":"current_opponent","team":"DAL","pos":"TEAM","stat":"red_zone_run_pct_allowed","role":"def","claimed_rank":11},
+{"type":"current_opponent","team":"DAL","pos":"TEAM","stat":"red_zone_pass_pct_allowed","role":"def","claimed_rank":22},
+{"type":"current_opponent","team":"TB","pos":"QB","stat":"sacks_pg","role":"off","claimed_rank":32},
+{"type":"current_opponent","team":"TB","pos":"QB","stat":"int_pg","role":"off","claimed_rank":28},
+{"type":"current_opponent","team":"TB","pos":"QB","stat":"comp_pct","role":"off","claimed_rank":18},
+{"type":"current_opponent","team":"TB","pos":"QB","stat":"pass_td","role":"off","claimed_rank":30},
 {"type":"current_opponent","team":"DAL","pos":"QB","stat":"comp_pct","role":"off","claimed_rank":4},
-{"type":"current_opponent","team":"DAL","pos":"QB","stat":"int_pg","role":"off","claimed_rank":5},
 {"type":"current_opponent","team":"DAL","pos":"QB","stat":"sacks_pg","role":"off","claimed_rank":5},
+{"type":"current_opponent","team":"DAL","pos":"QB","stat":"int_pg","role":"off","claimed_rank":5},
+{"type":"current_opponent","team":"DAL","pos":"QB","stat":"pass_td","role":"off","claimed_rank":8},
+{"type":"current_opponent","team":"TB","pos":"QB","stat":"sacks_pg","role":"def","claimed_rank":27},
+{"type":"current_opponent","team":"TB","pos":"QB","stat":"int_pg","role":"def","claimed_rank":18},
+{"type":"current_opponent","team":"TB","pos":"QB","stat":"comp_pct","role":"def","claimed_rank":28},
+{"type":"current_opponent","team":"TB","pos":"QB","stat":"pass_td","role":"def","claimed_rank":20},
+{"type":"current_opponent","team":"DAL","pos":"QB","stat":"sacks_pg","role":"def","claimed_rank":28},
+{"type":"current_opponent","team":"DAL","pos":"QB","stat":"int_pg","role":"def","claimed_rank":32},
+{"type":"current_opponent","team":"DAL","pos":"QB","stat":"comp_pct","role":"def","claimed_rank":30},
+{"type":"current_opponent","team":"DAL","pos":"QB","stat":"pass_td","role":"def","claimed_rank":27},
+{"type":"current_opponent","team":"TB","pos":"RB","stat":"rush_ypg","role":"off","claimed_rank":27},
+{"type":"current_opponent","team":"TB","pos":"RB","stat":"rec_ypg","role":"off","claimed_rank":18},
+{"type":"current_opponent","team":"DAL","pos":"RB","stat":"rush_ypg","role":"off","claimed_rank":24},
+{"type":"current_opponent","team":"DAL","pos":"RB","stat":"rush_td","role":"off","claimed_rank":5},
+{"type":"current_opponent","team":"TB","pos":"RB","stat":"rush_ypg","role":"def","claimed_rank":3},
+{"type":"current_opponent","team":"TB","pos":"RB","stat":"rec_ypg","role":"def","claimed_rank":26},
+{"type":"current_opponent","team":"TB","pos":"RB","stat":"rec_pg","role":"def","claimed_rank":30},
+{"type":"current_opponent","team":"DAL","pos":"RB","stat":"rush_ypg","role":"def","claimed_rank":18},
+{"type":"current_opponent","team":"DAL","pos":"RB","stat":"rec_ypg","role":"def","claimed_rank":6},
+{"type":"current_opponent","team":"DAL","pos":"RB","stat":"rec_pg","role":"def","claimed_rank":4},
+{"type":"current_opponent","team":"TB","pos":"WR","stat":"rec_ypg","role":"off","claimed_rank":27},
 {"type":"current_opponent","team":"DAL","pos":"WR","stat":"rec_ypg","role":"off","claimed_rank":1},
-{"type":"current_opponent","team":"DAL","pos":"WR","stat":"tgt_pg","role":"off","claimed_rank":1},
-{"type":"current_opponent","team":"DAL","pos":"TE","stat":"td","role":"off","claimed_rank":7},
-{"type":"current_opponent","team":"DAL","pos":"QB","stat":"int_pg","role":"def","claimed_rank":32}
+{"type":"current_opponent","team":"TB","pos":"WR","stat":"rec_ypg","role":"def","claimed_rank":2},
+{"type":"current_opponent","team":"DAL","pos":"WR","stat":"rec_ypg","role":"def","claimed_rank":24},
+{"type":"current_opponent","team":"TB","pos":"TE","stat":"rec_ypg","role":"off","claimed_rank":23},
+{"type":"current_opponent","team":"DAL","pos":"TE","stat":"rec_ypg","role":"off","claimed_rank":25},
+{"type":"current_opponent","team":"TB","pos":"TE","stat":"rec_ypg","role":"def","claimed_rank":27},
+{"type":"current_opponent","team":"DAL","pos":"TE","stat":"rec_ypg","role":"def","claimed_rank":19}
 ]}

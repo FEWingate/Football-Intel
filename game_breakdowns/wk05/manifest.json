@@ -5,7 +5,7 @@
       "home": "DAL",
       "season": 2026,
       "week": 5,
-      "generated_at": "2026-10-07T14:46:44.840247+00:00"
+      "generated_at": "2026-10-08T21:07:29.040650+00:00"
     },
     "PHI_JAX": {
       "away": "PHI",
@@ -34,6 +34,76 @@
       "season": 2026,
       "week": 5,
       "generated_at": "2026-10-07T15:42:57.195317+00:00"
+    },
+    "MIN_NO": {
+      "away": "MIN",
+      "home": "NO",
+      "season": 2026,
+      "week": 5,
+      "generated_at": "2026-10-08T21:29:31.434849+00:00"
+    },
+    "CLE_NYJ": {
+      "away": "CLE",
+      "home": "NYJ",
+      "season": 2026,
+      "week": 5,
+      "generated_at": "2026-10-08T21:44:55.836895+00:00"
+    },
+    "IND_PIT": {
+      "away": "IND",
+      "home": "PIT",
+      "season": 2026,
+      "week": 5,
+      "generated_at": "2026-10-08T22:00:16.906160+00:00"
+    },
+    "HOU_TEN": {
+      "away": "HOU",
+      "home": "TEN",
+      "season": 2026,
+      "week": 5,
+      "generated_at": "2026-10-08T22:15:17.620323+00:00"
+    },
+    "NYG_WAS": {
+      "away": "NYG",
+      "home": "WAS",
+      "season": 2026,
+      "week": 5,
+      "generated_at": "2026-10-08T22:26:29.524752+00:00"
+    },
+    "DEN_LAC": {
+      "away": "DEN",
+      "home": "LAC",
+      "season": 2026,
+      "week": 5,
+      "generated_at": "2026-10-08T22:45:33.506540+00:00"
+    },
+    "DET_ARI": {
+      "away": "DET",
+      "home": "ARI",
+      "season": 2026,
+      "week": 5,
+      "generated_at": "2026-10-08T23:11:49.071356+00:00"
+    },
+    "SF_SEA": {
+      "away": "SF",
+      "home": "SEA",
+      "season": 2026,
+      "week": 5,
+      "generated_at": "2026-10-08T23:27:42.020644+00:00"
+    },
+    "BAL_ATL": {
+      "away": "BAL",
+      "home": "ATL",
+      "season": 2026,
+      "week": 5,
+      "generated_at": "2026-10-08T23:46:52.396256+00:00"
+    },
+    "BUF_LAR": {
+      "away": "BUF",
+      "home": "LAR",
+      "season": 2026,
+      "week": 5,
+      "generated_at": "2026-10-08T23:59:28.052953+00:00"
     }
   }
 }
