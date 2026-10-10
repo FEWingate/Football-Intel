@@ -20,7 +20,8 @@ const NAV = [
   { key: 'coeus',    label: 'Ask Coeus',    ico: '◉', href: 'coeus.html' },
 ];
 
-const MOBILE_NAV = ['games', 'threats', 'matchup', 'context', 'teams', 'dfs', 'stats'];
+const MOBILE_NAV = NAV.map(n => n.key);   // all sections, 6 per row (2 rows)
+const MOBILE_LABEL = { dfs: 'DFS', props: 'Props', stats: 'Stats', reports: 'Reports', coeus: 'Coeus', context: 'Context' };
 
 function fiShell({ page, pageLabel, status = 'ready' }) {
   document.body.dataset.page = page;
@@ -40,7 +41,7 @@ function fiShell({ page, pageLabel, status = 'ready' }) {
     const tag = n.href ? 'a' : 'button';
     const attr = n.href ? ` href="${n.href}"` : ' type="button" disabled';
     return `<${tag} class="mobile-nav-btn${active}"${attr}>
-      <span class="mnav-icon">${n.ico}</span>${n.label.split(' ')[0]}</${tag}>`;
+      <span class="mnav-icon">${n.ico}</span>${MOBILE_LABEL[n.key] || n.label.split(' ')[0]}</${tag}>`;
   };
 
   document.body.insertAdjacentHTML('afterbegin', `
