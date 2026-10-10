@@ -99,7 +99,7 @@
 .subsect{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.18em;
   text-transform:uppercase;color:var(--text-dim);padding:14px 0 3px}
 
-.splits-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(480px,1fr));gap:14px}
+.splits-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(480px,100%),1fr));gap:14px}
 .splits-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
   overflow:hidden;cursor:pointer}
 .splits-card:hover{border-color:var(--border2)}
@@ -121,7 +121,8 @@
 .splits-table tr:last-child td{border-bottom:0}
 .splits-table td.name-col{font-family:var(--font-body,inherit);font-weight:600;color:var(--text-mid)}
 @media(max-width:900px){
-  .browse-layout, .browse-layout.collapsed{grid-template-columns:1fr}
+  .browse-layout, .browse-layout.collapsed{grid-template-columns:minmax(0,1fr)}
+  .browse-layout > *{min-width:0}
   .browse-layout.collapsed #browseCol{width:auto;overflow:visible;padding:0}
   #browseCol{border-bottom:1px solid var(--border);padding-bottom:16px}
   .browse-collapse-btn{display:none}

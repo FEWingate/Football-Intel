@@ -62,7 +62,7 @@
   .division-grid{grid-template-columns:1fr}
 }
 
-.splits-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(480px,1fr));gap:14px}
+.splits-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(480px,100%),1fr));gap:14px}
 .splits-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
 .splits-head{display:flex;align-items:center;gap:11px;padding:12px 14px;border-bottom:1px solid var(--border);
   background:var(--surface2)}

@@ -9,7 +9,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/fi-styles.css">
 <style>
-.parlay-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px;margin-bottom:22px}
+#pcWeek,#pcBatch{max-width:100%;text-overflow:ellipsis}
+@media (max-width:768px){#pcBatchBar,#pcWeekBar{flex-wrap:wrap}#pcBatch{max-width:calc(100vw - 48px)}}
+.parlay-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr));gap:14px;margin-bottom:22px}
 .parlay-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
 .parlay-card.invalid{border-color:rgba(244,63,94,.4)}
 .parlay-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);
@@ -61,7 +63,7 @@
 .pc-alts-grid{display:flex;flex-wrap:wrap;gap:6px;padding:8px 10px}
 .pc-alt-chip{font-family:var(--font-mono);font-size:10.5px;background:var(--surface2);border:1px solid var(--border);
   border-radius:var(--radius-sm);padding:4px 8px;color:var(--text-mid)}
-.pc-td-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.pc-td-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:8px}
 .pc-td-chip{display:flex;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);
   border-radius:var(--radius-sm);padding:7px 10px;font-size:12px}
 
@@ -134,12 +136,12 @@
   border-radius:var(--radius-sm);border:1px solid var(--border);color:var(--text-mid)}
 .odd b{color:var(--text);font-weight:600}
 
-#pcSlate{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+#pcSlate{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:16px}
 .pc-modal-stat-sect{margin:18px 0 8px}
 .pc-modal-stat-sect h4{font-family:var(--font-display);font-size:13px;color:var(--text);margin-bottom:8px}
 
 /* ── Coeus Prop Breakdown / Favorite O/U pick cards ──────────────────── */
-.pc-pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:8px}
+.pc-pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:10px;margin-bottom:8px}
 .pc-pick-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
   padding:10px 12px}
 .pc-pick-badge{font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;
