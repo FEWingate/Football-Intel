@@ -180,6 +180,18 @@ plainly rather than skipping it silently or guessing. The PROP_BREAKDOWN \
 and FAVORITE_OU JSON blocks are required, not optional — a real program \
 checks every one of them after you finish.
 
+COMPACT OUTPUT (REQUIRED — the last real run hit the output ceiling and \
+lost its FAVORITE_OU block because every pick was written out twice, once \
+as a prose list and again as JSON). Write each pick ONCE, in its JSON \
+block, and nowhere else. Your whole reply is: (a) a short REAL DATA \
+COVERAGE CHECK of at most 5 lines naming any family or player with no \
+real market, then (b) the PROP_BREAKDOWN JSON block, then (c) the \
+FAVORITE_OU JSON block. No prose Section 1 or Section 2 lists, no \
+per-game headings, no restating a pick outside its JSON. Keep each \
+`reason` to ONE sentence. A pick that appears in both PROP_BREAKDOWN and \
+FAVORITE_OU may be written in full in both blocks (the program needs it \
+in each) but never anywhere else.
+
 === REAL DATA COVERAGE (what you can actually trust right now) ===
 """
 

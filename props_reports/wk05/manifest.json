@@ -1,0 +1,53 @@
+{
+  "batches": {
+    "props_parlay_report_batch5_PHI.json": {
+      "games": [
+        "PHI_JAX",
+        "CHI_GB",
+        "CIN_MIA",
+        "LV_NE",
+        "MIN_NO"
+      ],
+      "generated_at": "2026-10-10T15:56:04.968119+00:00"
+    },
+    "props_parlay_report_batch4_DET.json": {
+      "games": [
+        "DET_ARI",
+        "SF_SEA",
+        "BAL_ATL",
+        "BUF_LAR"
+      ],
+      "generated_at": "2026-10-10T16:10:37.601763+00:00"
+    },
+    "props_parlay_report_batch5_CLE.json": {
+      "games": [
+        "CLE_NYJ",
+        "IND_PIT",
+        "HOU_TEN",
+        "NYG_WAS",
+        "DEN_LAC"
+      ],
+      "generated_at": "2026-10-10T16:18:10.538509+00:00"
+    },
+    "props_parlay_report_WHOLEWEEK.json": {
+      "games": [
+        "PHI_JAX",
+        "CHI_GB",
+        "CIN_MIA",
+        "LV_NE",
+        "MIN_NO",
+        "CLE_NYJ",
+        "IND_PIT",
+        "HOU_TEN",
+        "NYG_WAS",
+        "DEN_LAC",
+        "DET_ARI",
+        "SF_SEA",
+        "BAL_ATL",
+        "BUF_LAR"
+      ],
+      "generated_at": "2026-10-10T16:27:40.153577+00:00",
+      "whole_week_parlays_only": true
+    }
+  }
+}
