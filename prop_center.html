@@ -237,6 +237,10 @@ let propsBatchFilter = null;
 // case these three tabs fall back to the selected batch's own parlays
 // exactly as before (see renderParlays/renderAnytimeTD/renderSpreads).
 let WHOLE_WEEK_REPORT = null;
+// Every batch report for the selected week (graded copy when one exists),
+// so a game's modal can show Coeus's picks for that game no matter which
+// batch they were generated in.
+let ALL_BATCH_REPORTS = [];
 
 // REAL ADDITION (2026-10-02), per Frank's direct request: a Prop Builder
 // slip — real, user-picked legs from Game Lines/Totals/ML and Player
@@ -458,6 +462,18 @@ async function loadManifestForWeek(wk){
   await loadWholeWeekReport(wk);
 
   const filenames = Object.keys(PROPS_BATCHES);
+  ALL_BATCH_REPORTS = [];
+  await Promise.all(filenames.map(async fn => {
+    const fetchJson = async name => {
+      try{
+        const res = await fetch(`props_reports/${wk}/${name}`, { cache: 'no-store' });
+        return res.ok ? await res.json() : null;
+      }catch(e){ return null; }
+    };
+    const graded = await fetchJson(fn.replace(/\.json$/, '_graded.json'));
+    const rep = graded || await fetchJson(fn);
+    if(rep) ALL_BATCH_REPORTS.push(rep);
+  }));
   if(!filenames.length){
     propsBatchFilter = null;
     REPORT = null;
@@ -723,6 +739,38 @@ function gameLinesSectionHTML(g){
   return `<div class="pc-modal-stat-sect"><h4>Game Lines</h4><div class="pc-td-grid">${chips.join('')}</div></div>`;
 }
 
+// Coeus's picks for ONE game, pulled from every batch of the selected week
+// plus the weekly Best 10 — each real pick once, Best 10 plays first.
+function coeusPicksForGame(g){
+  const out = new Map();
+  const add = (p, badge) => {
+    if(!p || p.canonical_event_id !== g.canonical_event_id) return;
+    const k = [p.player, p.market_key, p.side || '', p.line ?? p.threshold ?? p.point ?? ''].join('|');
+    const prev = out.get(k);
+    if(!prev) out.set(k, { pick: p, badge });
+    else if(badge && (!prev.badge || String(badge).startsWith('Best 10'))) prev.badge = badge;
+  };
+  for(const r of ALL_BATCH_REPORTS){
+    const pb = r.prop_breakdown || {};
+    (pb.per_game || []).forEach(gm => {
+      if(gm.away === g.away_code && gm.home === g.home_code) (gm.picks || []).forEach(p => add(p));
+    });
+    Object.entries(pb.per_position || {}).forEach(([pos, p]) => add(p, pos));
+    const fou = r.favorite_ou || {};
+    [...(fou.overs || []), ...(fou.unders || [])].forEach(p => add(p));
+  }
+  const b10 = (WHOLE_WEEK_REPORT && WHOLE_WEEK_REPORT.best_10 && WHOLE_WEEK_REPORT.best_10.picks) || [];
+  b10.forEach(p => add(p, `Best 10 · #${p.rank}`));
+  const rank = x => (String(x.badge || '').startsWith('Best 10') ? Number(x.pick.rank) || 99 : 100);
+  return [...out.values()].sort((a, b) => rank(a) - rank(b));
+}
+function coeusPicksSectionHTML(g){
+  const picks = coeusPicksForGame(g);
+  if(!picks.length) return '';
+  return `<div class="pc-modal-stat-sect"><h4>Coeus Picks</h4>
+    <div class="pc-pick-grid">${picks.map(x => pickCardHTML(x.pick, x.badge)).join('')}</div></div>`;
+}
+
 function openGameProps(eid, source){
   const g = FDPROPS.games.find(x => x.canonical_event_id === eid);
   if(!g) return;
@@ -732,6 +780,7 @@ function openGameProps(eid, source){
   $('mSub').textContent = t;
 
   let h = '';
+  h += coeusPicksSectionHTML(g);
   h += gameLinesSectionHTML(g);
   h += statBlockForGame(g, 'passing_yards', 'Passing Yards');
   h += statBlockForGame(g, 'rushing_yards', 'Rushing Yards');
