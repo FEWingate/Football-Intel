@@ -920,8 +920,18 @@ function projectionLineHTML(pick){
   } else if(pick.market_key === 'spreads'){
     txt = `Coeus projects a ${pick.projection > 0 ? '+' : ''}${pick.projection} margin`;
   } else {
-    const edge = typeof pick.projection_edge === 'number'
-      ? ` (${pick.projection_edge > 0 ? '+' : ''}${pick.projection_edge} vs line)` : '';
+    // Signed difference, projection minus the posted line: negative for a
+    // projection below the line (the usual case for an Under pick). The old
+    // stored projection_edge is always "edge toward the pick's side", so it
+    // showed +17.5 for an Under — read the real numbers instead.
+    const ln = typeof pick.line === 'number' ? pick.line
+             : typeof pick.threshold === 'number' ? pick.threshold : null;
+    let diff = ln !== null ? pick.projection - ln : null;
+    if(diff === null && typeof pick.projection_edge === 'number'){
+      diff = String(pick.side || '').toLowerCase() === 'under' ? -pick.projection_edge : pick.projection_edge;
+    }
+    const edge = diff === null ? '' :
+      ` (${diff > 0 ? '+' : diff < 0 ? '\u2212' : ''}${Math.abs(Math.round(diff * 10) / 10)} vs line)`;
     txt = `Coeus projects ${pick.projection}${edge}`;
   }
   const n = Number.isInteger(pick.games_2026) ? ` · ${pick.games_2026} games in 2026` : '';
