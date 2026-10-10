@@ -404,9 +404,20 @@ async function applyGameLinesWeekFilter(wk){
     return;
   }
   const validKeys = new Set(schedule.games.map(g => `${g.away}_${g.home}`));
+  // Same order the Games page uses: by real kickoff (gameday + gametime, ET),
+  // ties kept in the schedule file's own order — not whatever order the
+  // FanDuel feed happened to return them in.
+  const kickoffOrder = {};
+  schedule.games
+    .map((g, i) => ({ key: `${g.away}_${g.home}`, when: `${g.gameday || ''} ${g.gametime || ''}`, i }))
+    .sort((a, b) => (a.when < b.when ? -1 : a.when > b.when ? 1 : a.i - b.i))
+    .forEach((x, rank) => { kickoffOrder[x.key] = rank; });
   FDPROPS = {
     ...FDPROPS_ALL,
-    games: (FDPROPS_ALL.games || []).filter(g => validKeys.has(`${g.away_code}_${g.home_code}`)),
+    games: (FDPROPS_ALL.games || [])
+      .filter(g => validKeys.has(`${g.away_code}_${g.home_code}`))
+      .sort((a, b) => (kickoffOrder[`${a.away_code}_${a.home_code}`] ?? 999) -
+                      (kickoffOrder[`${b.away_code}_${b.home_code}`] ?? 999)),
   };
 }
 
