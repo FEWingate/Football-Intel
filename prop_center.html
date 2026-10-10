@@ -948,8 +948,10 @@ function pickCardHTML(pick, badge){
 // so the toggle is left out. Older, fully written reports (e.g. Week 4)
 // have real "SECTION" headings and keep it.
 function reportHasWrittenBody(){
-  const md = (REPORT && REPORT.markdown) || '';
-  return /^\s*#{1,4}\s*.*(SECTION|BREAKDOWN|PARLAY|BEST 10)/im.test(md) || md.length > 3000;
+  // Measure only what renderMarkdown would actually show: it strips the
+  // ```json blocks, which make up most of a report's raw length.
+  const md = ((REPORT && REPORT.markdown) || '').replace(/```json[\s\S]*?```/g, '');
+  return /^\s*#{1,4}\s+.*(SECTION|BREAKDOWN|PARLAY|BEST 10)/im.test(md) || md.trim().length > 1500;
 }
 function reportToggleHTML(){
   if(!reportHasWrittenBody()) return '';
