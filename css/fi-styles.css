@@ -302,6 +302,8 @@ select:hover{border-color:var(--border2)}
   background:var(--surface);border-top:1px solid var(--border);
   padding:6px 0 max(6px,env(safe-area-inset-bottom));
 }
+.mobile-bottom-nav{transition:transform .25s ease}
+.mobile-bottom-nav.nav-hidden{transform:translateY(110%)}
 .mobile-bottom-nav-inner{display:flex;align-items:center;justify-content:space-around}
 .mobile-nav-btn{
   display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;
@@ -334,6 +336,7 @@ select:hover{border-color:var(--border2)}
   .last-updated{display:none}
   .modal{inset:0;transform:none;width:100%;max-height:100%;border-radius:0;border:0}
   .modal-title{font-size:19px}
+  .modal-body{padding-bottom:84px}
   .legend{width:100%;margin-left:0}
 }
 @media (prefers-reduced-motion:reduce){

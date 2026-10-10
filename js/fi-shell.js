@@ -79,6 +79,28 @@ function fiShell({ page, pageLabel, status = 'ready' }) {
     </nav>
   `);
 
+  // mobile bottom nav: hide while scrolling down (page or any popup), show on scroll up
+  (function(){
+    const nav = document.querySelector('.mobile-bottom-nav');
+    if (!nav) return;
+    const last = new WeakMap();
+    document.addEventListener('scroll', (e) => {
+      const t = e.target === document ? document.scrollingElement : e.target;
+      if (!t || t.scrollTop === undefined) return;
+      const y = t.scrollTop, prev = last.has(t) ? last.get(t) : 0;
+      const d = y - prev;
+      if (Math.abs(d) < 6) return;
+      last.set(t, y);
+      if (y < 40 || d < 0) nav.classList.remove('nav-hidden');
+      else nav.classList.add('nav-hidden');
+    }, true);
+    // popups opening/closing always start with the nav visible
+    new MutationObserver((muts) => {
+      if (muts.some(m => m.target.classList && (m.target.classList.contains('modal') || m.target.classList.contains('modal-overlay'))))
+        nav.classList.remove('nav-hidden');
+    }).observe(document.body, {subtree: true, attributes: true, attributeFilter: ['class']});
+  })();
+
   // theme
   const saved = localStorage.getItem('fi_theme');
   if (saved === 'light') document.body.classList.add('light-mode');
