@@ -1431,7 +1431,8 @@ function teamOpponentMap(players){
   return map;
 }
 
-function buildLineupModel(players, priorPidSets, minDiff, mode, bringBack, scoreField, forceSingleTE, pinnedPids, enforceSalaryFloor, minPlayerSalary, favorWrFlex){
+function buildLineupModel(players, priorPidSets, minDiff, mode, bringBack, scoreField, forceSingleTE, pinnedPids, enforceSalaryFloor, minPlayerSalary, favorWrFlex, batchOpts){
+  batchOpts = batchOpts || {};
   scoreField = scoreField || 'quality';
   pinnedPids = pinnedPids || new Set();
   // BUG FIX (2026-09-24), per Frank's direct, real catch (a real
@@ -1636,6 +1637,28 @@ function buildLineupModel(players, priorPidSets, minDiff, mode, bringBack, score
     });
   }
 
+  // STACK EXPOSURE (2026-10-13), per Frank: (1) never more than maxPartners same-team pass-catchers (WR/TE)
+  // in one lineup - the batch loop allows 3 only once per batch, otherwise 2 (Onslaught is a deliberate
+  // 4+ stack, so it is exempt); (2) any specific pair of same-team pass-catchers (e.g. Adams + Nacua)
+  // may share a lineup only a couple of times per batch - once a pair hits its cap it is banned, so the
+  // QB gets stacked with Adams alone or Nacua alone in the rest.
+  if(mode !== 'onslaught' && batchOpts.maxPartners){
+    teams.forEach(T => {
+      const key = 'maxPartners_' + T;
+      constraints[key] = { max: batchOpts.maxPartners };
+      players.forEach((p) => {
+        if(p.team === T && (p.pos === 'WR' || p.pos === 'TE')) variables['p' + p.__pid][key] = 1;
+      });
+    });
+  }
+  (batchOpts.bannedPairs || []).forEach(([a, b], i) => {
+    const va = variables['p' + a], vb = variables['p' + b];
+    if(!va || !vb) return; // one of them is already out of the eligible pool
+    const key = 'pairBan_' + i;
+    constraints[key] = { max: 1 };
+    va[key] = 1; vb[key] = 1;
+  });
+
   return { optimize:'quality', opType:'max', constraints, variables, binaries };
 }
 
@@ -1730,6 +1753,8 @@ const EXPOSURE_CAPS = { 5: 2, 10: 4, 15: 6, 25: 8 };
 // of each real batch size, rounded up to at least 1 (the real article
 // data says TE-FLEX does still win sometimes — just rarely, not never).
 const TE_FLEX_CAPS = { 5: 1, 10: 1, 15: 2, 25: 3 };
+// How many lineups in one batch may contain the same two same-team pass-catchers together.
+const PAIR_CAPS = { 5: 1, 10: 1, 15: 2, 25: 2 };
 
 function generateLineups(){
   if(typeof solver === 'undefined'){
@@ -1758,6 +1783,10 @@ function generateLineups(){
   let teLineupCount = 0;
   const lineups = [];
   const priorPidSets = [];
+  const pairCap = PAIR_CAPS[numLineups] || 2;
+  const pairCount = {};     // 'a|b' -> lineups containing both
+  const bannedPairs = [];
+  let bigStackUsed = 0;     // lineups with 3 pass-catchers on the QB's team (allowed once per batch)
 
   for(let n = 0; n < numLineups; n++){
     const eligible = pool.filter(p => (exposureCount[p.__pid] || 0) < exposureCap);
@@ -1775,7 +1804,8 @@ function generateLineups(){
     // iteration, with teFlexCap still enforced as a hard ceiling for the
     // whole real batch regardless of how the random draws land.
     const forceSingleTE = excludeTeFlex || teLineupCount >= teFlexCap || Math.random() > 0.10;
-    const model = buildLineupModel(eligible, priorPidSets, 3, stackMode, bringBack, scoreField, forceSingleTE, null, true, 0, !!($("favorWrFlexChk") && $("favorWrFlexChk").checked));
+    const model = buildLineupModel(eligible, priorPidSets, 3, stackMode, bringBack, scoreField, forceSingleTE, null, true, 0, !!($("favorWrFlexChk") && $("favorWrFlexChk").checked),
+      { maxPartners: bigStackUsed < 1 ? 3 : 2, bannedPairs });
     const result = solver.Solve(model);
     if(!result.feasible) break;
 
@@ -1788,6 +1818,19 @@ function generateLineups(){
 
     chosen.forEach(p => { exposureCount[p.__pid] = (exposureCount[p.__pid] || 0) + 1; });
     if(chosen.filter(p => p.pos === 'TE').length === 2) teLineupCount++;
+    // stack-exposure bookkeeping
+    const qbChosen = chosen.find(p => p.pos === 'QB');
+    if(qbChosen && stackMode !== 'onslaught' &&
+       chosen.filter(p => p.team === qbChosen.team && (p.pos === 'WR' || p.pos === 'TE')).length >= 3) bigStackUsed++;
+    const catchersByTeam = {};
+    chosen.filter(p => p.pos === 'WR' || p.pos === 'TE').forEach(p => { (catchersByTeam[p.team] = catchersByTeam[p.team] || []).push(p.__pid); });
+    Object.values(catchersByTeam).forEach(ids => {
+      for(let i = 0; i < ids.length; i++) for(let j = i + 1; j < ids.length; j++){
+        const key = Math.min(ids[i], ids[j]) + '|' + Math.max(ids[i], ids[j]);
+        pairCount[key] = (pairCount[key] || 0) + 1;
+        if(pairCount[key] === pairCap) bannedPairs.push([Math.min(ids[i], ids[j]), Math.max(ids[i], ids[j])]);
+      }
+    });
   }
 
   btn.disabled = false; btn.textContent = `Generate ${numLineups} lineups`;
