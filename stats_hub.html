@@ -407,6 +407,10 @@ function fmtVal(v){
 /* ── RANK SHIFTS (2025 carryover rank vs. real, computed 2026 rank) ── */
 const RANK_SHIFTS_HIGHER_IS_BETTER = { offense: true, defense: false, dvp: false };
 
+let RANK_SHIFTS_BASE = null; // real 2025 full-season baseline = the Week 1 matchup file
+// (built from the carryover season, so every cell's v/r is genuinely 2025).
+// Needed because once real 2026 games exist, matchup/wkNN.json files rank on
+// 2026 data ALONE (2026-09-28 change) and no longer carry any 2025 numbers.
 let RANK_SHIFTS_WK = null; // real, current-season matchup data — always
 // live/unprefixed, deliberately independent of the page's own season
 // toggle (see the real reasoning above setupRankShiftsControls()).
@@ -432,7 +436,11 @@ async function loadRankShiftsData(){
   for(let w = 1; w <= 22; w++){
     try{
       const r = await fetch(`matchup/wk${pad(w)}.json`, { cache: 'no-store' });
-      if(r.ok) latest = await r.json();
+      if(r.ok){
+        latest = await r.json();
+        // The first file built from the carryover season is the real 2025 baseline.
+        if(!RANK_SHIFTS_BASE && latest.carryover_season) RANK_SHIFTS_BASE = latest;
+      }
     }catch(e){}
   }
   RANK_SHIFTS_WK = latest;
@@ -522,12 +530,23 @@ function renderRankShiftsTable(){
   });
 
   const higherIsBetter = RANK_SHIFTS_HIGHER_IS_BETTER[rankShiftsSide];
+  const cellOf = (t) => isDvp
+    ? ((t.def || {})[rankShiftsPos] || {})[rankShiftsCat]
+    : (t[sideKey] || {})[rankShiftsCat];
+  // Current file already ranks on real 2026 data alone (no carryover): its own
+  // r/v ARE the 2026 rank/value, and the 2025 numbers come from the Week 1
+  // baseline file. Older-style files (carryover in the file itself) keep the
+  // original behaviour: r/v = 2025, v26 = 2026.
+  const ranksOn2026 = !wk.carryover_season && !!RANK_SHIFTS_BASE;
   const rows = Object.entries(wk.teams)
     .map(([abbr, t]) => {
-      const cell = isDvp
-        ? ((t.def || {})[rankShiftsPos] || {})[rankShiftsCat]
-        : (t[sideKey] || {})[rankShiftsCat];
+      const cell = cellOf(t);
       if(!cell) return null;
+      if(ranksOn2026){
+        const base = cellOf((RANK_SHIFTS_BASE.teams || {})[abbr] || {});
+        if(!base) return null;
+        return { abbr, rank2025: base.r, val2025: base.v, val2026: cell.v ?? null, rank2026Direct: cell.r ?? null };
+      }
       return { abbr, rank2025: cell.r, val2025: cell.v, val2026: cell.v26 ?? null };
     })
     .filter(r => r);
@@ -547,7 +566,7 @@ function renderRankShiftsTable(){
   sorted2026.forEach((r, i) => { rank2026ByAbbr[r.abbr] = i + 1; });
 
   rows.forEach(r => {
-    r.rank2026 = rank2026ByAbbr[r.abbr] ?? null;
+    r.rank2026 = r.rank2026Direct != null ? r.rank2026Direct : (rank2026ByAbbr[r.abbr] ?? null);
     // Positive rankDiff = rank NUMBER went down = real improvement (e.g. 28 -> 5).
     // Negative rankDiff = rank NUMBER went up = real decline (e.g. 5 -> 28).
     r.rankDiff = r.rank2026 != null ? r.rank2025 - r.rank2026 : null;
