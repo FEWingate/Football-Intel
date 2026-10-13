@@ -243,7 +243,7 @@ let slatePos = 'ALL';
 let slateSort = 'value', slateDir = 'desc';
 let searchTerm = '';
 let dfsView = 'best'; // 'best' | 'lineups' | 'slate'
-let stackMode = 'none'; // 'none' | 'stack' | 'double' | 'onslaught'
+let stackMode = 'stack'; // 'none' | 'stack' | 'double' | 'onslaught'
 let scoringMode = 'composite'; // 'composite' | 'matchup_history' | 'ceiling'
 let generatorCount = 5; // 5 | 10 | 15 | 25
 let bestView = 'players'; // 'players' | 'stacks'
@@ -391,6 +391,17 @@ let unmatchedRelevant = [];
 // because nothing before this distinguished "this team's real current QB1"
 // from "any QB on this team's roster with a salary row."
 let STARTER_QB_GSIS_BY_TEAM = {};
+
+// TOP-5 PASS-CATCHING BACKS (2026-10-13), per Frank: an RB may only be stacked with (rostered alongside)
+// his own QB if he is one of the league's 5 most productive pass-catching RBs - receptions per game,
+// targets per game as the tiebreak, min 3 games. Everyone else (e.g. James Cook with Josh Allen) is
+// kept apart from his QB by the lineup solver.
+let PASS_CATCHING_RB_IDS = new Set();
+function buildPassCatchingRBs(stats){
+  const rbs = (stats?.players?.RB || []).filter(r => (r.season?.games || 0) >= 3 && r.gsis_id);
+  rbs.sort((a,b) => (b.season.m.rec_pg || 0) - (a.season.m.rec_pg || 0) || (b.season.m.tgt_pg || 0) - (a.season.m.tgt_pg || 0));
+  return new Set(rbs.slice(0, 5).map(r => r.gsis_id));
+}
 
 function normalizeName(name){
   return String(name).toLowerCase().trim()
@@ -629,7 +640,7 @@ async function load(){
   }catch(e){ /* no Vegas factor without it — scoring falls back to the previous weights */ }
   try{
     const res = await fetch(`players/latest.json`);
-    if(res.ok){ PLAYERSTATS = await res.json(); NAME_INDEX = buildNameIndex(PLAYERSTATS); }
+    if(res.ok){ PLAYERSTATS = await res.json(); NAME_INDEX = buildNameIndex(PLAYERSTATS); PASS_CATCHING_RB_IDS = buildPassCatchingRBs(PLAYERSTATS); }
   }catch(e){ /* matchup history / ceiling modes unavailable without it */ }
   await loadStarterGsisByTeam(currentWeekStr);
 
@@ -730,10 +741,13 @@ function renderShell(){
       <div class="stack-controls">
         <div class="tabs" id="stackModeTabs" role="tablist"></div>
         <label class="bringback-toggle">
-          <input type="checkbox" id="bringBackChk"> Bring-back (add 1+ opponent player)
+          <input type="checkbox" id="bringBackChk" checked> Bring-back (add 1+ opponent player)
         </label>
         <label class="bringback-toggle">
           <input type="checkbox" id="excludeTeFlexChk"> Exclude TE from FLEX
+        </label>
+        <label class="bringback-toggle" title="FLEX goes to a WR (or TE if allowed), never a 3rd RB - WRs have the higher weekly ceiling in PPR.">
+          <input type="checkbox" id="favorWrFlexChk" checked> Favor WR in FLEX
         </label>
         <label class="bringback-toggle" title="RB: team's RB1 only. WR: team's top 3. TE: team's TE1. Plus a minimum DraftKings average (RB/WR 8, TE 6).">
           <input type="checkbox" id="startersOnlyChk" checked> Real starters only (no fill-in scrubs)
@@ -816,6 +830,7 @@ function computeAll(players){
     p.opp = opponentOf(p.team, p.gameInfo);
     p.value = p.salary ? (p.avgPts / (p.salary / 1000)) : 0;
     p.siteData = (PLAYERSTATS && p.pos !== 'DST') ? matchSiteData(p) : null;
+    p.isPassCatchingBack = !!(p.pos === 'RB' && p.siteData?.gsis_id && PASS_CATCHING_RB_IDS.has(p.siteData.gsis_id));
     // Only ever flips true when we positively know a different QB on this
     // same team is the real current starter — missing depth-chart data, a
     // team with no current starter resolved at all, or no site match for
@@ -1301,14 +1316,15 @@ function generateRestOfLineup(){
   // solver-picked RB/WR/TE so the solver can no longer reach for a true
   // scrub just because it's cheap. Pinned players are never excluded by
   // this regardless of price (see buildLineupModel above).
+  const favorWr = !!($("favorWrFlexChk") && $("favorWrFlexChk").checked) && pinned.filter(p => p.pos === 'RB').length <= 2;
   const solvePool = startersOnlyOn() ? startersOnlyPool(pool, pinnedPids) : pool;
-  let model = buildLineupModel(solvePool, priorPidSets, minDiff, stackMode, false, scoreField, forceSingleTE, pinnedPids, false, 4500);
+  let model = buildLineupModel(solvePool, priorPidSets, minDiff, stackMode, false, scoreField, forceSingleTE, pinnedPids, false, 4500, favorWr);
   let result = solver.Solve(model);
   if(!result.feasible && priorPidSets.length){
     // Real fallback: the variety requirement made this specific
     // combination infeasible — retry without it rather than showing an
     // error for what would otherwise be a perfectly good completion.
-    model = buildLineupModel(solvePool, [], 0, stackMode, false, scoreField, forceSingleTE, pinnedPids, false, 4500);
+    model = buildLineupModel(solvePool, [], 0, stackMode, false, scoreField, forceSingleTE, pinnedPids, false, 4500, favorWr);
     result = solver.Solve(model);
   }
   if(!result.feasible){
@@ -1415,7 +1431,7 @@ function teamOpponentMap(players){
   return map;
 }
 
-function buildLineupModel(players, priorPidSets, minDiff, mode, bringBack, scoreField, forceSingleTE, pinnedPids, enforceSalaryFloor, minPlayerSalary){
+function buildLineupModel(players, priorPidSets, minDiff, mode, bringBack, scoreField, forceSingleTE, pinnedPids, enforceSalaryFloor, minPlayerSalary, favorWrFlex){
   scoreField = scoreField || 'quality';
   pinnedPids = pinnedPids || new Set();
   // BUG FIX (2026-09-24), per Frank's direct, real catch (a real
@@ -1480,10 +1496,13 @@ function buildLineupModel(players, priorPidSets, minDiff, mode, bringBack, score
     // for why the single-lineup completor turns it off.
     salary: { min: enforceSalaryFloor ? 48500 : 0, max: 50000 }, total: { equal: 9 },
     isQB: { equal: 1 }, isDST: { equal: 1 },
-    isRB: { min: 2, max: 3 }, isWR: { min: 3, max: 4 },
+    // FLEX favors WR (higher weekly ceiling / PPR upside): RB capped at 2 so FLEX is a WR (or TE if allowed)
+    isRB: { min: 2, max: favorWrFlex ? 2 : 3 }, isWR: { min: 3, max: 4 },
     isTE: forceSingleTE ? { equal: 1 } : { min: 1, max: 2 },
   };
   const stackSize = STACK_SIZES[mode] || 0;
+  // An RB counts as a stack partner (and may sit with his own QB) only if he is a top-5 pass-catching back.
+  const rbStackOK = p => p.pos !== 'RB' || !!p.isPassCatchingBack;
   const oppOf = teamOpponentMap(players);
   const teams = [...new Set(players.map(p => p.team))];
   // Stack/double stack pair the QB with his own pass-catchers (the
@@ -1519,7 +1538,7 @@ function buildLineupModel(players, priorPidSets, minDiff, mode, bringBack, score
       constraints[key] = { min: 0 };
       players.forEach((p) => {
         const vid = 'p' + p.__pid;
-        if(p.team === T && stackPositions.includes(p.pos)) variables[vid][key] = 1;
+        if(p.team === T && stackPositions.includes(p.pos) && rbStackOK(p)) variables[vid][key] = 1;
         if(p.team === T && p.pos === 'QB') variables[vid][key] = -stackSize;
       });
     });
@@ -1584,6 +1603,35 @@ function buildLineupModel(players, priorPidSets, minDiff, mode, bringBack, score
         const vid = 'p' + p.__pid;
         if(p.team === O) variables[vid][key] = 1;
         if(p.team === T && p.pos === 'QB') variables[vid][key] = -1;
+      });
+    });
+  }
+
+  {
+    const M = 9;
+    const pinnedPlayers = players.filter(p => pinnedPids.has(p.__pid));
+    // RB with his own QB: forbidden unless he is a top-5 pass-catching back (skipped only if the user pinned both).
+    teams.forEach(T => {
+      if(pinnedPlayers.some(p => p.pos === 'QB' && p.team === T) && pinnedPlayers.some(p => p.pos === 'RB' && p.team === T && !rbStackOK(p))) return;
+      const key = 'rbNoQb_' + T;
+      constraints[key] = { max: M };
+      players.forEach((p) => {
+        const vid = 'p' + p.__pid;
+        if(p.team === T && p.pos === 'RB' && !rbStackOK(p)) variables[vid][key] = 1;
+        if(p.team === T && p.pos === 'QB') variables[vid][key] = M;
+      });
+    });
+    // NEGATIVE CORRELATION: never roster a DST against an offensive player of the team it faces.
+    teams.forEach(T => {
+      const O = oppOf[T];
+      if(!O) return;
+      if(pinnedPlayers.some(p => p.pos === 'DST' && p.team === T) && pinnedPlayers.some(p => p.pos !== 'DST' && p.team === O)) return;
+      const key = 'dstNeg_' + T;
+      constraints[key] = { max: M };
+      players.forEach((p) => {
+        const vid = 'p' + p.__pid;
+        if(p.team === O && p.pos !== 'DST') variables[vid][key] = 1;
+        if(p.team === T && p.pos === 'DST') variables[vid][key] = M;
       });
     });
   }
@@ -1727,7 +1775,7 @@ function generateLineups(){
     // iteration, with teFlexCap still enforced as a hard ceiling for the
     // whole real batch regardless of how the random draws land.
     const forceSingleTE = excludeTeFlex || teLineupCount >= teFlexCap || Math.random() > 0.10;
-    const model = buildLineupModel(eligible, priorPidSets, 3, stackMode, bringBack, scoreField, forceSingleTE);
+    const model = buildLineupModel(eligible, priorPidSets, 3, stackMode, bringBack, scoreField, forceSingleTE, null, true, 0, !!($("favorWrFlexChk") && $("favorWrFlexChk").checked));
     const result = solver.Solve(model);
     if(!result.feasible) break;
 
