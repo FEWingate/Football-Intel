@@ -1,8 +1,22 @@
 name: Update Football Intel data
 
-# Runs after each NFL week completes and commits the refreshed JSON.
-#   Tuesday 17:00 UTC = 1pm ET  — after Monday Night Football is processed
-#   Wednesday 09:00 UTC = 5am ET — catch-up in case nflverse published late
+# The one automatic weekly data refresh. Runs after each NFL week completes,
+# rebuilds EVERYTHING build_matchup_stats.py produces (games and final scores,
+# team stats and records, players, injuries, rosters, matchup, context,
+# threats, ...) and commits it straight to main so the site updates with no
+# manual step.
+#   Tuesday 17:00 UTC   = 1pm ET  - after Monday Night Football is processed
+#   Wednesday 09:00 UTC = 5am ET  - catch-up in case nflverse published late
+#
+# History: this used to commit only matchup/ context/ threats/, so game
+# scores (games/), team records and stats (teamstats/) and the rest stayed
+# stale until someone rebuilt by hand. It now commits every file the build
+# changed (git add -A), but only after a sanity check: if any game from a
+# previous day still has no final score (nflverse hasn't published it yet),
+# the job stops WITHOUT committing, so a half-updated site never goes live.
+# The Wednesday run then tries again. The old PR-based "Weekly Stats Rebuild"
+# workflow is now manual-only (Actions tab -> Run workflow) so the two don't
+# compete.
 on:
   schedule:
     - cron: '0 17 * * 2'
@@ -21,37 +35,68 @@ on:
 permissions:
   contents: write
 
+# Never run two refreshes at once, and never overlap a manual run.
+concurrency:
+  group: data-refresh
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: Install dependencies
-        run: pip install --quiet pandas requests
+        run: pip install --quiet pandas requests pyarrow
 
       - name: Build snapshots from nflverse
         env:
           NFL_SEASON: ${{ github.event.inputs.season }}
         run: |
           if [ -z "$NFL_SEASON" ]; then unset NFL_SEASON; fi
-          python3 build_matchup_stats.py "${{ github.event.inputs.weeks || 'all' }}"
+          set -o pipefail
+          python3 build_matchup_stats.py "${{ github.event.inputs.weeks || 'all' }}" 2>&1 | tee "$RUNNER_TEMP/build_output.log"
+
+      - name: Sanity check - every game before today must have a final score
+        run: |
+          python3 - <<'PY'
+          import datetime, glob, json, sys
+          cutoff = datetime.datetime.now(datetime.timezone.utc).date() - datetime.timedelta(days=1)
+          missing = []
+          for path in sorted(glob.glob("games/wk*.json")):
+              for g in json.load(open(path)).get("games", []):
+                  try:
+                      day = datetime.date.fromisoformat(str(g.get("gameday", ""))[:10])
+                  except ValueError:
+                      continue
+                  if day <= cutoff and not g.get("played"):
+                      missing.append(f"{path}: {g.get('away')} @ {g.get('home')} ({day})")
+          if missing:
+              print("nflverse has not published final scores for these games yet:")
+              print("\n".join(missing))
+              print("Not committing a half-updated site. The next scheduled run will retry.")
+              sys.exit(1)
+          print("All past games have final scores - safe to commit.")
+          PY
 
       - name: Commit refreshed data
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add matchup context threats
+          git add -A
           if git diff --staged --quiet; then
-            echo "No data changes — nothing to commit."
+            echo "No data changes - nothing to commit."
           else
             git commit -m "Data refresh: $(date -u '+%Y-%m-%d %H:%M UTC')"
-            git push
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
             echo "Pushed updated data."
           fi

@@ -22,10 +22,16 @@ name: Weekly Stats Rebuild
 # lines when clocks change in November, only if the underlying US DST
 # rules themselves ever change (they haven't in years, but it's the kind
 # of thing worth a quick glance every preseason, not blind faith).
+# NOTE (2026-10-13): the automatic schedule is turned OFF. "Update Football
+# Intel data" (update-data.yml) is now the one automatic weekly refresh and
+# commits everything directly, with its own sanity check. This workflow stays
+# available as a MANUAL, review-first option: Actions tab -> Weekly Stats
+# Rebuild -> Run workflow. To bring the schedule back, un-comment the two
+# cron lines below.
 on:
-  schedule:
-    - cron: '0 18 * * 2'   # 2:00 PM EDT (UTC-4) — mid-March to early November
-    - cron: '0 19 * * 2'   # 2:00 PM EST (UTC-5) — early November to mid-March
+  # schedule:
+  #   - cron: '0 18 * * 2'   # 2:00 PM EDT (UTC-4) — mid-March to early November
+  #   - cron: '0 19 * * 2'   # 2:00 PM EST (UTC-5) — early November to mid-March
   workflow_dispatch: {}    # lets Frank trigger a run manually from the Actions tab, any time
 
 permissions:
