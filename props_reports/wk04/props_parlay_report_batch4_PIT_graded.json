@@ -79,7 +79,9 @@
                 "claimed_rank": 24
               }
             ],
-            "grade": "W"
+            "grade": "W",
+            "actual": 93.0,
+            "actual_label": "93 rush yds"
           },
           {
             "player": "Pat Freiermuth",
@@ -99,7 +101,9 @@
                 "claimed_rank": 24
               }
             ],
-            "grade": "L"
+            "grade": "L",
+            "actual": 17.0,
+            "actual_label": "17 rec yds"
           },
           {
             "player": "Aaron Rodgers",
@@ -119,7 +123,9 @@
                 "claimed_rank": 10
               }
             ],
-            "grade": "L"
+            "grade": "L",
+            "actual": 299.0,
+            "actual_label": "299 pass yds"
           }
         ],
         "mismatch_count": 0
@@ -146,7 +152,9 @@
                 "claimed_rank": 30
               }
             ],
-            "grade": "L"
+            "grade": "L",
+            "actual": 16.0,
+            "actual_label": "16 rec yds"
           },
           {
             "player": "Jonathan Taylor",
@@ -166,7 +174,9 @@
                 "claimed_rank": 3
               }
             ],
-            "grade": "L"
+            "grade": "L",
+            "actual": 95.0,
+            "actual_label": "95 rush yds"
           },
           {
             "player": "Tyler Warren",
@@ -186,7 +196,9 @@
                 "claimed_rank": 27
               }
             ],
-            "grade": "L"
+            "grade": "L",
+            "actual": 5.0,
+            "actual_label": "5 rec"
           }
         ],
         "mismatch_count": 0
@@ -213,7 +225,9 @@
                 "claimed_rank": 16
               }
             ],
-            "grade": "L"
+            "grade": "L",
+            "actual": 75.0,
+            "actual_label": "75 rush yds"
           },
           {
             "player": "Dalton Kincaid",
@@ -233,7 +247,9 @@
                 "claimed_rank": 4
               }
             ],
-            "grade": "W"
+            "grade": "W",
+            "actual": 7.0,
+            "actual_label": "7 rec yds"
           },
           {
             "player": "Josh Allen",
@@ -253,7 +269,9 @@
                 "claimed_rank": 6
               }
             ],
-            "grade": "L"
+            "grade": "L",
+            "actual": 253.0,
+            "actual_label": "253 pass yds"
           }
         ],
         "mismatch_count": 0
@@ -278,7 +296,9 @@
             "claimed_rank": 31
           }
         ],
-        "grade": "L"
+        "grade": "L",
+        "actual": 143.0,
+        "actual_label": "143 pass yds"
       },
       "RB": {
         "player": "Jonathan Taylor",
@@ -298,7 +318,9 @@
             "claimed_rank": 3
           }
         ],
-        "grade": "L"
+        "grade": "L",
+        "actual": 95.0,
+        "actual_label": "95 rush yds"
       },
       "WR": {
         "player": "Josh Downs",
@@ -318,7 +340,9 @@
             "claimed_rank": 30
           }
         ],
-        "grade": "L"
+        "grade": "L",
+        "actual": 16.0,
+        "actual_label": "16 rec yds"
       },
       "TE": {
         "player": "Tyler Warren",
@@ -338,7 +362,9 @@
             "claimed_rank": 26
           }
         ],
-        "grade": "L"
+        "grade": "L",
+        "actual": 41.0,
+        "actual_label": "41 rec yds"
       }
     }
   },
@@ -363,7 +389,9 @@
             "claimed_rank": 30
           }
         ],
-        "grade": "L"
+        "grade": "L",
+        "actual": 16.0,
+        "actual_label": "16 rec yds"
       },
       {
         "player": "James Cook",
@@ -383,7 +411,9 @@
             "claimed_rank": 16
           }
         ],
-        "grade": "L"
+        "grade": "L",
+        "actual": 75.0,
+        "actual_label": "75 rush yds"
       },
       {
         "player": "Jaylen Warren",
@@ -403,7 +433,9 @@
             "claimed_rank": 24
           }
         ],
-        "grade": "W"
+        "grade": "W",
+        "actual": 93.0,
+        "actual_label": "93 rush yds"
       },
       {
         "player": "Pat Freiermuth",
@@ -423,7 +455,9 @@
             "claimed_rank": 24
           }
         ],
-        "grade": "L"
+        "grade": "L",
+        "actual": 17.0,
+        "actual_label": "17 rec yds"
       }
     ],
     "unders": [
@@ -445,7 +479,9 @@
             "claimed_rank": 3
           }
         ],
-        "grade": "L"
+        "grade": "L",
+        "actual": 95.0,
+        "actual_label": "95 rush yds"
       },
       {
         "player": "Josh Allen",
@@ -465,7 +501,9 @@
             "claimed_rank": 6
           }
         ],
-        "grade": "L"
+        "grade": "L",
+        "actual": 253.0,
+        "actual_label": "253 pass yds"
       },
       {
         "player": "Dalton Kincaid",
@@ -485,7 +523,9 @@
             "claimed_rank": 4
           }
         ],
-        "grade": "W"
+        "grade": "W",
+        "actual": 7.0,
+        "actual_label": "7 rec yds"
       },
       {
         "player": "Aaron Rodgers",
@@ -505,7 +545,9 @@
             "claimed_rank": 10
           }
         ],
-        "grade": "L"
+        "grade": "L",
+        "actual": 299.0,
+        "actual_label": "299 pass yds"
       }
     ]
   },
@@ -543,7 +585,9 @@
               "claimed_rank": 24
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 93.0,
+          "actual_label": "93 rush yds"
         },
         {
           "player": "James Cook",
@@ -563,7 +607,9 @@
               "claimed_rank": 16
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 75.0,
+          "actual_label": "75 rush yds"
         },
         {
           "player": "Josh Downs",
@@ -583,7 +629,9 @@
               "claimed_rank": 30
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 16.0,
+          "actual_label": "16 rec yds"
         }
       ],
       "mismatches": [],
@@ -623,7 +671,9 @@
               "claimed_rank": 24
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 93.0,
+          "actual_label": "93 rush yds"
         },
         {
           "player": "James Cook",
@@ -643,7 +693,9 @@
               "claimed_rank": 16
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 75.0,
+          "actual_label": "75 rush yds"
         },
         {
           "player": "Josh Downs",
@@ -663,7 +715,9 @@
               "claimed_rank": 30
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 16.0,
+          "actual_label": "16 rec yds"
         },
         {
           "player": "Josh Allen",
@@ -683,7 +737,9 @@
               "claimed_rank": 6
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 253.0,
+          "actual_label": "253 pass yds"
         }
       ],
       "mismatches": [],
@@ -723,7 +779,9 @@
               "claimed_rank": 24
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 93.0,
+          "actual_label": "93 rush yds"
         },
         {
           "player": "Pat Freiermuth",
@@ -743,7 +801,9 @@
               "claimed_rank": 24
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 17.0,
+          "actual_label": "17 rec yds"
         },
         {
           "player": "James Cook",
@@ -763,7 +823,9 @@
               "claimed_rank": 16
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 75.0,
+          "actual_label": "75 rush yds"
         },
         {
           "player": "Josh Downs",
@@ -783,7 +845,9 @@
               "claimed_rank": 30
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 16.0,
+          "actual_label": "16 rec yds"
         },
         {
           "player": "Jonathan Taylor",
@@ -803,7 +867,9 @@
               "claimed_rank": 3
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 95.0,
+          "actual_label": "95 rush yds"
         }
       ],
       "mismatches": [],
@@ -843,7 +909,9 @@
               "claimed_rank": 24
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 93.0,
+          "actual_label": "93 rush yds"
         },
         {
           "player": "Pat Freiermuth",
@@ -863,7 +931,9 @@
               "claimed_rank": 24
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 17.0,
+          "actual_label": "17 rec yds"
         },
         {
           "player": "James Cook",
@@ -883,7 +953,9 @@
               "claimed_rank": 16
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 75.0,
+          "actual_label": "75 rush yds"
         },
         {
           "player": "Josh Allen",
@@ -903,7 +975,9 @@
               "claimed_rank": 6
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 253.0,
+          "actual_label": "253 pass yds"
         },
         {
           "player": "Josh Downs",
@@ -923,7 +997,9 @@
               "claimed_rank": 30
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 16.0,
+          "actual_label": "16 rec yds"
         },
         {
           "player": "Jonathan Taylor",
@@ -943,7 +1019,9 @@
               "claimed_rank": 3
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 95.0,
+          "actual_label": "95 rush yds"
         }
       ],
       "mismatches": [],
@@ -983,7 +1061,9 @@
               "claimed_rank": 24
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 93.0,
+          "actual_label": "93 rush yds"
         },
         {
           "player": "Pat Freiermuth",
@@ -1003,7 +1083,9 @@
               "claimed_rank": 24
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 17.0,
+          "actual_label": "17 rec yds"
         },
         {
           "player": "Aaron Rodgers",
@@ -1023,7 +1105,9 @@
               "claimed_rank": 10
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 299.0,
+          "actual_label": "299 pass yds"
         },
         {
           "player": "James Cook",
@@ -1043,7 +1127,9 @@
               "claimed_rank": 16
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 75.0,
+          "actual_label": "75 rush yds"
         },
         {
           "player": "Josh Allen",
@@ -1063,7 +1149,9 @@
               "claimed_rank": 6
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 253.0,
+          "actual_label": "253 pass yds"
         },
         {
           "player": "Josh Downs",
@@ -1083,7 +1171,9 @@
               "claimed_rank": 30
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 16.0,
+          "actual_label": "16 rec yds"
         },
         {
           "player": "Jonathan Taylor",
@@ -1103,7 +1193,9 @@
               "claimed_rank": 3
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 95.0,
+          "actual_label": "95 rush yds"
         }
       ],
       "mismatches": [],
@@ -1143,7 +1235,9 @@
               "claimed_rank": 7
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 2.0,
+          "actual_label": "2 TD"
         },
         {
           "player": "James Cook",
@@ -1163,7 +1257,9 @@
               "claimed_rank": 22
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         },
         {
           "player": "Quinshon Judkins",
@@ -1183,7 +1279,9 @@
               "claimed_rank": 14
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         }
       ],
       "mismatches": [],
@@ -1223,7 +1321,9 @@
               "claimed_rank": 7
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 2.0,
+          "actual_label": "2 TD"
         },
         {
           "player": "James Cook",
@@ -1243,7 +1343,9 @@
               "claimed_rank": 22
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         },
         {
           "player": "Quinshon Judkins",
@@ -1263,7 +1365,9 @@
               "claimed_rank": 14
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         },
         {
           "player": "Jacory Croskey-Merritt",
@@ -1283,7 +1387,9 @@
               "claimed_rank": 30
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         }
       ],
       "mismatches": [],
@@ -1323,7 +1429,9 @@
               "claimed_rank": 7
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 2.0,
+          "actual_label": "2 TD"
         },
         {
           "player": "James Cook",
@@ -1343,7 +1451,9 @@
               "claimed_rank": 22
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         },
         {
           "player": "Quinshon Judkins",
@@ -1363,7 +1473,9 @@
               "claimed_rank": 14
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         },
         {
           "player": "Jacory Croskey-Merritt",
@@ -1383,7 +1495,9 @@
               "claimed_rank": 30
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "Stefon Diggs",
@@ -1403,7 +1517,9 @@
               "claimed_rank": 20
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         }
       ],
       "mismatches": [],
@@ -1443,7 +1559,9 @@
               "claimed_rank": 7
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 2.0,
+          "actual_label": "2 TD"
         },
         {
           "player": "James Cook",
@@ -1463,7 +1581,9 @@
               "claimed_rank": 22
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         },
         {
           "player": "Quinshon Judkins",
@@ -1483,7 +1603,9 @@
               "claimed_rank": 14
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         },
         {
           "player": "Jacory Croskey-Merritt",
@@ -1503,7 +1625,9 @@
               "claimed_rank": 30
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "Stefon Diggs",
@@ -1523,7 +1647,9 @@
               "claimed_rank": 20
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "Denzel Boston",
@@ -1543,7 +1669,9 @@
               "claimed_rank": 10
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         }
       ],
       "mismatches": [],
@@ -1583,7 +1711,9 @@
               "claimed_rank": 7
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 2.0,
+          "actual_label": "2 TD"
         },
         {
           "player": "James Cook",
@@ -1603,7 +1733,9 @@
               "claimed_rank": 22
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         },
         {
           "player": "Quinshon Judkins",
@@ -1623,7 +1755,9 @@
               "claimed_rank": 14
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         },
         {
           "player": "Jacory Croskey-Merritt",
@@ -1643,7 +1777,9 @@
               "claimed_rank": 30
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "Stefon Diggs",
@@ -1663,7 +1799,9 @@
               "claimed_rank": 20
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "Denzel Boston",
@@ -1683,7 +1821,9 @@
               "claimed_rank": 10
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "Pat Freiermuth",
@@ -1703,7 +1843,9 @@
               "claimed_rank": 11
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         }
       ],
       "mismatches": [],
@@ -1733,7 +1875,9 @@
           "point": -2.5,
           "reason": "Stronger, more stable defense and rushing-matchup edge; PIT is 58.8% ATS overall, 56.0% ATS on the road.",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": -3.0,
+          "actual_label": "lost by 3"
         },
         {
           "player": "Baltimore Ravens",
@@ -1743,7 +1887,9 @@
           "point": -11.5,
           "reason": "Statistically dominant matchup vs TEN's run funnel; BAL is 51.5% ATS overall but only 45.1% ATS at home \u2014 a real caution flag at this number.",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": 6.0,
+          "actual_label": "won by 6"
         },
         {
           "player": "Buffalo Bills",
@@ -1753,7 +1899,9 @@
           "point": -6.5,
           "reason": "Top-scoring offense facing a shaky NE pass D long-term floor; BUF is 56.0% ATS overall, 56.9% ATS at home.",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": -3.0,
+          "actual_label": "lost by 3"
         }
       ],
       "mismatches": [],
@@ -1781,7 +1929,9 @@
           "point": -2.5,
           "reason": "Stronger defense and rushing edge; 58.8% ATS overall, 56.0% ATS on the road.",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": -3.0,
+          "actual_label": "lost by 3"
         },
         {
           "player": "Baltimore Ravens",
@@ -1791,7 +1941,9 @@
           "point": -11.5,
           "reason": "Dominant matchup vs TEN; 51.5% ATS overall, only 45.1% ATS at home.",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": 6.0,
+          "actual_label": "won by 6"
         },
         {
           "player": "Buffalo Bills",
@@ -1801,7 +1953,9 @@
           "point": -6.5,
           "reason": "Top-scoring offense; 56.0% ATS overall, 56.9% ATS at home.",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": -3.0,
+          "actual_label": "lost by 3"
         },
         {
           "player": "Washington Commanders",
@@ -1811,7 +1965,9 @@
           "point": 3.5,
           "reason": "Genuine game-script uncertainty (Daniels availability, IND's 30th-ranked D) argues for the points; WAS is 48.5% ATS overall, 49.0% ATS at home.",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": -17.0,
+          "actual_label": "lost by 17"
         }
       ],
       "mismatches": [],
@@ -1841,7 +1997,9 @@
           "point": -2.5,
           "reason": "Stronger defense and rushing edge; 58.8% ATS overall, 56.0% ATS on the road. NOTE: only 4 real spread markets exist on this slate \u2014 no 5th independent leg is available.",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": -3.0,
+          "actual_label": "lost by 3"
         },
         {
           "player": "Baltimore Ravens",
@@ -1851,7 +2009,9 @@
           "point": -11.5,
           "reason": "Dominant matchup vs TEN; 51.5% ATS overall, only 45.1% ATS at home.",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": 6.0,
+          "actual_label": "won by 6"
         },
         {
           "player": "Buffalo Bills",
@@ -1861,7 +2021,9 @@
           "point": -6.5,
           "reason": "Top-scoring offense; 56.0% ATS overall, 56.9% ATS at home.",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": -3.0,
+          "actual_label": "lost by 3"
         },
         {
           "player": "Washington Commanders",
@@ -1871,7 +2033,9 @@
           "point": 3.5,
           "reason": "Game-script uncertainty argues for the points; 48.5% ATS overall, 49.0% ATS at home.",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": -17.0,
+          "actual_label": "lost by 17"
         }
       ],
       "mismatches": [],
@@ -1901,7 +2065,9 @@
           "point": -2.5,
           "reason": "Stronger defense and rushing edge; 58.8% ATS overall, 56.0% ATS on the road. NOTE: only 4 real spread markets exist on this slate \u2014 no 6th independent leg is available.",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": -3.0,
+          "actual_label": "lost by 3"
         },
         {
           "player": "Baltimore Ravens",
@@ -1911,7 +2077,9 @@
           "point": -11.5,
           "reason": "Dominant matchup vs TEN; 51.5% ATS overall, only 45.1% ATS at home.",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": 6.0,
+          "actual_label": "won by 6"
         },
         {
           "player": "Buffalo Bills",
@@ -1921,7 +2089,9 @@
           "point": -6.5,
           "reason": "Top-scoring offense; 56.0% ATS overall, 56.9% ATS at home.",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": -3.0,
+          "actual_label": "lost by 3"
         },
         {
           "player": "Washington Commanders",
@@ -1931,7 +2101,9 @@
           "point": 3.5,
           "reason": "Game-script uncertainty argues for the points; 48.5% ATS overall, 49.0% ATS at home.",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": -17.0,
+          "actual_label": "lost by 17"
         }
       ],
       "mismatches": [],
@@ -1961,7 +2133,9 @@
           "point": -2.5,
           "reason": "Stronger defense and rushing edge; 58.8% ATS overall, 56.0% ATS on the road. NOTE: only 4 real spread markets exist on this slate \u2014 no 7th independent leg is available.",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": -3.0,
+          "actual_label": "lost by 3"
         },
         {
           "player": "Baltimore Ravens",
@@ -1971,7 +2145,9 @@
           "point": -11.5,
           "reason": "Dominant matchup vs TEN; 51.5% ATS overall, only 45.1% ATS at home.",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": 6.0,
+          "actual_label": "won by 6"
         },
         {
           "player": "Buffalo Bills",
@@ -1981,7 +2157,9 @@
           "point": -6.5,
           "reason": "Top-scoring offense; 56.0% ATS overall, 56.9% ATS at home.",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": -3.0,
+          "actual_label": "lost by 3"
         },
         {
           "player": "Washington Commanders",
@@ -1991,7 +2169,9 @@
           "point": 3.5,
           "reason": "Game-script uncertainty argues for the points; 48.5% ATS overall, 49.0% ATS at home.",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": -17.0,
+          "actual_label": "lost by 17"
         }
       ],
       "mismatches": [],
@@ -2168,5 +2348,5 @@
       }
     }
   },
-  "graded_at": "2026-10-07T16:37:50.973323+00:00"
+  "graded_at": "2026-10-13T21:35:45.120492+00:00"
 }

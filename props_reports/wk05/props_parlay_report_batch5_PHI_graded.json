@@ -83,7 +83,9 @@
             "projection": 90,
             "games_2026": 4,
             "projection_edge": 5.5,
-            "grade": "L"
+            "grade": "L",
+            "actual": 43.0,
+            "actual_label": "43 rush yds"
           },
           {
             "player": "Matthew Golden",
@@ -113,7 +115,9 @@
             "projection": 45,
             "games_2026": 4,
             "projection_edge": 11.5,
-            "grade": "L"
+            "grade": "L",
+            "actual": 123.0,
+            "actual_label": "123 rec yds"
           },
           {
             "player": "Colston Loveland",
@@ -143,7 +147,9 @@
             "projection": 20,
             "games_2026": 4,
             "projection_edge": 17.5,
-            "grade": "W"
+            "grade": "W",
+            "actual": 19.0,
+            "actual_label": "19 rec yds"
           }
         ],
         "mismatch_count": 0
@@ -180,7 +186,9 @@
             "projection": 210,
             "games_2026": 4,
             "projection_edge": 23.5,
-            "grade": "W"
+            "grade": "W",
+            "actual": 220.0,
+            "actual_label": "220 pass yds"
           },
           {
             "player": "Trevor Lawrence",
@@ -210,7 +218,9 @@
             "projection": 205,
             "games_2026": 4,
             "projection_edge": 20.5,
-            "grade": "L"
+            "grade": "L",
+            "actual": 331.0,
+            "actual_label": "331 pass yds"
           },
           {
             "player": "Dontayvion Wicks",
@@ -233,7 +243,9 @@
             "projection": 58,
             "games_2026": 4,
             "projection_edge": 13.5,
-            "grade": "W"
+            "grade": "W",
+            "actual": 63.0,
+            "actual_label": "63 rec yds"
           }
         ],
         "mismatch_count": 0
@@ -270,7 +282,9 @@
             "projection": 280,
             "games_2026": 4,
             "projection_edge": 27.5,
-            "grade": "L"
+            "grade": "L",
+            "actual": 190.0,
+            "actual_label": "190 pass yds"
           },
           {
             "player": "Malik Washington",
@@ -300,7 +314,9 @@
             "projection": 52,
             "games_2026": 4,
             "projection_edge": 7.5,
-            "grade": "L"
+            "grade": "L",
+            "actual": 43.0,
+            "actual_label": "43 rec yds"
           },
           {
             "player": "Ollie Gordon II",
@@ -333,7 +349,9 @@
             "evidence_mismatches": [
               "REAL MISMATCH: CIN's real current RB def rush_yds rank is #9 or #22 \u2014 the report claimed #8."
             ],
-            "grade": "W"
+            "grade": "W",
+            "actual": 88.0,
+            "actual_label": "88 rush yds"
           }
         ],
         "mismatch_count": 0
@@ -370,7 +388,9 @@
             "projection": 55,
             "games_2026": 2,
             "projection_edge": 18.5,
-            "grade": "L"
+            "grade": "L",
+            "actual": 110.0,
+            "actual_label": "110 rec yds"
           },
           {
             "player": "Kirk Cousins",
@@ -400,7 +420,9 @@
             "projection": 215,
             "games_2026": 4,
             "projection_edge": 19.5,
-            "grade": "L"
+            "grade": "L",
+            "actual": 243.0,
+            "actual_label": "243 pass yds"
           },
           {
             "player": "Tre Tucker",
@@ -430,7 +452,9 @@
             "projection": 55,
             "games_2026": 4,
             "projection_edge": 14.5,
-            "grade": "W"
+            "grade": "W",
+            "actual": 41.0,
+            "actual_label": "41 rec yds"
           }
         ],
         "mismatch_count": 0
@@ -475,7 +499,9 @@
             "projection": 55,
             "games_2026": 4,
             "projection_edge": 18.5,
-            "grade": "L"
+            "grade": "L",
+            "actual": 7.0,
+            "actual_label": "7 rec yds"
           },
           {
             "player": "Aaron Jones",
@@ -505,7 +531,9 @@
             "projection": 78,
             "games_2026": 4,
             "projection_edge": 5.5,
-            "grade": "W"
+            "grade": "W",
+            "actual": 113.0,
+            "actual_label": "113 rush yds"
           },
           {
             "player": "Kyler Murray",
@@ -528,7 +556,9 @@
             "projection": 175,
             "games_2026": 3,
             "projection_edge": 37.5,
-            "grade": "L"
+            "grade": "L",
+            "actual": 229.0,
+            "actual_label": "229 pass yds"
           }
         ],
         "mismatch_count": 0
@@ -564,7 +594,9 @@
         "projection": 280,
         "games_2026": 4,
         "projection_edge": 42.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 96.0,
+        "actual_label": "96 pass yds"
       },
       "RB": {
         "player": "D'Andre Swift",
@@ -587,7 +619,9 @@
         "projection": 90,
         "games_2026": 4,
         "projection_edge": 5.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 43.0,
+        "actual_label": "43 rush yds"
       },
       "WR": {
         "player": "Malik Washington",
@@ -617,7 +651,9 @@
         "projection": 52,
         "games_2026": 4,
         "projection_edge": 7.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 43.0,
+        "actual_label": "43 rec yds"
       },
       "TE": {
         "player": "T.J. Hockenson",
@@ -648,7 +684,9 @@
         "projection": 55,
         "games_2026": 4,
         "projection_edge": 18.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 7.0,
+        "actual_label": "7 rec yds"
       }
     }
   },
@@ -686,7 +724,9 @@
         "projection": 55,
         "games_2026": 4,
         "projection_edge": 18.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 7.0,
+        "actual_label": "7 rec yds"
       },
       {
         "player": "D'Andre Swift",
@@ -709,7 +749,9 @@
         "projection": 90,
         "games_2026": 4,
         "projection_edge": 5.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 43.0,
+        "actual_label": "43 rush yds"
       },
       {
         "player": "Dontayvion Wicks",
@@ -732,7 +774,9 @@
         "projection": 58,
         "games_2026": 4,
         "projection_edge": 13.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 63.0,
+        "actual_label": "63 rec yds"
       },
       {
         "player": "Joe Burrow",
@@ -762,7 +806,9 @@
         "projection": 280,
         "games_2026": 4,
         "projection_edge": 27.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 190.0,
+        "actual_label": "190 pass yds"
       },
       {
         "player": "Malik Washington",
@@ -792,7 +838,9 @@
         "projection": 52,
         "games_2026": 4,
         "projection_edge": 7.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 43.0,
+        "actual_label": "43 rec yds"
       }
     ],
     "unders": [
@@ -824,7 +872,9 @@
         "projection": 45,
         "games_2026": 4,
         "projection_edge": 11.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 123.0,
+        "actual_label": "123 rec yds"
       },
       {
         "player": "Colston Loveland",
@@ -854,7 +904,9 @@
         "projection": 20,
         "games_2026": 4,
         "projection_edge": 17.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 19.0,
+        "actual_label": "19 rec yds"
       },
       {
         "player": "Trevor Lawrence",
@@ -884,7 +936,9 @@
         "projection": 205,
         "games_2026": 4,
         "projection_edge": 20.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 331.0,
+        "actual_label": "331 pass yds"
       },
       {
         "player": "Kirk Cousins",
@@ -914,7 +968,9 @@
         "projection": 215,
         "games_2026": 4,
         "projection_edge": 19.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 243.0,
+        "actual_label": "243 pass yds"
       },
       {
         "player": "Brock Bowers",
@@ -944,7 +1000,9 @@
         "projection": 55,
         "games_2026": 2,
         "projection_edge": 18.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 110.0,
+        "actual_label": "110 rec yds"
       }
     ]
   },
@@ -1164,5 +1222,5 @@
       }
     }
   },
-  "graded_at": "2026-10-13T21:01:24.753470+00:00"
+  "graded_at": "2026-10-13T21:35:47.641538+00:00"
 }

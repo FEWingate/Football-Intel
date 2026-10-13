@@ -204,6 +204,49 @@ def grade_pick(pick, player_stats, scores):
     return grade_ou(real_value, line, pick.get("side", "over"))
 
 
+_ACTUAL_UNIT = {
+    "passing_yards": "pass yds", "rushing_yards": "rush yds",
+    "receiving_yards": "rec yds", "receptions": "rec",
+}
+
+
+def _fmt_num(x):
+    return str(int(x)) if float(x) == int(x) else str(round(float(x), 1))
+
+
+def actual_result(pick, player_stats, scores):
+    """The REAL number behind a pick's grade, for display next to Hit/Miss
+    ("279 pass yds", "1 TD", "won by 12"). Read straight from the same real
+    stats the grade itself used; (None, None) when there is nothing real to show."""
+    market_key = pick.get("market_key")
+    if market_key == "player_anytime_td":
+        row = player_stats.get(normalize_name(pick.get("player", "")))
+        if row is None:
+            return None, None
+        n = float(row.get("rushing_tds", 0) or 0) + float(row.get("receiving_tds", 0) or 0)
+        return n, f"{_fmt_num(n)} TD"
+    if market_key == "spreads":
+        code = TEAM_NAME_TO_CODE.get(pick.get("player"), pick.get("player"))
+        entry = scores.get(normalize_team_code(code))
+        if not entry or not entry.get("final"):
+            return None, None
+        m = entry["own"] - entry["opp"]
+        label = "tied" if m == 0 else (f"won by {_fmt_num(abs(m))}" if m > 0 else f"lost by {_fmt_num(abs(m))}")
+        return m, label
+    stat_col = MARKET_STAT_COL.get(market_key)
+    if stat_col is None:
+        alt = ALT_MARKET_RE.match(market_key or "")
+        if alt:
+            stat_col = MARKET_STAT_COL.get(f"player_{alt.group(1)}")
+    if stat_col is None:
+        return None, None
+    row = player_stats.get(normalize_name(pick.get("player", "")))
+    if row is None:
+        return None, None
+    v = float(row.get(stat_col, 0) or 0)
+    return v, f"{_fmt_num(v)} {_ACTUAL_UNIT.get(stat_col, '')}".strip()
+
+
 def grade_pick_list(picks, player_stats, scores):
     graded = []
     for p in picks:
@@ -212,6 +255,9 @@ def grade_pick_list(picks, player_stats, scores):
         entry["grade"] = grade
         if reason:
             entry["ungraded_reason"] = reason
+        actual, label = actual_result(p, player_stats, scores)
+        if label:
+            entry["actual"], entry["actual_label"] = actual, label
         graded.append(entry)
     return graded
 
@@ -295,6 +341,9 @@ def grade_report(report, player_stats, scores):
             entry["grade"] = grade
             if reason:
                 entry["ungraded_reason"] = reason
+            actual, label = actual_result(pick, player_stats, scores)
+            if label:
+                entry["actual"], entry["actual_label"] = actual, label
             new_per_position[pos] = entry
             tally(tallies["prop_breakdown"], grade, pick_units(grade, pick.get("price")))
             tally(tallies["overall"], grade)

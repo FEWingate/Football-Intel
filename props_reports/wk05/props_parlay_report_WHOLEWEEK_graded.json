@@ -95,7 +95,9 @@
         "projection": 35,
         "games_2026": 4,
         "projection_edge": 16.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 87.0,
+        "actual_label": "87 rec yds"
       },
       {
         "rank": 2,
@@ -119,7 +121,9 @@
         "projection": 8.5,
         "games_2026": 4,
         "projection_edge": 1.0,
-        "grade": "W"
+        "grade": "W",
+        "actual": 9.0,
+        "actual_label": "9 rec"
       },
       {
         "rank": 3,
@@ -143,7 +147,9 @@
         "projection": 70,
         "games_2026": 4,
         "projection_edge": 24.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 6.0,
+        "actual_label": "6 rec yds"
       },
       {
         "rank": 4,
@@ -167,7 +173,9 @@
         "projection": 65,
         "games_2026": 4,
         "projection_edge": 27.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 33.0,
+        "actual_label": "33 rush yds"
       },
       {
         "rank": 5,
@@ -199,7 +207,9 @@
         "projection": 55,
         "games_2026": 4,
         "projection_edge": 18.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 7.0,
+        "actual_label": "7 rec yds"
       },
       {
         "rank": 6,
@@ -223,7 +233,9 @@
         "projection": 310,
         "games_2026": 4,
         "projection_edge": 31.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 383.0,
+        "actual_label": "383 pass yds"
       },
       {
         "rank": 7,
@@ -247,7 +259,9 @@
         "projection": 280,
         "games_2026": 4,
         "projection_edge": 27.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 190.0,
+        "actual_label": "190 pass yds"
       },
       {
         "rank": 8,
@@ -271,7 +285,9 @@
         "projection": 42,
         "games_2026": 4,
         "projection_edge": 8.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 113.0,
+        "actual_label": "113 rec yds"
       },
       {
         "rank": 9,
@@ -295,7 +311,9 @@
         "projection": 95,
         "games_2026": 3,
         "projection_edge": 26.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 53.0,
+        "actual_label": "53 rec yds"
       },
       {
         "rank": 10,
@@ -327,7 +345,9 @@
         ],
         "projection": 10,
         "games_2026": 4,
-        "grade": "L"
+        "grade": "L",
+        "actual": 2.0,
+        "actual_label": "won by 2"
       }
     ],
     "errors": []
@@ -367,7 +387,9 @@
           ],
           "projection": 35,
           "games_2026": 4,
-          "grade": "W"
+          "grade": "W",
+          "actual": 87.0,
+          "actual_label": "87 rec yds"
         },
         {
           "player": "Trey McBride",
@@ -389,7 +411,9 @@
           ],
           "projection": 8.5,
           "games_2026": 4,
-          "grade": "W"
+          "grade": "W",
+          "actual": 9.0,
+          "actual_label": "9 rec"
         }
       ],
       "mismatches": [],
@@ -429,7 +453,9 @@
           ],
           "projection": 35,
           "games_2026": 4,
-          "grade": "W"
+          "grade": "W",
+          "actual": 87.0,
+          "actual_label": "87 rec yds"
         },
         {
           "player": "Trey McBride",
@@ -451,7 +477,9 @@
           ],
           "projection": 8.5,
           "games_2026": 4,
-          "grade": "W"
+          "grade": "W",
+          "actual": 9.0,
+          "actual_label": "9 rec"
         },
         {
           "player": "Carnell Tate",
@@ -473,7 +501,9 @@
           ],
           "projection": 70,
           "games_2026": 4,
-          "grade": "L"
+          "grade": "L",
+          "actual": 6.0,
+          "actual_label": "6 rec yds"
         }
       ],
       "mismatches": [],
@@ -513,7 +543,9 @@
           ],
           "projection": 35,
           "games_2026": 4,
-          "grade": "W"
+          "grade": "W",
+          "actual": 87.0,
+          "actual_label": "87 rec yds"
         },
         {
           "player": "Trey McBride",
@@ -535,7 +567,9 @@
           ],
           "projection": 8.5,
           "games_2026": 4,
-          "grade": "W"
+          "grade": "W",
+          "actual": 9.0,
+          "actual_label": "9 rec"
         },
         {
           "player": "Carnell Tate",
@@ -557,7 +591,9 @@
           ],
           "projection": 70,
           "games_2026": 4,
-          "grade": "L"
+          "grade": "L",
+          "actual": 6.0,
+          "actual_label": "6 rec yds"
         },
         {
           "player": "Omarion Hampton",
@@ -579,7 +615,9 @@
           ],
           "projection": 65,
           "games_2026": 4,
-          "grade": "L"
+          "grade": "L",
+          "actual": 33.0,
+          "actual_label": "33 rush yds"
         }
       ],
       "mismatches": [],
@@ -1178,5 +1216,5 @@
       }
     }
   },
-  "graded_at": "2026-10-13T21:01:24.744288+00:00"
+  "graded_at": "2026-10-13T21:35:47.634282+00:00"
 }

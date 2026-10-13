@@ -83,7 +83,9 @@
               }
             ],
             "projection_edge": 7.5,
-            "grade": "W"
+            "grade": "W",
+            "actual": 104.0,
+            "actual_label": "104 rec yds"
           },
           {
             "player": "Quinshon Judkins",
@@ -106,7 +108,9 @@
               }
             ],
             "projection_edge": 8.5,
-            "grade": "L"
+            "grade": "L",
+            "actual": 44.0,
+            "actual_label": "44 rush yds"
           },
           {
             "player": "Deshaun Watson",
@@ -129,7 +133,9 @@
               }
             ],
             "projection_edge": 12.5,
-            "grade": "W"
+            "grade": "W",
+            "actual": 155.0,
+            "actual_label": "155 pass yds"
           }
         ],
         "mismatch_count": 0
@@ -159,7 +165,9 @@
               }
             ],
             "projection_edge": 16.5,
-            "grade": "W"
+            "grade": "W",
+            "actual": 87.0,
+            "actual_label": "87 rec yds"
           },
           {
             "player": "Jonathan Taylor",
@@ -185,7 +193,9 @@
             "evidence_mismatches": [
               "REAL MISMATCH: PIT's real current RB def rush_yds rank is #19 or #20 \u2014 the report claimed #18."
             ],
-            "grade": "L"
+            "grade": "L",
+            "actual": 45.0,
+            "actual_label": "45 rush yds"
           },
           {
             "player": "Josh Downs",
@@ -208,7 +218,9 @@
               }
             ],
             "projection_edge": 16.5,
-            "grade": "W"
+            "grade": "W",
+            "actual": 47.0,
+            "actual_label": "47 rec yds"
           }
         ],
         "mismatch_count": 0
@@ -238,7 +250,9 @@
               }
             ],
             "projection_edge": 24.5,
-            "grade": "L"
+            "grade": "L",
+            "actual": 6.0,
+            "actual_label": "6 rec yds"
           },
           {
             "player": "Dalton Schultz",
@@ -261,7 +275,9 @@
               }
             ],
             "projection_edge": 6.5,
-            "grade": "W"
+            "grade": "W",
+            "actual": 30.0,
+            "actual_label": "30 rec yds"
           },
           {
             "player": "David Montgomery",
@@ -287,7 +303,9 @@
             "evidence_mismatches": [
               "REAL MISMATCH: TEN's real current RB def rush_yds rank is #6 or #21 \u2014 the report claimed #24."
             ],
-            "grade": "W"
+            "grade": "W",
+            "actual": 11.0,
+            "actual_label": "11 rush yds"
           }
         ],
         "mismatch_count": 0
@@ -317,7 +335,9 @@
               }
             ],
             "projection_edge": 8.5,
-            "grade": "W"
+            "grade": "W",
+            "actual": 94.0,
+            "actual_label": "94 rec yds"
           },
           {
             "player": "Cam Skattebo",
@@ -340,7 +360,9 @@
               }
             ],
             "projection_edge": 3.5,
-            "grade": "L"
+            "grade": "L",
+            "actual": 12.0,
+            "actual_label": "12 rec yds"
           },
           {
             "player": "Jacory Croskey-Merritt",
@@ -363,7 +385,9 @@
               }
             ],
             "projection_edge": 18.5,
-            "grade": "L"
+            "grade": "L",
+            "actual": 82.0,
+            "actual_label": "82 rush yds"
           }
         ],
         "mismatch_count": 0
@@ -393,7 +417,9 @@
               }
             ],
             "projection_edge": 17.5,
-            "grade": "L"
+            "grade": "L",
+            "actual": 0.0,
+            "actual_label": "0 rec yds"
           },
           {
             "player": "Omarion Hampton",
@@ -416,7 +442,9 @@
               }
             ],
             "projection_edge": 27.5,
-            "grade": "L"
+            "grade": "L",
+            "actual": 33.0,
+            "actual_label": "33 rush yds"
           },
           {
             "player": "Jaylen Waddle",
@@ -439,7 +467,9 @@
               }
             ],
             "projection_edge": 15.5,
-            "grade": "W"
+            "grade": "W",
+            "actual": 19.0,
+            "actual_label": "19 rec yds"
           }
         ],
         "mismatch_count": 0
@@ -467,7 +497,9 @@
           }
         ],
         "projection_edge": 34.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 235.0,
+        "actual_label": "235 pass yds"
       },
       "RB": {
         "player": "Jaylen Warren",
@@ -490,7 +522,9 @@
           }
         ],
         "projection_edge": 16.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 87.0,
+        "actual_label": "87 rec yds"
       },
       "WR": {
         "player": "Carnell Tate",
@@ -513,7 +547,9 @@
           }
         ],
         "projection_edge": 24.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 6.0,
+        "actual_label": "6 rec yds"
       },
       "TE": {
         "player": "Isaiah Likely",
@@ -536,7 +572,9 @@
           }
         ],
         "projection_edge": 8.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 94.0,
+        "actual_label": "94 rec yds"
       }
     }
   },
@@ -567,7 +605,9 @@
           }
         ],
         "projection_edge": 16.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 87.0,
+        "actual_label": "87 rec yds"
       },
       {
         "player": "Isaiah Likely",
@@ -590,7 +630,9 @@
           }
         ],
         "projection_edge": 8.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 94.0,
+        "actual_label": "94 rec yds"
       },
       {
         "player": "Carnell Tate",
@@ -613,7 +655,9 @@
           }
         ],
         "projection_edge": 24.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 6.0,
+        "actual_label": "6 rec yds"
       },
       {
         "player": "Omarion Hampton",
@@ -636,7 +680,9 @@
           }
         ],
         "projection_edge": 27.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 33.0,
+        "actual_label": "33 rush yds"
       },
       {
         "player": "Aaron Rodgers",
@@ -659,7 +705,9 @@
           }
         ],
         "projection_edge": 34.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 235.0,
+        "actual_label": "235 pass yds"
       }
     ],
     "unders": [
@@ -684,7 +732,9 @@
           }
         ],
         "projection_edge": 6.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 30.0,
+        "actual_label": "30 rec yds"
       },
       {
         "player": "Deshaun Watson",
@@ -707,7 +757,9 @@
           }
         ],
         "projection_edge": 12.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 155.0,
+        "actual_label": "155 pass yds"
       },
       {
         "player": "Josh Downs",
@@ -730,7 +782,9 @@
           }
         ],
         "projection_edge": 16.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 47.0,
+        "actual_label": "47 rec yds"
       },
       {
         "player": "Jaylen Waddle",
@@ -753,7 +807,9 @@
           }
         ],
         "projection_edge": 15.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 19.0,
+        "actual_label": "19 rec yds"
       },
       {
         "player": "Jacory Croskey-Merritt",
@@ -776,7 +832,9 @@
           }
         ],
         "projection_edge": 18.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 82.0,
+        "actual_label": "82 rush yds"
       }
     ]
   },
@@ -996,5 +1054,5 @@
       }
     }
   },
-  "graded_at": "2026-10-13T21:01:24.750508+00:00"
+  "graded_at": "2026-10-13T21:35:47.639018+00:00"
 }

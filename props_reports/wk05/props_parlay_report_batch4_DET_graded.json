@@ -82,7 +82,9 @@
               }
             ],
             "projection_edge": 6.5,
-            "grade": "L"
+            "grade": "L",
+            "actual": 30.0,
+            "actual_label": "30 rec yds"
           },
           {
             "player": "Trey McBride",
@@ -105,7 +107,9 @@
               }
             ],
             "projection_edge": 1.0,
-            "grade": "W"
+            "grade": "W",
+            "actual": 9.0,
+            "actual_label": "9 rec"
           },
           {
             "player": "Jared Goff",
@@ -128,7 +132,9 @@
               }
             ],
             "projection_edge": 19.5,
-            "grade": "L"
+            "grade": "L",
+            "actual": 271.0,
+            "actual_label": "271 pass yds"
           }
         ],
         "mismatch_count": 0
@@ -165,7 +171,9 @@
               }
             ],
             "projection_edge": 14.5,
-            "grade": "W"
+            "grade": "W",
+            "actual": 24.0,
+            "actual_label": "24 rec yds"
           },
           {
             "player": "Christian McCaffrey",
@@ -188,7 +196,9 @@
               }
             ],
             "projection_edge": 0.5,
-            "grade": "L"
+            "grade": "L",
+            "actual": 3.0,
+            "actual_label": "3 rec"
           },
           {
             "player": "Mike Evans",
@@ -211,7 +221,9 @@
               }
             ],
             "projection_edge": 8.5,
-            "grade": "L"
+            "grade": "L",
+            "actual": 113.0,
+            "actual_label": "113 rec yds"
           }
         ],
         "mismatch_count": 0
@@ -241,7 +253,9 @@
               }
             ],
             "projection_edge": 12.5,
-            "grade": "L"
+            "grade": "L",
+            "actual": 102.0,
+            "actual_label": "102 rush yds"
           },
           {
             "player": "Zay Flowers",
@@ -264,7 +278,9 @@
               }
             ],
             "projection_edge": 26.5,
-            "grade": "L"
+            "grade": "L",
+            "actual": 53.0,
+            "actual_label": "53 rec yds"
           },
           {
             "player": "Drake London",
@@ -287,7 +303,9 @@
               }
             ],
             "projection_edge": 14.5,
-            "grade": "W"
+            "grade": "W",
+            "actual": 118.0,
+            "actual_label": "118 rec yds"
           }
         ],
         "mismatch_count": 0
@@ -317,7 +335,9 @@
               }
             ],
             "projection_edge": 31.5,
-            "grade": "W"
+            "grade": "W",
+            "actual": 383.0,
+            "actual_label": "383 pass yds"
           },
           {
             "player": "Kyren Williams",
@@ -340,7 +360,9 @@
               }
             ],
             "projection_edge": 22.5,
-            "grade": "W"
+            "grade": "W",
+            "actual": 27.0,
+            "actual_label": "27 rec yds"
           },
           {
             "player": "Josh Allen",
@@ -363,7 +385,9 @@
               }
             ],
             "projection_edge": 19.5,
-            "grade": "W"
+            "grade": "W",
+            "actual": 210.0,
+            "actual_label": "210 pass yds"
           }
         ],
         "mismatch_count": 0
@@ -391,7 +415,9 @@
           }
         ],
         "projection_edge": 31.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 383.0,
+        "actual_label": "383 pass yds"
       },
       "RB": {
         "player": "Kyren Williams",
@@ -414,7 +440,9 @@
           }
         ],
         "projection_edge": 22.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 27.0,
+        "actual_label": "27 rec yds"
       },
       "WR": {
         "player": "Michael Wilson",
@@ -437,7 +465,9 @@
           }
         ],
         "projection_edge": 6.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 30.0,
+        "actual_label": "30 rec yds"
       },
       "TE": {
         "player": "Trey McBride",
@@ -460,7 +490,9 @@
           }
         ],
         "projection_edge": 1.0,
-        "grade": "W"
+        "grade": "W",
+        "actual": 9.0,
+        "actual_label": "9 rec"
       }
     }
   },
@@ -488,7 +520,9 @@
           }
         ],
         "projection_edge": 1.0,
-        "grade": "W"
+        "grade": "W",
+        "actual": 9.0,
+        "actual_label": "9 rec"
       },
       {
         "player": "Kyren Williams",
@@ -511,7 +545,9 @@
           }
         ],
         "projection_edge": 22.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 27.0,
+        "actual_label": "27 rec yds"
       },
       {
         "player": "Matthew Stafford",
@@ -534,7 +570,9 @@
           }
         ],
         "projection_edge": 31.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 383.0,
+        "actual_label": "383 pass yds"
       },
       {
         "player": "Michael Wilson",
@@ -557,7 +595,9 @@
           }
         ],
         "projection_edge": 6.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 30.0,
+        "actual_label": "30 rec yds"
       },
       {
         "player": "Drake London",
@@ -580,7 +620,9 @@
           }
         ],
         "projection_edge": 14.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 118.0,
+        "actual_label": "118 rec yds"
       },
       {
         "player": "Zay Flowers",
@@ -603,7 +645,9 @@
           }
         ],
         "projection_edge": 26.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 53.0,
+        "actual_label": "53 rec yds"
       },
       {
         "player": "Puka Nacua",
@@ -626,7 +670,9 @@
           }
         ],
         "projection_edge": 7.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 138.0,
+        "actual_label": "138 rec yds"
       }
     ],
     "unders": [
@@ -651,7 +697,9 @@
           }
         ],
         "projection_edge": 12.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 102.0,
+        "actual_label": "102 rush yds"
       },
       {
         "player": "Mike Evans",
@@ -674,7 +722,9 @@
           }
         ],
         "projection_edge": 8.5,
-        "grade": "L"
+        "grade": "L",
+        "actual": 113.0,
+        "actual_label": "113 rec yds"
       },
       {
         "player": "George Kittle",
@@ -704,7 +754,9 @@
           }
         ],
         "projection_edge": 14.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 24.0,
+        "actual_label": "24 rec yds"
       },
       {
         "player": "Josh Allen",
@@ -727,7 +779,9 @@
           }
         ],
         "projection_edge": 19.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 210.0,
+        "actual_label": "210 pass yds"
       },
       {
         "player": "Sam Darnold",
@@ -750,7 +804,9 @@
           }
         ],
         "projection_edge": 41.5,
-        "grade": "W"
+        "grade": "W",
+        "actual": 195.0,
+        "actual_label": "195 pass yds"
       }
     ]
   },
@@ -928,5 +984,5 @@
       }
     }
   },
-  "graded_at": "2026-10-13T21:01:24.747365+00:00"
+  "graded_at": "2026-10-13T21:35:47.636985+00:00"
 }

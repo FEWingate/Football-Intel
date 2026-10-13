@@ -1,6 +1,41 @@
 {
   "weeks": {
     "wk04": {
+      "td_parlays": {
+        "w": 3,
+        "l": 17,
+        "p": 0,
+        "ungraded": 0,
+        "units": -9.2
+      },
+      "parlays": {
+        "w": 4,
+        "l": 21,
+        "p": 0,
+        "ungraded": 0,
+        "units": 3.92
+      },
+      "spread_parlays": {
+        "w": 0,
+        "l": 14,
+        "p": 0,
+        "ungraded": 0,
+        "units": -14.0
+      },
+      "prop_breakdown": {
+        "w": 27,
+        "l": 34,
+        "p": 0,
+        "ungraded": 0,
+        "units": -10.13
+      },
+      "best_10": {
+        "w": 0,
+        "l": 0,
+        "p": 0,
+        "ungraded": 0,
+        "units": 0.0
+      },
       "overall": {
         "w": 41,
         "l": 50,
@@ -14,41 +49,6 @@
         "p": 0,
         "ungraded": 0,
         "units": -4.61
-      },
-      "best_10": {
-        "w": 0,
-        "l": 0,
-        "p": 0,
-        "ungraded": 0,
-        "units": 0.0
-      },
-      "prop_breakdown": {
-        "w": 27,
-        "l": 34,
-        "p": 0,
-        "ungraded": 0,
-        "units": -10.13
-      },
-      "spread_parlays": {
-        "w": 0,
-        "l": 14,
-        "p": 0,
-        "ungraded": 0,
-        "units": -14.0
-      },
-      "parlays": {
-        "w": 4,
-        "l": 21,
-        "p": 0,
-        "ungraded": 0,
-        "units": 3.92
-      },
-      "td_parlays": {
-        "w": 3,
-        "l": 17,
-        "p": 0,
-        "ungraded": 0,
-        "units": -9.2
       },
       "unique": {
         "w": 41,
@@ -87,12 +87,12 @@
       }
     },
     "wk05": {
-      "parlays": {
-        "w": 1,
-        "l": 2,
+      "overall": {
+        "w": 23,
+        "l": 24,
         "p": 0,
         "ungraded": 0,
-        "units": 0.18
+        "units": -3.95
       },
       "prop_breakdown": {
         "w": 26,
@@ -101,26 +101,12 @@
         "ungraded": 0,
         "units": -5.49
       },
-      "favorite_ou": {
-        "w": 17,
-        "l": 15,
-        "p": 0,
-        "ungraded": 0,
-        "units": -0.22
-      },
       "spread_parlays": {
         "w": 0,
         "l": 0,
         "p": 0,
         "ungraded": 0,
         "units": 0.0
-      },
-      "overall": {
-        "w": 23,
-        "l": 24,
-        "p": 0,
-        "ungraded": 0,
-        "units": -3.95
       },
       "best_10": {
         "w": 3,
@@ -135,6 +121,20 @@
         "p": 0,
         "ungraded": 0,
         "units": 0.0
+      },
+      "favorite_ou": {
+        "w": 17,
+        "l": 15,
+        "p": 0,
+        "ungraded": 0,
+        "units": -0.22
+      },
+      "parlays": {
+        "w": 1,
+        "l": 2,
+        "p": 0,
+        "ungraded": 0,
+        "units": 0.18
       },
       "unique": {
         "w": 23,
@@ -174,26 +174,12 @@
     }
   },
   "season_totals": {
-    "spread_parlays_legs": {
-      "w": 10,
-      "l": 9,
+    "overall": {
+      "w": 64,
+      "l": 74,
       "p": 1,
       "ungraded": 0,
-      "units": 0.2
-    },
-    "parlays": {
-      "w": 5,
-      "l": 23,
-      "p": 0,
-      "ungraded": 0,
-      "units": 4.1
-    },
-    "td_parlays_legs": {
-      "w": 12,
-      "l": 14,
-      "p": 0,
-      "ungraded": 0,
-      "units": -2.57
+      "units": -16.36
     },
     "prop_breakdown": {
       "w": 53,
@@ -202,21 +188,35 @@
       "ungraded": 0,
       "units": -15.62
     },
-    "favorite_ou": {
-      "w": 31,
-      "l": 32,
-      "p": 0,
-      "ungraded": 0,
-      "units": -4.83
-    },
-    "unique": {
-      "w": 64,
-      "l": 74,
+    "spread_parlays_legs": {
+      "w": 10,
+      "l": 9,
       "p": 1,
       "ungraded": 0,
-      "units": -16.36
+      "units": 0.2
     },
-    "overall": {
+    "td_parlays": {
+      "w": 3,
+      "l": 17,
+      "p": 0,
+      "ungraded": 0,
+      "units": -9.2
+    },
+    "spread_parlays": {
+      "w": 0,
+      "l": 14,
+      "p": 0,
+      "ungraded": 0,
+      "units": -14.0
+    },
+    "parlays_legs": {
+      "w": 19,
+      "l": 24,
+      "p": 0,
+      "ungraded": 0,
+      "units": -7.39
+    },
+    "unique": {
       "w": 64,
       "l": 74,
       "p": 1,
@@ -237,27 +237,27 @@
       "ungraded": 0,
       "units": 0.0
     },
-    "spread_parlays": {
-      "w": 0,
+    "favorite_ou": {
+      "w": 31,
+      "l": 32,
+      "p": 0,
+      "ungraded": 0,
+      "units": -4.83
+    },
+    "td_parlays_legs": {
+      "w": 12,
       "l": 14,
       "p": 0,
       "ungraded": 0,
-      "units": -14.0
+      "units": -2.57
     },
-    "parlays_legs": {
-      "w": 19,
-      "l": 24,
+    "parlays": {
+      "w": 5,
+      "l": 23,
       "p": 0,
       "ungraded": 0,
-      "units": -7.39
-    },
-    "td_parlays": {
-      "w": 3,
-      "l": 17,
-      "p": 0,
-      "ungraded": 0,
-      "units": -9.2
+      "units": 4.1
     }
   },
-  "generated_at": "2026-10-13T21:01:24.756680+00:00"
+  "generated_at": "2026-10-13T21:35:47.643934+00:00"
 }

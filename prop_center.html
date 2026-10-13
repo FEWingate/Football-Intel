@@ -966,11 +966,14 @@ function sideLineLabel(pick){
 // so this has zero effect anywhere the pick hasn't actually been
 // graded — only the Results tab ever passes graded picks through
 // pickCardHTML/parlayCard.
-function gradeBadgeHTML(grade){
+function gradeBadgeHTML(grade, actual){
   if(grade === undefined) return '';
-  if(grade === 'W') return `<span class="grade-badge win">✓ Hit</span>`;
-  if(grade === 'L') return `<span class="grade-badge loss">✗ Miss</span>`;
-  if(grade === 'P') return `<span class="grade-badge push">Push</span>`;
+  // `actual` is the real result the grade was based on ("279 pass yds",
+  // "1 TD", "won by 12"), written by grade_props_report.py next to each grade.
+  const a = actual ? ` · ${esc(actual)}` : '';
+  if(grade === 'W') return `<span class="grade-badge win">✓ Hit${a}</span>`;
+  if(grade === 'L') return `<span class="grade-badge loss">✗ Miss${a}</span>`;
+  if(grade === 'P') return `<span class="grade-badge push">Push${a}</span>`;
   return `<span class="grade-badge pending">Pending</span>`;
 }
 
@@ -987,8 +990,16 @@ function projectionLineHTML(pick){
   } else if(pick.market_key === 'spreads'){
     txt = `Coeus projects a ${pick.projection > 0 ? '+' : ''}${pick.projection} margin`;
   } else {
-    const edge = typeof pick.projection_edge === 'number'
-      ? ` (${pick.projection_edge > 0 ? '+' : ''}${pick.projection_edge} vs line)` : '';
+    // Signed projection minus the line: an Under with a projection BELOW the
+    // line reads negative ("projects 188, -12.5 vs line" for Under 200.5), not
+    // the always-positive "edge" number stored in the report.
+    const ln = typeof pick.line === 'number' ? pick.line
+             : (typeof pick.threshold === 'number' ? pick.threshold : null);
+    let diff = null;
+    if(ln !== null) diff = Math.round((pick.projection - ln) * 10) / 10;
+    else if(typeof pick.projection_edge === 'number') diff = pick.side === 'under' ? -pick.projection_edge : pick.projection_edge;
+    const edge = diff === null ? ''
+      : ` (${diff > 0 ? '+' : diff < 0 ? '\u2212' : ''}${Math.abs(diff)} vs line)`;
     txt = `Coeus projects ${pick.projection}${edge}`;
   }
   const n = Number.isInteger(pick.games_2026) ? ` · ${pick.games_2026} games in 2026` : '';
@@ -1001,7 +1012,7 @@ function pickCardHTML(pick, badge){
   const sideLabel = sideLineLabel(pick);
   return `<div class="pc-pick-card">
     ${badge ? `<span class="pc-pick-badge">${esc(badge)}</span>` : ''}
-    ${gradeBadgeHTML(pick.grade)}
+    ${gradeBadgeHTML(pick.grade, pick.actual_label)}
     <div class="pc-pick-player">${esc(pick.player)}</div>
     <div class="pc-pick-market">${esc(marketKeyLabel(pick.market_key))}${gameLabel ? ' · ' + esc(gameLabel) : ''}</div>
     <div class="pc-pick-price-row">${sideLabel}<span class="pc-pick-price">${priceLine(pick.price)}</span></div>
@@ -1178,7 +1189,7 @@ function parlayCard(size, p){
     })();
     return `
     <div class="parlay-leg">
-      <div><div class="who">${esc(leg.player || leg.side || '—')} ${gradeBadgeHTML(leg.grade)}</div>
+      <div><div class="who">${esc(leg.player || leg.side || '—')} ${gradeBadgeHTML(leg.grade, leg.actual_label)}</div>
         <div class="mkt">${esc(marketKeyLabel(leg.market_key || ''))}${gameLabel ? ' · ' + esc(gameLabel) : ''}</div>
         ${legSideLabel}
         ${leg.reason ? `<div class="pc-pick-reason">${esc(leg.reason)}</div>` : ''}</div>
@@ -1367,7 +1378,7 @@ function scrambleLegRowHTML(leg){
   const gameLabel = game ? `${game.away_code} @ ${game.home_code}` : '';
   const sideLabel = sideLineLabel(leg);
   return `<div class="parlay-leg">
-    <div><div class="who">${esc(leg.player || leg.side || '—')} ${gradeBadgeHTML(leg.grade)}</div>
+    <div><div class="who">${esc(leg.player || leg.side || '—')} ${gradeBadgeHTML(leg.grade, leg.actual_label)}</div>
       <div class="mkt">${esc(marketKeyLabel(leg.market_key || ''))}${gameLabel ? ' · ' + esc(gameLabel) : ''}</div>
       ${sideLabel}
       ${leg.reason ? `<div class="pc-pick-reason">${esc(leg.reason)}</div>` : ''}

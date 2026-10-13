@@ -115,7 +115,9 @@
               "claimed_rank": 32
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 329.0,
+          "actual_label": "329 pass yds"
         },
         {
           "player": "Kyren Williams",
@@ -143,7 +145,9 @@
               "claimed_rank": 26
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 80.0,
+          "actual_label": "80 rush yds"
         },
         {
           "player": "Justin Herbert",
@@ -171,7 +175,9 @@
               "claimed_rank": 1
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 189.0,
+          "actual_label": "189 pass yds"
         }
       ],
       "mismatches": [],
@@ -219,7 +225,9 @@
               "claimed_rank": 24
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 218.0,
+          "actual_label": "218 pass yds"
         },
         {
           "player": "CeeDee Lamb",
@@ -247,7 +255,9 @@
               "claimed_rank": 27
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 189.0,
+          "actual_label": "189 rec yds"
         },
         {
           "player": "C.J. Stroud",
@@ -275,7 +285,9 @@
               "claimed_rank": 9
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 347.0,
+          "actual_label": "347 pass yds"
         },
         {
           "player": "Kirk Cousins",
@@ -303,7 +315,9 @@
               "claimed_rank": 3
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 365.0,
+          "actual_label": "365 pass yds"
         }
       ],
       "mismatches": [],
@@ -351,7 +365,9 @@
               "claimed_rank": 24
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 93.0,
+          "actual_label": "93 rush yds"
         },
         {
           "player": "Pat Freiermuth",
@@ -379,7 +395,9 @@
               "claimed_rank": 24
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 17.0,
+          "actual_label": "17 rec yds"
         },
         {
           "player": "Josh Downs",
@@ -407,7 +425,9 @@
               "claimed_rank": 30
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 16.0,
+          "actual_label": "16 rec yds"
         },
         {
           "player": "Jonathan Taylor",
@@ -435,7 +455,9 @@
               "claimed_rank": 3
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 95.0,
+          "actual_label": "95 rush yds"
         },
         {
           "player": "Javonte Williams",
@@ -463,7 +485,9 @@
               "claimed_rank": 28
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 62.0,
+          "actual_label": "62 rush yds"
         }
       ],
       "mismatches": [],
@@ -513,7 +537,9 @@
               "claimed_rank": 13
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 119.0,
+          "actual_label": "119 pass yds"
         },
         {
           "player": "Braelon Allen",
@@ -541,7 +567,9 @@
               "claimed_rank": 17
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 59.0,
+          "actual_label": "59 rush yds"
         },
         {
           "player": "Christian Watson",
@@ -569,7 +597,9 @@
               "claimed_rank": 7
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 47.0,
+          "actual_label": "47 rec yds"
         },
         {
           "player": "Jordan Love",
@@ -597,7 +627,9 @@
               "claimed_rank": 14
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 197.0,
+          "actual_label": "197 pass yds"
         },
         {
           "player": "Michael Wilson",
@@ -626,7 +658,9 @@
             }
           ],
           "threshold": 5,
-          "grade": "W"
+          "grade": "W",
+          "actual": 7.0,
+          "actual_label": "7 rec"
         },
         {
           "player": "Cam Skattebo",
@@ -654,7 +688,9 @@
               "claimed_rank": 4
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 8.0,
+          "actual_label": "8 rec yds"
         }
       ],
       "mismatches": [],
@@ -702,7 +738,9 @@
               "claimed_rank": 16
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 75.0,
+          "actual_label": "75 rush yds"
         },
         {
           "player": "Josh Allen",
@@ -730,7 +768,9 @@
               "claimed_rank": 6
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 253.0,
+          "actual_label": "253 pass yds"
         },
         {
           "player": "Dalton Kincaid",
@@ -758,7 +798,9 @@
               "claimed_rank": 4
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 7.0,
+          "actual_label": "7 rec yds"
         },
         {
           "player": "Trevor Lawrence",
@@ -786,7 +828,9 @@
               "claimed_rank": 29
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 227.0,
+          "actual_label": "227 pass yds"
         },
         {
           "player": "Bhayshul Tuten",
@@ -814,7 +858,9 @@
               "claimed_rank": 8
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 73.0,
+          "actual_label": "73 rush yds"
         },
         {
           "player": "Brian Thomas Jr.",
@@ -842,7 +888,9 @@
               "claimed_rank": 14
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 17.0,
+          "actual_label": "17 rec yds"
         },
         {
           "player": "Aaron Jones",
@@ -870,7 +918,9 @@
               "claimed_rank": 18
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 94.0,
+          "actual_label": "94 rush yds"
         }
       ],
       "mismatches": [
@@ -973,7 +1023,9 @@
               "claimed_rank": 29
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         },
         {
           "player": "Bijan Robinson",
@@ -1001,7 +1053,9 @@
               "claimed_rank": 31
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 2.0,
+          "actual_label": "2 TD"
         },
         {
           "player": "Derrick Henry",
@@ -1029,7 +1083,9 @@
               "claimed_rank": 24
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         }
       ],
       "mismatches": [],
@@ -1077,7 +1133,9 @@
               "claimed_rank": 19
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         },
         {
           "player": "Jaxon Smith-Njigba",
@@ -1105,7 +1163,9 @@
               "claimed_rank": 28
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "Jahmyr Gibbs",
@@ -1133,7 +1193,9 @@
               "claimed_rank": 29
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         },
         {
           "player": "Derrick Henry",
@@ -1161,7 +1223,9 @@
               "claimed_rank": 24
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         }
       ],
       "mismatches": [],
@@ -1209,7 +1273,9 @@
               "claimed_rank": 31
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 2.0,
+          "actual_label": "2 TD"
         },
         {
           "player": "Chris Olave",
@@ -1229,7 +1295,9 @@
               "claimed_rank": 32
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "Jahmyr Gibbs",
@@ -1257,7 +1325,9 @@
               "claimed_rank": 29
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         },
         {
           "player": "Darren Waller",
@@ -1277,7 +1347,9 @@
               "claimed_rank": 32
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "Derrick Henry",
@@ -1305,7 +1377,9 @@
               "claimed_rank": 24
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         }
       ],
       "mismatches": [],
@@ -1355,7 +1429,9 @@
               "claimed_rank": 19
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         },
         {
           "player": "George Kittle",
@@ -1383,7 +1459,9 @@
               "claimed_rank": 12
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         },
         {
           "player": "Jaxon Smith-Njigba",
@@ -1411,7 +1489,9 @@
               "claimed_rank": 28
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "Jahmyr Gibbs",
@@ -1439,7 +1519,9 @@
               "claimed_rank": 29
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         },
         {
           "player": "Derrick Henry",
@@ -1467,7 +1549,9 @@
               "claimed_rank": 24
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         },
         {
           "player": "Travis Kelce",
@@ -1495,7 +1579,9 @@
               "claimed_rank": 30
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         }
       ],
       "mismatches": [],
@@ -1543,7 +1629,9 @@
               "claimed_rank": 31
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 2.0,
+          "actual_label": "2 TD"
         },
         {
           "player": "Chris Olave",
@@ -1563,7 +1651,9 @@
               "claimed_rank": 32
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "Jahmyr Gibbs",
@@ -1591,7 +1681,9 @@
               "claimed_rank": 29
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         },
         {
           "player": "Darren Waller",
@@ -1611,7 +1703,9 @@
               "claimed_rank": 32
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "Derrick Henry",
@@ -1639,7 +1733,9 @@
               "claimed_rank": 24
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 1.0,
+          "actual_label": "1 TD"
         },
         {
           "player": "Trey McBride",
@@ -1667,7 +1763,9 @@
               "claimed_rank": 16
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "Isaiah Likely",
@@ -1695,7 +1793,9 @@
               "claimed_rank": 18
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         }
       ],
       "mismatches": [],
@@ -1742,7 +1842,9 @@
               "claimed_rank": 26
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": -6.0,
+          "actual_label": "lost by 6"
         },
         {
           "player": "Los Angeles Rams",
@@ -1769,7 +1871,9 @@
               "claimed_rank": 23
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 4.0,
+          "actual_label": "won by 4"
         },
         {
           "player": "Arizona Cardinals",
@@ -1796,7 +1900,9 @@
               "claimed_rank": 28
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": -12.0,
+          "actual_label": "lost by 12"
         }
       ],
       "mismatches": [],
@@ -1841,7 +1947,9 @@
               "claimed_rank": 24
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": -3.0,
+          "actual_label": "lost by 3"
         },
         {
           "player": "Indianapolis Colts",
@@ -1868,7 +1976,9 @@
               "claimed_rank": 31
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 17.0,
+          "actual_label": "won by 17"
         },
         {
           "player": "Detroit Lions",
@@ -1895,7 +2005,9 @@
               "claimed_rank": 26
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": -6.0,
+          "actual_label": "lost by 6"
         },
         {
           "player": "Los Angeles Rams",
@@ -1922,7 +2034,9 @@
               "claimed_rank": 23
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 4.0,
+          "actual_label": "won by 4"
         }
       ],
       "mismatches": [],
@@ -1967,7 +2081,9 @@
               "claimed_rank": 31
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 5.0,
+          "actual_label": "won by 5"
         },
         {
           "player": "Dallas Cowboys",
@@ -1994,7 +2110,9 @@
               "claimed_rank": 25
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 4.0,
+          "actual_label": "won by 4"
         },
         {
           "player": "Arizona Cardinals",
@@ -2021,7 +2139,9 @@
               "claimed_rank": 28
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": -12.0,
+          "actual_label": "lost by 12"
         },
         {
           "player": "Pittsburgh Steelers",
@@ -2048,7 +2168,9 @@
               "claimed_rank": 24
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": -3.0,
+          "actual_label": "lost by 3"
         },
         {
           "player": "Detroit Lions",
@@ -2075,7 +2197,9 @@
               "claimed_rank": 26
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": -6.0,
+          "actual_label": "lost by 6"
         }
       ],
       "mismatches": [],
@@ -2120,7 +2244,9 @@
               "claimed_rank": 8
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": -3.0,
+          "actual_label": "lost by 3"
         },
         {
           "player": "Jacksonville Jaguars",
@@ -2147,7 +2273,9 @@
               "claimed_rank": 12
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 5.0,
+          "actual_label": "won by 5"
         },
         {
           "player": "New England Patriots",
@@ -2174,7 +2302,9 @@
               "claimed_rank": 22
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 3.0,
+          "actual_label": "won by 3"
         },
         {
           "player": "Tampa Bay Buccaneers",
@@ -2201,7 +2331,9 @@
               "claimed_rank": 23
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": -3.0,
+          "actual_label": "lost by 3"
         },
         {
           "player": "Minnesota Vikings",
@@ -2228,7 +2360,9 @@
               "claimed_rank": 31
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 5.0,
+          "actual_label": "won by 5"
         },
         {
           "player": "Los Angeles Rams",
@@ -2255,7 +2389,9 @@
               "claimed_rank": 23
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 4.0,
+          "actual_label": "won by 4"
         }
       ],
       "mismatches": [],
@@ -2300,7 +2436,9 @@
               "claimed_rank": 11
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 21.0,
+          "actual_label": "won by 21"
         },
         {
           "player": "Las Vegas Raiders",
@@ -2327,7 +2465,9 @@
               "claimed_rank": 8
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": -3.0,
+          "actual_label": "lost by 3"
         },
         {
           "player": "Jacksonville Jaguars",
@@ -2354,7 +2494,9 @@
               "claimed_rank": 12
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 5.0,
+          "actual_label": "won by 5"
         },
         {
           "player": "New England Patriots",
@@ -2381,7 +2523,9 @@
               "claimed_rank": 22
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 3.0,
+          "actual_label": "won by 3"
         },
         {
           "player": "Tampa Bay Buccaneers",
@@ -2408,7 +2552,9 @@
               "claimed_rank": 23
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": -3.0,
+          "actual_label": "lost by 3"
         },
         {
           "player": "Minnesota Vikings",
@@ -2435,7 +2581,9 @@
               "claimed_rank": 31
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 5.0,
+          "actual_label": "won by 5"
         },
         {
           "player": "Detroit Lions",
@@ -2462,7 +2610,9 @@
               "claimed_rank": 26
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": -6.0,
+          "actual_label": "lost by 6"
         }
       ],
       "mismatches": [],
@@ -3143,5 +3293,5 @@
       }
     }
   },
-  "graded_at": "2026-10-07T16:37:50.953814+00:00"
+  "graded_at": "2026-10-13T21:35:45.086362+00:00"
 }

@@ -90,7 +90,9 @@
             "evidence_mismatches": [
               "REAL MISMATCH: LAR's real current RB off rush_ypg rank is #4 \u2014 the report claimed #9."
             ],
-            "grade": "W"
+            "grade": "W",
+            "actual": 80.0,
+            "actual_label": "80 rush yds"
           },
           {
             "player": "Davante Adams",
@@ -118,7 +120,9 @@
                 "claimed_rank": 21
               }
             ],
-            "grade": "L"
+            "grade": "L",
+            "actual": 4.0,
+            "actual_label": "4 rec"
           },
           {
             "player": "Jalen Hurts",
@@ -146,7 +150,9 @@
                 "claimed_rank": 2
               }
             ],
-            "grade": "W"
+            "grade": "W",
+            "actual": 93.0,
+            "actual_label": "93 pass yds"
           }
         ],
         "mismatch_count": 1
@@ -184,7 +190,9 @@
             "evidence_mismatches": [
               "REAL MISMATCH: TB's real current RB off rush_ypg rank is #27 \u2014 the report claimed #16."
             ],
-            "grade": "W"
+            "grade": "W",
+            "actual": 61.0,
+            "actual_label": "61 rush yds"
           },
           {
             "player": "Christian Watson",
@@ -212,7 +220,9 @@
                 "claimed_rank": 7
               }
             ],
-            "grade": "L"
+            "grade": "L",
+            "actual": 47.0,
+            "actual_label": "47 rec yds"
           },
           {
             "player": "Jordan Love",
@@ -240,7 +250,9 @@
                 "claimed_rank": 14
               }
             ],
-            "grade": "L"
+            "grade": "L",
+            "actual": 197.0,
+            "actual_label": "197 pass yds"
           }
         ],
         "mismatch_count": 0
@@ -275,7 +287,9 @@
                 "claimed_rank": 26
               }
             ],
-            "grade": "L"
+            "grade": "L",
+            "actual": 85.0,
+            "actual_label": "85 pass yds"
           },
           {
             "player": "Aaron Jones",
@@ -306,7 +320,9 @@
             "evidence_mismatches": [
               "REAL MISMATCH: MIN's real current RB off rush_ypg rank is #15 \u2014 the report claimed #12."
             ],
-            "grade": "W"
+            "grade": "W",
+            "actual": 94.0,
+            "actual_label": "94 rush yds"
           },
           {
             "player": "T.J. Hockenson",
@@ -334,7 +350,9 @@
                 "claimed_rank": 28
               }
             ],
-            "grade": "L"
+            "grade": "L",
+            "actual": 0.0,
+            "actual_label": "0 TD"
           }
         ],
         "mismatch_count": 0
@@ -369,7 +387,9 @@
                 "claimed_rank": 15
               }
             ],
-            "grade": "L"
+            "grade": "L",
+            "actual": 225.0,
+            "actual_label": "225 pass yds"
           },
           {
             "player": "Ashton Jeanty",
@@ -400,7 +420,9 @@
             "evidence_mismatches": [
               "REAL MISMATCH: LV's real current RB off rush_ypg rank is #9 \u2014 the report claimed #10."
             ],
-            "grade": "L"
+            "grade": "L",
+            "actual": 58.0,
+            "actual_label": "58 rush yds"
           },
           {
             "player": "Kirk Cousins",
@@ -428,7 +450,9 @@
                 "claimed_rank": 3
               }
             ],
-            "grade": "L"
+            "grade": "L",
+            "actual": 365.0,
+            "actual_label": "365 pass yds"
           }
         ],
         "mismatch_count": 0
@@ -461,7 +485,9 @@
             "claimed_rank": 15
           }
         ],
-        "grade": "L"
+        "grade": "L",
+        "actual": 225.0,
+        "actual_label": "225 pass yds"
       },
       "RB": {
         "player": "Kyren Williams",
@@ -492,7 +518,9 @@
         "evidence_mismatches": [
           "REAL MISMATCH: LAR's real current RB off rush_ypg rank is #4 \u2014 the report claimed #9."
         ],
-        "grade": "W"
+        "grade": "W",
+        "actual": 80.0,
+        "actual_label": "80 rush yds"
       },
       "WR": {
         "player": "Christian Watson",
@@ -520,7 +548,9 @@
             "claimed_rank": 7
           }
         ],
-        "grade": "L"
+        "grade": "L",
+        "actual": 47.0,
+        "actual_label": "47 rec yds"
       },
       "TE": {
         "player": "Travis Kelce",
@@ -548,7 +578,9 @@
             "claimed_rank": 28
           }
         ],
-        "grade": "L"
+        "grade": "L",
+        "actual": 0.0,
+        "actual_label": "0 TD"
       }
     }
   },
@@ -591,7 +623,9 @@
         "evidence_mismatches": [
           "REAL MISMATCH: LAR's real current RB off rush_ypg rank is #4 \u2014 the report claimed #9."
         ],
-        "grade": "W"
+        "grade": "W",
+        "actual": 80.0,
+        "actual_label": "80 rush yds"
       },
       {
         "player": "Bucky Irving",
@@ -622,7 +656,9 @@
         "evidence_mismatches": [
           "REAL MISMATCH: TB's real current RB off rush_ypg rank is #27 \u2014 the report claimed #16."
         ],
-        "grade": "W"
+        "grade": "W",
+        "actual": 61.0,
+        "actual_label": "61 rush yds"
       },
       {
         "player": "Davante Adams",
@@ -650,7 +686,9 @@
             "claimed_rank": 21
           }
         ],
-        "grade": "L"
+        "grade": "L",
+        "actual": 4.0,
+        "actual_label": "4 rec"
       },
       {
         "player": "Patrick Mahomes",
@@ -678,7 +716,9 @@
             "claimed_rank": 15
           }
         ],
-        "grade": "L"
+        "grade": "L",
+        "actual": 225.0,
+        "actual_label": "225 pass yds"
       },
       {
         "player": "Jordan Love",
@@ -706,7 +746,9 @@
             "claimed_rank": 14
           }
         ],
-        "grade": "L"
+        "grade": "L",
+        "actual": 197.0,
+        "actual_label": "197 pass yds"
       }
     ],
     "unders": [
@@ -736,7 +778,9 @@
             "claimed_rank": 2
           }
         ],
-        "grade": "W"
+        "grade": "W",
+        "actual": 93.0,
+        "actual_label": "93 pass yds"
       },
       {
         "player": "Kirk Cousins",
@@ -764,7 +808,9 @@
             "claimed_rank": 3
           }
         ],
-        "grade": "L"
+        "grade": "L",
+        "actual": 365.0,
+        "actual_label": "365 pass yds"
       },
       {
         "player": "Ashton Jeanty",
@@ -795,7 +841,9 @@
         "evidence_mismatches": [
           "REAL MISMATCH: LV's real current RB off rush_ypg rank is #9 \u2014 the report claimed #10."
         ],
-        "grade": "L"
+        "grade": "L",
+        "actual": 58.0,
+        "actual_label": "58 rush yds"
       },
       {
         "player": "Saquon Barkley",
@@ -826,7 +874,9 @@
         "evidence_mismatches": [
           "REAL MISMATCH: PHI's real current RB off rush_ypg rank is #22 \u2014 the report claimed #19."
         ],
-        "grade": "W"
+        "grade": "W",
+        "actual": 8.0,
+        "actual_label": "8 rush yds"
       }
     ]
   },
@@ -881,7 +931,9 @@
               "claimed_rank": 15
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 225.0,
+          "actual_label": "225 pass yds"
         },
         {
           "player": "Kyren Williams",
@@ -909,7 +961,9 @@
               "claimed_rank": 26
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 80.0,
+          "actual_label": "80 rush yds"
         },
         {
           "player": "Bucky Irving",
@@ -937,7 +991,9 @@
               "claimed_rank": 30
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 61.0,
+          "actual_label": "61 rush yds"
         }
       ],
       "mismatches": [],
@@ -986,7 +1042,9 @@
               "claimed_rank": 15
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 225.0,
+          "actual_label": "225 pass yds"
         },
         {
           "player": "Kyren Williams",
@@ -1014,7 +1072,9 @@
               "claimed_rank": 26
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 80.0,
+          "actual_label": "80 rush yds"
         },
         {
           "player": "Bucky Irving",
@@ -1042,7 +1102,9 @@
               "claimed_rank": 30
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 61.0,
+          "actual_label": "61 rush yds"
         },
         {
           "player": "Malik Willis",
@@ -1070,7 +1132,9 @@
               "claimed_rank": 26
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 85.0,
+          "actual_label": "85 pass yds"
         }
       ],
       "mismatches": [],
@@ -1121,7 +1185,9 @@
               "claimed_rank": 15
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 225.0,
+          "actual_label": "225 pass yds"
         },
         {
           "player": "Malik Willis",
@@ -1149,7 +1215,9 @@
               "claimed_rank": 26
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 85.0,
+          "actual_label": "85 pass yds"
         },
         {
           "player": "Kyren Williams",
@@ -1177,7 +1245,9 @@
               "claimed_rank": 26
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 80.0,
+          "actual_label": "80 rush yds"
         },
         {
           "player": "Jalen Hurts",
@@ -1205,7 +1275,9 @@
               "claimed_rank": 2
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 93.0,
+          "actual_label": "93 pass yds"
         },
         {
           "player": "Bucky Irving",
@@ -1233,7 +1305,9 @@
               "claimed_rank": 30
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 61.0,
+          "actual_label": "61 rush yds"
         }
       ],
       "mismatches": [],
@@ -1284,7 +1358,9 @@
               "claimed_rank": 15
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 225.0,
+          "actual_label": "225 pass yds"
         },
         {
           "player": "Malik Willis",
@@ -1312,7 +1388,9 @@
               "claimed_rank": 26
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 85.0,
+          "actual_label": "85 pass yds"
         },
         {
           "player": "Kyren Williams",
@@ -1340,7 +1418,9 @@
               "claimed_rank": 26
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 80.0,
+          "actual_label": "80 rush yds"
         },
         {
           "player": "Jalen Hurts",
@@ -1368,7 +1448,9 @@
               "claimed_rank": 2
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 93.0,
+          "actual_label": "93 pass yds"
         },
         {
           "player": "Bucky Irving",
@@ -1396,7 +1478,9 @@
               "claimed_rank": 30
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 61.0,
+          "actual_label": "61 rush yds"
         },
         {
           "player": "Christian Watson",
@@ -1424,7 +1508,9 @@
               "claimed_rank": 7
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 47.0,
+          "actual_label": "47 rec yds"
         }
       ],
       "mismatches": [],
@@ -1475,7 +1561,9 @@
               "claimed_rank": 15
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 225.0,
+          "actual_label": "225 pass yds"
         },
         {
           "player": "Kirk Cousins",
@@ -1503,7 +1591,9 @@
               "claimed_rank": 3
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 365.0,
+          "actual_label": "365 pass yds"
         },
         {
           "player": "Malik Willis",
@@ -1531,7 +1621,9 @@
               "claimed_rank": 26
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 85.0,
+          "actual_label": "85 pass yds"
         },
         {
           "player": "Kyren Williams",
@@ -1559,7 +1651,9 @@
               "claimed_rank": 26
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 80.0,
+          "actual_label": "80 rush yds"
         },
         {
           "player": "Jalen Hurts",
@@ -1587,7 +1681,9 @@
               "claimed_rank": 2
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 93.0,
+          "actual_label": "93 pass yds"
         },
         {
           "player": "Bucky Irving",
@@ -1615,7 +1711,9 @@
               "claimed_rank": 30
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 61.0,
+          "actual_label": "61 rush yds"
         },
         {
           "player": "Christian Watson",
@@ -1643,7 +1741,9 @@
               "claimed_rank": 7
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 47.0,
+          "actual_label": "47 rec yds"
         }
       ],
       "mismatches": [],
@@ -1695,7 +1795,9 @@
               "claimed_rank": 14
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 2.0,
+          "actual_label": "2 TD"
         },
         {
           "player": "Aaron Jones",
@@ -1723,7 +1825,9 @@
               "claimed_rank": 18
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "Kyren Williams",
@@ -1751,7 +1855,9 @@
               "claimed_rank": 26
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 2.0,
+          "actual_label": "2 TD"
         }
       ],
       "mismatches": [],
@@ -1802,7 +1908,9 @@
               "claimed_rank": 14
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 2.0,
+          "actual_label": "2 TD"
         },
         {
           "player": "Aaron Jones",
@@ -1830,7 +1938,9 @@
               "claimed_rank": 18
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "Kyren Williams",
@@ -1858,7 +1968,9 @@
               "claimed_rank": 26
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 2.0,
+          "actual_label": "2 TD"
         },
         {
           "player": "Bucky Irving",
@@ -1886,7 +1998,9 @@
               "claimed_rank": 30
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         }
       ],
       "mismatches": [],
@@ -1939,7 +2053,9 @@
               "claimed_rank": 14
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 2.0,
+          "actual_label": "2 TD"
         },
         {
           "player": "Aaron Jones",
@@ -1967,7 +2083,9 @@
               "claimed_rank": 18
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "Kyren Williams",
@@ -1995,7 +2113,9 @@
               "claimed_rank": 26
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 2.0,
+          "actual_label": "2 TD"
         },
         {
           "player": "Bucky Irving",
@@ -2023,7 +2143,9 @@
               "claimed_rank": 30
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "T.J. Hockenson",
@@ -2051,7 +2173,9 @@
               "claimed_rank": 28
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         }
       ],
       "mismatches": [],
@@ -2104,7 +2228,9 @@
               "claimed_rank": 14
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 2.0,
+          "actual_label": "2 TD"
         },
         {
           "player": "Aaron Jones",
@@ -2132,7 +2258,9 @@
               "claimed_rank": 18
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "Kyren Williams",
@@ -2160,7 +2288,9 @@
               "claimed_rank": 26
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 2.0,
+          "actual_label": "2 TD"
         },
         {
           "player": "Bucky Irving",
@@ -2188,7 +2318,9 @@
               "claimed_rank": 30
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "T.J. Hockenson",
@@ -2216,7 +2348,9 @@
               "claimed_rank": 28
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "Travis Kelce",
@@ -2244,7 +2378,9 @@
               "claimed_rank": 28
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         }
       ],
       "mismatches": [],
@@ -2297,7 +2433,9 @@
               "claimed_rank": 14
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 2.0,
+          "actual_label": "2 TD"
         },
         {
           "player": "Aaron Jones",
@@ -2325,7 +2463,9 @@
               "claimed_rank": 18
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "Kyren Williams",
@@ -2353,7 +2493,9 @@
               "claimed_rank": 26
             }
           ],
-          "grade": "W"
+          "grade": "W",
+          "actual": 2.0,
+          "actual_label": "2 TD"
         },
         {
           "player": "Bucky Irving",
@@ -2381,7 +2523,9 @@
               "claimed_rank": 30
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "T.J. Hockenson",
@@ -2409,7 +2553,9 @@
               "claimed_rank": 28
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "Travis Kelce",
@@ -2437,7 +2583,9 @@
               "claimed_rank": 28
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         },
         {
           "player": "Christian Watson",
@@ -2465,7 +2613,9 @@
               "claimed_rank": 7
             }
           ],
-          "grade": "L"
+          "grade": "L",
+          "actual": 0.0,
+          "actual_label": "0 TD"
         }
       ],
       "mismatches": [],
@@ -2495,7 +2645,9 @@
           "point": 4.5,
           "reason": "LV home ATS 54.9% (28-23-1) vs KC road ATS 44.0% (22-28-1) since 2020.",
           "evidence_check": [],
-          "grade": "W"
+          "grade": "W",
+          "actual": -3.0,
+          "actual_label": "lost by 3"
         },
         {
           "player": "Philadelphia Eagles",
@@ -2505,7 +2657,9 @@
           "point": 3.0,
           "reason": "PHI home ATS 53.1% (26-23-2) vs LAR road ATS 54.0% (27-23-2) \u2014 genuinely split signal, consistent with a projected toss-up.",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": -4.0,
+          "actual_label": "lost by 4"
         },
         {
           "player": "Green Bay Packers",
@@ -2515,7 +2669,9 @@
           "point": -3.5,
           "reason": "TB home ATS 43.1% (22-29-1), the weakest home number on this slate, vs GB road ATS 44.2% (23-29-1).",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": 3.0,
+          "actual_label": "won by 3"
         }
       ],
       "mismatches": [],
@@ -2543,7 +2699,9 @@
           "point": 4.5,
           "reason": "LV home ATS 54.9% (28-23-1) vs KC road ATS 44.0% (22-28-1) since 2020.",
           "evidence_check": [],
-          "grade": "W"
+          "grade": "W",
+          "actual": -3.0,
+          "actual_label": "lost by 3"
         },
         {
           "player": "Philadelphia Eagles",
@@ -2553,7 +2711,9 @@
           "point": 3.0,
           "reason": "PHI home ATS 53.1% (26-23-2) vs LAR road ATS 54.0% (27-23-2) \u2014 genuinely split signal.",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": -4.0,
+          "actual_label": "lost by 4"
         },
         {
           "player": "Green Bay Packers",
@@ -2563,7 +2723,9 @@
           "point": -3.5,
           "reason": "TB home ATS 43.1% (22-29-1) vs GB road ATS 44.2% (23-29-1).",
           "evidence_check": [],
-          "grade": "L"
+          "grade": "L",
+          "actual": 3.0,
+          "actual_label": "won by 3"
         },
         {
           "player": "Miami Dolphins",
@@ -2573,7 +2735,9 @@
           "point": 10.5,
           "reason": "MIN home ATS 47.1% (24-27-0) vs MIA road ATS 45.1% (23-28-1) \u2014 weakest-signal leg, included for the real points cushion.",
           "evidence_check": [],
-          "grade": "W"
+          "grade": "W",
+          "actual": -5.0,
+          "actual_label": "lost by 5"
         }
       ],
       "mismatches": [],
@@ -2780,5 +2944,5 @@
       }
     }
   },
-  "graded_at": "2026-10-07T16:37:50.964694+00:00"
+  "graded_at": "2026-10-13T21:35:45.104767+00:00"
 }
