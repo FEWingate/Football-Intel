@@ -1598,7 +1598,11 @@ function buildLineupModel(players, priorPidSets, minDiff, mode, bringBack, score
       players.forEach((p) => {
         const vid = 'p' + p.__pid;
         if(p.team === T && stackPositions.includes(p.pos)) variables[vid][key] = 1;
-        if(p.team === T && p.pos === 'QB') variables[vid][key] = -M;
+        // EXACT STACK SIZES (2026-10-13), per Frank: Stack = exactly 1 pass-catcher with the QB, Double = 2,
+        // Onslaught = 3, No stack = 0. With the stack minimum above this makes the count exact:
+        // QB picked -> partners <= stackSize; QB not picked -> the usual cap of 1. (The single-lineup
+        // completor keeps the old relaxed rule so hand-pinned players can never make it infeasible.)
+        if(p.team === T && p.pos === 'QB') variables[vid][key] = batchOpts.exactStack ? -(stackSize - 1) : -M;
       });
     });
   }
@@ -1817,7 +1821,7 @@ function generateLineups(){
     // whole real batch regardless of how the random draws land.
     const forceSingleTE = excludeTeFlex || teLineupCount >= teFlexCap || Math.random() > 0.10;
     const model = buildLineupModel(eligible, priorPidSets, 3, stackMode, bringBack, scoreField, forceSingleTE, null, true, 0, !!($("favorWrFlexChk") && $("favorWrFlexChk").checked),
-      { maxPartners: bigStackUsed < 1 ? 3 : 2, bannedPairs });
+      { maxPartners: bigStackUsed < 1 ? 3 : 2, bannedPairs, exactStack: true });
     const result = solver.Solve(model);
     if(!result.feasible) break;
 
