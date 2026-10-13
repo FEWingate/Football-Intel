@@ -443,7 +443,12 @@ const WHOLE_WEEK_FILENAME = 'props_parlay_report_WHOLEWEEK.json';
 async function loadWholeWeekReport(wk){
   WHOLE_WEEK_REPORT = null;
   try{
-    const res = await fetch(`props_reports/${wk}/${WHOLE_WEEK_FILENAME}`, { cache: 'no-store' });
+    // Prefer the graded copy (same file plus real Hit/Miss grades on every
+    // Best 10 pick and parlay leg) once grade_props_report.py has written it,
+    // exactly like the per-batch reports do; otherwise the ungraded original.
+    const gradedName = WHOLE_WEEK_FILENAME.replace(/\.json$/, '_graded.json');
+    let res = await fetch(`props_reports/${wk}/${gradedName}`, { cache: 'no-store' });
+    if(!res.ok) res = await fetch(`props_reports/${wk}/${WHOLE_WEEK_FILENAME}`, { cache: 'no-store' });
     if(res.ok) WHOLE_WEEK_REPORT = await res.json();
   }catch(e){ /* stays null — routine, handled by callers */ }
 }
@@ -1505,7 +1510,13 @@ function renderResults(){
     }
   }
 
-  const b10 = REPORT_GRADED.best_10;
+  // The Best 10 and the 2-7 leg parlays are built from the WHOLE week, so
+  // they live in the whole-week graded file, not in each batch's file. Use the
+  // batch's own when it has them (older weeks), else the whole-week graded one.
+  const wholeWeek = WHOLE_WEEK_REPORT || {};
+  const hasParlays = blk => blk && Object.keys(blk).length > 0;
+  const b10 = (REPORT_GRADED.best_10 && (REPORT_GRADED.best_10.picks || []).length)
+    ? REPORT_GRADED.best_10 : wholeWeek.best_10;
   if(b10 && (b10.picks || []).length){
     h += `<div class="subsect" style="margin-top:14px">Best 10</div>
       <div class="pc-pick-grid">${b10.picks.slice().sort((a,b) => (a.rank||99)-(b.rank||99))
@@ -1524,14 +1535,15 @@ function renderResults(){
 
   const sizes = ['2', '3', '4', '5', '6', '7'];
   const parlaySection = (title, block) => {
-    if(!block) return '';
+    if(!block || !Object.keys(block).length) return '';
     const cards = sizes.map(s => block[s] ? parlayCard(s, block[s]) : '').join('');
     return `<div class="subsect" style="margin-top:14px">${esc(title)}</div>
       <div class="parlay-grid">${cards}</div>`;
   };
-  h += parlaySection('Parlays', REPORT_GRADED.parlays);
-  h += parlaySection('Anytime TD Parlays', REPORT_GRADED.td_parlays);
-  h += parlaySection('Spread Parlays', REPORT_GRADED.spread_parlays);
+  const pickBlock = key => hasParlays(REPORT_GRADED[key]) ? REPORT_GRADED[key] : wholeWeek[key];
+  h += parlaySection('Parlays', pickBlock('parlays'));
+  h += parlaySection('Anytime TD Parlays', pickBlock('td_parlays'));
+  h += parlaySection('Spread Parlays', pickBlock('spread_parlays'));
 
   $('body').innerHTML = h;
 }
