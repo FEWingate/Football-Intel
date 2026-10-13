@@ -386,9 +386,17 @@ def grade_report(report, player_stats, scores):
     return graded, tallies
 
 
-def iter_graded_picks(graded):
+# Anytime TD and Spread PARLAYS are retired as separate products, so legs that
+# exist only inside those two sections no longer count toward the Overall record.
+# (A pick that ALSO appears in the Best 10, Prop Breakdown or Favorite O/U still
+# counts there, because it's a real pick Coeus made in a section that stays.)
+OVERALL_PARLAY_SECTIONS = ("parlays",)
+
+
+def iter_graded_picks(graded, parlay_sections=("parlays", "td_parlays", "spread_parlays")):
     """Every individual graded pick/leg in one graded report, regardless
-    of which section it sits in."""
+    of which section it sits in. `parlay_sections` limits which parlay
+    sections' legs are walked."""
     pb = graded.get("prop_breakdown") or {}
     for game in pb.get("per_game") or []:
         for p in game.get("picks") or []:
@@ -400,7 +408,7 @@ def iter_graded_picks(graded):
     fou = graded.get("favorite_ou") or {}
     for p in (fou.get("overs") or []) + (fou.get("unders") or []):
         yield p
-    for section in ("parlays", "td_parlays", "spread_parlays"):
+    for section in parlay_sections:
         for parlay in (graded.get(section) or {}).values():
             for leg in (parlay or {}).get("legs") or []:
                 yield leg
@@ -418,7 +426,7 @@ def unique_tally(graded_reports):
     own stored price."""
     seen = {}
     for graded in graded_reports:
-        for p in iter_graded_picks(graded):
+        for p in iter_graded_picks(graded, OVERALL_PARLAY_SECTIONS):
             if "grade" in p:
                 seen.setdefault(unique_pick_key(p), p)
     t = blank_tally()
