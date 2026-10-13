@@ -851,7 +851,7 @@ function computeAll(players){
           if(r){ p.oppScore = ((r - 1) / 31) * 100; p.oppRankLabel = `Opp offense #${r}`; p.oppTier = tierOf(r); }
         } else if(oppKey){
           const r = MATCHUP.teams[p.opp].def?.[pos]?.[oppKey]?.r;
-          if(r){ p.oppScore = ((r - 1) / 31) * 100; p.oppRankLabel = `Def vs ${pos} #${r}`; p.oppTier = tierOf(r); }
+          if(r){ p.oppScore = ((r - 1) / 31) * 100; p.oppRankLabel = `Def vs ${pos} #${r}`; p.oppTier = tierOf(r); p.oppRankNum = r; }
         }
       }
 
@@ -1348,45 +1348,33 @@ function playCardHTML(p, tag){
     </div>`;
 }
 
-// Most teams have more than one useful WR, so for WR: for every team that already has a WR in the
-// top 6, also surface that team's best OTHER receiver (WR2/WR3 only), ranked by target share +
-// per-game performance.
-function wrTeammates(pool, top){
-  const inTop = new Set(top);
-  const teams = [...new Set(top.map(p => p.team))];
-  const shares = pool.map(p => p.siteData?.season?.m?.target_share).filter(v => typeof v === 'number');
-  const maxShare = shares.length ? Math.max(...shares) : 0;
-  const out = [];
-  teams.forEach(team => {
-    const teamWRs = pool.filter(p => p.team === team).sort((a,b) => b.avgPts - a.avgPts);
-    const rankOf = new Map(teamWRs.map((p,i) => [p, i + 1]));
-    const lead = top.find(p => p.team === team);
-    const cands = teamWRs.filter(p => !inTop.has(p) && rankOf.get(p) <= 3 && p.avgPts > 0);
-    if(!cands.length) return;
-    const key = p => {
-      const ts = p.siteData?.season?.m?.target_share;
-      const tsScore = (typeof ts === 'number' && maxShare) ? (ts / maxShare) * 100 : null;
-      return tsScore === null ? p.perfScore : 0.5 * tsScore + 0.5 * p.perfScore;
-    };
-    cands.sort((a,b) => key(b) - key(a));
-    out.push({ p: cands[0], tag: `WR${rankOf.get(cands[0])} · with ${lead.name.split(' ').slice(-1)[0]}` });
-  });
-  return out.sort((a,b) => b.p.composite - a.p.composite);
-}
+// RB and WR: the pool is every real starter-level player facing one of the 12 WEAKEST defenses
+// against that position (rank 21-32 of 32; rank 1 = toughest), not just a top 6. A "starter-level"
+// player is a team's top 2 RBs / top 3 WRs by DraftKings average points, so bench players on a
+// soft matchup don't flood the list. Everything is ordered by the same composite score as before.
+const WIDE_POOL = { RB: { roleCap: 2, label: 'run defenses' }, WR: { roleCap: 3, label: 'pass defenses' } };
+const WEAK_DEFENSE_MIN_RANK = 21;
 
 function renderBestPlays(){
-  const pool = CSV_PLAYERS.filter(p => p.pos === bestPos && p.status !== 'OUT' && p.status !== 'IR' && !p.isBackupQB);
-  pool.sort((a,b) => b.composite - a.composite);
-  const top = pool.slice(0, 6);
-  let html = top.map(p => playCardHTML(p)).join('');
-  if(bestPos === 'WR' && top.length){
-    const mates = wrTeammates(pool, top);
-    if(mates.length){
-      html += `<div class="pc-subhead" style="grid-column:1/-1;margin-top:8px">Teammate WRs — each team's next-best receiver by target share and per-game production</div>`
-        + mates.map(m => playCardHTML(m.p, m.tag)).join('');
-    }
+  const eligible = CSV_PLAYERS.filter(p => p.pos === bestPos && p.status !== 'OUT' && p.status !== 'IR' && !p.isBackupQB);
+  eligible.sort((a,b) => b.composite - a.composite);
+  const wide = WIDE_POOL[bestPos];
+  let pool, note = '';
+  if(wide && eligible.some(p => p.oppRankNum != null)){
+    const roleRank = new Map();
+    const byTeam = {};
+    eligible.forEach(p => { (byTeam[p.team] = byTeam[p.team] || []).push(p); });
+    Object.values(byTeam).forEach(list => list.slice().sort((a,b) => b.avgPts - a.avgPts)
+      .forEach((p,i) => roleRank.set(p, i + 1)));
+    pool = eligible.filter(p => p.oppRankNum != null && p.oppRankNum >= WEAK_DEFENSE_MIN_RANK
+      && roleRank.get(p) <= wide.roleCap);
+    note = `<div class="pc-subhead" style="grid-column:1/-1">${pool.length} ${esc(bestPos)}${pool.length===1?'':'s'} facing the 12 weakest ${wide.label}
+      (rank ${WEAK_DEFENSE_MIN_RANK}-32) · each team's top ${wide.roleCap} by average points</div>`;
+  } else {
+    pool = eligible.slice(0, 6);
   }
-  $("bestCards").innerHTML = html || `<div class="empty">No eligible ${esc(bestPos)} plays in this slate.</div>`;
+  $("bestCards").innerHTML = (pool.length ? note + pool.map(p => playCardHTML(p)).join('') : '')
+    || `<div class="empty">No eligible ${esc(bestPos)} plays in this slate.</div>`;
 }
 
 const STACK_SIZES = { none: 0, stack: 1, double: 2, onslaught: 3 };
