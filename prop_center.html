@@ -1481,9 +1481,8 @@ function renderResults(){
   const season = SEASON_RECORD.season_totals || {};
   const sectionLabels = {
     overall: 'Overall (unique picks)', best_10: 'Best 10', prop_breakdown: 'Prop Breakdown',
-    favorite_ou: 'Favorite O/U', parlays: 'Parlays (whole)', td_parlays: 'Anytime TD Parlays (whole)',
-    spread_parlays: 'Spread Parlays (whole)',
-  };
+    favorite_ou: 'Favorite O/U', parlays: 'Parlays (whole)',
+  };  // Anytime TD / Spread parlays are retired as separate products — no tiles or sections for them
   let h = `<div class="lineup-note" style="margin-bottom:14px">
     Season-to-date record of Coeus's real, graded picks. <b>Overall</b> counts each separate pick
     once, however many places it appears. Units are flat 1-unit stakes at each pick's real price
@@ -1553,8 +1552,6 @@ function renderResults(){
   };
   const pickBlock = key => hasParlays(REPORT_GRADED[key]) ? REPORT_GRADED[key] : wholeWeek[key];
   h += parlaySection('Parlays', pickBlock('parlays'));
-  h += parlaySection('Anytime TD Parlays', pickBlock('td_parlays'));
-  h += parlaySection('Spread Parlays', pickBlock('spread_parlays'));
 
   $('body').innerHTML = h;
 }
