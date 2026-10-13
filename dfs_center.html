@@ -1350,9 +1350,9 @@ function playCardHTML(p, tag){
 
 // RB and WR: the pool is every real starter-level player facing one of the 12 WEAKEST defenses
 // against that position (rank 21-32 of 32; rank 1 = toughest), not just a top 6. A "starter-level"
-// player is a team's top 2 RBs / top 3 WRs by DraftKings average points, so bench players on a
+// player is a team's top RB / top 3 WRs by DraftKings average points, so bench players on a
 // soft matchup don't flood the list. Everything is ordered by the same composite score as before.
-const WIDE_POOL = { RB: { roleCap: 2, label: 'run defenses' }, WR: { roleCap: 3, label: 'pass defenses' } };
+const WIDE_POOL = { RB: { roleCap: 1, label: 'run defenses' }, WR: { roleCap: 3, label: 'pass defenses' } };
 const WEAK_DEFENSE_MIN_RANK = 21;
 
 function renderBestPlays(){
@@ -1369,7 +1369,7 @@ function renderBestPlays(){
     pool = eligible.filter(p => p.oppRankNum != null && p.oppRankNum >= WEAK_DEFENSE_MIN_RANK
       && roleRank.get(p) <= wide.roleCap);
     note = `<div class="pc-subhead" style="grid-column:1/-1">${pool.length} ${esc(bestPos)}${pool.length===1?'':'s'} facing the 12 weakest ${wide.label}
-      (rank ${WEAK_DEFENSE_MIN_RANK}-32) · each team's top ${wide.roleCap} by average points</div>`;
+      (rank ${WEAK_DEFENSE_MIN_RANK}-32) · ${wide.roleCap===1 ? "each team's RB1" : "each team's top "+wide.roleCap+" by average points"}</div>`;
   } else {
     pool = eligible.slice(0, 6);
   }
