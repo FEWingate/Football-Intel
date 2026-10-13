@@ -735,6 +735,9 @@ function renderShell(){
         <label class="bringback-toggle">
           <input type="checkbox" id="excludeTeFlexChk"> Exclude TE from FLEX
         </label>
+        <label class="bringback-toggle" title="RB: team's RB1 only. WR: team's top 3. TE: team's TE1. Plus a minimum DraftKings average (RB/WR 8, TE 6).">
+          <input type="checkbox" id="startersOnlyChk" checked> Real starters only (no fill-in scrubs)
+        </label>
       </div>
       <div id="lineupResults"></div>
     </div>
@@ -1215,6 +1218,32 @@ function renderBuilderSearch(){
 // worth breaking a completion that would otherwise work.
 let lastGeneratedPids = null;
 
+// STARTERS-ONLY POOL (2026-10-13), per Frank's direct, real catch that the generator keeps filling
+// slots with $3,000-$4,000 players who have no real shot at a big game. Root cause: the solver
+// maximizes matchup+Vegas+performance under a $50,000 cap, so it buys studs first and the leftover
+// salary is closed with whoever is cheapest. A salary floor does not fix that (it just changes the
+// scrub's price), so this limits WHO is allowed at all: RB = team's RB1 only (RB2s rarely produce),
+// WR = team's top 3, TE = team's TE1, and RB/WR/TE need a real DraftKings average. Players the user
+// PINNED are never removed. QB and DST are untouched.
+const STARTER_MIN_AVG = { RB: 8, WR: 8, TE: 6 };
+const STARTER_ROLE_CAP = { RB: 1, WR: 3, TE: 1 };
+function startersOnlyPool(players, pinnedPids){
+  pinnedPids = pinnedPids || new Set();
+  const roleRank = new Map();
+  ['RB','WR','TE'].forEach(pos => {
+    const byTeam = {};
+    players.filter(p => p.pos === pos).forEach(p => { (byTeam[p.team] = byTeam[p.team] || []).push(p); });
+    Object.values(byTeam).forEach(list => list.slice().sort((a,b) => b.avgPts - a.avgPts)
+      .forEach((p,i) => roleRank.set(p, i + 1)));
+  });
+  return players.filter(p => {
+    if(pinnedPids.has(p.__pid)) return true;
+    if(!STARTER_ROLE_CAP[p.pos]) return true;
+    return roleRank.get(p) <= STARTER_ROLE_CAP[p.pos] && p.avgPts >= STARTER_MIN_AVG[p.pos];
+  });
+}
+function startersOnlyOn(){ const c = $("startersOnlyChk"); return !c || c.checked; }
+
 function generateRestOfLineup(){
   if(typeof solver === 'undefined') return;
   const pool = CSV_PLAYERS
@@ -1272,13 +1301,14 @@ function generateRestOfLineup(){
   // solver-picked RB/WR/TE so the solver can no longer reach for a true
   // scrub just because it's cheap. Pinned players are never excluded by
   // this regardless of price (see buildLineupModel above).
-  let model = buildLineupModel(pool, priorPidSets, minDiff, stackMode, false, scoreField, forceSingleTE, pinnedPids, false, 4500);
+  const solvePool = startersOnlyOn() ? startersOnlyPool(pool, pinnedPids) : pool;
+  let model = buildLineupModel(solvePool, priorPidSets, minDiff, stackMode, false, scoreField, forceSingleTE, pinnedPids, false, 4500);
   let result = solver.Solve(model);
   if(!result.feasible && priorPidSets.length){
     // Real fallback: the variety requirement made this specific
     // combination infeasible — retry without it rather than showing an
     // error for what would otherwise be a perfectly good completion.
-    model = buildLineupModel(pool, [], 0, stackMode, false, scoreField, forceSingleTE, pinnedPids, false, 4500);
+    model = buildLineupModel(solvePool, [], 0, stackMode, false, scoreField, forceSingleTE, pinnedPids, false, 4500);
     result = solver.Solve(model);
   }
   if(!result.feasible){
@@ -1287,7 +1317,7 @@ function generateRestOfLineup(){
     return;
   }
   const chosen = [];
-  pool.forEach(p => { if(result['p'+p.__pid]) chosen.push(p); });
+  solvePool.forEach(p => { if(result['p'+p.__pid]) chosen.push(p); });
   initBuilderSlots();
   // place pinned players first so they land in the same slots as before
   pinned.forEach(p => placeInBuilder(p));
@@ -1672,8 +1702,9 @@ function generateLineups(){
   const exposureCap = EXPOSURE_CAPS[numLineups];
   const teFlexCap = TE_FLEX_CAPS[numLineups];
 
-  const pool = CSV_PLAYERS.filter(p => p.status !== 'OUT' && p.status !== 'IR' && !p.isBackupQB);
+  let pool = CSV_PLAYERS.filter(p => p.status !== 'OUT' && p.status !== 'IR' && !p.isBackupQB);
   pool.forEach((p, i) => { p.__pid = i; }); // stable id, survives per-iteration filtering
+  if(startersOnlyOn()) pool = startersOnlyPool(pool);
 
   const exposureCount = {};
   let teLineupCount = 0;
