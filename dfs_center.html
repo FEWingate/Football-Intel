@@ -206,6 +206,8 @@
   display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-mid);cursor:pointer;
 }
 .bringback-toggle input{cursor:pointer}
+.pc-tag{font-family:var(--font-mono);font-size:10px;margin-left:6px;padding:1px 6px;border-radius:8px;background:var(--surface2);color:var(--text-mid)}
+.pc-subhead{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid)}
 </style>
 </head>
 <body>
@@ -235,6 +237,7 @@ let DFS_GAMES = [];        // this week's real games, from that folder's manifes
 
 let CSV_PLAYERS = null;
 let MATCHUP = null;
+let GAME_LINES = null; // team -> {implied, oppImplied, total, margin} from games/wkNN.json (real Vegas lines)
 let bestPos = 'QB';
 let slatePos = 'ALL';
 let slateSort = 'value', slateDir = 'desc';
@@ -276,36 +279,13 @@ main.innerHTML = `
     <span class="lbl">DFS Center</span>
     <div class="legend"><span>Upload a DraftKings salary CSV to get started</span></div>
   </div>
-  <div class="page-switch" id="pageSwitch" role="tablist">
-    <button role="tab" data-page="tools" aria-selected="${pageView==='tools'}">DFS Tools</button>
-    <button role="tab" data-page="coeus" aria-selected="${pageView==='coeus'}">Coeus DFS Report</button>
-    <button role="tab" data-page="weekly" aria-selected="${pageView==='weekly'}">Weekly DFS Report</button>
-  </div>
+  <!-- Coeus DFS Report / Weekly DFS Report tabs removed (2026-10-13); DFS Tools is the only view. -->
   <div class="bar" id="coeusWeekBar" style="display:none">
     <label class="lbl" for="coeusWeek">Week</label><select id="coeusWeek"></select>
   </div>
   <div id="content" style="display:${pageView==='tools'?'':'none'}"></div>
   <div id="coeusContent" style="display:${pageView==='coeus'?'':'none'}"></div>
   <div id="weeklyContent" style="display:${pageView==='weekly'?'':'none'}"></div>`;
-
-$("pageSwitch").querySelectorAll("button").forEach(b => {
-  b.onclick = async () => {
-    pageView = b.dataset.page;
-    $("pageSwitch").querySelectorAll("button").forEach(x =>
-      x.setAttribute("aria-selected", String(x.dataset.page === pageView)));
-    $("content").style.display = pageView === 'tools' ? '' : 'none';
-    $("coeusContent").style.display = pageView === 'coeus' ? '' : 'none';
-    $("weeklyContent").style.display = pageView === 'weekly' ? '' : 'none';
-    if(pageView === 'coeus'){
-      if(!dfsWeekFilter) await discoverDfsWeeks();
-      $("coeusWeekBar").style.display = dfsWeekFilter ? '' : 'none';
-      renderCoeusReports();
-    } else {
-      $("coeusWeekBar").style.display = 'none';
-    }
-    if(pageView === 'weekly') renderWeeklyReport();
-  };
-});
 
 const pad = n => String(n).padStart(2, '0');
 
@@ -627,6 +607,26 @@ async function load(){
       if(res.ok) MATCHUP = await res.json();
     }
   }catch(e){ /* opponent grading unavailable without it */ }
+  // Real Vegas lines for this week's slate (spread + total) -> each team's implied points.
+  // games/wkNN.json: spread_line > 0 means the HOME team is favored by that many points.
+  GAME_LINES = null;
+  try{
+    if(currentWeekStr){
+      const gr = await fetch(`games/wk${currentWeekStr}.json`);
+      if(gr.ok){
+        const gd = await gr.json();
+        const lines = {};
+        (gd.games || []).forEach(g => {
+          if(typeof g.total_line !== 'number' || typeof g.spread_line !== 'number') return;
+          const homeImp = g.total_line / 2 + g.spread_line / 2;
+          const awayImp = g.total_line / 2 - g.spread_line / 2;
+          lines[g.home] = { implied: homeImp, oppImplied: awayImp, total: g.total_line, margin: g.spread_line };
+          lines[g.away] = { implied: awayImp, oppImplied: homeImp, total: g.total_line, margin: -g.spread_line };
+        });
+        if(Object.keys(lines).length) GAME_LINES = lines;
+      }
+    }
+  }catch(e){ /* no Vegas factor without it — scoring falls back to the previous weights */ }
   try{
     const res = await fetch(`players/latest.json`);
     if(res.ok){ PLAYERSTATS = await res.json(); NAME_INDEX = buildNameIndex(PLAYERSTATS); }
@@ -662,10 +662,11 @@ function renderShell(){
       <span class="file-name">${CSV_PLAYERS.length} players loaded${loadedFileName ? ' · ' + esc(loadedFileName) : ''}</span>
       <button class="replace-btn" id="replaceBtn">Replace file</button>
     </div>
-    ${MATCHUP ? `<div class="caveat"><b>Opponent grading note:</b> using ${MATCHUP.season} season-final
-      defense-vs-position ranks (through week ${MATCHUP.week}) as the matchup signal — there's no current-season
-      data yet this early. This updates automatically once real games are on the board.</div>`
-      : `<div class="caveat"><b>No opponent data found</b> — matchup/wk18.json didn't load, so Best Plays will
+    ${MATCHUP ? `<div class="caveat"><b>Opponent grading note:</b> the matchup signal is each opponent's real
+      ${MATCHUP.carryover_season ? `${MATCHUP.carryover_season} full-season (carryover — no ${MATCHUP.season} games played yet)`
+        : `${MATCHUP.season} (${esc(MATCHUP.data_horizon || 'current season')})`}
+      defense-vs-position rank. It updates automatically as each new week's data is built.</div>`
+      : `<div class="caveat"><b>No opponent data found</b> — the matchup file didn't load, so Best Plays will
       skip the opponent factor. Salary and value still work fine.</div>`}
 
     <div class="tabs view-switch" id="dfsViewSwitch" role="tablist">
@@ -830,6 +831,14 @@ function computeAll(players){
     const [pMin, pMax] = range(group.map(p => p.avgPts));
     const norm = (v, lo, hi) => hi > lo ? ((v - lo) / (hi - lo)) * 100 : 50;
     const primaryKey = MATCHUP?.labels?.pos?.[pos] ? Object.keys(MATCHUP.labels.pos[pos])[0] : null;
+    // Matchup RANK uses the per-game version of that stat (e.g. pass_ypg, not total pass_yds):
+    // teams that have played fewer games (byes) otherwise look tougher than they are.
+    // primaryKey itself stays as is — player split data is keyed by it.
+    const oppKey = MATCHUP?.labels?.pos?.[pos]
+      ? (Object.keys(MATCHUP.labels.pos[pos]).find(k => /_ypg$/.test(k)) || primaryKey) : null;
+    const lineVals = GAME_LINES ? Object.values(GAME_LINES) : [];
+    const impMin = lineVals.length ? Math.min(...lineVals.map(l => l.implied)) : 0;
+    const impMax = lineVals.length ? Math.max(...lineVals.map(l => l.implied)) : 0;
 
     group.forEach(p => {
       p.valueScore = norm(p.value, vMin, vMax);
@@ -840,18 +849,40 @@ function computeAll(players){
         if(pos === 'DST'){
           const r = MATCHUP.teams[p.opp].team_off?.ppg?.r;
           if(r){ p.oppScore = ((r - 1) / 31) * 100; p.oppRankLabel = `Opp offense #${r}`; p.oppTier = tierOf(r); }
-        } else if(primaryKey){
-          const r = MATCHUP.teams[p.opp].def?.[pos]?.[primaryKey]?.r;
+        } else if(oppKey){
+          const r = MATCHUP.teams[p.opp].def?.[pos]?.[oppKey]?.r;
           if(r){ p.oppScore = ((r - 1) / 31) * 100; p.oppRankLabel = `Def vs ${pos} #${r}`; p.oppTier = tierOf(r); }
         }
       }
 
+      // Vegas factor: the team's implied points this week (from the real spread + total).
+      // For a DST, a LOW implied score for the opponent is what helps, so it's inverted.
+      p.vegasScore = null; p.vegasLabel = null;
+      const gl = GAME_LINES && GAME_LINES[p.team];
+      if(gl && impMax > impMin){
+        const sc = v => ((v - impMin) / (impMax - impMin)) * 100;
+        p.vegasScore = pos === 'DST' ? 100 - sc(gl.oppImplied) : sc(gl.implied);
+        const fav = gl.margin > 0 ? `fav by ${gl.margin}` : gl.margin < 0 ? `dog by ${Math.abs(gl.margin)}` : 'pick\'em';
+        p.vegasLabel = pos === 'DST'
+          ? `Opp implied ${gl.oppImplied.toFixed(1)} · ${fav}`
+          : `Team total ${gl.implied.toFixed(1)} · ${fav}`;
+      }
       const hasOpp = p.oppScore !== null;
-      p.composite = hasOpp
-        ? 0.4 * p.oppScore + 0.3 * p.valueScore + 0.3 * p.perfScore
-        : 0.5 * p.valueScore + 0.5 * p.perfScore;
-      // lineup generator's default mode: matchup + performance only, no salary/value
-      p.quality = hasOpp ? 0.5 * p.oppScore + 0.5 * p.perfScore : p.perfScore;
+      const hasVeg = p.vegasScore !== null;
+      // Weights: matchup + Vegas + value (points per $1k) + performance (DK avg points).
+      if(hasOpp && hasVeg)
+        p.composite = 0.30 * p.oppScore + 0.20 * p.vegasScore + 0.25 * p.valueScore + 0.25 * p.perfScore;
+      else if(hasOpp)
+        p.composite = 0.4 * p.oppScore + 0.3 * p.valueScore + 0.3 * p.perfScore;
+      else if(hasVeg)
+        p.composite = 0.2 * p.vegasScore + 0.4 * p.valueScore + 0.4 * p.perfScore;
+      else
+        p.composite = 0.5 * p.valueScore + 0.5 * p.perfScore;
+      // lineup generator's default mode: matchup + Vegas + performance, no salary/value
+      if(hasOpp && hasVeg) p.quality = 0.4 * p.oppScore + 0.2 * p.vegasScore + 0.4 * p.perfScore;
+      else if(hasOpp)      p.quality = 0.5 * p.oppScore + 0.5 * p.perfScore;
+      else if(hasVeg)      p.quality = 0.25 * p.vegasScore + 0.75 * p.perfScore;
+      else                 p.quality = p.perfScore;
 
       // Matchup History: this exact player's own history against defenses
       // in the same tier as their actual upcoming opponent. Needs 2+
@@ -1294,20 +1325,17 @@ function statusPill(status){
   return `<span class="status-pill ${cls}">${esc(status)}</span>`;
 }
 
-function renderBestPlays(){
-  const pool = CSV_PLAYERS.filter(p => p.pos === bestPos && p.status !== 'OUT' && p.status !== 'IR' && !p.isBackupQB);
-  pool.sort((a,b) => b.composite - a.composite);
-  const top = pool.slice(0, 6);
-
-  $("bestCards").innerHTML = top.map(p => `
+function playCardHTML(p, tag){
+  return `
     <div class="play-card">
       <div class="pc-top">
         <span class="pc-name">${esc(p.name)}</span>
         ${statusPill(p.status)}
       </div>
-      <div class="pc-team">${esc(p.team)}</div>
+      <div class="pc-team">${esc(p.team)}${tag ? ` <span class="pc-tag">${esc(tag)}</span>` : ''}</div>
       <div class="pc-opp">${fiLogoHTML(p.opp || '', 16)}vs ${esc(p.opp || '?')}
         ${p.oppRankLabel ? ' · ' + esc(p.oppRankLabel) : ' · opponent data unavailable'}</div>
+      ${p.vegasLabel ? `<div class="pc-opp">${esc(p.vegasLabel)}</div>` : ''}
       <div class="pc-factors">
         <div class="pc-factor"><div class="f-label">Value</div><div class="f-value">${p.value.toFixed(1)}x</div></div>
         <div class="pc-factor"><div class="f-label">Avg pts</div><div class="f-value">${p.avgPts.toFixed(1)}</div></div>
@@ -1317,7 +1345,48 @@ function renderBestPlays(){
         <span class="pc-salary">$${p.salary.toLocaleString()}</span>
         <span class="pc-score">score ${p.composite.toFixed(0)}</span>
       </div>
-    </div>`).join('') || `<div class="empty">No eligible ${esc(bestPos)} plays in this slate.</div>`;
+    </div>`;
+}
+
+// Most teams have more than one useful WR, so for WR: for every team that already has a WR in the
+// top 6, also surface that team's best OTHER receiver (WR2/WR3 only), ranked by target share +
+// per-game performance.
+function wrTeammates(pool, top){
+  const inTop = new Set(top);
+  const teams = [...new Set(top.map(p => p.team))];
+  const shares = pool.map(p => p.siteData?.season?.m?.target_share).filter(v => typeof v === 'number');
+  const maxShare = shares.length ? Math.max(...shares) : 0;
+  const out = [];
+  teams.forEach(team => {
+    const teamWRs = pool.filter(p => p.team === team).sort((a,b) => b.avgPts - a.avgPts);
+    const rankOf = new Map(teamWRs.map((p,i) => [p, i + 1]));
+    const lead = top.find(p => p.team === team);
+    const cands = teamWRs.filter(p => !inTop.has(p) && rankOf.get(p) <= 3 && p.avgPts > 0);
+    if(!cands.length) return;
+    const key = p => {
+      const ts = p.siteData?.season?.m?.target_share;
+      const tsScore = (typeof ts === 'number' && maxShare) ? (ts / maxShare) * 100 : null;
+      return tsScore === null ? p.perfScore : 0.5 * tsScore + 0.5 * p.perfScore;
+    };
+    cands.sort((a,b) => key(b) - key(a));
+    out.push({ p: cands[0], tag: `WR${rankOf.get(cands[0])} · with ${lead.name.split(' ').slice(-1)[0]}` });
+  });
+  return out.sort((a,b) => b.p.composite - a.p.composite);
+}
+
+function renderBestPlays(){
+  const pool = CSV_PLAYERS.filter(p => p.pos === bestPos && p.status !== 'OUT' && p.status !== 'IR' && !p.isBackupQB);
+  pool.sort((a,b) => b.composite - a.composite);
+  const top = pool.slice(0, 6);
+  let html = top.map(p => playCardHTML(p)).join('');
+  if(bestPos === 'WR' && top.length){
+    const mates = wrTeammates(pool, top);
+    if(mates.length){
+      html += `<div class="pc-subhead" style="grid-column:1/-1;margin-top:8px">Teammate WRs — each team's next-best receiver by target share and per-game production</div>`
+        + mates.map(m => playCardHTML(m.p, m.tag)).join('');
+    }
+  }
+  $("bestCards").innerHTML = html || `<div class="empty">No eligible ${esc(bestPos)} plays in this slate.</div>`;
 }
 
 const STACK_SIZES = { none: 0, stack: 1, double: 2, onslaught: 3 };
