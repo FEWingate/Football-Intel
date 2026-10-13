@@ -838,6 +838,18 @@ function computeAll(players){
     const realStarterGsis = p.pos === 'QB' ? STARTER_QB_GSIS_BY_TEAM[p.team] : null;
     p.isBackupQB = !!(realStarterGsis && p.siteData?.gsis_id && p.siteData.gsis_id !== realStarterGsis);
   });
+  // A backup with NO site stats match (a QB who hasn't thrown a pass this season, e.g. Shane Buechele
+  // behind Josh Allen) never got flagged above, because the check needs his own gsis_id. If the team's
+  // depth-chart starter is in this slate and matched, every other unmatched QB on that team is a backup.
+  {
+    const starterOnSlate = {};
+    players.forEach(p => {
+      if(p.pos === 'QB' && p.siteData?.gsis_id && STARTER_QB_GSIS_BY_TEAM[p.team] === p.siteData.gsis_id) starterOnSlate[p.team] = true;
+    });
+    players.forEach(p => {
+      if(p.pos === 'QB' && !p.siteData && starterOnSlate[p.team]) p.isBackupQB = true;
+    });
+  }
 
   unmatchedRelevant = players.filter(p =>
     p.pos !== 'DST' && !p.siteData && p.avgPts >= 5);
@@ -1238,14 +1250,14 @@ let lastGeneratedPids = null;
 // maximizes matchup+Vegas+performance under a $50,000 cap, so it buys studs first and the leftover
 // salary is closed with whoever is cheapest. A salary floor does not fix that (it just changes the
 // scrub's price), so this limits WHO is allowed at all: RB = team's RB1 only (RB2s rarely produce),
-// WR = team's top 3, TE = team's TE1, and RB/WR/TE need a real DraftKings average. Players the user
+// WR = team's top 3, TE = team's TE1, QB = team's QB1 (a backup like Buechele behind Allen is out), and each needs a real DraftKings average. Players the user
 // PINNED are never removed. QB and DST are untouched.
-const STARTER_MIN_AVG = { RB: 8, WR: 8, TE: 6 };
-const STARTER_ROLE_CAP = { RB: 1, WR: 3, TE: 1 };
+const STARTER_MIN_AVG = { QB: 10, RB: 8, WR: 8, TE: 6 };
+const STARTER_ROLE_CAP = { QB: 1, RB: 1, WR: 3, TE: 1 };
 function startersOnlyPool(players, pinnedPids){
   pinnedPids = pinnedPids || new Set();
   const roleRank = new Map();
-  ['RB','WR','TE'].forEach(pos => {
+  ['QB','RB','WR','TE'].forEach(pos => {
     const byTeam = {};
     players.filter(p => p.pos === pos).forEach(p => { (byTeam[p.team] = byTeam[p.team] || []).push(p); });
     Object.values(byTeam).forEach(list => list.slice().sort((a,b) => b.avgPts - a.avgPts)
