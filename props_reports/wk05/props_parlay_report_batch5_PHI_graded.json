@@ -1,0 +1,1168 @@
+{
+  "generated_at": "2026-10-10T15:56:04.968119+00:00",
+  "games_included": [
+    "PHI_JAX",
+    "CHI_GB",
+    "CIN_MIA",
+    "LV_NE",
+    "MIN_NO"
+  ],
+  "coverage": {
+    "passing_yards": {
+      "status": "current",
+      "current_event_count": 14,
+      "displayed_event_count": 14,
+      "previous_event_count": 11,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-10T15:21:58.435849+00:00",
+      "source_age_seconds": 0
+    },
+    "rushing_yards": {
+      "status": "current",
+      "current_event_count": 14,
+      "displayed_event_count": 14,
+      "previous_event_count": 10,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-10T15:21:58.435849+00:00",
+      "source_age_seconds": 0
+    },
+    "receiving_yards": {
+      "status": "current",
+      "current_event_count": 14,
+      "displayed_event_count": 14,
+      "previous_event_count": 10,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-10T15:21:58.435849+00:00",
+      "source_age_seconds": 0
+    },
+    "receptions": {
+      "status": "current",
+      "current_event_count": 14,
+      "displayed_event_count": 14,
+      "previous_event_count": 10,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-10T15:21:58.435849+00:00",
+      "source_age_seconds": 0
+    },
+    "anytime_td": {
+      "status": "current",
+      "current_event_count": 14,
+      "displayed_event_count": 14,
+      "previous_event_count": 11,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-10T15:21:58.435849+00:00",
+      "source_age_seconds": 0
+    }
+  },
+  "stake_used_for_payout_examples": 10,
+  "markdown": "REAL DATA COVERAGE CHECK: All five families (passing, rushing, receiving, receptions, anytime TD) are LIVE across all 14 real FanDuel events \u2014 no stat family is stale or unavailable this week. One real gap: PHI@JAX has no real DeVonta Smith prop anywhere in the data despite his Threat designation \u2014 no pick made on him. CIN@MIA has no real Ja'Marr Chase or Tee Higgins props (both carry real DNP injury tags) and no real Chase Brown receiving-yards market exists \u2014 picks built only from what's actually posted. LV@NE has no real Ashton Jeanty or Mack Hollins props (Hollins carries a real DNP calf tag) \u2014 neither is picked.\n\n```json\nPROP_BREAKDOWN\n{\n  \"per_game\": [\n    {\"away\": \"CHI\", \"home\": \"GB\", \"picks\": [\n      {\"player\": \"D'Andre Swift\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"9d6a4b64c9a604f2\", \"price\": 1.877, \"side\": \"over\", \"line\": 84.5, \"reason\": \"Swift's own rush-yards rank sits 8th in the league (77.8 ypg) and climbs to 88.7 ypg in his specific bottom-tier-run-defense bucket (n=3), the same caliber GB represents at 29th against RBs (113.8 ypg allowed).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"GB\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":29}], \"projection\": 90, \"games_2026\": 4},\n      {\"player\": \"Matthew Golden\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"9d6a4b64c9a604f2\", \"price\": 1.877, \"side\": \"under\", \"line\": 56.5, \"reason\": \"Golden's season rate is 68.5 ypg on a team-high 24.7% target share, but his own top-tier-defense bucket (n=2) shows just 39.5 ypg, matching CHI's defense which ranks a stout 9th against WRs (128.8 ypg allowed).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CHI\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":9},{\"type\":\"log_opponent\",\"player\":\"Matthew Golden\",\"week\":4,\"stat\":\"rec_yds\",\"claimed_rank\":2}], \"projection\": 45, \"games_2026\": 4},\n      {\"player\": \"Colston Loveland\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"9d6a4b64c9a604f2\", \"price\": 1.877, \"side\": \"under\", \"line\": 37.5, \"reason\": \"Loveland's season rate is just 22.75 rec ypg and even his best game this year (31.0 ypg vs a top-tier defense) sits well below this line; GB's TE defense ranks 6th in the league (33.2 ypg allowed).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"GB\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":6},{\"type\":\"log_opponent\",\"player\":\"Colston Loveland\",\"week\":3,\"stat\":\"rec_yds\",\"claimed_rank\":10}], \"projection\": 20, \"games_2026\": 4}\n    ]},\n    {\"away\": \"PHI\", \"home\": \"JAX\", \"picks\": [\n      {\"player\": \"Jalen Hurts\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"6275929b4056e14c\", \"price\": 1.885, \"side\": \"over\", \"line\": 186.5, \"reason\": \"Hurts ranks 26th in the league in pass yards (178.2 ypg) but his own bottom-tier-pass-defense game this season produced 203 yards, and JAX's pass defense ranks a stark 31st (287.5 ypg allowed) \u2014 the same bottom-tier shape, with the 41.5 total and JAX favored by 7.5 also supporting pass volume.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"JAX\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":31},{\"type\":\"log_opponent\",\"player\":\"Jalen Hurts\",\"week\":1,\"stat\":\"pass_yds\",\"claimed_rank\":24}], \"projection\": 210, \"games_2026\": 4},\n      {\"player\": \"Trevor Lawrence\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"6275929b4056e14c\", \"price\": 1.885, \"side\": \"under\", \"line\": 225.5, \"reason\": \"Lawrence's season rate (210.8 ypg, 18th) and home average (213.5 ypg) both sit below this 225.5 line, and PHI's pass defense ranks a genuine mid-tier 15th (227.8 ypg allowed).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"PHI\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":15},{\"type\":\"log_opponent\",\"player\":\"Trevor Lawrence\",\"week\":2,\"stat\":\"pass_yds\",\"claimed_rank\":22}], \"projection\": 205, \"games_2026\": 4},\n      {\"player\": \"Dontayvion Wicks\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"6275929b4056e14c\", \"price\": 1.885, \"side\": \"over\", \"line\": 44.5, \"reason\": \"Wicks' season rate of 49.25 rec ypg already clears this line, and JAX's WR defense ranks dead last in the league (210.5 ypg allowed, 32nd) \u2014 the same bottom-tier shape that produced his season-high 74-yard game.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"JAX\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":32}], \"projection\": 58, \"games_2026\": 4}\n    ]},\n    {\"away\": \"CIN\", \"home\": \"MIA\", \"picks\": [\n      {\"player\": \"Joe Burrow\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"f85173e306621e17\", \"price\": 1.877, \"side\": \"over\", \"line\": 252.5, \"reason\": \"Burrow's season average of 292.8 ypg (5th) comfortably clears this line, his own mid-tier matchup (282 yards vs Pittsburgh) maps onto MIA's 19th-ranked pass defense, and MIA's league-worst pass rush (1.0 sacks/gm, 30th) gives him a clean pocket.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"MIA\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":19},{\"type\":\"log_opponent\",\"player\":\"Joe Burrow\",\"week\":3,\"stat\":\"pass_yds\",\"claimed_rank\":13}], \"projection\": 280, \"games_2026\": 4},\n      {\"player\": \"Malik Washington\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"f85173e306621e17\", \"price\": 1.877, \"side\": \"over\", \"line\": 44.5, \"reason\": \"Washington's season rate is 54.75 ypg on a team-high 27.5% target share, and even his own top-tier-defense bucket (n=2, facing units ranked 4th and 7th) still averaged 49.5 ypg, clearing CIN's defense which ranks 10th against WRs (130.0 ypg allowed).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CIN\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":10},{\"type\":\"log_opponent\",\"player\":\"Malik Washington\",\"week\":3,\"stat\":\"rec_yds\",\"claimed_rank\":4}], \"projection\": 52, \"games_2026\": 4},\n      {\"player\": \"Ollie Gordon II\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"f85173e306621e17\", \"price\": 1.877, \"side\": \"over\", \"line\": 44.5, \"reason\": \"Gordon's own top-tier-run-defense bucket (two feature games against fronts ranked 5th and 7th) averaged 70.5 ypg, directly comparable to CIN's defense which ranks 8th against the run (99.5 ypg allowed).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CIN\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":8},{\"type\":\"log_opponent\",\"player\":\"Ollie Gordon II\",\"week\":4,\"stat\":\"rush_yds\",\"claimed_rank\":8}], \"projection\": 65, \"games_2026\": 3}\n    ]},\n    {\"away\": \"LV\", \"home\": \"NE\", \"picks\": [\n      {\"player\": \"Brock Bowers\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"05835fd6db578ab9\", \"price\": 1.877, \"side\": \"under\", \"line\": 73.5, \"reason\": \"Bowers' 101.0 ypg average is a thin two-game sample (flagged) built on soft matchups, while NE's defense ranks 2nd in the league against tight ends (26.0 ypg allowed, zero TDs surrendered all season) \u2014 the toughest individual positional matchup in this game.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":2},{\"type\":\"log_opponent\",\"player\":\"Brock Bowers\",\"week\":3,\"stat\":\"rec_yds\",\"claimed_rank\":28}], \"projection\": 55, \"games_2026\": 2},\n      {\"player\": \"Kirk Cousins\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"05835fd6db578ab9\", \"price\": 1.877, \"side\": \"under\", \"line\": 234.5, \"reason\": \"Every one of Cousins' four starts has come against a mid-tier pass defense (ranks 14th-19th) and he's never faced a unit like NE's, which ranks a genuine 5th (205.5 ypg allowed); the 44.5 total and tight 3.5-point spread don't offset facing his toughest test yet.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":5},{\"type\":\"log_opponent\",\"player\":\"Kirk Cousins\",\"week\":4,\"stat\":\"pass_yds\",\"claimed_rank\":18}], \"projection\": 215, \"games_2026\": 4},\n      {\"player\": \"Tre Tucker\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"05835fd6db578ab9\", \"price\": 1.877, \"side\": \"over\", \"line\": 40.5, \"reason\": \"Tucker's season average of 58.25 rec ypg sits well above this line against NE's non-elite 14th-ranked WR defense (147.2 ypg allowed), with even his road game against a top-tier unit landing near this threshold.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":14},{\"type\":\"log_opponent\",\"player\":\"Tre Tucker\",\"week\":3,\"stat\":\"rec_yds\",\"claimed_rank\":6}], \"projection\": 55, \"games_2026\": 4}\n    ]},\n    {\"away\": \"MIN\", \"home\": \"NO\", \"picks\": [\n      {\"player\": \"T.J. Hockenson\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7d6fb6d33d0dcc1b\", \"price\": 1.877, \"side\": \"over\", \"line\": 36.5, \"reason\": \"Hockenson's receptions rank 3rd (5.5/gm) and receiving yards rank 9th (48.75 ypg) both converge with NO's defense, which ranks a weak 29th against TE receptions and 28th against TE yards (76.5 ypg allowed) \u2014 a real Threat-tier convergence.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":28},{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"TE\",\"stat\":\"rec\",\"role\":\"def\",\"claimed_rank\":29},{\"type\":\"log_opponent\",\"player\":\"T.J. Hockenson\",\"week\":4,\"stat\":\"rec_yds\",\"claimed_rank\":30}], \"projection\": 55, \"games_2026\": 4},\n      {\"player\": \"Aaron Jones\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"7d6fb6d33d0dcc1b\", \"price\": 1.877, \"side\": \"over\", \"line\": 72.5, \"reason\": \"Jones' season rate of 74.25 ypg (and road average of 81.5 ypg) clears this line against NO's run defense, the worst in the league (138.5 ypg allowed to backs, 32nd); his lone thin (n=1) bottom-tier game produced just 40.0 yards but isn't enough to override the season rate.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":32},{\"type\":\"log_opponent\",\"player\":\"Aaron Jones\",\"week\":1,\"stat\":\"rush_yds\",\"claimed_rank\":29}], \"projection\": 78, \"games_2026\": 4},\n      {\"player\": \"Kyler Murray\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"7d6fb6d33d0dcc1b\", \"price\": 1.877, \"side\": \"under\", \"line\": 212.5, \"reason\": \"Murray's season average is just 144.33 ypg across a thin three-game sample, well below this line; NO's pass defense ranks a moderate 16th (228.0 ypg allowed), and the 42.5 total with MIN favored by only 1.5 doesn't project heavy forced volume either way.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":16}], \"projection\": 175, \"games_2026\": 3}\n    ]}\n  ],\n  \"per_position\": {\n    \"QB\": {\"player\": \"Tyler Shough\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"7d6fb6d33d0dcc1b\", \"price\": 1.877, \"side\": \"over\", \"line\": 237.5, \"reason\": \"Shough's 300.8 ypg season rate and explosive-play profile (3.75 completions of 20+ yds/gm, 5th) line up directly with MIN's boom-prone secondary (1.0 completions of 40+ allowed/gm to QBs, 31st) even though MIN otherwise ranks 10th overall.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"MIN\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":10},{\"type\":\"current_opponent\",\"team\":\"MIN\",\"pos\":\"QB\",\"stat\":\"p40_pg\",\"role\":\"def\",\"claimed_rank\":31}], \"projection\": 280, \"games_2026\": 4},\n    \"RB\": {\"player\": \"D'Andre Swift\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"9d6a4b64c9a604f2\", \"price\": 1.877, \"side\": \"over\", \"line\": 84.5, \"reason\": \"Swift carries a real Standard/Double Threat designation in this exact category (8th-ranked rusher vs GB's 29th-ranked run defense against backs, 113.8 ypg allowed), and his own bottom-tier-matchup bucket (88.7 ypg, n=3) clears this line.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"GB\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":29}], \"projection\": 90, \"games_2026\": 4},\n    \"WR\": {\"player\": \"Malik Washington\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"f85173e306621e17\", \"price\": 1.877, \"side\": \"over\", \"line\": 44.5, \"reason\": \"Washington's 54.75 ypg season rate on a team-high 27.5% target share clears this line, and his own top-tier-defense bucket (49.5 ypg, n=2) still holds up against CIN's 10th-ranked WR defense (130.0 ypg allowed).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CIN\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":10},{\"type\":\"log_opponent\",\"player\":\"Malik Washington\",\"week\":3,\"stat\":\"rec_yds\",\"claimed_rank\":4}], \"projection\": 52, \"games_2026\": 4},\n    \"TE\": {\"player\": \"T.J. Hockenson\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7d6fb6d33d0dcc1b\", \"price\": 1.877, \"side\": \"over\", \"line\": 36.5, \"reason\": \"Hockenson's receptions (3rd) and receiving yards (9th) ranks both converge with NO's defense, which ranks 29th against TE receptions and 28th against TE yards (76.5 ypg allowed) \u2014 the week's clearest Threat-backed TE play.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":28},{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"TE\",\"stat\":\"rec\",\"role\":\"def\",\"claimed_rank\":29}], \"projection\": 55, \"games_2026\": 4}\n  }\n}\n```\n\n```json\nFAVORITE_OU\n{\n  \"overs\": [\n    {\"player\": \"T.J. Hockenson\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7d6fb6d33d0dcc1b\", \"price\": 1.877, \"side\": \"over\", \"line\": 36.5, \"reason\": \"Hockenson's receptions rank 3rd and receiving yards rank 9th both converge with NO's defense, which ranks 29th against TE receptions and 28th against TE yards (76.5 ypg allowed) \u2014 this week's cleanest Threat-backed convergence.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":28},{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"TE\",\"stat\":\"rec\",\"role\":\"def\",\"claimed_rank\":29}], \"projection\": 55, \"games_2026\": 4},\n    {\"player\": \"D'Andre Swift\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"9d6a4b64c9a604f2\", \"price\": 1.877, \"side\": \"over\", \"line\": 84.5, \"reason\": \"Swift's Standard/Double Threat designation (8th-ranked rusher vs GB's 29th-ranked RB run defense, 113.8 ypg allowed) is backed directly by his own bottom-tier-matchup bucket (88.7 ypg, n=3), which clears this line.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"GB\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":29}], \"projection\": 90, \"games_2026\": 4},\n    {\"player\": \"Dontayvion Wicks\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"6275929b4056e14c\", \"price\": 1.885, \"side\": \"over\", \"line\": 44.5, \"reason\": \"Wicks' season rate of 49.25 ypg already clears this line, and JAX's WR defense ranks dead last in the league (210.5 ypg allowed, 32nd) \u2014 the same bottom-tier shape that produced his season-high 74-yard outing.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"JAX\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":32}], \"projection\": 58, \"games_2026\": 4},\n    {\"player\": \"Joe Burrow\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"f85173e306621e17\", \"price\": 1.877, \"side\": \"over\", \"line\": 252.5, \"reason\": \"Burrow's 292.8 ypg season rate (5th) comfortably clears this line, with his own mid-tier matchup data (282 yards vs Pittsburgh) mapping onto MIA's 19th-ranked pass defense and league-worst pass rush (1.0 sacks/gm, 30th).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"MIA\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":19},{\"type\":\"log_opponent\",\"player\":\"Joe Burrow\",\"week\":3,\"stat\":\"pass_yds\",\"claimed_rank\":13}], \"projection\": 280, \"games_2026\": 4},\n    {\"player\": \"Malik Washington\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"f85173e306621e17\", \"price\": 1.877, \"side\": \"over\", \"line\": 44.5, \"reason\": \"Washington's 54.75 ypg season rate on a team-high 27.5% target share clears this line, with his own top-tier-defense bucket (49.5 ypg, n=2) still holding up against CIN's 10th-ranked WR defense.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CIN\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":10},{\"type\":\"log_opponent\",\"player\":\"Malik Washington\",\"week\":3,\"stat\":\"rec_yds\",\"claimed_rank\":4}], \"projection\": 52, \"games_2026\": 4}\n  ],\n  \"unders\": [\n    {\"player\": \"Matthew Golden\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"9d6a4b64c9a604f2\", \"price\": 1.877, \"side\": \"under\", \"line\": 56.5, \"reason\": \"Golden's season rate is 68.5 ypg, but his own top-tier-defense bucket (n=2) shows just 39.5 ypg, matching CHI's defense which ranks a stout 9th against WRs (128.8 ypg allowed).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CHI\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":9},{\"type\":\"log_opponent\",\"player\":\"Matthew Golden\",\"week\":4,\"stat\":\"rec_yds\",\"claimed_rank\":2}], \"projection\": 45, \"games_2026\": 4},\n    {\"player\": \"Colston Loveland\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"9d6a4b64c9a604f2\", \"price\": 1.877, \"side\": \"under\", \"line\": 37.5, \"reason\": \"Loveland's season rate is just 22.75 rec ypg, and even his best game this year (31.0 ypg vs a top-tier defense) sits well below this line against GB's 6th-ranked TE defense.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"GB\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":6},{\"type\":\"log_opponent\",\"player\":\"Colston Loveland\",\"week\":3,\"stat\":\"rec_yds\",\"claimed_rank\":10}], \"projection\": 20, \"games_2026\": 4},\n    {\"player\": \"Trevor Lawrence\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"6275929b4056e14c\", \"price\": 1.885, \"side\": \"under\", \"line\": 225.5, \"reason\": \"Lawrence's season rate (210.8 ypg) and home average (213.5 ypg) both sit below this line against PHI's genuine mid-tier 15th-ranked pass defense (227.8 ypg allowed).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"PHI\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":15},{\"type\":\"log_opponent\",\"player\":\"Trevor Lawrence\",\"week\":2,\"stat\":\"pass_yds\",\"claimed_rank\":22}], \"projection\": 205, \"games_2026\": 4},\n    {\"player\": \"Kirk Cousins\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"05835fd6db578ab9\", \"price\": 1.877, \"side\": \"under\", \"line\": 234.5, \"reason\": \"Every one of Cousins' four starts has come against a mid-tier pass defense, and he's never faced a unit like NE's, which ranks a genuine 5th in the league (205.5 ypg allowed).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":5},{\"type\":\"log_opponent\",\"player\":\"Kirk Cousins\",\"week\":4,\"stat\":\"pass_yds\",\"claimed_rank\":18}], \"projection\": 215, \"games_2026\": 4},\n    {\"player\": \"Brock Bowers\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"05835fd6db578ab9\", \"price\": 1.877, \"side\": \"under\", \"line\": 73.5, \"reason\": \"Bowers' 101.0 ypg average is a thin two-game sample built on soft matchups, while NE's defense ranks 2nd in the league against tight ends (26.0 ypg allowed, zero TDs surrendered all season).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NE\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":2},{\"type\":\"log_opponent\",\"player\":\"Brock Bowers\",\"week\":3,\"stat\":\"rec_yds\",\"claimed_rank\":28}], \"projection\": 55, \"games_2026\": 2}\n  ]\n}\n```",
+  "prop_breakdown": {
+    "per_game": [
+      {
+        "away": "CHI",
+        "home": "GB",
+        "picks": [
+          {
+            "player": "D'Andre Swift",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "9d6a4b64c9a604f2",
+            "price": 1.877,
+            "side": "over",
+            "line": 84.5,
+            "reason": "Swift's own rush-yards rank sits 8th in the league (77.8 ypg) and climbs to 88.7 ypg in his specific bottom-tier-run-defense bucket (n=3), the same caliber GB represents at 29th against RBs (113.8 ypg allowed).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "GB",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "def",
+                "claimed_rank": 29
+              }
+            ],
+            "projection": 90,
+            "games_2026": 4,
+            "projection_edge": 5.5,
+            "grade": "L"
+          },
+          {
+            "player": "Matthew Golden",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "9d6a4b64c9a604f2",
+            "price": 1.877,
+            "side": "under",
+            "line": 56.5,
+            "reason": "Golden's season rate is 68.5 ypg on a team-high 24.7% target share, but his own top-tier-defense bucket (n=2) shows just 39.5 ypg, matching CHI's defense which ranks a stout 9th against WRs (128.8 ypg allowed).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "CHI",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 9
+              },
+              {
+                "type": "log_opponent",
+                "player": "Matthew Golden",
+                "week": 4,
+                "stat": "rec_yds",
+                "claimed_rank": 2
+              }
+            ],
+            "projection": 45,
+            "games_2026": 4,
+            "projection_edge": 11.5,
+            "grade": "L"
+          },
+          {
+            "player": "Colston Loveland",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "9d6a4b64c9a604f2",
+            "price": 1.877,
+            "side": "under",
+            "line": 37.5,
+            "reason": "Loveland's season rate is just 22.75 rec ypg and even his best game this year (31.0 ypg vs a top-tier defense) sits well below this line; GB's TE defense ranks 6th in the league (33.2 ypg allowed).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "GB",
+                "pos": "TE",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 6
+              },
+              {
+                "type": "log_opponent",
+                "player": "Colston Loveland",
+                "week": 3,
+                "stat": "rec_yds",
+                "claimed_rank": 10
+              }
+            ],
+            "projection": 20,
+            "games_2026": 4,
+            "projection_edge": 17.5,
+            "grade": "W"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "PHI",
+        "home": "JAX",
+        "picks": [
+          {
+            "player": "Jalen Hurts",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "6275929b4056e14c",
+            "price": 1.885,
+            "side": "over",
+            "line": 186.5,
+            "reason": "Hurts ranks 26th in the league in pass yards (178.2 ypg) but his own bottom-tier-pass-defense game this season produced 203 yards, and JAX's pass defense ranks a stark 31st (287.5 ypg allowed) \u2014 the same bottom-tier shape, with the 41.5 total and JAX favored by 7.5 also supporting pass volume.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "JAX",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "def",
+                "claimed_rank": 31
+              },
+              {
+                "type": "log_opponent",
+                "player": "Jalen Hurts",
+                "week": 1,
+                "stat": "pass_yds",
+                "claimed_rank": 24
+              }
+            ],
+            "projection": 210,
+            "games_2026": 4,
+            "projection_edge": 23.5,
+            "grade": "W"
+          },
+          {
+            "player": "Trevor Lawrence",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "6275929b4056e14c",
+            "price": 1.885,
+            "side": "under",
+            "line": 225.5,
+            "reason": "Lawrence's season rate (210.8 ypg, 18th) and home average (213.5 ypg) both sit below this 225.5 line, and PHI's pass defense ranks a genuine mid-tier 15th (227.8 ypg allowed).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "PHI",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "def",
+                "claimed_rank": 15
+              },
+              {
+                "type": "log_opponent",
+                "player": "Trevor Lawrence",
+                "week": 2,
+                "stat": "pass_yds",
+                "claimed_rank": 22
+              }
+            ],
+            "projection": 205,
+            "games_2026": 4,
+            "projection_edge": 20.5,
+            "grade": "L"
+          },
+          {
+            "player": "Dontayvion Wicks",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "6275929b4056e14c",
+            "price": 1.885,
+            "side": "over",
+            "line": 44.5,
+            "reason": "Wicks' season rate of 49.25 rec ypg already clears this line, and JAX's WR defense ranks dead last in the league (210.5 ypg allowed, 32nd) \u2014 the same bottom-tier shape that produced his season-high 74-yard game.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "JAX",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 32
+              }
+            ],
+            "projection": 58,
+            "games_2026": 4,
+            "projection_edge": 13.5,
+            "grade": "W"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "CIN",
+        "home": "MIA",
+        "picks": [
+          {
+            "player": "Joe Burrow",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "f85173e306621e17",
+            "price": 1.877,
+            "side": "over",
+            "line": 252.5,
+            "reason": "Burrow's season average of 292.8 ypg (5th) comfortably clears this line, his own mid-tier matchup (282 yards vs Pittsburgh) maps onto MIA's 19th-ranked pass defense, and MIA's league-worst pass rush (1.0 sacks/gm, 30th) gives him a clean pocket.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "MIA",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "def",
+                "claimed_rank": 19
+              },
+              {
+                "type": "log_opponent",
+                "player": "Joe Burrow",
+                "week": 3,
+                "stat": "pass_yds",
+                "claimed_rank": 13
+              }
+            ],
+            "projection": 280,
+            "games_2026": 4,
+            "projection_edge": 27.5,
+            "grade": "L"
+          },
+          {
+            "player": "Malik Washington",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "f85173e306621e17",
+            "price": 1.877,
+            "side": "over",
+            "line": 44.5,
+            "reason": "Washington's season rate is 54.75 ypg on a team-high 27.5% target share, and even his own top-tier-defense bucket (n=2, facing units ranked 4th and 7th) still averaged 49.5 ypg, clearing CIN's defense which ranks 10th against WRs (130.0 ypg allowed).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "CIN",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 10
+              },
+              {
+                "type": "log_opponent",
+                "player": "Malik Washington",
+                "week": 3,
+                "stat": "rec_yds",
+                "claimed_rank": 4
+              }
+            ],
+            "projection": 52,
+            "games_2026": 4,
+            "projection_edge": 7.5,
+            "grade": "L"
+          },
+          {
+            "player": "Ollie Gordon II",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "f85173e306621e17",
+            "price": 1.877,
+            "side": "over",
+            "line": 44.5,
+            "reason": "Gordon's own top-tier-run-defense bucket (two feature games against fronts ranked 5th and 7th) averaged 70.5 ypg, directly comparable to CIN's defense which ranks 8th against the run (99.5 ypg allowed).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "CIN",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "def",
+                "claimed_rank": 8
+              },
+              {
+                "type": "log_opponent",
+                "player": "Ollie Gordon II",
+                "week": 4,
+                "stat": "rush_yds",
+                "claimed_rank": 8
+              }
+            ],
+            "projection": 65,
+            "games_2026": 3,
+            "projection_edge": 20.5,
+            "evidence_mismatches": [
+              "REAL MISMATCH: CIN's real current RB def rush_yds rank is #9 or #22 \u2014 the report claimed #8."
+            ],
+            "grade": "W"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "LV",
+        "home": "NE",
+        "picks": [
+          {
+            "player": "Brock Bowers",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "05835fd6db578ab9",
+            "price": 1.877,
+            "side": "under",
+            "line": 73.5,
+            "reason": "Bowers' 101.0 ypg average is a thin two-game sample (flagged) built on soft matchups, while NE's defense ranks 2nd in the league against tight ends (26.0 ypg allowed, zero TDs surrendered all season) \u2014 the toughest individual positional matchup in this game.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NE",
+                "pos": "TE",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 2
+              },
+              {
+                "type": "log_opponent",
+                "player": "Brock Bowers",
+                "week": 3,
+                "stat": "rec_yds",
+                "claimed_rank": 28
+              }
+            ],
+            "projection": 55,
+            "games_2026": 2,
+            "projection_edge": 18.5,
+            "grade": "L"
+          },
+          {
+            "player": "Kirk Cousins",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "05835fd6db578ab9",
+            "price": 1.877,
+            "side": "under",
+            "line": 234.5,
+            "reason": "Every one of Cousins' four starts has come against a mid-tier pass defense (ranks 14th-19th) and he's never faced a unit like NE's, which ranks a genuine 5th (205.5 ypg allowed); the 44.5 total and tight 3.5-point spread don't offset facing his toughest test yet.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NE",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "def",
+                "claimed_rank": 5
+              },
+              {
+                "type": "log_opponent",
+                "player": "Kirk Cousins",
+                "week": 4,
+                "stat": "pass_yds",
+                "claimed_rank": 18
+              }
+            ],
+            "projection": 215,
+            "games_2026": 4,
+            "projection_edge": 19.5,
+            "grade": "L"
+          },
+          {
+            "player": "Tre Tucker",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "05835fd6db578ab9",
+            "price": 1.877,
+            "side": "over",
+            "line": 40.5,
+            "reason": "Tucker's season average of 58.25 rec ypg sits well above this line against NE's non-elite 14th-ranked WR defense (147.2 ypg allowed), with even his road game against a top-tier unit landing near this threshold.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NE",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 14
+              },
+              {
+                "type": "log_opponent",
+                "player": "Tre Tucker",
+                "week": 3,
+                "stat": "rec_yds",
+                "claimed_rank": 6
+              }
+            ],
+            "projection": 55,
+            "games_2026": 4,
+            "projection_edge": 14.5,
+            "grade": "W"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "MIN",
+        "home": "NO",
+        "picks": [
+          {
+            "player": "T.J. Hockenson",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "7d6fb6d33d0dcc1b",
+            "price": 1.877,
+            "side": "over",
+            "line": 36.5,
+            "reason": "Hockenson's receptions rank 3rd (5.5/gm) and receiving yards rank 9th (48.75 ypg) both converge with NO's defense, which ranks a weak 29th against TE receptions and 28th against TE yards (76.5 ypg allowed) \u2014 a real Threat-tier convergence.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NO",
+                "pos": "TE",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 28
+              },
+              {
+                "type": "current_opponent",
+                "team": "NO",
+                "pos": "TE",
+                "stat": "rec",
+                "role": "def",
+                "claimed_rank": 29
+              },
+              {
+                "type": "log_opponent",
+                "player": "T.J. Hockenson",
+                "week": 4,
+                "stat": "rec_yds",
+                "claimed_rank": 30
+              }
+            ],
+            "projection": 55,
+            "games_2026": 4,
+            "projection_edge": 18.5,
+            "grade": "L"
+          },
+          {
+            "player": "Aaron Jones",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "7d6fb6d33d0dcc1b",
+            "price": 1.877,
+            "side": "over",
+            "line": 72.5,
+            "reason": "Jones' season rate of 74.25 ypg (and road average of 81.5 ypg) clears this line against NO's run defense, the worst in the league (138.5 ypg allowed to backs, 32nd); his lone thin (n=1) bottom-tier game produced just 40.0 yards but isn't enough to override the season rate.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NO",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "def",
+                "claimed_rank": 32
+              },
+              {
+                "type": "log_opponent",
+                "player": "Aaron Jones",
+                "week": 1,
+                "stat": "rush_yds",
+                "claimed_rank": 29
+              }
+            ],
+            "projection": 78,
+            "games_2026": 4,
+            "projection_edge": 5.5,
+            "grade": "W"
+          },
+          {
+            "player": "Kyler Murray",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "7d6fb6d33d0dcc1b",
+            "price": 1.877,
+            "side": "under",
+            "line": 212.5,
+            "reason": "Murray's season average is just 144.33 ypg across a thin three-game sample, well below this line; NO's pass defense ranks a moderate 16th (228.0 ypg allowed), and the 42.5 total with MIN favored by only 1.5 doesn't project heavy forced volume either way.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NO",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "def",
+                "claimed_rank": 16
+              }
+            ],
+            "projection": 175,
+            "games_2026": 3,
+            "projection_edge": 37.5,
+            "grade": "L"
+          }
+        ],
+        "mismatch_count": 0
+      }
+    ],
+    "per_position": {
+      "QB": {
+        "player": "Tyler Shough",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "7d6fb6d33d0dcc1b",
+        "price": 1.877,
+        "side": "over",
+        "line": 237.5,
+        "reason": "Shough's 300.8 ypg season rate and explosive-play profile (3.75 completions of 20+ yds/gm, 5th) line up directly with MIN's boom-prone secondary (1.0 completions of 40+ allowed/gm to QBs, 31st) even though MIN otherwise ranks 10th overall.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "MIN",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "def",
+            "claimed_rank": 10
+          },
+          {
+            "type": "current_opponent",
+            "team": "MIN",
+            "pos": "QB",
+            "stat": "p40_pg",
+            "role": "def",
+            "claimed_rank": 31
+          }
+        ],
+        "projection": 280,
+        "games_2026": 4,
+        "projection_edge": 42.5,
+        "grade": "L"
+      },
+      "RB": {
+        "player": "D'Andre Swift",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "9d6a4b64c9a604f2",
+        "price": 1.877,
+        "side": "over",
+        "line": 84.5,
+        "reason": "Swift carries a real Standard/Double Threat designation in this exact category (8th-ranked rusher vs GB's 29th-ranked run defense against backs, 113.8 ypg allowed), and his own bottom-tier-matchup bucket (88.7 ypg, n=3) clears this line.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "GB",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "def",
+            "claimed_rank": 29
+          }
+        ],
+        "projection": 90,
+        "games_2026": 4,
+        "projection_edge": 5.5,
+        "grade": "L"
+      },
+      "WR": {
+        "player": "Malik Washington",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "f85173e306621e17",
+        "price": 1.877,
+        "side": "over",
+        "line": 44.5,
+        "reason": "Washington's 54.75 ypg season rate on a team-high 27.5% target share clears this line, and his own top-tier-defense bucket (49.5 ypg, n=2) still holds up against CIN's 10th-ranked WR defense (130.0 ypg allowed).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "CIN",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 10
+          },
+          {
+            "type": "log_opponent",
+            "player": "Malik Washington",
+            "week": 3,
+            "stat": "rec_yds",
+            "claimed_rank": 4
+          }
+        ],
+        "projection": 52,
+        "games_2026": 4,
+        "projection_edge": 7.5,
+        "grade": "L"
+      },
+      "TE": {
+        "player": "T.J. Hockenson",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "7d6fb6d33d0dcc1b",
+        "price": 1.877,
+        "side": "over",
+        "line": 36.5,
+        "reason": "Hockenson's receptions (3rd) and receiving yards (9th) ranks both converge with NO's defense, which ranks 29th against TE receptions and 28th against TE yards (76.5 ypg allowed) \u2014 the week's clearest Threat-backed TE play.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NO",
+            "pos": "TE",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 28
+          },
+          {
+            "type": "current_opponent",
+            "team": "NO",
+            "pos": "TE",
+            "stat": "rec",
+            "role": "def",
+            "claimed_rank": 29
+          }
+        ],
+        "projection": 55,
+        "games_2026": 4,
+        "projection_edge": 18.5,
+        "grade": "L"
+      }
+    }
+  },
+  "prop_breakdown_errors": [
+    "CIN@MIA \u2014 Ollie Gordon II: REAL MISMATCH: CIN's real current RB def rush_yds rank is #9 or #22 \u2014 the report claimed #8."
+  ],
+  "favorite_ou": {
+    "overs": [
+      {
+        "player": "T.J. Hockenson",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "7d6fb6d33d0dcc1b",
+        "price": 1.877,
+        "side": "over",
+        "line": 36.5,
+        "reason": "Hockenson's receptions rank 3rd and receiving yards rank 9th both converge with NO's defense, which ranks 29th against TE receptions and 28th against TE yards (76.5 ypg allowed) \u2014 this week's cleanest Threat-backed convergence.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NO",
+            "pos": "TE",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 28
+          },
+          {
+            "type": "current_opponent",
+            "team": "NO",
+            "pos": "TE",
+            "stat": "rec",
+            "role": "def",
+            "claimed_rank": 29
+          }
+        ],
+        "projection": 55,
+        "games_2026": 4,
+        "projection_edge": 18.5,
+        "grade": "L"
+      },
+      {
+        "player": "D'Andre Swift",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "9d6a4b64c9a604f2",
+        "price": 1.877,
+        "side": "over",
+        "line": 84.5,
+        "reason": "Swift's Standard/Double Threat designation (8th-ranked rusher vs GB's 29th-ranked RB run defense, 113.8 ypg allowed) is backed directly by his own bottom-tier-matchup bucket (88.7 ypg, n=3), which clears this line.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "GB",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "def",
+            "claimed_rank": 29
+          }
+        ],
+        "projection": 90,
+        "games_2026": 4,
+        "projection_edge": 5.5,
+        "grade": "L"
+      },
+      {
+        "player": "Dontayvion Wicks",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "6275929b4056e14c",
+        "price": 1.885,
+        "side": "over",
+        "line": 44.5,
+        "reason": "Wicks' season rate of 49.25 ypg already clears this line, and JAX's WR defense ranks dead last in the league (210.5 ypg allowed, 32nd) \u2014 the same bottom-tier shape that produced his season-high 74-yard outing.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "JAX",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 32
+          }
+        ],
+        "projection": 58,
+        "games_2026": 4,
+        "projection_edge": 13.5,
+        "grade": "W"
+      },
+      {
+        "player": "Joe Burrow",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "f85173e306621e17",
+        "price": 1.877,
+        "side": "over",
+        "line": 252.5,
+        "reason": "Burrow's 292.8 ypg season rate (5th) comfortably clears this line, with his own mid-tier matchup data (282 yards vs Pittsburgh) mapping onto MIA's 19th-ranked pass defense and league-worst pass rush (1.0 sacks/gm, 30th).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "MIA",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "def",
+            "claimed_rank": 19
+          },
+          {
+            "type": "log_opponent",
+            "player": "Joe Burrow",
+            "week": 3,
+            "stat": "pass_yds",
+            "claimed_rank": 13
+          }
+        ],
+        "projection": 280,
+        "games_2026": 4,
+        "projection_edge": 27.5,
+        "grade": "L"
+      },
+      {
+        "player": "Malik Washington",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "f85173e306621e17",
+        "price": 1.877,
+        "side": "over",
+        "line": 44.5,
+        "reason": "Washington's 54.75 ypg season rate on a team-high 27.5% target share clears this line, with his own top-tier-defense bucket (49.5 ypg, n=2) still holding up against CIN's 10th-ranked WR defense.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "CIN",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 10
+          },
+          {
+            "type": "log_opponent",
+            "player": "Malik Washington",
+            "week": 3,
+            "stat": "rec_yds",
+            "claimed_rank": 4
+          }
+        ],
+        "projection": 52,
+        "games_2026": 4,
+        "projection_edge": 7.5,
+        "grade": "L"
+      }
+    ],
+    "unders": [
+      {
+        "player": "Matthew Golden",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "9d6a4b64c9a604f2",
+        "price": 1.877,
+        "side": "under",
+        "line": 56.5,
+        "reason": "Golden's season rate is 68.5 ypg, but his own top-tier-defense bucket (n=2) shows just 39.5 ypg, matching CHI's defense which ranks a stout 9th against WRs (128.8 ypg allowed).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "CHI",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 9
+          },
+          {
+            "type": "log_opponent",
+            "player": "Matthew Golden",
+            "week": 4,
+            "stat": "rec_yds",
+            "claimed_rank": 2
+          }
+        ],
+        "projection": 45,
+        "games_2026": 4,
+        "projection_edge": 11.5,
+        "grade": "L"
+      },
+      {
+        "player": "Colston Loveland",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "9d6a4b64c9a604f2",
+        "price": 1.877,
+        "side": "under",
+        "line": 37.5,
+        "reason": "Loveland's season rate is just 22.75 rec ypg, and even his best game this year (31.0 ypg vs a top-tier defense) sits well below this line against GB's 6th-ranked TE defense.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "GB",
+            "pos": "TE",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 6
+          },
+          {
+            "type": "log_opponent",
+            "player": "Colston Loveland",
+            "week": 3,
+            "stat": "rec_yds",
+            "claimed_rank": 10
+          }
+        ],
+        "projection": 20,
+        "games_2026": 4,
+        "projection_edge": 17.5,
+        "grade": "W"
+      },
+      {
+        "player": "Trevor Lawrence",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "6275929b4056e14c",
+        "price": 1.885,
+        "side": "under",
+        "line": 225.5,
+        "reason": "Lawrence's season rate (210.8 ypg) and home average (213.5 ypg) both sit below this line against PHI's genuine mid-tier 15th-ranked pass defense (227.8 ypg allowed).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "PHI",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "def",
+            "claimed_rank": 15
+          },
+          {
+            "type": "log_opponent",
+            "player": "Trevor Lawrence",
+            "week": 2,
+            "stat": "pass_yds",
+            "claimed_rank": 22
+          }
+        ],
+        "projection": 205,
+        "games_2026": 4,
+        "projection_edge": 20.5,
+        "grade": "L"
+      },
+      {
+        "player": "Kirk Cousins",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "05835fd6db578ab9",
+        "price": 1.877,
+        "side": "under",
+        "line": 234.5,
+        "reason": "Every one of Cousins' four starts has come against a mid-tier pass defense, and he's never faced a unit like NE's, which ranks a genuine 5th in the league (205.5 ypg allowed).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NE",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "def",
+            "claimed_rank": 5
+          },
+          {
+            "type": "log_opponent",
+            "player": "Kirk Cousins",
+            "week": 4,
+            "stat": "pass_yds",
+            "claimed_rank": 18
+          }
+        ],
+        "projection": 215,
+        "games_2026": 4,
+        "projection_edge": 19.5,
+        "grade": "L"
+      },
+      {
+        "player": "Brock Bowers",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "05835fd6db578ab9",
+        "price": 1.877,
+        "side": "under",
+        "line": 73.5,
+        "reason": "Bowers' 101.0 ypg average is a thin two-game sample built on soft matchups, while NE's defense ranks 2nd in the league against tight ends (26.0 ypg allowed, zero TDs surrendered all season).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NE",
+            "pos": "TE",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 2
+          },
+          {
+            "type": "log_opponent",
+            "player": "Brock Bowers",
+            "week": 3,
+            "stat": "rec_yds",
+            "claimed_rank": 28
+          }
+        ],
+        "projection": 55,
+        "games_2026": 2,
+        "projection_edge": 18.5,
+        "grade": "L"
+      }
+    ]
+  },
+  "favorite_ou_errors": [],
+  "parlays": {},
+  "td_parlays": {},
+  "spread_parlays": {},
+  "ats_records": {
+    "CHI": {
+      "since": 2020,
+      "overall": {
+        "w": 48,
+        "l": 48,
+        "p": 9,
+        "pct": 50.0
+      },
+      "home": {
+        "w": 26,
+        "l": 22,
+        "p": 5,
+        "pct": 54.2
+      },
+      "away": {
+        "w": 22,
+        "l": 26,
+        "p": 4,
+        "pct": 45.8
+      }
+    },
+    "CIN": {
+      "since": 2020,
+      "overall": {
+        "w": 58,
+        "l": 43,
+        "p": 3,
+        "pct": 57.4
+      },
+      "home": {
+        "w": 26,
+        "l": 23,
+        "p": 3,
+        "pct": 53.1
+      },
+      "away": {
+        "w": 32,
+        "l": 20,
+        "p": 0,
+        "pct": 61.5
+      }
+    },
+    "GB": {
+      "since": 2020,
+      "overall": {
+        "w": 53,
+        "l": 50,
+        "p": 2,
+        "pct": 51.5
+      },
+      "home": {
+        "w": 30,
+        "l": 21,
+        "p": 0,
+        "pct": 58.8
+      },
+      "away": {
+        "w": 23,
+        "l": 29,
+        "p": 2,
+        "pct": 44.2
+      }
+    },
+    "JAX": {
+      "since": 2020,
+      "overall": {
+        "w": 54,
+        "l": 50,
+        "p": 1,
+        "pct": 51.9
+      },
+      "home": {
+        "w": 28,
+        "l": 25,
+        "p": 0,
+        "pct": 52.8
+      },
+      "away": {
+        "w": 26,
+        "l": 25,
+        "p": 1,
+        "pct": 51.0
+      }
+    },
+    "LV": {
+      "since": 2020,
+      "overall": {
+        "w": 53,
+        "l": 50,
+        "p": 2,
+        "pct": 51.5
+      },
+      "home": {
+        "w": 29,
+        "l": 23,
+        "p": 1,
+        "pct": 55.8
+      },
+      "away": {
+        "w": 24,
+        "l": 27,
+        "p": 1,
+        "pct": 47.1
+      }
+    },
+    "MIA": {
+      "since": 2020,
+      "overall": {
+        "w": 55,
+        "l": 49,
+        "p": 1,
+        "pct": 52.9
+      },
+      "home": {
+        "w": 31,
+        "l": 21,
+        "p": 0,
+        "pct": 59.6
+      },
+      "away": {
+        "w": 24,
+        "l": 28,
+        "p": 1,
+        "pct": 46.2
+      }
+    },
+    "MIN": {
+      "since": 2020,
+      "overall": {
+        "w": 52,
+        "l": 48,
+        "p": 5,
+        "pct": 52.0
+      },
+      "home": {
+        "w": 24,
+        "l": 28,
+        "p": 0,
+        "pct": 46.2
+      },
+      "away": {
+        "w": 28,
+        "l": 20,
+        "p": 5,
+        "pct": 58.3
+      }
+    },
+    "NE": {
+      "since": 2020,
+      "overall": {
+        "w": 50,
+        "l": 51,
+        "p": 4,
+        "pct": 49.5
+      },
+      "home": {
+        "w": 24,
+        "l": 27,
+        "p": 1,
+        "pct": 47.1
+      },
+      "away": {
+        "w": 26,
+        "l": 24,
+        "p": 3,
+        "pct": 52.0
+      }
+    },
+    "NO": {
+      "since": 2020,
+      "overall": {
+        "w": 49,
+        "l": 55,
+        "p": 1,
+        "pct": 47.1
+      },
+      "home": {
+        "w": 21,
+        "l": 31,
+        "p": 0,
+        "pct": 40.4
+      },
+      "away": {
+        "w": 28,
+        "l": 24,
+        "p": 1,
+        "pct": 53.8
+      }
+    },
+    "PHI": {
+      "since": 2020,
+      "overall": {
+        "w": 50,
+        "l": 52,
+        "p": 3,
+        "pct": 49.0
+      },
+      "home": {
+        "w": 26,
+        "l": 24,
+        "p": 2,
+        "pct": 52.0
+      },
+      "away": {
+        "w": 24,
+        "l": 28,
+        "p": 1,
+        "pct": 46.2
+      }
+    }
+  },
+  "graded_at": "2026-10-13T21:01:24.753470+00:00"
+}

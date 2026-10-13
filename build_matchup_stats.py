@@ -1485,6 +1485,27 @@ def _int(v):
     return None if f is None else int(f)
 
 
+def _season_totals_by_player(df):
+    """Collapse per-week player rows into ONE row per player (season-to-date
+    totals). _leaders_and_box() ranks rows, so handing it raw weekly rows for
+    a "Season leaders" preview made it pick the best SINGLE GAMES instead of
+    season totals — the same player (a Derrick Henry, a Zay Flowers) could
+    appear twice with two different games' lines, and a QB showed his one
+    biggest game rather than his season. Summing per player first fixes that;
+    the box-score totals are unaffected (they sum every row either way)."""
+    if df is None or not len(df):
+        return df
+    num_cols = [c for c in df.columns
+                if c not in ("player_id", "name", "position", "team", "opponent_team",
+                             "week", "headshot_url") and pd.api.types.is_numeric_dtype(df[c])]
+    keys = [c for c in ("player_id", "name", "team") if c in df.columns]
+    agg = {c: "sum" for c in num_cols}
+    for c in ("position", "headshot_url"):
+        if c in df.columns:
+            agg[c] = "last"
+    return df.groupby(keys, as_index=False, sort=False).agg(agg)
+
+
 def _leaders_and_box(df, team, pts=None):
     """df = player rows for one team (one game, or a season slice)."""
     g = lambda r, k: float(r.get(k, 0) or 0)
@@ -1551,7 +1572,7 @@ def build_games(week, all_teams, records, week_games, prior_games, stats=None):
         # box score for a completed game; season-to-date leaders before kickoff
         if stats is not None:
             entry = rows[-1]
-            src_df = stats[stats["week"] == week] if played else stats[stats["week"] < week]
+            src_df = stats[stats["week"] == week] if played else _season_totals_by_player(stats[stats["week"] < week])
             entry["leader_scope"] = "game" if played else "season"
             box, lead = {}, {}
             for side, t, pts in [("away", away, as_), ("home", home, hs)]:

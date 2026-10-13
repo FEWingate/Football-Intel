@@ -85,15 +85,157 @@
         "ungraded": 0,
         "units": 0.2
       }
+    },
+    "wk05": {
+      "parlays": {
+        "w": 1,
+        "l": 2,
+        "p": 0,
+        "ungraded": 0,
+        "units": 0.18
+      },
+      "prop_breakdown": {
+        "w": 26,
+        "l": 28,
+        "p": 0,
+        "ungraded": 0,
+        "units": -5.49
+      },
+      "favorite_ou": {
+        "w": 17,
+        "l": 15,
+        "p": 0,
+        "ungraded": 0,
+        "units": -0.22
+      },
+      "spread_parlays": {
+        "w": 0,
+        "l": 0,
+        "p": 0,
+        "ungraded": 0,
+        "units": 0.0
+      },
+      "overall": {
+        "w": 23,
+        "l": 24,
+        "p": 0,
+        "ungraded": 0,
+        "units": -3.95
+      },
+      "best_10": {
+        "w": 3,
+        "l": 7,
+        "p": 0,
+        "ungraded": 0,
+        "units": -4.55
+      },
+      "td_parlays": {
+        "w": 0,
+        "l": 0,
+        "p": 0,
+        "ungraded": 0,
+        "units": 0.0
+      },
+      "unique": {
+        "w": 23,
+        "l": 24,
+        "p": 0,
+        "ungraded": 0,
+        "units": -3.95
+      },
+      "entries": {
+        "w": 52,
+        "l": 53,
+        "p": 0,
+        "ungraded": 0,
+        "units": 0.0
+      },
+      "parlays_legs": {
+        "w": 2,
+        "l": 2,
+        "p": 0,
+        "ungraded": 0,
+        "units": -0.43
+      },
+      "td_parlays_legs": {
+        "w": 0,
+        "l": 0,
+        "p": 0,
+        "ungraded": 0,
+        "units": 0.0
+      },
+      "spread_parlays_legs": {
+        "w": 0,
+        "l": 0,
+        "p": 0,
+        "ungraded": 0,
+        "units": 0.0
+      }
     }
   },
   "season_totals": {
-    "favorite_ou": {
-      "w": 14,
-      "l": 17,
+    "spread_parlays_legs": {
+      "w": 10,
+      "l": 9,
+      "p": 1,
+      "ungraded": 0,
+      "units": 0.2
+    },
+    "parlays": {
+      "w": 5,
+      "l": 23,
       "p": 0,
       "ungraded": 0,
-      "units": -4.61
+      "units": 4.1
+    },
+    "td_parlays_legs": {
+      "w": 12,
+      "l": 14,
+      "p": 0,
+      "ungraded": 0,
+      "units": -2.57
+    },
+    "prop_breakdown": {
+      "w": 53,
+      "l": 62,
+      "p": 0,
+      "ungraded": 0,
+      "units": -15.62
+    },
+    "favorite_ou": {
+      "w": 31,
+      "l": 32,
+      "p": 0,
+      "ungraded": 0,
+      "units": -4.83
+    },
+    "unique": {
+      "w": 64,
+      "l": 74,
+      "p": 1,
+      "ungraded": 0,
+      "units": -16.36
+    },
+    "overall": {
+      "w": 64,
+      "l": 74,
+      "p": 1,
+      "ungraded": 0,
+      "units": -16.36
+    },
+    "best_10": {
+      "w": 3,
+      "l": 7,
+      "p": 0,
+      "ungraded": 0,
+      "units": -4.55
+    },
+    "entries": {
+      "w": 238,
+      "l": 241,
+      "p": 1,
+      "ungraded": 0,
+      "units": 0.0
     },
     "spread_parlays": {
       "w": 0,
@@ -103,67 +245,11 @@
       "units": -14.0
     },
     "parlays_legs": {
-      "w": 17,
-      "l": 22,
+      "w": 19,
+      "l": 24,
       "p": 0,
       "ungraded": 0,
-      "units": -6.96
-    },
-    "unique": {
-      "w": 41,
-      "l": 50,
-      "p": 1,
-      "ungraded": 0,
-      "units": -12.41
-    },
-    "overall": {
-      "w": 41,
-      "l": 50,
-      "p": 1,
-      "ungraded": 0,
-      "units": -12.41
-    },
-    "entries": {
-      "w": 186,
-      "l": 188,
-      "p": 1,
-      "ungraded": 0,
-      "units": 0.0
-    },
-    "best_10": {
-      "w": 0,
-      "l": 0,
-      "p": 0,
-      "ungraded": 0,
-      "units": 0.0
-    },
-    "prop_breakdown": {
-      "w": 27,
-      "l": 34,
-      "p": 0,
-      "ungraded": 0,
-      "units": -10.13
-    },
-    "spread_parlays_legs": {
-      "w": 10,
-      "l": 9,
-      "p": 1,
-      "ungraded": 0,
-      "units": 0.2
-    },
-    "td_parlays_legs": {
-      "w": 12,
-      "l": 14,
-      "p": 0,
-      "ungraded": 0,
-      "units": -2.57
-    },
-    "parlays": {
-      "w": 4,
-      "l": 21,
-      "p": 0,
-      "ungraded": 0,
-      "units": 3.92
+      "units": -7.39
     },
     "td_parlays": {
       "w": 3,
@@ -173,5 +259,5 @@
       "units": -9.2
     }
   },
-  "generated_at": "2026-10-07T16:37:50.976192+00:00"
+  "generated_at": "2026-10-13T21:01:24.756680+00:00"
 }
