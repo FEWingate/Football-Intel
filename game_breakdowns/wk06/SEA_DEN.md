@@ -7,7 +7,7 @@
 
 Seattle (3-2, recent form L-W-L over its last three) travels to Denver (3-2, recent form W-L-W) for a Thursday night assignment that pits one of the league's more explosive offenses against a defense that is far better than its name suggests on paper — and, as of this week, considerably more vulnerable than its season-long numbers indicate. This is not a division game, and these two teams have not met yet this season, so there is no head-to-head evidence to weigh.
 
-Seattle's offense ranks 8th in scoring (26.8 points per game) behind a passing attack that leans heavily — arguably too heavily — on one receiver, while its defense has been one of the best in football against the pass (2nd in yards allowed) even though its overall point-prevention is merely solid (8th). Denver's profile inverts that: an offense that has struggled to score (26th, 19.4 ppg) protected unusually well up front, paired with a defense that is respectable against the pass on paper (9th in yards allowed) but has been thoroughly overrun against the run (29th). Both teams enter 3-2, and Denver is favored by 2.5 points at home with a 40.5-point total — context worth noting, though this report builds its own view independent of the market.
+Seattle's offense ranks 8th in scoring (26.8 points per game) behind a passing attack that leans heavily — arguably too heavily — on one receiver, while its defense has been one of the best in football against the pass (2nd in yards allowed) even though its overall point-prevention is merely solid (8th). Denver's profile inverts that: an offense that has struggled to score (26th, 19.4 ppg) protected unusually well up front, paired with a defense that is respectable against the pass on paper (9th in yards allowed) but has been thoroughly overrun against the run (29th). Both teams enter 3-2.
 
 The broad shape this game appears to be taking: Seattle's passing attack, led by a receiver operating at a target share rarely seen in the league, against a Denver defense that will be without multiple key secondary pieces this week. Denver's counter has to come from controlling tempo, leaning on situational football (third down, red zone), and hoping its offense — which has had little margin for error all season — can find enough explosive plays against a Seattle defense that is excellent through the air but only middling against the run. Which of those two forces wins out, and how much the injury situation actually matters on the field Thursday night, is the real question this report works through below — not a conclusion to draw yet.
 
@@ -53,7 +53,7 @@ The broad shape this game appears to be taking: Seattle's passing attack, led by
 - **TE position allowed:** 28.0 rec yds/gm (2nd) — one of the league's best defenses against tight ends.
 - **Down/Distance (defense):** 29.4% third-down conversion allowed (3rd-best in the league) on 13.6 attempts faced/gm.
 - **Red Zone Play Calling (defense):** 48.3% run allowed in the red zone (15th), 51.7% pass allowed (18th) — roughly average tendency faced.
-- **Contextual Statistics:** No multi-game log entry against a bottom-tier offense yet this season to build a full tiered picture, but Seattle's defense has allowed just 21.0 ppg (n=2) and 31.0 ppg (n=2) in its two bottom-tier-opponent games — a modest sample suggesting its raw numbers may understate true quality against lesser competition.
+- **Contextual Statistics:** Not available in this week's evidence package.
 
 ### Denver Offense
 - **Team identity:** 19.4 ppg (26th), 274.6 total yds/gm (31st — second-worst in the league), 188.4 pass yds/gm (27th), 86.2 rush yds/gm (25th), 14.4 first downs/gm (27th).
@@ -73,7 +73,7 @@ The broad shape this game appears to be taking: Seattle's passing attack, led by
 - **TE position allowed:** 62.6 rec yds/gm (25th) — a soft matchup for tight ends.
 - **Down/Distance (defense):** 45.2% third-down conversion allowed (26th) on 14.6 attempts faced/gm.
 - **Red Zone Play Calling (defense):** 51.2% run allowed in the red zone (11th), 48.8% pass allowed (22nd).
-- **Contextual Statistics:** No full tiered picture yet, but Denver has already faced four top-third pass-offense quality tests and been outscored in several; its defensive profile (strong pass numbers, poor rush numbers) is thin on contextual samples given the early point in the season.
+- **Contextual Statistics:** Not available in this week's evidence package.
 
 ---
 

@@ -76,6 +76,17 @@ numeric claims precise rather than paraphrased, and give every \
 DFS/Props-relevant player enough standalone context to be extracted from \
 this report alone.
 
+DATA-LIMIT RULES (these override anything in the Standard that would require \
+otherwise): (1) The evidence package's team_context holds OFFENSIVE tier \
+splits only — how each team's own scoring and each position's production \
+changed against top/mid/bottom defenses faced. It has NO defensive tier splits. \
+In Matchup Statistics, the Contextual Statistics bullet for each team's DEFENSE \
+must therefore read exactly "Not available in this week's evidence package." \
+Never re-label an offensive split (points scored, yards gained) as something a \
+defense allowed, and never invent opponent-offense-quality splits. (2) Do not \
+mention the point spread, moneyline, or over/under anywhere in the report, \
+including the Pregame Briefing; this report is market-neutral.
+
 Base every claim ONLY on the evidence package below — Football Intel data \
 first, per the Evidence Permission and Web Search Fallback rules. If a \
 required fact isn't in the evidence package and you cannot find it via \
