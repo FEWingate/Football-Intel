@@ -105,7 +105,7 @@
 .play-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px}
 .play-card .pc-top{display:flex;justify-content:space-between;align-items:start;margin-bottom:2px}
 .play-card .pc-name{font-family:var(--font-display);font-weight:700;font-size:15px}
-.play-card .pc-team{font-size:11px;color:var(--text-dim);font-family:var(--font-mono);margin-bottom:10px}
+.play-card .pc-team{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-dim);font-family:var(--font-mono);margin-bottom:10px}
 .play-card .pc-opp{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-mid);margin-bottom:12px;
   font-family:var(--font-mono)}
 .pc-factors{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
@@ -1390,7 +1390,7 @@ function playCardHTML(p, tag){
         <span class="pc-name">${esc(p.name)}</span>
         ${statusPill(p.status)}
       </div>
-      <div class="pc-team">${esc(p.team)}${tag ? ` <span class="pc-tag">${esc(tag)}</span>` : ''}</div>
+      <div class="pc-team">${fiLogoHTML(p.team || '', 16)}${esc(p.team)}${tag ? ` <span class="pc-tag">${esc(tag)}</span>` : ''}</div>
       <div class="pc-opp">${fiLogoHTML(p.opp || '', 16)}vs ${esc(p.opp || '?')}
         ${p.oppRankLabel ? ' · ' + esc(p.oppRankLabel) : ' · opponent data unavailable'}</div>
       ${p.vegasLabel ? `<div class="pc-opp">${esc(p.vegasLabel)}</div>` : ''}
