@@ -8,7 +8,7 @@ Run from ~/football-intel on your own machine. It shells out to the `restish` CL
 Everything it writes goes under private/pff/, which is gitignored. Do NOT move that output into the
 public repo until PFF's terms of service have been read.
 
-  python3 pff_pull.py                 # all played weeks of the current season (skips weeks already saved)
+  python3 pff_pull.py                 # all played weeks of the season (older saved weeks are reused; the newest week is always re-pulled)
   python3 pff_pull.py --refresh       # re-pull every week
   python3 pff_pull.py --season 2026 --through 5
 
@@ -133,7 +133,9 @@ def main():
     through = a.through or max(games)
     weeks = [w for w in sorted(games) if w <= through]
 
-    rows_by_week = {w: pull_week(restish, a.season, w, a.refresh) for w in weeks}
+    # The newest week is ALWAYS re-pulled: an earlier run may have caught it before the last game (Monday night)
+    # was final. Older weeks are final, so they are read from the saved file unless --refresh is given.
+    rows_by_week = {w: pull_week(restish, a.season, w, a.refresh or w == weeks[-1]) for w in weeks}
     season_teams, unmapped = aggregate(rows_by_week, games, weeks)
     last3 = weeks[-3:]
     last3_teams, _ = aggregate(rows_by_week, games, last3)
