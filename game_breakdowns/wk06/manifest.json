@@ -6,6 +6,27 @@
       "season": 2026,
       "week": 6,
       "generated_at": "2026-10-15T20:30:32.666453+00:00"
+    },
+    "LAC_KC": {
+      "away": "LAC",
+      "home": "KC",
+      "season": 2026,
+      "week": 6,
+      "generated_at": "2026-10-15T20:54:22.936468+00:00"
+    },
+    "HOU_JAX": {
+      "away": "HOU",
+      "home": "JAX",
+      "season": 2026,
+      "week": 6,
+      "generated_at": "2026-10-15T21:04:30.896213+00:00"
+    },
+    "CHI_ATL": {
+      "away": "CHI",
+      "home": "ATL",
+      "season": 2026,
+      "week": 6,
+      "generated_at": "2026-10-15T21:36:51.536858+00:00"
     }
   }
 }
