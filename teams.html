@@ -252,6 +252,12 @@ async function load(){
     if(resC.ok) COVERAGE = await resC.json();
   }catch(e){ console.error('intel/coverage.json failed to load or parse:', e); }
 
+  // PFF slot-coverage (private, local-only - see pff_pull.py). 404s on the public site, which is expected.
+  try{
+    const resS = await fetch(`private/pff/slot_defense.json`, { cache: 'no-store' });
+    if(resS.ok) PFF_SLOT = await resS.json();
+  }catch(e){ /* not present on this machine */ }
+
   try{
     const resD = await fetch(`intel/cb_rankings.json`, { cache: 'no-store' });
     if(resD.ok) CBDB = await resD.json();
@@ -623,6 +629,40 @@ function openTeam(t, source){
   renderStats(); $("mClose").focus();
 }
 
+let PFF_SLOT = null;
+
+/* Slot coverage allowed: receiving yards this defense has given up to receivers lined up in the slot
+   (PFF charting). Rank 1 = toughest, 32 = weakest, same as the matchup ranks elsewhere on the site.
+   Only shows where the private PFF file exists (statsYear 2026 only). */
+function slotCoverageHTML(team){
+  if(!PFF_SLOT || Number(statsYear) !== 2026) return '';
+  const s = (PFF_SLOT.season_to_date || {})[team];
+  const l = ((PFF_SLOT.last3 || {}).teams || {})[team];
+  if(!s) return '';
+  const cell = (r, key, rkKey, suffix) => {
+    const v = r ? r[key] : null;
+    if(v == null) return '—';
+    const rk = rkKey && r[rkKey] ? ` <span style="color:var(--text-dim);font-size:10px">#${r[rkKey]}</span>` : '';
+    return `${v}${suffix || ''}${rk}`;
+  };
+  const l3 = (PFF_SLOT.last3 || {}).weeks || [];
+  return `
+    <div class="subsect">Slot Coverage Allowed — PFF, through Week ${PFF_SLOT.through_week}</div>
+    <table class="stat-table"><thead><tr>
+      <th>Stat</th><th class="right">Season</th><th class="right">Last ${l3.length || 3} games</th>
+    </tr></thead><tbody>
+      <tr><td>Slot yards / game</td><td class="num">${cell(s,'slot_yards_pg','rank_yards_pg')}</td><td class="num">${cell(l,'slot_yards_pg','rank_yards_pg')}</td></tr>
+      <tr><td>Slot targets / game</td><td class="num">${cell(s,'slot_targets_pg')}</td><td class="num">${cell(l,'slot_targets_pg')}</td></tr>
+      <tr><td>Yards / target</td><td class="num">${cell(s,'yards_per_target','rank_yards_per_target')}</td><td class="num">${cell(l,'yards_per_target','rank_yards_per_target')}</td></tr>
+      <tr><td>Yards / coverage snap</td><td class="num">${cell(s,'yards_per_coverage_snap','rank_yards_per_coverage_snap')}</td><td class="num">${cell(l,'yards_per_coverage_snap','rank_yards_per_coverage_snap')}</td></tr>
+      <tr><td>Catch rate allowed</td><td class="num">${cell(s,'catch_rate',null,'%')}</td><td class="num">${cell(l,'catch_rate',null,'%')}</td></tr>
+      <tr><td>Slot TDs allowed</td><td class="num">${cell(s,'slot_tds')}</td><td class="num">${cell(l,'slot_tds')}</td></tr>
+    </tbody></table>
+    <div class="empty" style="padding:4px 0 12px;text-align:left;font-size:10px">
+      Yards allowed by defenders lined up in the slot (PFF charting) · rank 1 = toughest · small sample early in the season.
+    </div>`;
+}
+
 function coverageTendencyHTML(team){
   if(!COVERAGE || !COVERAGE.available) return '';
   // REAL BUG FIX (2026-09-13): same real cause as cbDbRankingsHTML's
@@ -915,7 +955,7 @@ function renderStats(){
   h += `<div class="empty" style="padding:8px 0 4px;text-align:left;font-size:10px">
     ${teamstats.data_horizon} · ${teamData.games} games played</div>`;
 
-  if(activeSec === 'defense') h += coverageTendencyHTML(activeTeam);
+  if(activeSec === 'defense') h += slotCoverageHTML(activeTeam) + coverageTendencyHTML(activeTeam);
 
   for(const [subgroup, cols] of Object.entries(labels)){
     h += `<div class="subsect">${esc(subgroup)}</div>

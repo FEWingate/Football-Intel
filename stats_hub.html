@@ -118,6 +118,11 @@ let rankShiftsSide = 'offense', rankShiftsCat = null, rankShiftsPos = 'RB', rank
 // VALUE (v26) exists pre-computed; the rank is genuinely new.
 
 let CBDB = null;
+// PFF slot-coverage data (2026-10-14): produced by the LOCAL script pff_pull.py into private/pff/ (gitignored).
+// Only loads where that file exists (Frank's own localhost). On the public site it 404s, the tab is removed,
+// and nothing from PFF is shown or shipped.
+let PFF_SLOT = null;
+let slotRange = 'season_to_date', slotSortKey = 'rank_yards_pg', slotSortDir = 'asc';
 let cbdbSortKey = null, cbdbSortDir = 'asc';
 let cbdbSearchTerm = '';
 
@@ -134,6 +139,7 @@ main.innerHTML = `
     <button role="tab" data-view="dvp" aria-selected="false">Defense vs Position</button>
     <button role="tab" data-view="rank_shifts" aria-selected="false">Rank Shifts</button>
     <button role="tab" data-view="cbdb" aria-selected="false">CB/DB Coverage</button>
+    <button role="tab" data-view="slot" aria-selected="false">Slot Defense (PFF)</button>
   </div>
   <div class="bar">
     <span class="lbl" id="sectionLbl">Team Offense</span>
@@ -284,6 +290,15 @@ async function load(){
     if(res.ok) CBDB = await res.json();
   }catch(e){ /* cb/db rankings not built yet */ }
 
+  try{
+    const res = await fetch(`private/pff/slot_defense.json`, { cache: 'no-store' });
+    if(res.ok) PFF_SLOT = await res.json();
+  }catch(e){ /* private PFF file not present - normal on the public site */ }
+  if(!PFF_SLOT){
+    const slotTab = document.querySelector('#viewSwitch [data-view="slot"]');
+    if(slotTab) slotTab.remove();
+  }
+
   if(!weekList.length && !TEAMSTATS && !PLAYERSTATS){
     fiStatus("No data","error"); fiUpdated("");
     $("leadTable").outerHTML = season === 2026
@@ -325,6 +340,13 @@ function switchView(){
     $("weekSel").style.display = 'none';
     $("catTabs").style.display = 'none';
     setupTeamDefenseControls();
+  } else if(currentView === 'slot'){
+    $("sectionLbl").textContent = 'Slot Defense (PFF)';
+    $("sectionLegend").innerHTML = '<span>Receiving yards allowed by each defense to receivers lined up in the slot · ' +
+      'rank 1 = toughest · private PFF data · click any column to sort</span>';
+    $("weekSel").style.display = 'none';
+    $("catTabs").style.display = 'none';
+    setupSlotControls();
   } else if(currentView === 'cbdb'){
     $("sectionLbl").textContent = 'CB/DB Coverage';
     $("sectionLegend").innerHTML = '<span>Individual defensive backs, season totals · click any column to sort</span>';
@@ -988,6 +1010,83 @@ function renderCbDbTable(){
     $("leadTable").outerHTML = `<div class="empty" id="leadTable">
       CB/DB data looks out of date or malformed (${esc(err.message)}).<br>
       Re-run <b>python3 build_matchup_stats.py all</b>, then reload.</div>`;
+  }
+}
+
+/* ── SLOT DEFENSE (PFF, private) ─────────────────────────────────── */
+const SLOT_COLS = [
+  { key: 'slot_yards_pg', rankKey: 'rank_yards_pg', label: 'Slot Yds/G' },
+  { key: 'slot_targets_pg', label: 'Slot Tgt/G' },
+  { key: 'yards_per_target', rankKey: 'rank_yards_per_target', label: 'Yds/Tgt' },
+  { key: 'yards_per_coverage_snap', rankKey: 'rank_yards_per_coverage_snap', label: 'Yds/Cov Snap' },
+  { key: 'catch_rate', label: 'Catch %', pct: true },
+  { key: 'slot_tds', label: 'TD' },
+];
+
+function slotRowsFor(range){
+  if(!PFF_SLOT) return {};
+  return range === 'last3' ? ((PFF_SLOT.last3 || {}).teams || {}) : (PFF_SLOT.season_to_date || {});
+}
+
+function setupSlotControls(){
+  if(!PFF_SLOT){ $("leadTable").outerHTML = `<div class="empty" id="leadTable">No PFF slot data on this machine.</div>`; return; }
+  if(season !== 2026){
+    $("innerTabs").innerHTML = '';
+    $("leadTable").outerHTML = `<div class="empty" id="leadTable">Slot defense is only available for 2026.</div>`;
+    return;
+  }
+  const l3 = (PFF_SLOT.last3 || {}).weeks || [];
+  $("innerTabs").innerHTML = `
+    <button role="tab" aria-selected="${slotRange==='season_to_date'}" data-r="season_to_date">Season to date</button>
+    <button role="tab" aria-selected="${slotRange==='last3'}" data-r="last3">Last 3 games${l3.length ? ` (Wk ${l3[0]}-${l3[l3.length-1]})` : ''}</button>`;
+  $("innerTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    slotRange = b.dataset.r;
+    slotSortKey = 'rank_yards_pg'; slotSortDir = 'asc';
+    setupSlotControls();
+  });
+  fiUpdated(`Through Week ${PFF_SLOT.through_week} · PFF`);
+  renderSlotTable();
+}
+
+function renderSlotTable(){
+  try{
+    const teams = slotRowsFor(slotRange);
+    const keyOf = r => slotSortKey.startsWith('rank_') ? r[slotSortKey] : r[slotSortKey];
+    const rows = Object.entries(teams).map(([code, r]) => ({ code, ...r })).sort((a,b) => {
+      const av = keyOf(a) ?? Infinity, bv = keyOf(b) ?? Infinity;
+      return slotSortDir === 'desc' ? bv - av : av - bv;
+    });
+    const head = `<thead><tr>
+      <th class="team-col">Team</th><th>GP</th>
+      ${SLOT_COLS.map(c => {
+        const k = c.rankKey || c.key;
+        const on = k === slotSortKey;
+        return `<th data-key="${k}" class="${on?'sorted':''}">${esc(c.label)}${on ? (slotSortDir==='desc'?' ▾':' ▴') : ''}</th>`;
+      }).join('')}
+    </tr></thead>`;
+    const body = '<tbody>' + rows.map((r,i) => `<tr>
+      <td class="team-col"><span class="rank-num">${i+1}</span>${fiLogoHTML(r.code,20)}${esc(FI_TEAM_NAME[r.code] || r.code)}</td>
+      <td><span class="cell-val">${r.games ?? '—'}</span></td>
+      ${SLOT_COLS.map(c => {
+        const v = r[c.key];
+        const rk = c.rankKey ? r[c.rankKey] : null;
+        const text = v == null ? '—' : (c.pct ? `${v}%` : v);
+        return `<td><span class="cell-val">${text}${rk ? ` <span style="color:var(--text-dim);font-size:10px">#${rk}</span>` : ''}</span></td>`;
+      }).join('')}
+    </tr>`).join('') + '</tbody>';
+    $("leadTable").innerHTML = head + body;
+    $("leadTable").querySelectorAll("thead th[data-key]").forEach(th => {
+      th.onclick = () => {
+        const k = th.dataset.key;
+        if(k === slotSortKey) slotSortDir = slotSortDir === 'desc' ? 'asc' : 'desc';
+        else { slotSortKey = k; slotSortDir = 'asc'; }
+        renderSlotTable();
+      };
+    });
+  }catch(err){
+    console.error("renderSlotTable failed:", err);
+    $("leadTable").outerHTML = `<div class="empty" id="leadTable">Slot data looks malformed (${esc(err.message)}).
+      Re-run <b>python3 pff_pull.py</b>, then reload.</div>`;
   }
 }
 
