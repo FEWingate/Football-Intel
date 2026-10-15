@@ -55,3 +55,4 @@ scratch/
 # prompt+evidence dumps used for pre-publish review are excluded.
 props_reports/**/*_prompt.json
 props_reports/**/*_prompt_full.txt
+private/
