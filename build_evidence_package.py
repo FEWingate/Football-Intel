@@ -199,6 +199,7 @@ def main():
     coverage_json = load_json("intel/coverage.json")
     cbdb_json = load_json("intel/cb_rankings.json")
     dfs_json = load_json(f"dfs/{wk}.json")
+    injuries_json = load_json(f"injuries/{wk}.json")
 
     required = {"games": games_json, "matchup": matchup_json,
                 "players": players_json}
@@ -311,6 +312,26 @@ def main():
         dfs_block = {"available": dfs_json is not None, "players": []}
         injuries_block = {"source": "DraftKings slate Status column (not a "
                                      "general injury feed)", "players": []}
+        # Real injury feed: injuries/wkNN.json (nflverse practice/game-status reports),
+        # built by build_matchup_stats.py. Without this the breakdown's injury section
+        # has no data unless dfs/wkNN.json exists. report_status "Pending" means no final
+        # designation (Questionable/Doubtful/Out) has been filed yet - not "healthy".
+        if injuries_json is not None:
+            injuries_block["report_players"] = [
+                {k: p.get(k) for k in ("name", "position", "team", "report_status",
+                                        "report_primary_injury", "report_secondary_injury",
+                                        "practice_status")}
+                for p in injuries_json.get("players", []) if p.get("team") in teams]
+            injuries_block["report_source"] = ("injuries/%s.json (nflverse injury reports); "
+                                                "'Pending' = no final designation filed yet" % wk)
+            have = {p["team"] for p in injuries_block["report_players"]}
+            missing_inj = [t for t in teams if t not in have]
+            if missing_inj:
+                notes.append("No injury-report entries yet for " + ", ".join(missing_inj) +
+                             " - their report may not be posted; do not infer a clean injury "
+                             "report from the absence.")
+        else:
+            notes.append("injuries/%s.json not found - injury evidence unavailable" % wk)
         if dfs_json is not None:
             game_players = [p for p in dfs_json.get("players", []) if p.get("team") in teams]
             dfs_block["players"] = game_players

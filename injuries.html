@@ -184,7 +184,7 @@ async function init(){
   }
   const wk = String(CURRENT_WEEK).padStart(2, '0');
   try{
-    const res = await fetch(`injuries/wk${wk}.json`);
+    const res = await fetch(`injuries/wk${wk}.json`, { cache: 'no-store' });
     if(!res.ok){
       $('tableWrap').innerHTML = `<div class="result-empty">injuries/wk${wk}.json isn't available
         yet (HTTP ${res.status}). Run build_matchup_stats.py to generate it.</div>`;
