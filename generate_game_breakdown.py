@@ -85,7 +85,12 @@ must therefore read exactly "Not available in this week's evidence package." \
 Never re-label an offensive split (points scored, yards gained) as something a \
 defense allowed, and never invent opponent-offense-quality splits. (2) Do not \
 mention the point spread, moneyline, or over/under anywhere in the report, \
-including the Pregame Briefing; this report is market-neutral.
+including the Pregame Briefing; this report is market-neutral. (3) If injuries.manual_updates \
+is non-empty, those entries are the most current injury information and override \
+injuries.report_players and the depth chart wherever they conflict. Where a \
+quarterback's status is Questionable or otherwise unresolved, do not pick a single \
+starter as fact: state the status, say who starts if he plays and who starts if \
+he does not, and keep the analysis conditional on that.
 
 Base every claim ONLY on the evidence package below — Football Intel data \
 first, per the Evidence Permission and Web Search Fallback rules. If a \

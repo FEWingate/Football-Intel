@@ -57,6 +57,17 @@
 .side-h .vs{color:var(--text-dim);letter-spacing:.04em;text-transform:none}
 
 .thr{padding:10px 0;border-bottom:1px solid var(--hairline)}
+.thr.out .thr-name,.thr.out .thr-pos,.thr.out .thr-snap,.thr.out .thr-badges,.thr.out .conv{opacity:.4;filter:grayscale(.85)}
+.thr.out .thr-name{text-decoration:line-through;text-decoration-thickness:1px}
+.inj{display:inline-flex;align-items:center;font-family:var(--font-mono);font-size:9.5px;font-weight:800;
+  letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:var(--radius-sm);
+  margin-left:auto;white-space:nowrap}
+.inj.out{background:#ff2d4a;color:#fff;box-shadow:0 0 0 2px rgba(255,45,74,.28);opacity:1}
+.inj.doubtful{background:#ff8a1f;color:#1a0f00}
+.inj.questionable{background:#f5c518;color:#1a1400}
+.inj.practice{background:transparent;color:var(--text-mid);border:1px solid var(--border)}
+.hide-out{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10.5px;
+  color:var(--text-mid);margin-left:auto;cursor:pointer}
 .thr:last-child{border-bottom:0}
 .thr-top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
 .thr-name{font-family:var(--font-display);font-weight:700;font-size:14.5px;letter-spacing:-.01em}
@@ -111,6 +122,7 @@ main.innerHTML = `
       <span class="tier-nuclear"><span class="tbadge">Nuclear</span></span>
       <span>top 3 vs bottom 3</span>
     </div>
+    <label class="hide-out"><input type="checkbox" id="hideOut"> Hide OUT players</label>
   </div>
   <div id="warn"></div>
   <div class="summary" id="summary"></div>
@@ -123,6 +135,7 @@ for (let w = 1; w <= 18; w++){
   wkSel.appendChild(o);
 }
 wkSel.addEventListener('change', () => load(Number(wkSel.value)));
+document.getElementById('hideOut').addEventListener('change', () => { if (DATA) render(); });
 
 const classify = fiClassify;
 
@@ -172,6 +185,26 @@ async function determineDefaultWeek(){
   return week;
 }
 
+/* ── injuries: flag threats the injury report says are hurt ── */
+let INJ = {};
+const injKey = (team, name) => team + '|' + String(name || '').toLowerCase()
+  .replace(/[.'\u2019]/g, '').replace(/\b(jr|sr|ii|iii|iv|v)\b/g, '').replace(/[^a-z]/g, '');
+function injFor(team, s){ return INJ[injKey(team, s.name)] || null; }
+function isOut(team, s){
+  const i = injFor(team, s);
+  return !!i && /^(out|ir|injured reserve)$/i.test((i.report_status || '').trim());
+}
+function hideOutOn(){ const c = document.getElementById('hideOut'); return !!(c && c.checked); }
+async function loadInjuries(week){
+  INJ = {};
+  try {
+    const r = await fetch(`injuries/wk${pad(week)}.json`, { cache: 'no-store' });
+    if (!r.ok) return;
+    const d = await r.json();
+    for (const p of (d.players || [])) INJ[injKey(p.team, p.name)] = p;
+  } catch (e) { /* no injury file: page works exactly as before */ }
+}
+
 /* ── data ── */
 async function load(week){
   $('grid').innerHTML = `<div class="empty">Loading week ${week}…</div>`;
@@ -188,6 +221,7 @@ async function load(week){
       Run <b>python3 build_matchup_stats.py ${week}</b>, then reload.</div>`;
     return;
   }
+  await loadInjuries(week);
   fiStatus('Ready');
   fiUpdated(DATA.carryover_season
     ? `${DATA.season} Week ${DATA.week} · ranked off ${DATA.carryover_season}'s full season`
@@ -197,7 +231,7 @@ async function load(week){
 
 function label(pos, cat){ return DATA.labels[pos][cat] || cat; }
 
-function threatHTML(s){
+function threatHTML(s, team){
   const results = classify(s.cats || {});
   if (!results.length) return '';
   const badges = results.map(r =>
@@ -232,11 +266,24 @@ function threatHTML(s){
         + (support.length === 1 ? 'top-10 strength, defence not vulnerable there'
                                 : 'top-10 strengths, defence not vulnerable there')
         + '</div>' : '');
-  return `<div class="thr">
+  const inj = injFor(team, s), out = isOut(team, s);
+  if (out && hideOutOn()) return '';
+  let injBadge = '';
+  if (inj){
+    const st = (inj.report_status || '').trim(), stl = st.toLowerCase();
+    const body = esc(inj.report_primary_injury || '');
+    if (out) injBadge = `<span class="inj out" title="${esc(inj.practice_status || '')}">OUT${body ? ' \u00b7 ' + body : ''}</span>`;
+    else if (stl === 'doubtful') injBadge = `<span class="inj doubtful">DOUBTFUL${body ? ' \u00b7 ' + body : ''}</span>`;
+    else if (stl === 'questionable') injBadge = `<span class="inj questionable">QUESTIONABLE${body ? ' \u00b7 ' + body : ''}</span>`;
+    else if (/did not|limited/i.test(inj.practice_status || ''))
+      injBadge = `<span class="inj practice">${/did not/i.test(inj.practice_status) ? 'DNP' : 'LIMITED'}${body ? ' \u00b7 ' + body : ''}</span>`;
+  }
+  return `<div class="thr${out ? ' out' : ''}">
     <div class="thr-top">
       <span class="thr-name">${esc(s.name)}</span>
       <span class="thr-pos">${esc(s.pos)}</span>
       <span class="thr-snap">${s.snap_pct}% snaps</span>
+      ${injBadge}
     </div>
     <div class="thr-badges">${badges}</div>
     <div class="conv">${rows}</div>
@@ -246,7 +293,7 @@ function threatHTML(s){
 function sideHTML(team, opp){
   const t = DATA.teams[team];
   if (!t) return `<div class="side"><div class="side-h">${fiLogoHTML(team,18)}${esc(team)}</div><div class="na">N/A</div></div>`;
-  const body = (t.starters || []).map(threatHTML).filter(Boolean).join('');
+  const body = (t.starters || []).map(s => threatHTML(s, team)).filter(Boolean).join('');
   return `<div class="side">
     <div class="side-h">${fiLogoHTML(team,18)}${esc(team)} <span class="vs">vs ${fiLogoHTML(opp,14)}${esc(opp)} defense</span></div>
     ${body || '<div class="na">N/A — no threats</div>'}
@@ -263,10 +310,12 @@ function render(){
   const withCount = DATA.games.map(g => {
     let n = 0, best = 0;
     for (const t of [g.away, g.home])
-      for (const s of (DATA.teams[t]?.starters || []))
+      for (const s of (DATA.teams[t]?.starters || [])){
+        if (isOut(t, s)) continue;
         for (const r of classify(s.cats || {})){
           n++; best = Math.max(best, TIER_WEIGHT[r.tier] || 0);
         }
+      }
     return { g, n, best };
   });
   const ordered = withCount
@@ -274,9 +323,10 @@ function render(){
     .map(x => x.g);
 
   const cards = ordered.map(g => {
-    let n = 0;
+    let n = 0, outN = 0;
     for (const t of [g.away, g.home]){
       for (const s of (DATA.teams[t]?.starters || [])){
+        if (isOut(t, s)){ if (classify(s.cats || {}).length) outN++; continue; }
         for (const r of classify(s.cats || {})){
           n++; total++;
           counts[`${r.tierLabel} ${r.type}`] = (counts[`${r.tierLabel} ${r.type}`] || 0) + 1;
@@ -285,11 +335,11 @@ function render(){
     }
     if (n) gamesWith++;
     const hot = Object.keys(DATA.teams).length && n >= 3;
-    return `<section class="gm${hot ? ' live' : ''}${n ? '' : ' empty-game'}">
+    return `<section class="gm${hot ? ' live' : ''}${(n || (outN && !hideOutOn())) ? '' : ' empty-game'}">
       <div class="gm-head">
         <span class="gm-title">${fiLogoHTML(g.away,24)}${g.away}<em>@</em>${fiLogoHTML(g.home,24)}${g.home}</span>
         <span class="gm-recs">${esc(g.away_record)} · ${esc(g.home_record)}</span>
-        <span class="gm-count">${n || 'no'} threat${n === 1 ? '' : 's'}</span>
+        <span class="gm-count">${n || 'no'} threat${n === 1 ? '' : 's'}${outN && !hideOutOn() ? ` \u00b7 ${outN} out` : ''}</span>
       </div>
       <div class="sides">${sideHTML(g.away, g.home)}${sideHTML(g.home, g.away)}</div>
     </section>`;

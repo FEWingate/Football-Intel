@@ -201,6 +201,7 @@ def main():
     dfs_json = load_json(f"dfs/{wk}.json")
     injuries_json = load_json(f"injuries/{wk}.json")
     depth_json = load_json("depth_charts/latest.json")
+    manual_inj_json = load_json(f"manual_injuries/{wk}.json")
 
     required = {"games": games_json, "matchup": matchup_json,
                 "players": players_json}
@@ -313,6 +314,14 @@ def main():
         dfs_block = {"available": dfs_json is not None, "players": []}
         injuries_block = {"source": "DraftKings slate Status column (not a "
                                      "general injury feed)", "players": []}
+        # Hand-entered late injury news (manual_injuries/wkNN.json). The nflverse feed lags the
+        # real reports by hours to days, so the site owner can add a newer status here; these
+        # entries are shown to the report as MORE CURRENT than the feed where they conflict.
+        manual_updates = [
+            e for e in (manual_inj_json or {}).get("entries", []) if e.get("team") in teams]
+        if manual_updates:
+            notes.append("%d manually entered injury update(s) included for this game" % len(manual_updates))
+
         # Official depth chart (nflverse, depth_charts/latest.json): who is the listed
         # starter at each spot. Lets the report tell a starter from a backup (e.g. which
         # QB starts, whether an injured LB is a starter) instead of guessing from snaps.
@@ -394,7 +403,10 @@ def main():
             "hidden_intelligence": hidden_intel,
             "cb_db_rankings": cbdb_block,
             "dfs": dfs_block,
-            "injuries": injuries_block,
+            "injuries": dict(injuries_block, manual_updates=manual_updates,
+                              manual_updates_note=("Entries entered by the site owner from current news "
+                                                    "reports. They are MORE CURRENT than report_players "
+                                                    "and override it wherever the two disagree.")),
             "depth_chart": depth_block,
             "data_notes": notes,
         }
