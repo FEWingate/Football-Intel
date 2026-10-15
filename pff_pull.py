@@ -117,6 +117,34 @@ def finish(teams):
     return out
 
 
+def pull_receivers(restish, season):
+    """Season-to-date PFF receiving report -> {team: [receivers with slot/wide/inline alignment rates]}."""
+    r = subprocess.run([restish, "pff", "position-report", "nfl", "receiving", "--season", str(season)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        print("WARNING: receiving report failed:", r.stderr.strip()[:300]); return None
+    try:
+        rows = json.loads(r.stdout).get("rows", [])
+    except ValueError:
+        print("WARNING: receiving report was not JSON"); return None
+    teams = {}
+    for x in rows:
+        if x.get("position") not in ("WR", "TE", "HB", "RB", "FB") or not x.get("teamAbbreviation"):
+            continue
+        code = PFF_TO_FI.get(x["teamAbbreviation"], x["teamAbbreviation"])
+        teams.setdefault(code, []).append({
+            "player": x.get("player"), "pos": x.get("position"), "games": x.get("gamesPlayed"),
+            "targets": x.get("targets"), "target_share": x.get("teamTargetsPercent"),
+            "routes": x.get("routes"), "yprr": x.get("yprr"), "yards": x.get("yards"),
+            "slot_rate": x.get("slotRate"), "wide_rate": x.get("wideRate"), "inline_rate": x.get("inlineRate"),
+            "slot_snaps": x.get("slotSnaps"), "wide_snaps": x.get("wideSnaps"), "inline_snaps": x.get("inlineSnaps"),
+            "avg_depth_of_target": x.get("avgDepthOfTarget"), "pff_grade": x.get("gradesOffense")})
+    for c in teams:
+        teams[c].sort(key=lambda y: -(y["targets"] or 0))
+        teams[c] = teams[c][:8]
+    return teams
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--season", type=int, default=2026)
@@ -149,6 +177,12 @@ def main():
     os.makedirs(PRIVATE, exist_ok=True)
     out_path = os.path.join(PRIVATE, "slot_defense.json")
     json.dump(result, open(out_path, "w"), indent=1)
+
+    rec = pull_receivers(restish, a.season)
+    if rec:
+        rp = os.path.join(PRIVATE, "receivers.json")
+        json.dump({"season": a.season, "through_week": through, "teams": rec}, open(rp, "w"), indent=1)
+        print(f"Wrote {rp}: {len(rec)} teams (receiver slot/wide/inline rates)")
 
     std = result["season_to_date"]
     print(f"Wrote {out_path}: {len(std)} teams through week {through}")

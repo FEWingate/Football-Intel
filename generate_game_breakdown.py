@@ -30,6 +30,7 @@ import sys
 from datetime import datetime, timezone
 
 from evidence_check_validator import verify_evidence_check
+import pff_context  # private PFF slot data; optional
 
 PROMPTS_DIR = "prompts"
 MASTER_PROMPT_PATH = f"{PROMPTS_DIR}/Coeus_Master_Prompt_v1.1.md"
@@ -299,6 +300,8 @@ def main():
                           "per Frank's real ATL@GB run hitting the old 64000 ceiling before "
                           "finishing: 120000 leaves real headroom under claude-sonnet-5's "
                           "confirmed 128K max-output limit on the synchronous Messages API.")
+    ap.add_argument("--no-pff", action="store_true",
+                     help="Leave PFF slot data out of the breakdown (default: include it when private/pff/ exists).")
     ap.add_argument("--dry-run", action="store_true",
                      help="Build and save the exact prompt without calling the API.")
     args = ap.parse_args()
@@ -412,7 +415,15 @@ def main():
                  "directly with Section 1, Pregame Briefing. Where a required check has "
                  "nothing to report (for example a division game with no prior meeting this "
                  "season), say so briefly inside that section, not in a separate note.\n")
-    user_content = task + json.dumps(evidence, separators=(",", ":"))
+    # PRIVATE PFF slot data: merged into the model input only, never saved into the committed evidence file.
+    model_evidence = evidence
+    if not args.no_pff:
+        pff_block = pff_context.build(args.away, args.home)
+        if pff_block:
+            model_evidence = dict(evidence, pff=pff_block)
+            task += pff_context.PROMPT_ADDENDUM
+            print("  PFF slot data included in this breakdown")
+    user_content = task + json.dumps(model_evidence, separators=(",", ":"))
 
     os.makedirs(out_dir, exist_ok=True)
     out_stem = f"{out_dir}/{args.away}_{args.home}"
@@ -440,13 +451,17 @@ def main():
     print(f"Rough input size: ~{approx_input_tokens:,} tokens (estimate only, not exact)")
 
     if args.dry_run:
-        with open(f"{out_stem}_prompt_full.txt", "w") as f:
+        dry_path = f"{out_stem}_prompt_full.txt"
+        if model_evidence is not evidence:  # contains private PFF data: keep it out of the public folder
+            os.makedirs("private/pff", exist_ok=True)
+            dry_path = f"private/pff/{args.away}_{args.home}_prompt_full.txt"
+        with open(dry_path, "w") as f:
             f.write("=== SYSTEM (Master Prompt) ===\n\n" + master_prompt +
                      "\n\n=== SYSTEM (Game Breakdown Standard) ===\n\n" + gb_standard +
                      "\n\n=== SYSTEM (Gold Standard Example) ===\n\n" + gold_example_framed +
                      "\n\n=== USER MESSAGE ===\n\n" + user_content)
         print(f"\nDRY RUN — no API call made. Full prompt written to "
-              f"{out_stem}_prompt_full.txt for review. Remove --dry-run to actually generate.")
+              f"{dry_path} for review. Remove --dry-run to actually generate.")
         return
 
     try:
