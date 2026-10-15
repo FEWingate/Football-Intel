@@ -1,3 +1,37 @@
-{"entries":[
-{"name":"Caleb Williams","team":"CHI","position":"QB","report_status":"Questionable","injury":"Hamstring (tear, suffered Week 2)","practice_status":"Full participation Wednesday and Thursday","note":"Missed three games. Expected to play but must pass final medical tests; head coach Ben Johnson called the QB situation fluid.","as_of":"2026-10-15","source":"NFL.com / Yahoo Sports reports"}
-]}
+{
+  "entries": [
+    {
+      "name": "Caleb Williams",
+      "team": "CHI",
+      "position": "QB",
+      "report_status": "Questionable",
+      "injury": "Hamstring (tear, suffered Week 2)",
+      "practice_status": "Full participation Wednesday and Thursday",
+      "note": "Missed three games. Expected to play but must pass final medical tests; head coach Ben Johnson called the QB situation fluid.",
+      "as_of": "2026-10-15",
+      "source": "NFL.com / Yahoo Sports reports"
+    },
+    {
+      "name": "Marvin Harrison Jr.",
+      "team": "HOU",
+      "position": "WR",
+      "report_status": "Traded",
+      "injury": "N/A - roster move",
+      "practice_status": "N/A",
+      "note": "Traded from Arizona to Houston this week. Not on Arizona's roster for Week 6; do not treat him as an Arizona receiver. Season stats before the trade were with ARI.",
+      "as_of": "2026-10-15",
+      "source": "Reported trade (confirmed by user)"
+    },
+    {
+      "name": "Marvin Harrison Jr.",
+      "team": "HOU",
+      "position": "WR",
+      "report_status": "Traded",
+      "injury": "N/A - roster move",
+      "practice_status": "N/A",
+      "note": "Traded from Arizona to Houston this week. Not on Arizona's roster for Week 6; do not treat him as an Arizona receiver. Season stats before the trade were with ARI.",
+      "as_of": "2026-10-15",
+      "source": "Reported trade (confirmed by user)"
+    }
+  ]
+}
