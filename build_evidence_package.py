@@ -200,6 +200,7 @@ def main():
     cbdb_json = load_json("intel/cb_rankings.json")
     dfs_json = load_json(f"dfs/{wk}.json")
     injuries_json = load_json(f"injuries/{wk}.json")
+    depth_json = load_json("depth_charts/latest.json")
 
     required = {"games": games_json, "matchup": matchup_json,
                 "players": players_json}
@@ -312,6 +313,26 @@ def main():
         dfs_block = {"available": dfs_json is not None, "players": []}
         injuries_block = {"source": "DraftKings slate Status column (not a "
                                      "general injury feed)", "players": []}
+        # Official depth chart (nflverse, depth_charts/latest.json): who is the listed
+        # starter at each spot. Lets the report tell a starter from a backup (e.g. which
+        # QB starts, whether an injured LB is a starter) instead of guessing from snaps.
+        depth_block = {"available": False}
+        if depth_json is not None:
+            dteams = depth_json.get("teams", {})
+            depth_block = {
+                "available": True, "as_of": depth_json.get("as_of"),
+                "note": ("Official depth chart. pos_rank 1 = listed starter at that spot; "
+                          "QB entries show pos_rank 1/2/3 order. Use it to decide who starts and "
+                          "whether an injured player is a starter or a backup."),
+                "teams": {t: [{"name": e.get("name"), "pos": e.get("pos_abb"),
+                                "group": e.get("pos_group"), "rank": e.get("pos_rank")}
+                               for e in dteams.get(t, [])
+                               if e.get("pos_rank") == 1 or
+                               (e.get("pos_abb") == "QB" and (e.get("pos_rank") or 9) <= 3)]
+                          for t in teams}}
+        else:
+            notes.append("depth_charts/latest.json not found - starter designations unavailable")
+
         # Real injury feed: injuries/wkNN.json (nflverse practice/game-status reports),
         # built by build_matchup_stats.py. Without this the breakdown's injury section
         # has no data unless dfs/wkNN.json exists. report_status "Pending" means no final
@@ -374,6 +395,7 @@ def main():
             "cb_db_rankings": cbdb_block,
             "dfs": dfs_block,
             "injuries": injuries_block,
+            "depth_chart": depth_block,
             "data_notes": notes,
         }
 
