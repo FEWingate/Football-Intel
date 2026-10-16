@@ -1391,7 +1391,7 @@ function playCardHTML(p, tag){
         ${statusPill(p.status)}
       </div>
       <div class="pc-team">${fiLogoHTML(p.team || '', 16)}${esc(p.team)}${tag ? ` <span class="pc-tag">${esc(tag)}</span>` : ''}</div>
-      <div class="pc-opp">${fiLogoHTML(p.opp || '', 16)}vs ${esc(p.opp || '?')}
+      <div class="pc-opp">vs ${fiLogoHTML(p.opp || '', 16)}${esc(p.opp || '?')}
         ${p.oppRankLabel ? ' · ' + esc(p.oppRankLabel) : ' · opponent data unavailable'}</div>
       ${p.vegasLabel ? `<div class="pc-opp">${esc(p.vegasLabel)}</div>` : ''}
       <div class="pc-factors">
