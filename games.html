@@ -163,19 +163,64 @@
 .mu-lbl{text-align:center;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.08em;
   text-transform:uppercase;color:var(--text-dim)}
 
-/* Threats modal */
-.thr-side{margin-bottom:16px}
-.thr-side:last-child{margin-bottom:0}
-.thr-player{padding:10px 0;border-bottom:1px solid var(--hairline)}
-.thr-player:last-child{border-bottom:0}
-.thr-pname{font-size:13px;font-weight:600;color:var(--text)}
-.thr-ppos{font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-left:6px}
-.thr-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
-.thr-badge{font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;
-  padding:3px 8px;border-radius:3px;border:1px solid rgba(163,230,53,.35);
-  color:var(--primary);background:rgba(163,230,53,.07)}
-.thr-badge.nuclear{border-color:rgba(248,113,113,.4);color:#f87171;background:rgba(248,113,113,.08)}
-.thr-badge.elite{border-color:rgba(250,204,21,.4);color:var(--accent-gold);background:rgba(250,204,21,.08)}
+/* Threats modal — same cards as the Threat System page (threats.html), scoped to .tmod */
+.tmod .tier-nuclear{--tc:var(--accent-red)}
+.tmod .tier-elite{--tc:var(--accent-gold)}
+.tmod .tier-standard{--tc:var(--accent-blue)}
+.tmod .tbadge{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);
+  font-size:9px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;
+  padding:3px 8px;border-radius:var(--radius-sm);color:var(--tc);
+  border:1px solid color-mix(in srgb, var(--tc) 45%, transparent);
+  background:color-mix(in srgb, var(--tc) 9%, transparent)}
+.tmod .tbadge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--tc)}
+.tmod .gm{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.tmod .sides{display:grid;grid-template-columns:1fr 1fr}
+@media(max-width:700px){.tmod .sides{grid-template-columns:1fr}}
+.tmod .side{padding:13px 15px 15px}
+.tmod .side + .side{border-left:1px solid var(--border)}
+@media(max-width:700px){.tmod .side + .side{border-left:0;border-top:1px solid var(--border)}}
+.tmod .side-h{font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--text-mid);margin-bottom:11px;
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tmod .side-h .vs{display:inline-flex;align-items:center;gap:5px;color:var(--text-dim);
+  letter-spacing:.04em;text-transform:none}
+.tmod .thr{padding:10px 0;border-bottom:1px solid var(--hairline)}
+.tmod .thr:last-child{border-bottom:0}
+.tmod .thr.out .thr-name,.tmod .thr.out .thr-pos,.tmod .thr.out .thr-snap,
+.tmod .thr.out .thr-badges,.tmod .thr.out .conv{opacity:.4;filter:grayscale(.85)}
+.tmod .thr.out .thr-name{text-decoration:line-through;text-decoration-thickness:1px}
+.tmod .inj{display:inline-flex;align-items:center;font-family:var(--font-mono);font-size:9.5px;font-weight:800;
+  letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:var(--radius-sm);
+  margin-left:auto;white-space:nowrap}
+.tmod .inj.out{background:#ff2d4a;color:#fff;box-shadow:0 0 0 2px rgba(255,45,74,.28);opacity:1}
+.tmod .inj.doubtful{background:#ff8a1f;color:#1a0f00}
+.tmod .inj.questionable{background:#f5c518;color:#1a1400}
+.tmod .inj.practice{background:transparent;color:var(--text-mid);border:1px solid var(--border)}
+.tmod .thr-top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.tmod .thr-name{font-family:var(--font-display);font-weight:700;font-size:14.5px;letter-spacing:-.01em}
+.tmod .thr-pos{font-family:var(--font-mono);font-size:9.5px;color:var(--text-dim);
+  border:1px solid var(--border);border-radius:3px;padding:1px 5px}
+.tmod .thr-snap{font-family:var(--font-mono);font-size:9px;color:var(--text-dim);margin-left:auto}
+.tmod .thr-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.tmod .conv{margin-top:8px;display:flex;flex-direction:column;gap:4px}
+.tmod .conv-row{padding:5px 0 6px}
+.tmod .conv-cat{font-family:var(--font-mono);font-size:10.5px;color:var(--text);
+  letter-spacing:.03em;display:flex;align-items:center;gap:6px}
+.tmod .conv-nums{display:flex;align-items:baseline;gap:9px;padding-left:13px;margin-top:3px;
+  font-family:var(--font-mono);font-size:11px;color:var(--text-mid);flex-wrap:wrap}
+.tmod .side-val{display:inline-flex;align-items:baseline;gap:5px}
+.tmod .side-val b{color:var(--text);font-weight:500;font-variant-numeric:tabular-nums}
+.tmod .side-val b.carryover-val{color:var(--accent-gold)}
+.tmod .val26{font-family:var(--font-mono);font-size:10.5px;color:var(--accent-blue);
+  font-variant-numeric:tabular-nums;margin-left:3px}
+.tmod .side-val em{font-style:normal;font-size:9px;color:var(--text-dim);letter-spacing:.05em}
+.tmod .conv-row .rk{font-size:9.5px}
+.tmod .conv-row .arrow{color:var(--text-dim);font-size:9.5px}
+.tmod .conv-row .mark{width:7px;display:inline-block;color:var(--primary);font-size:7px;line-height:1}
+.tmod .conv-row.support{opacity:.8}
+.tmod .support-note{font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;
+  color:var(--text-dim);padding-left:14px;margin-top:2px;font-style:italic}
+.tmod .na{letter-spacing:.1em;padding:8px 0}
 
 /* Game Breakdown modal — markdown container, matches DFS Center's
    Coeus report styling */
@@ -270,6 +315,11 @@ async function load(week){
     const r3 = await fetch(`matchup/wk${pad(week)}.json`, { cache: 'no-store' });
     if (r3.ok) MATCHUP = await r3.json();
   } catch (e){ /* matchup stats not built for this week — Matchup button just disables */ }
+  INJ = {};
+  try {
+    const ri = await fetch(`injuries/wk${pad(week)}.json`, { cache: 'no-store' });
+    if (ri.ok) for (const p of ((await ri.json()).players || [])) INJ[injKey(p.team, p.name)] = p;
+  } catch (e){ /* no injury file — threat cards just show no injury badges */ }
   GB_MANIFEST = null;
   try {
     const r4 = await fetch(`game_breakdowns/wk${pad(week)}/manifest.json`, { cache: 'no-store' });
@@ -293,7 +343,7 @@ async function load(week){
 function threatCount(team){
   if (!THREATS || !THREATS.teams[team]) return null;
   return (THREATS.teams[team].starters || [])
-    .reduce((n, s) => n + fiClassify(s.cats).length, 0);
+    .reduce((n, s) => n + (isOut(team, s) ? 0 : fiClassify(s.cats).length), 0);
 }
 
 function formHTML(f){
@@ -1067,31 +1117,94 @@ function openMatchup(gid, source){
   $('mClose').focus();
 }
 
-/* ── threats modal: every starter's fiClassify() output, both teams ── */
-function threatBadges(cats){
-  return fiClassify(cats).map(t =>
-    `<span class="thr-badge ${t.tier}">${t.type} ${t.tierLabel}</span>`).join('');
+/* ── threats modal: same cards as the Threat System page (threats.html) ── */
+const SUPPORT_DISPLAY_MAX = 10;   // how far down to show supporting rows (same as threats.html)
+let INJ = {};
+const injKey = (team, name) => team + '|' + String(name || '').toLowerCase()
+  .replace(/[.'\u2019]/g, '').replace(/\b(jr|sr|ii|iii|iv|v)\b/g, '').replace(/[^a-z]/g, '');
+function injFor(team, s){ return INJ[injKey(team, s.name)] || null; }
+function isOut(team, s){
+  const i = injFor(team, s);
+  return !!i && /^(out|ir|injured reserve)$/i.test((i.report_status || '').trim());
 }
-function threatSide(team){
+function thrLabel(pos, cat){ return (THREATS.labels && THREATS.labels[pos] && THREATS.labels[pos][cat]) || cat; }
+
+function threatCardHTML(s, team){
+  const results = fiClassify(s.cats || {});
+  if (!results.length) return '';
+  const badges = results.map(r =>
+    `<span class="tier-${r.tier}"><span class="tbadge">${r.tierLabel} ${r.type}</span></span>`).join('');
+  const convCats = results.flatMap(r => r.conv);
+  const isCarryover = !!THREATS.carryover_season;
+  const row = (c, converged) => {
+    const x = s.cats[c];
+    const vClass = isCarryover ? 'carryover-val' : '';
+    const v26 = (x.v26 !== undefined) ? `<span class="val26">(${x.v26})</span>` : '';
+    const dv26 = (x.dv26 !== undefined) ? `<span class="val26">(${x.dv26})</span>` : '';
+    return `<div class="conv-row${converged ? '' : ' support'}">
+      <div class="conv-cat">
+        ${converged ? '<span class="mark">\u25CF</span>' : '<span class="mark"></span>'}
+        ${esc(thrLabel(s.pos, c))}
+      </div>
+      <div class="conv-nums">
+        <span class="side-val"><b class="${vClass}">${x.v}</b>${v26}<span class="rk ${rkClass(x.r)}">#${x.r}</span></span>
+        <span class="arrow">vs</span>
+        <span class="side-val"><b class="${vClass}">${x.dv}</b>${dv26}<span class="rk ${rkClass(x.dr)}">#${x.dr}</span>
+          <em>allowed</em></span>
+      </div>
+    </div>`;
+  };
+  const support = Object.keys(s.cats).filter(c =>
+    !convCats.includes(c) && s.cats[c].r <= SUPPORT_DISPLAY_MAX);
+  const rows = convCats.map(c => row(c, true)).join('')
+    + support.map(c => row(c, false)).join('')
+    + (support.length ? '<div class="support-note">'
+        + (support.length === 1 ? 'top-10 strength, defence not vulnerable there'
+                                : 'top-10 strengths, defence not vulnerable there')
+        + '</div>' : '');
+  const inj = injFor(team, s), out = isOut(team, s);
+  let injBadge = '';
+  if (inj){
+    const st = (inj.report_status || '').trim(), stl = st.toLowerCase();
+    const body = esc(inj.report_primary_injury || '');
+    if (out) injBadge = `<span class="inj out" title="${esc(inj.practice_status || '')}">OUT${body ? ' \u00b7 ' + body : ''}</span>`;
+    else if (stl === 'doubtful') injBadge = `<span class="inj doubtful">DOUBTFUL${body ? ' \u00b7 ' + body : ''}</span>`;
+    else if (stl === 'questionable') injBadge = `<span class="inj questionable">QUESTIONABLE${body ? ' \u00b7 ' + body : ''}</span>`;
+    else if (/did not|limited/i.test(inj.practice_status || ''))
+      injBadge = `<span class="inj practice">${/did not/i.test(inj.practice_status) ? 'DNP' : 'LIMITED'}${body ? ' \u00b7 ' + body : ''}</span>`;
+  }
+  return `<div class="thr${out ? ' out' : ''}">
+    <div class="thr-top">
+      <span class="thr-name">${esc(s.name)}</span>
+      <span class="thr-pos">${esc(s.pos)}</span>
+      <span class="thr-snap">${s.snap_pct}% snaps</span>
+      ${injBadge}
+    </div>
+    <div class="thr-badges">${badges}</div>
+    <div class="conv">${rows}</div>
+  </div>`;
+}
+function threatSide(team, opp){
   const t = THREATS?.teams?.[team];
-  if (!t) return `<div class="thr-side"><div class="mu-head">${fiLogoHTML(team, 22)}
-    <span>${esc(team)}</span></div><div class="na">No threat data</div></div>`;
-  const qualifying = (t.starters || []).filter(s => fiClassify(s.cats).length);
-  const body = qualifying.length
-    ? qualifying.map(s => `<div class="thr-player">
-        <span class="thr-pname">${esc(s.name)}</span><span class="thr-ppos">${esc(s.pos)}</span>
-        <div class="thr-badges">${threatBadges(s.cats)}</div></div>`).join('')
-    : `<div class="na">No qualifying Threats this week</div>`;
-  return `<div class="thr-side"><div class="mu-head">${fiLogoHTML(team, 22)}
-    <span>${esc(team)}</span></div>${body}</div>`;
+  const head = `<div class="side-h">${fiLogoHTML(team, 18)}${esc(team)}
+    <span class="vs">vs ${fiLogoHTML(opp, 14)}${esc(opp)} defense</span></div>`;
+  if (!t) return `<div class="side">${head}<div class="na">N/A</div></div>`;
+  const body = (t.starters || []).map(s => threatCardHTML(s, team)).filter(Boolean).join('');
+  return `<div class="side">${head}${body || '<div class="na">N/A \u2014 no threats</div>'}</div>`;
 }
 function openThreats(gid, source){
   const g = GAMES.games.find(x => x.game_id === gid);
   if (!g || !THREATS) return;
   lastFocus = source;
+  let n = 0, outN = 0;
+  for (const t of [g.away, g.home])
+    for (const s of (THREATS.teams?.[t]?.starters || [])){
+      const k = fiClassify(s.cats || {}).length;
+      if (isOut(t, s)) { if (k) outN++; } else n += k;
+    }
   $('mTitle').innerHTML = `${fiLogoHTML(g.away, 34)} ${g.away} <em>at</em> ${g.home} ${fiLogoHTML(g.home, 34)}`;
-  $('mSub').textContent = 'Threats for this game';
-  $('mBody').innerHTML = threatSide(g.away) + threatSide(g.home);
+  $('mSub').textContent = `Threats for this game \u00b7 ${n || 'no'} threat${n === 1 ? '' : 's'}${outN ? ` \u00b7 ${outN} out` : ''}`;
+  $('mBody').innerHTML = `<div class="tmod"><section class="gm"><div class="sides">${threatSide(g.away, g.home)}${threatSide(g.home, g.away)}</div></section></div>`;
   $('scrim').classList.add('open'); $('modal').classList.add('open');
   $('mClose').focus();
 }
