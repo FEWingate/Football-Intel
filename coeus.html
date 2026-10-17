@@ -2379,9 +2379,9 @@ const FEATURED_EXAMPLES = [
     spec: { mode: 'historical_h2h' } },
   { label: "Which players have a target or snap share trending up?",
     spec: { mode: 'trending_share' } },
-  { label: "Which defenses are weakest against the slot? (PFF, local only)",
+  { label: "Which defenses are weakest against the slot? (local only)",
     spec: { mode: 'slot_defense', window: 'season', limit: 10, worst_first: true } },
-  { label: "Bottom 5 slot defenses this week and the players they face with a 40%+ slot rate (PFF, local only)",
+  { label: "Bottom 5 slot defenses this week and the players they face with a 40%+ slot rate (local only)",
     spec: { mode: 'slot_matchups', opponent_rank_min: 28, min_slot_rate: 40, limit: 30 } },
 ];
 
@@ -2426,7 +2426,7 @@ async function init(){
     </div>
 
     <div class="qa-section" id="slotSection" style="display:none">
-      <div class="qa-section-title">Slot Matchups (PFF, local only)</div>
+      <div class="qa-section-title">Slot Matchups (local only)</div>
       <div class="qa-controls">
         <label>Defenses</label>
         <select id="smTier">
