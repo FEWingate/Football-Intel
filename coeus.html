@@ -1342,6 +1342,20 @@ function slotDefensesThisWeek(spec){
   return rows;
 }
 
+// Receiving yards per game from FI's own season stats (matched by team + name); falls back to PFF yards / games.
+function pffNormName(n){
+  return String(n || '').toLowerCase().replace(/[.'’]/g, '').replace(/\b(jr|sr|ii|iii|iv|v)\b/g, '').replace(/[^a-z ]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+function recYpgFor(team, r){
+  const want = pffNormName(r.player);
+  for(const pos of ['WR', 'TE', 'RB']){
+    const hit = (PLAYERS?.players?.[pos] || []).find(x => x.team === team && pffNormName(x.name) === want);
+    const v = hit?.season?.m?.rec_ypg;
+    if(v != null) return Math.round(v * 10) / 10;
+  }
+  return (r.yards != null && r.games) ? Math.round(r.yards / r.games * 10) / 10 : null;
+}
+
 function findSlotMatchups(spec){
   const minSlot = spec.min_slot_rate ?? 40;
   const recs = PFF?.receivers?.teams || {}, slot = PFF?.slot?.season_to_date || {};
@@ -1357,7 +1371,7 @@ function findSlotMatchups(spec){
         player: r.player, pos: r.pos, team, opponent: opp,
         slot_rate: r.slot_rate, wide_rate: r.wide_rate, inline_rate: r.inline_rate,
         role: r.slot_rate >= 50 ? 'primary slot' : 'hybrid (slot/wide mix)',
-        targets: r.targets, target_share: r.target_share, yprr: r.yprr,
+        targets: r.targets, target_share: r.target_share, yprr: r.yprr, rec_ypg: recYpgFor(team, r),
         opp_slot_yards_pg: d.slot_yards_pg, opp_slot_yards_pg_rank: d.rank_yards_pg,
         opp_yards_per_target: d.yards_per_target, opp_yards_per_target_rank: d.rank_yards_per_target,
       });
@@ -1428,12 +1442,12 @@ function renderSlotDefenseTable(rows){
 function renderSlotMatchupTable(rows){
   if(!rows.length) return `<div class="result-empty">No slot receivers matched this filter in the PFF data.</div>`;
   return `<table class="result-table"><thead><tr>
-    <th>Receiver</th><th>Team</th><th>vs.</th><th>Slot / Wide %</th><th>Role</th><th>Targets (share)</th><th>YPRR</th>
+    <th>Receiver</th><th>Team</th><th>vs.</th><th>Slot / Wide %</th><th>Role</th><th>Targets (share)</th><th>Rec yds/g</th><th>YPRR</th>
     <th>Opp. slot yds/g (rank)</th><th>Opp. yds/target (rank)</th>
     </tr></thead><tbody>
     ${rows.map(r => `<tr><td>${esc(r.player)}</td><td>${esc(r.team)}</td><td>${esc(r.opponent)}</td>
       <td>${r.slot_rate}% / ${r.wide_rate}%</td><td>${esc(r.role)}</td>
-      <td>${r.targets} (${r.target_share ?? '—'}%)</td><td>${r.yprr ?? '—'}</td>
+      <td>${r.targets} (${r.target_share ?? '—'}%)</td><td>${r.rec_ypg ?? '—'}</td><td>${r.yprr ?? '—'}</td>
       <td>${r.opp_slot_yards_pg} (#${r.opp_slot_yards_pg_rank})</td>
       <td>${r.opp_yards_per_target} (#${r.opp_yards_per_target_rank})</td></tr>`).join('')}
     </tbody></table>
