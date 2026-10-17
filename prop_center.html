@@ -924,6 +924,16 @@ function marketKeyLabel(key){
   return STAT_LABELS[statKey] || statKey.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
 
+function gameLabelWithTime(game){
+  if(!game) return '';
+  let t = '';
+  if(game.commence_time){
+    const d = new Date(game.commence_time);
+    if(!isNaN(d)) t = ' · ' + d.toLocaleString('en-US', {timeZone:'America/New_York', weekday:'short', hour:'numeric', minute:'2-digit'}) + ' ET';
+  }
+  return `${game.away_code} @ ${game.home_code}${t}`;
+}
+
 function gameForEventId(eid){
   return (FDPROPS && FDPROPS.games || []).find(g => g.canonical_event_id === eid);
 }
@@ -1008,7 +1018,7 @@ function projectionLineHTML(pick){
 
 function pickCardHTML(pick, badge){
   const game = gameForEventId(pick.canonical_event_id);
-  const gameLabel = game ? `${game.away_code} @ ${game.home_code}` : '';
+  const gameLabel = gameLabelWithTime(game);
   const sideLabel = sideLineLabel(pick);
   return `<div class="pc-pick-card">
     ${badge ? `<span class="pc-pick-badge">${esc(badge)}</span>` : ''}
@@ -1185,7 +1195,7 @@ function parlayCard(size, p){
     const legSideLabel = sideLineLabel(leg);
     const gameLabel = (() => {
       const game = gameForEventId(leg.canonical_event_id);
-      return game ? `${game.away_code} @ ${game.home_code}` : '';
+      return gameLabelWithTime(game);
     })();
     return `
     <div class="parlay-leg">
@@ -1375,7 +1385,7 @@ function shuffledSample(arr, n){
 
 function scrambleLegRowHTML(leg){
   const game = gameForEventId(leg.canonical_event_id);
-  const gameLabel = game ? `${game.away_code} @ ${game.home_code}` : '';
+  const gameLabel = gameLabelWithTime(game);
   const sideLabel = sideLineLabel(leg);
   return `<div class="parlay-leg">
     <div><div class="who">${esc(leg.player || leg.side || '—')} ${gradeBadgeHTML(leg.grade, leg.actual_label)}</div>
@@ -1565,7 +1575,7 @@ function renderResults(){
 // the real price shown at the time.
 function slipLegRowHTML(leg){
   const game = gameForEventId(leg.canonical_event_id);
-  const gameLabel = game ? `${game.away_code} @ ${game.home_code}` : '';
+  const gameLabel = gameLabelWithTime(game);
   const sideLabel = sideLineLabel(leg);
   return `<div class="parlay-leg">
     <div><div class="who">${esc(leg.player)}</div>
