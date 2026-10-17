@@ -181,6 +181,7 @@ $("szn").value = String(season);
 $("szn").addEventListener("change", () => { season = Number($("szn").value); load(); });
 
 let PFFCOV = null;   // private/pff/coverage_context.json (local only)
+let PFFREC = null;   // private/pff/receivers.json: alignment rates (slot/wide/inline), local only
 
 async function load(){
   fiStatus("Loading","loading");
@@ -197,10 +198,14 @@ async function load(){
     if(res.ok) PLAYERSTATS = await res.json();
   }catch(e){}
 
-  PFFCOV = null;
+  PFFCOV = null; PFFREC = null;
   try{
     const rc = await fetch('private/pff/coverage_context.json', { cache: 'no-store' });
     if(rc.ok) PFFCOV = await rc.json();
+  }catch(e){ /* private PFF file not present - normal on the public site */ }
+  try{
+    const rr = await fetch('private/pff/receivers.json', { cache: 'no-store' });
+    if(rr.ok) PFFREC = await rr.json();
   }catch(e){ /* private PFF file not present - normal on the public site */ }
 
   if(!PLAYERSTATS){
@@ -348,7 +353,7 @@ function renderProfilePanel(){
       <img class="profile-headshot" src="${esc(p.headshot||'')}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
       <div>
         <div class="profile-name">${esc(p.name)}</div>
-        <div class="profile-sub">${pos} · ${fiTeamLogoInline(p.team)} ${esc(p.team)} · ${p.games} games this season</div>
+        <div class="profile-sub">${pos} · ${fiTeamLogoInline(p.team)} ${esc(p.team)} · ${p.games} games this season${alignmentLineHTML(p)}</div>
       </div>
     </div>
     <div class="tabs" id="profileSecTabs" role="tablist">
@@ -376,6 +381,23 @@ function renderProfilePanel(){
    punctuation ignored). Only receivers PFF lists (3+ targets) have a line. */
 function pffNormName(n){
   return String(n || '').toLowerCase().replace(/[.'’]/g, '').replace(/\b(jr|sr|ii|iii|iv|v)\b/g, '').replace(/[^a-z ]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+/* Alignment (PFF): share of a receiver's snaps lined up in the slot / out wide / inline. */
+function pffAlignFor(p){
+  if(!PFFREC || Number(season) !== 2026) return null;
+  const list = ((PFFREC.teams || {})[p.team]) || [];
+  const want = pffNormName(p.name);
+  return list.find(r => pffNormName(r.player) === want) || null;
+}
+function slotPctText(p){
+  const a = pffAlignFor(p);
+  return (a && a.slot_rate != null) ? `${Number(a.slot_rate).toFixed(1)}%` : '—';
+}
+function alignmentLineHTML(p){
+  const a = pffAlignFor(p);
+  if(!a || a.slot_rate == null) return '';
+  const f = v => v == null ? '—' : `${Number(v).toFixed(0)}%`;
+  return ` <span style="margin-left:10px;color:var(--text-dim)" title="PFF alignment, season to date (private, local only)">Slot <b style="color:var(--text)">${f(a.slot_rate)}</b> · Wide <b style="color:var(--text)">${f(a.wide_rate)}</b> · Inline <b style="color:var(--text)">${f(a.inline_rate)}</b></span>`;
 }
 function pffReceiverFor(p){
   if(!PFFCOV || Number(season) !== 2026) return null;
@@ -886,6 +908,7 @@ function committeeTable(pos, cols){
       <td class="name-col">${p.headshot?`<img class="browse-headshot" src="${esc(p.headshot)}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">`:''}${esc(p.name)}</td>
       <td><span class="cell-val">${p.games}</span></td>
       ${cols.map(c => {
+        if(c.get) return `<td><span class="cell-val">${c.get(p)}</span></td>`;
         const v = p.season.m[c.key];
         const text = c.pct ? (v!=null?`${fmtVal(v)}%`:'—') : fmtVal(v);
         return `<td><span class="cell-val">${text}</span></td>`;
@@ -909,6 +932,7 @@ function renderCommitteeTables(){
   ]);
   $("committeeWR").innerHTML = committeeTable('WR', [
     { key:'target_share', label:'Target Share', pct:true },
+    ...(PFFREC && Number(season) === 2026 ? [{ key:'slot_rate', label:'Slot % (PFF)', get: slotPctText }] : []),
     { key:'rec', label:'Receptions' },
     { key:'rec_yds', label:'Rec Yds' },
     { key:'rz_target_share', label:'RZ Target Share', pct:true },

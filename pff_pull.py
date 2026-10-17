@@ -141,7 +141,7 @@ def pull_receivers(restish, season):
             "avg_depth_of_target": x.get("avgDepthOfTarget"), "pff_grade": x.get("gradesOffense")})
     for c in teams:
         teams[c].sort(key=lambda y: -(y["targets"] or 0))
-        teams[c] = teams[c][:8]
+        teams[c] = teams[c][:20]
     return teams
 
 
