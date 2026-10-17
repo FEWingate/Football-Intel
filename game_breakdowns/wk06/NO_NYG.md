@@ -29,7 +29,7 @@ The broad shape this sets up: New Orleans owns the more productive offense on pa
 - **Tyree Wilson (LB) — Ankle, Limited.**
 - **Vernon Broughton (DT) — Illness, Limited.** Starting edge/interior lineman.
 
-Taken together, New Orleans' defensive front — already the league's worst run defense at 148.8 rush yards allowed per game (30th) — has multiple starters banged up this week, which is a real risk factor layered on top of an already poor baseline against a Giants offense built around Cam Skattebo.
+Taken together, New Orleans' defensive front — already the league's 3rd-worst run defense at 148.8 rush yards allowed per game (30th) — has multiple starters banged up this week, which is a real risk factor layered on top of an already poor baseline against a Giants offense built around Cam Skattebo.
 
 **New York:**
 - **Andrew Thomas (LT) — Groin, Did Not Participate.** Starting left tackle.

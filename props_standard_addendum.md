@@ -109,3 +109,31 @@ Anytime TD parlays and Spread parlays) are RETIRED. In their place:
   array of leg objects (same shape as the BEST_10 picks, including
   `projection` and `games_2026`).
 - Per-game batch runs produce NO parlays at all.
+
+============================================================
+SUPERLATIVE LABELS (NON-NEGOTIABLE) — added 2026-10-17
+============================================================
+
+Rank 1 is best and rank 32 is worst. A label must match the rank printed
+beside it.
+
+- "league-worst", "worst in the league/NFL", "the league's worst" and
+  "dead last" mean RANK 32 and nothing else. "league-best", "best in the
+  league/NFL" and "the league's best" mean RANK 1 and nothing else.
+- If the rank is anything else, state the ordinal instead: 30th is the
+  "3rd-worst", 31st is the "2nd-worst", 2nd is the "2nd-best". Write
+  "ranked 30th (3rd-worst in the league)", never "league-worst (30th)".
+- Hedges are allowed only when true: "one of the league's worst" needs
+  rank 27 or lower; "one of the league's best" needs rank 6 or higher.
+  For anything between, just state the rank.
+- Every superlative must carry its rank in the SAME clause, in
+  parentheses, so it can be checked: "BUF allows 48.4 rec yds/gm to RBs
+  (30th, 3rd-worst)". A superlative with no rank beside it is a claim
+  nobody can verify — do not write one. When a later sentence refers back
+  to an earlier ranked number, repeat the rank or use "that 30th-ranked
+  ...", not a bare "league-worst".
+- Tied ranks: say "tied for worst (31st)" only when the evidence shows
+  the tie.
+- A script (superlative_fix.py) checks every superlative against the rank
+  beside it after the report is written and rewrites any that contradict
+  it. Getting it right the first time keeps the sentence you meant.

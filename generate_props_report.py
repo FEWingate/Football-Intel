@@ -55,6 +55,7 @@ from zoneinfo import ZoneInfo
 
 from parlay_validator import validate_parlay, verify_legs_against_source, leg_key
 from evidence_check_validator import verify_evidence_check
+from superlative_fix import fix_superlatives, summarize as summarize_superlatives
 
 
 # REAL BUG FIX (2026-09-21), per Frank's direct, real catch: a real,
@@ -1000,6 +1001,16 @@ def run_parlays_only(args, games, fanduel_data, coverage, ats_records):
     if not report_text.strip():
         sys.exit("FATAL: empty response, nothing written.")
 
+    # Absolute superlatives ("league-worst", "best in the NFL") must match the rank
+    # printed beside them; wrong ones are rewritten to the true ordinal ("3rd-worst")
+    # BEFORE the picks are parsed, so the .md and the Prop Center JSON agree.
+    report_text, _sup = fix_superlatives(report_text)
+    _fx, _rv, _un, _lines = summarize_superlatives(_sup)
+    print(f"SUPERLATIVE CHECK: {len(_fx)} rewritten, {len(_rv)} need a human look, "
+          f"{len(_un)} had no rank beside them to verify.")
+    for _l in _lines:
+        print(_l)
+
     with open(f"{out_stem}.md", "w") as f:
         f.write(report_text)
     usage = response.usage
@@ -1383,6 +1394,16 @@ def main():
         print("WARNING: hit the max_tokens ceiling before finishing — INCOMPLETE.")
     if not report_text.strip():
         sys.exit("FATAL: empty response, nothing written.")
+
+    # Absolute superlatives ("league-worst", "best in the NFL") must match the rank
+    # printed beside them; wrong ones are rewritten to the true ordinal ("3rd-worst")
+    # BEFORE the picks are parsed, so the .md and the Prop Center JSON agree.
+    report_text, _sup = fix_superlatives(report_text)
+    _fx, _rv, _un, _lines = summarize_superlatives(_sup)
+    print(f"SUPERLATIVE CHECK: {len(_fx)} rewritten, {len(_rv)} need a human look, "
+          f"{len(_un)} had no rank beside them to verify.")
+    for _l in _lines:
+        print(_l)
 
     with open(f"{out_stem}.md", "w") as f:
         f.write(report_text)

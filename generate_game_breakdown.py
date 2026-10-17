@@ -30,6 +30,7 @@ import sys
 from datetime import datetime, timezone
 
 from evidence_check_validator import verify_evidence_check
+from superlative_fix import fix_superlatives, summarize as summarize_superlatives
 import pff_context  # private PFF slot data; optional
 
 PROMPTS_DIR = "prompts"
@@ -516,6 +517,15 @@ def main():
             f.write(f"[EMPTY RESPONSE — stop_reason={response.stop_reason}, "
                      f"content block types={block_types}. Not a valid report.]")
         sys.exit(1)
+
+    # Absolute superlatives ("league-worst", "best in the NFL") must match the rank
+    # printed beside them; wrong ones are rewritten to the true ordinal ("3rd-worst").
+    report_text, sup_recs = fix_superlatives(report_text)
+    _fx, _rv, _un, _lines = summarize_superlatives(sup_recs)
+    print(f"\nSUPERLATIVE CHECK: {len(_fx)} rewritten, {len(_rv)} need a human look, "
+          f"{len(_un)} had no rank beside them to verify.")
+    for _l in _lines:
+        print(_l)
 
     truncated = response.stop_reason == "max_tokens"
     flag_off_roster_players(report_text, args.away, args.home)
