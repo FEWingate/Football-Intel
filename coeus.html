@@ -1301,6 +1301,8 @@ function renderPffStatus(){
     ? `● PFF slot data loaded (private, local) — through week ${esc(PFF.slot.through_week)}${PFFCOV ? ' · man/zone + CB/DB coverage loaded' : ''}`
     : '○ PFF slot data not loaded (private; local only)';
   el.style.color = PFF ? 'var(--accent-green)' : 'var(--text-dim)';
+  const sec = $('slotSection');
+  if(sec) sec.style.display = PFF ? '' : 'none';
 }
 
 function pffSlotWindow(win){
@@ -2365,8 +2367,8 @@ const FEATURED_EXAMPLES = [
     spec: { mode: 'trending_share' } },
   { label: "Which defenses are weakest against the slot? (PFF, local only)",
     spec: { mode: 'slot_defense', window: 'season', limit: 10, worst_first: true } },
-  { label: "Which slot receivers have the best matchup this week? (PFF, local only)",
-    spec: { mode: 'slot_matchups', opponent_rank_min: 23, min_slot_rate: 40, limit: 30 } },
+  { label: "Bottom 5 slot defenses this week and the players they face with a 40%+ slot rate (PFF, local only)",
+    spec: { mode: 'slot_matchups', opponent_rank_min: 28, min_slot_rate: 40, limit: 30 } },
 ];
 
 async function init(){
@@ -2406,6 +2408,26 @@ async function init(){
           <option value="top5">Top 5 defenses</option>
         </select>
         <button class="qa-go" id="mfGo">Ask</button>
+      </div>
+    </div>
+
+    <div class="qa-section" id="slotSection" style="display:none">
+      <div class="qa-section-title">Slot Matchups (PFF, local only)</div>
+      <div class="qa-controls">
+        <label>Defenses</label>
+        <select id="smTier">
+          <option value="bottom5" selected>Bottom 5 vs the slot</option>
+          <option value="bottom10">Bottom 10 vs the slot</option>
+          <option value="top10">Top 10 vs the slot</option>
+          <option value="top5">Top 5 vs the slot</option>
+        </select>
+        <label>Receiver slot %</label>
+        <select id="smRate">
+          <option value="30">30% or more</option>
+          <option value="40" selected>40% or more</option>
+          <option value="50">50% or more (primary slot)</option>
+        </select>
+        <button class="qa-go" id="smGo">Ask</button>
       </div>
     </div>
 
@@ -2456,6 +2478,15 @@ async function init(){
     const { spec: tierSpec, label: tierLabel } = TIERS[tier];
     const label = `${pos}'s vs. ${tierLabel} defenses`;
     ask(label, { position: pos, ...tierSpec });
+  };
+
+  $('smGo').onclick = () => {
+    const tier = $('smTier').value, rate = Number($('smRate').value);
+    const T = { bottom5: [{ opponent_rank_min: 28 }, 'bottom 5'], bottom10: [{ opponent_rank_min: 23 }, 'bottom 10'],
+                top10: [{ opponent_rank_max: 10 }, 'top 10'], top5: [{ opponent_rank_max: 5 }, 'top 5'] };
+    const [tierSpec, tierLabel] = T[tier];
+    ask(`${tierLabel} slot defenses this week and the players they face with a ${rate}%+ slot rate`,
+        { mode: 'slot_matchups', ...tierSpec, min_slot_rate: rate, limit: 30 });
   };
 
   $('glGo').onclick = () => {
