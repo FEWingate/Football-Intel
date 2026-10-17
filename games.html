@@ -437,8 +437,15 @@ function openPicks(gid, source){
     const lineTxt = p.market_key === 'player_anytime_td' || p.market_key === 'anytime_td'
       ? 'Anytime TD' : `${side}${ln != null ? esc(String(ln)) + ' ' : ''}${esc(mk)}`;
     const am = pkAmerican(p.price);
+    // The report stores projection_edge as an absolute value; the real signed edge is projection minus line
+    // (negative for an under whose projection sits below the line).
+    let edgeTxt = '';
+    if (p.projection != null && ln != null && !isNaN(Number(ln))) {
+      const e = Math.round((Number(p.projection) - Number(ln)) * 10) / 10;
+      edgeTxt = (e > 0 ? '+' : e < 0 ? '\u2212' : '') + Math.abs(e);
+    } else if (p.projection_edge != null) edgeTxt = String(p.projection_edge);
     const proj = p.projection != null
-      ? `<div class="pk-proj">Coeus projection <b>${esc(String(p.projection))}</b>${p.projection_edge != null ? ` \u00b7 edge ${p.projection_edge > 0 ? '+' : ''}${esc(String(p.projection_edge))}` : ''}${p.games_2026 ? ` \u00b7 ${esc(String(p.games_2026))} games in 2026` : ''}</div>` : '';
+      ? `<div class="pk-proj">Coeus projection <b>${esc(String(p.projection))}</b>${edgeTxt ? ` \u00b7 edge ${edgeTxt}` : ''}${p.games_2026 ? ` \u00b7 ${esc(String(p.games_2026))} games in 2026` : ''}</div>` : '';
     return `<div class="pk">
       <div class="pk-top"><span class="pk-name">${esc(p.player)}</span>
         <span class="pk-price">${esc(am)}${p.price ? ` <span style="color:var(--text-dim);font-weight:500">(${esc(String(p.price))})</span>` : ''}</span></div>
