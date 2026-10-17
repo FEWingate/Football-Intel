@@ -31,6 +31,7 @@ from datetime import datetime, timezone
 
 from evidence_check_validator import verify_evidence_check
 from superlative_fix import fix_superlatives, summarize as summarize_superlatives
+from evidence_gap_fix import scan_gaps, summarize_gaps
 import pff_context  # private PFF slot data; optional
 
 PROMPTS_DIR = "prompts"
@@ -78,13 +79,14 @@ DFS/Props-relevant player enough standalone context to be extracted from \
 this report alone.
 
 DATA-LIMIT RULES (these override anything in the Standard that would require \
-otherwise): (1) The evidence package's team_context holds OFFENSIVE tier \
-splits only — how each team's own scoring and each position's production \
-changed against top/mid/bottom defenses faced. It has NO defensive tier splits. \
-In Matchup Statistics, the Contextual Statistics bullet for each team's DEFENSE \
-must therefore read exactly "Not available in this week's evidence package." \
-Never re-label an offensive split (points scored, yards gained) as something a \
-defense allowed, and never invent opponent-offense-quality splits. (2) Do not \
+otherwise): (1) The evidence package's team_context holds tier splits for BOTH sides of \
+the ball. OFFENSE: `splits.team` and `splits.off` = how each team's own scoring and each \
+position's production changed against top/mid/bottom DEFENSES faced. DEFENSE: \
+`splits.team_allowed` and `splits.def` = what each team's DEFENSE allowed (the opponent's \
+production) against top/mid/bottom OFFENSES faced (tier set by the opponent offense's season \
+rank in that category, rank 1 = best offense). Use `splits.team_allowed` / `splits.def` for \
+each team's DEFENSE Contextual Statistics bullet. Never re-label an offensive split as \
+something a defense allowed. (2) Do not \
 mention the point spread, moneyline, or over/under anywhere in the report, \
 including the Pregame Briefing; this report is market-neutral. (3) If injuries.manual_updates \
 is non-empty, those entries are the most current injury information and override \
@@ -93,10 +95,23 @@ quarterback's status is Questionable or otherwise unresolved, do not pick a sing
 starter as fact: state the status, say who starts if he plays and who starts if \
 he does not, and keep the analysis conditional on that.
 
+NO MISSING-DATA STATEMENTS (NON-NEGOTIABLE; overrides every "say so plainly / say so briefly / \
+note the absence" instruction in the Standard): never write that the evidence package, "this week's \
+package", or the data lacks, does not include, has no, or is "not available" for anything, and never \
+describe any field as empty. Do not mention the evidence package in the report at all. Do not write \
+"Not available" as the content of any bullet. When a specific cell has no games behind it, state the \
+football fact instead ("no games yet against a bottom-5 defense", "0 games against top-5 run defenses"). \
+When a whole category has nothing, leave that item out and build the analysis on the data that does \
+exist. Home/road splits, tier-by-venue splits, 2025 season-final figures (season_2025), man/zone data \
+(hidden_intelligence.coverage_*, team_coverage_rate) and cb_db_rankings are all in the package for \
+this game: use them. Note hidden_intelligence.coverage_season tells you which season the man/zone \
+numbers cover; name that season when you cite them. \
+
 Base every claim ONLY on the evidence package below — Football Intel data \
 first, per the Evidence Permission and Web Search Fallback rules. If a \
-required fact isn't in the evidence package and you cannot find it via \
-web search, say so explicitly rather than filling the gap.
+required fact is not in the evidence package, look for it via web search; if \
+it still cannot be found, leave that item out without comment (see NO MISSING-DATA \
+STATEMENTS) rather than filling the gap with a guess.
 
 EVIDENCE PACKAGE (this game only, frozen at the timestamp shown inside it):
 """
@@ -526,6 +541,8 @@ def main():
           f"{len(_un)} had no rank beside them to verify.")
     for _l in _lines:
         print(_l)
+
+    print("\n" + summarize_gaps(scan_gaps(report_text)))
 
     truncated = response.stop_reason == "max_tokens"
     flag_off_roster_players(report_text, args.away, args.home)

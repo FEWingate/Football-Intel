@@ -29,7 +29,8 @@ def _slot_receivers(rows):
 def build(away, home):
     slot = _load("slot_defense.json")
     rec = _load("receivers.json")
-    if not slot and not rec:
+    cov = _load("coverage_context.json")
+    if not slot and not rec and not cov:
         return None
     block = {
         "source": "PFF (private). Slot = receiver lined up in the slot; rank 1 = toughest defense vs the slot, 32 = weakest.",
@@ -43,6 +44,25 @@ def build(away, home):
                 block["slot_defense"][team] = {"season_to_date": std, "last3": l3, "last3_weeks": slot["last3"]["weeks"]}
         if rec and team in rec["teams"]:
             block["receivers"][team] = rec["teams"][team]
+    if cov:
+        def _trim(tv):
+            if not tv:
+                return tv
+            tv = json.loads(json.dumps(tv))
+            if "defenders" in tv.get("defense", {}):
+                tv["defense"]["defenders"] = tv["defense"]["defenders"][:8]
+            if "receivers" in tv.get("offense", {}):
+                tv["offense"]["receivers"] = tv["offense"]["receivers"][:8]
+            return tv
+        block["coverage"] = {t: _trim((cov.get("teams") or {}).get(t)) for t in (away, home)}
+        block["coverage_season"] = cov.get("season")
+        block["man_zone_matchups"] = []
+        for off, dfn in ((away, home), (home, away)):
+            dz = ((cov.get("teams") or {}).get(dfn) or {}).get("defense", {}).get("man_zone")
+            rcs = ((cov.get("teams") or {}).get(off) or {}).get("offense", {}).get("receivers") or []
+            if dz or rcs:
+                block["man_zone_matchups"].append({"offense": off, "defense": dfn, "defense_man_zone": dz,
+                                                   "offense_receivers_vs_man_zone": rcs[:6]})
     for off, dfn in ((away, home), (home, away)):
         d = block["slot_defense"].get(dfn, {}).get("season_to_date")
         slots = _slot_receivers(block["receivers"].get(off, []))
@@ -58,6 +78,22 @@ def build(away, home):
 
 
 PROMPT_ADDENDUM = """
+
+PFF COVERAGE DATA (private input - "pff.coverage" and "pff.man_zone_matchups"; 2026 season-to-date):
+- pff.coverage[TEAM].defense.man_zone: the share of that defense's coverage snaps played in man vs zone \
+(man_pct / zone_pct) and what it has allowed against each (yards per target, catch rate, TDs, INTs) with \
+league ranks (rank 1 = best defense). These totals sum the qualifying defenders PFF lists, so describe them \
+as "per PFF" figures.
+- pff.coverage[TEAM].defense.defenders: that team's top coverage defenders (CB/S/LB) with PFF coverage grade, \
+targets, catch rate allowed, yards per coverage snap, QB rating against, forced-incompletion rate, and each \
+man-coverage and zone-coverage line. Use these for individual CB/DB matchups; name the defender and the number.
+- pff.coverage[TEAM].offense.receivers and pff.man_zone_matchups: each receiver's production against man vs \
+zone (targets, catches, yards, yards per route run, EPA, route grade). Pair a receiver's better split with the \
+opposing defense's weaker split, and say which it is.
+- These PFF numbers take precedence over hidden_intelligence.coverage_* (older, 2025 data) wherever both exist; \
+cite the PFF figure and label it PFF. Small samples (under 10 targets in a split) must be called small.
+- Never say the coverage data is missing or empty for a game: if a team has no row, leave coverage out silently.
+""" + """
 
 PFF SLOT DATA (private input - the "pff" key in the evidence below):
 - "pff.slot_defense" is how many yards, targets and yards per target each defense allows to receivers \

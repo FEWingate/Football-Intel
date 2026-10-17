@@ -56,6 +56,7 @@ from zoneinfo import ZoneInfo
 from parlay_validator import validate_parlay, verify_legs_against_source, leg_key
 from evidence_check_validator import verify_evidence_check
 from superlative_fix import fix_superlatives, summarize as summarize_superlatives
+from evidence_gap_fix import scan_gaps, summarize_gaps
 
 
 # REAL BUG FIX (2026-09-21), per Frank's direct, real catch: a real,
@@ -1010,6 +1011,7 @@ def run_parlays_only(args, games, fanduel_data, coverage, ats_records):
           f"{len(_un)} had no rank beside them to verify.")
     for _l in _lines:
         print(_l)
+    print(summarize_gaps(scan_gaps(report_text)))
 
     with open(f"{out_stem}.md", "w") as f:
         f.write(report_text)
@@ -1404,6 +1406,7 @@ def main():
           f"{len(_un)} had no rank beside them to verify.")
     for _l in _lines:
         print(_l)
+    print(summarize_gaps(scan_gaps(report_text)))
 
     with open(f"{out_stem}.md", "w") as f:
         f.write(report_text)

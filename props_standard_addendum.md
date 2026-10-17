@@ -137,3 +137,15 @@ beside it.
   beside it after the report is written and rewrites any that contradict
   it to the matching "bottom-N" / "top-N". Getting it right the first time
   keeps the sentence you meant.
+
+============================================================
+A-NMD. NO MISSING-DATA STATEMENTS (NON-NEGOTIABLE)
+============================================================
+
+Never write that the evidence package (or "the data") lacks, does not
+include, has no, or is "not available" for anything, and never describe a
+field as empty. Do not mention the evidence package in any pick or note.
+Home/road splits, tier-by-venue splits, man/zone data and CB/DB rankings
+are supplied; use them where they bear on the pick. When a cell has no
+games behind it, state the football fact ("no games yet against a bottom-5
+defense") or simply build the pick on the evidence that does exist.

@@ -142,6 +142,7 @@ let POSITION_RANKS = {};     // {team: {pos: [{...player, posRank}, ...]}}
 // PFF slot data is PRIVATE (gitignored, never published). It loads only when this page is served
 // from a machine that actually has private/pff/ (i.e. Frank's localhost server); on the public
 // site those files 404 and PFF stays null — every PFF feature below then says so instead of guessing.
+let PFFCOV = null;           // private/pff/coverage_context.json (man/zone + CB/DB), local only
 let PFF = null;              // { slot: slot_defense.json, receivers: receivers.json | null }
 
 const pad = n => String(n).padStart(2, '0');
@@ -321,6 +322,11 @@ async function loadData(){
       if(slot && slot.season_to_date) PFF = { slot, receivers: rr.ok ? await rr.json() : null };
     }
   }catch(e){ PFF = null; }
+  PFFCOV = null;
+  try{
+    const cr = await fetch('private/pff/coverage_context.json', { cache: 'no-store' });
+    if(cr.ok){ const c = await cr.json(); if(c && c.teams) PFFCOV = c; }
+  }catch(e){ PFFCOV = null; }
   renderPffStatus();
 
   TEAM_OPPONENT = {};
@@ -1292,7 +1298,7 @@ function renderPffStatus(){
   const el = $('pffStatus');
   if(!el) return;
   el.innerHTML = PFF
-    ? `● PFF slot data loaded (private, local) — through week ${esc(PFF.slot.through_week)}`
+    ? `● PFF slot data loaded (private, local) — through week ${esc(PFF.slot.through_week)}${PFFCOV ? ' · man/zone + CB/DB coverage loaded' : ''}`
     : '○ PFF slot data not loaded (private; local only)';
   el.style.color = PFF ? 'var(--accent-green)' : 'var(--text-dim)';
 }
@@ -1345,8 +1351,26 @@ function findSlotMatchups(spec){
 // Compact PFF block for the free-form prompt: every team's slot-coverage profile, every receiver who
 // really works the slot, and (for any team the question names, or its opponent) that offense's full
 // receiver alignment list. null when PFF isn't loaded.
+function pffCoverageForFreeform(spec){
+  if(!PFFCOV) return null;
+  const named = new Set();
+  for(const t of (spec?.mentioned_teams || [])){ const u = t.trim().toUpperCase(); named.add(u); if(TEAM_OPPONENT[u]) named.add(TEAM_OPPONENT[u]); }
+  const teams = {};
+  for(const [t, v] of Object.entries(PFFCOV.teams || {})){
+    const mz = v.defense?.man_zone;
+    if(named.has(t)){                                    // full detail: defenders + receivers (trimmed to the busiest 8)
+      const f = JSON.parse(JSON.stringify(v));
+      if(f.defense?.defenders) f.defense.defenders = f.defense.defenders.slice(0, 8);
+      if(f.offense?.receivers) f.offense.receivers = f.offense.receivers.slice(0, 8);
+      teams[t] = f;
+    }
+    else if(mz) teams[t] = { defense: { man_zone: mz } }; // everyone else: team man/zone only
+  }
+  return { season: PFFCOV.season, note: 'PFF man/zone and coverage data, season-to-date. Defense ranks: 1 = best defense.', teams_with_full_detail: [...named], teams };
+}
+
 function pffContextForFreeform(spec){
-  if(!PFF) return null;
+  if(!PFF) return PFFCOV ? { coverage: pffCoverageForFreeform(spec) } : null;
   const season = PFF.slot.season_to_date || {}, l3 = PFF.slot.last3?.teams || {};
   const defense = {};
   for(const t of Object.keys(season)){
@@ -1364,7 +1388,7 @@ function pffContextForFreeform(spec){
     if(list.length) receivers[t] = list.map(r => ({ player: r.player, pos: r.pos, slot_rate: r.slot_rate,
       wide_rate: r.wide_rate, inline_rate: r.inline_rate, targets: r.targets, target_share: r.target_share, yprr: r.yprr }));
   }
-  return { through_week: PFF.slot.through_week, rank_direction: '1 = toughest slot defense, 32 = weakest',
+  return { coverage: pffCoverageForFreeform(spec), through_week: PFF.slot.through_week, rank_direction: '1 = toughest slot defense, 32 = weakest',
            slot_defense_by_team: defense, receivers_by_team: receivers,
            this_week_opponent: TEAM_OPPONENT };
 }
@@ -1885,7 +1909,15 @@ wide_rate / inline_rate (share of snaps in each spot). A slot_rate of 50 or more
 receiver; anything in between is a hybrid and must be described as one. Cite only numbers present in \
 that block, never infer slot usage for a receiver who is not listed, and note slot-defense numbers \
 describe coverage allowed to the slot position, not any single defender's quality. A WR3 is not \
-automatically a slot receiver. WHEN PFF_SLOT_DATA IS null, PFF is not loaded in this session: if the \
+automatically a slot receiver. WHEN PFF_SLOT_DATA.coverage IS PRESENT it is PRIVATE PFF man/zone and coverage data (2026 season-to-date): \
+for each team, defense.man_zone gives man_pct / zone_pct (share of coverage snaps) and what the defense \
+allows against man and against zone (yards per target, catch rate, TDs, INTs) with a rank where 1 = BEST \
+defense; defense.defenders lists its top CB/S/LB with PFF coverage grade, targets, catch rate allowed, yards \
+per coverage snap, QB rating against and each defender's own man and zone lines; offense.receivers gives \
+each receiver's production against man vs zone (targets, catches, yards, yards per route run, EPA, route \
+grade). Only teams in teams_with_full_detail carry the defenders and receivers lists. Label these as PFF \
+figures, call splits under 10 targets small, and never invent a defender or receiver that is not listed. \
+WHEN PFF_SLOT_DATA IS null, PFF is not loaded in this session: if the \
 question depends on slot coverage or receiver alignment, say so plainly and do not estimate it.
 
 DATA (current week, real players, real opponents, real opponent defensive strength):

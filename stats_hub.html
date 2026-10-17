@@ -122,6 +122,8 @@ let CBDB = null;
 // Only loads where that file exists (Frank's own localhost). On the public site it 404s, the tab is removed,
 // and nothing from PFF is shown or shipped.
 let PFF_SLOT = null;
+let PFFCOV = null;   // private/pff/coverage_context.json (man/zone, CB/DB, receivers) - local only
+let mzView = 'teams', mzSortKey = null, mzSortDir = 'asc';
 let slotRange = 'season_to_date', slotSortKey = 'rank_yards_pg', slotSortDir = 'asc';
 let cbdbSortKey = null, cbdbSortDir = 'asc';
 let cbdbSearchTerm = '';
@@ -140,6 +142,7 @@ main.innerHTML = `
     <button role="tab" data-view="rank_shifts" aria-selected="false">Rank Shifts</button>
     <button role="tab" data-view="cbdb" aria-selected="false">CB/DB Coverage</button>
     <button role="tab" data-view="slot" aria-selected="false">Slot Defense (PFF)</button>
+    <button role="tab" data-view="manzone" aria-selected="false">Man/Zone (PFF)</button>
   </div>
   <div class="bar">
     <span class="lbl" id="sectionLbl">Team Offense</span>
@@ -294,6 +297,14 @@ async function load(){
     const res = await fetch(`private/pff/slot_defense.json`, { cache: 'no-store' });
     if(res.ok) PFF_SLOT = await res.json();
   }catch(e){ /* private PFF file not present - normal on the public site */ }
+  try{
+    const res = await fetch(`private/pff/coverage_context.json`, { cache: 'no-store' });
+    if(res.ok) PFFCOV = await res.json();
+  }catch(e){ /* private PFF file not present - normal on the public site */ }
+  if(!PFFCOV){
+    const mzTab = document.querySelector('#viewSwitch [data-view="manzone"]');
+    if(mzTab) mzTab.remove();
+  }
   if(!PFF_SLOT){
     const slotTab = document.querySelector('#viewSwitch [data-view="slot"]');
     if(slotTab) slotTab.remove();
@@ -347,6 +358,13 @@ function switchView(){
     $("weekSel").style.display = 'none';
     $("catTabs").style.display = 'none';
     setupSlotControls();
+  } else if(currentView === 'manzone'){
+    $("sectionLbl").textContent = 'Man/Zone (PFF)';
+    $("sectionLegend").innerHTML = '<span>2026 season to date · how defenses, defenders and receivers fare against man vs zone coverage · ' +
+      'private PFF data · click any column to sort</span>';
+    $("weekSel").style.display = 'none';
+    $("catTabs").style.display = 'none';
+    setupManZoneControls();
   } else if(currentView === 'cbdb'){
     $("sectionLbl").textContent = 'CB/DB Coverage';
     $("sectionLegend").innerHTML = '<span>Individual defensive backs, season totals · click any column to sort</span>';
@@ -1087,6 +1105,132 @@ function renderSlotTable(){
     console.error("renderSlotTable failed:", err);
     $("leadTable").outerHTML = `<div class="empty" id="leadTable">Slot data looks malformed (${esc(err.message)}).
       Re-run <b>python3 pff_pull.py</b>, then reload.</div>`;
+  }
+}
+
+/* ── MAN / ZONE (PFF, private) ───────────────────────────────────── */
+// Source: private/pff/coverage_context.json, written by pff_facets.py + pff_coverage.py on Frank's machine.
+const MZ_NUM = (v, d) => (v == null || v === '' || isNaN(v)) ? '—' : (d != null ? Number(v).toFixed(d) : v);
+function mzGet(obj, path){ return path.split('.').reduce((o, k) => (o == null ? null : o[k]), obj); }
+
+function mzTeamRows(){
+  const out = [];
+  for(const [code, v] of Object.entries((PFFCOV && PFFCOV.teams) || {})){
+    const m = v.defense && v.defense.man_zone;
+    if(!m) continue;
+    out.push({ code, name: FI_TEAM_NAME[code] || code, man_pct: m.man_pct, zone_pct: m.zone_pct,
+      man_rate_rk: m.man_rate_rank_most_man_is_1,
+      m_ypt: m.vs_man.yards_per_target, m_ypt_rk: m.vs_man.yards_per_target_rank,
+      z_ypt: m.vs_zone.yards_per_target, z_ypt_rk: m.vs_zone.yards_per_target_rank,
+      m_catch: m.vs_man.catch_rate, z_catch: m.vs_zone.catch_rate,
+      m_tgt: m.vs_man.targets, z_tgt: m.vs_zone.targets,
+      m_td: m.vs_man.tds, z_td: m.vs_zone.tds, m_int: m.vs_man.ints, z_int: m.vs_zone.ints });
+  }
+  return out;
+}
+const MZ_TEAM_COLS = [
+  { k: 'man_pct', label: 'Man %', rk: 'man_rate_rk', d: 1, dir: 'desc' }, { k: 'zone_pct', label: 'Zone %', d: 1, dir: 'desc' },
+  { k: 'm_ypt', label: 'Yds/Tgt vs Man', rk: 'm_ypt_rk', d: 2, dir: 'asc' }, { k: 'z_ypt', label: 'Yds/Tgt vs Zone', rk: 'z_ypt_rk', d: 2, dir: 'asc' },
+  { k: 'm_catch', label: 'Catch % vs Man', d: 1, pct: true, dir: 'asc' }, { k: 'z_catch', label: 'Catch % vs Zone', d: 1, pct: true, dir: 'asc' },
+  { k: 'm_tgt', label: 'Tgts vs Man', dir: 'desc' }, { k: 'z_tgt', label: 'Tgts vs Zone', dir: 'desc' },
+  { k: 'm_td', label: 'TD vs Man', dir: 'desc' }, { k: 'z_td', label: 'TD vs Zone', dir: 'desc' },
+  { k: 'm_int', label: 'INT vs Man', dir: 'desc' }, { k: 'z_int', label: 'INT vs Zone', dir: 'desc' },
+];
+
+function mzDefenderRows(){
+  const out = [];
+  for(const [code, v] of Object.entries((PFFCOV && PFFCOV.teams) || {})){
+    for(const d of ((v.defense && v.defense.defenders) || [])){
+      const s = d.season || {}, m = d.man || {}, z = d.zone || {};
+      out.push({ code, name: d.player, pos: d.pos, gp: d.games, snaps: d.coverage_snaps,
+        grade: s.grades_coverage_defense, tgt: s.targets, catch: s.catch_rate, ypcs: s.yards_per_coverage_snap,
+        qbr: s.qb_rating_against, pbu: s.pass_break_ups, ints: s.interceptions,
+        m_grade: m.grades_coverage_defense, m_snaps: m.snap_counts_coverage, m_tgt: m.targets, m_catch: m.catch_rate, m_qbr: m.qb_rating_against,
+        z_grade: z.grades_coverage_defense, z_snaps: z.snap_counts_coverage, z_tgt: z.targets, z_catch: z.catch_rate, z_qbr: z.qb_rating_against });
+    }
+  }
+  return out;
+}
+const MZ_DEF_COLS = [
+  { k: 'gp', label: 'GP', dir: 'desc' }, { k: 'snaps', label: 'Cov Snaps', dir: 'desc' },
+  { k: 'grade', label: 'Cov Grade', d: 1, dir: 'desc' }, { k: 'tgt', label: 'Tgts', dir: 'desc' },
+  { k: 'catch', label: 'Catch %', d: 1, pct: true, dir: 'asc' }, { k: 'ypcs', label: 'Yds/Cov Snap', d: 2, dir: 'asc' },
+  { k: 'qbr', label: 'QB Rtg Against', d: 1, dir: 'asc' }, { k: 'pbu', label: 'PBU', dir: 'desc' }, { k: 'ints', label: 'INT', dir: 'desc' },
+  { k: 'm_snaps', label: 'Man Snaps', dir: 'desc' }, { k: 'm_grade', label: 'Man Grade', d: 1, dir: 'desc' },
+  { k: 'm_qbr', label: 'Man QB Rtg', d: 1, dir: 'asc' }, { k: 'm_catch', label: 'Man Catch %', d: 1, pct: true, dir: 'asc' },
+  { k: 'z_snaps', label: 'Zone Snaps', dir: 'desc' }, { k: 'z_grade', label: 'Zone Grade', d: 1, dir: 'desc' },
+  { k: 'z_qbr', label: 'Zone QB Rtg', d: 1, dir: 'asc' }, { k: 'z_catch', label: 'Zone Catch %', d: 1, pct: true, dir: 'asc' },
+];
+
+function mzReceiverRows(){
+  const out = [];
+  for(const [code, v] of Object.entries((PFFCOV && PFFCOV.teams) || {})){
+    for(const r of ((v.offense && v.offense.receivers) || [])){
+      const m = r.vs_man || {}, z = r.vs_zone || {};
+      out.push({ code, name: r.player, pos: r.pos, gp: r.games, tgt: r.total_targets,
+        m_tgt: m.targets, m_rec: m.receptions, m_yds: m.yards, m_yprr: m.yprr, m_epa: m.epa, m_grade: m.grades_pass_route, m_catch: m.caught_percent,
+        z_tgt: z.targets, z_rec: z.receptions, z_yds: z.yards, z_yprr: z.yprr, z_epa: z.epa, z_grade: z.grades_pass_route, z_catch: z.caught_percent });
+    }
+  }
+  return out;
+}
+const MZ_REC_COLS = [
+  { k: 'gp', label: 'GP', dir: 'desc' }, { k: 'tgt', label: 'Tgts', dir: 'desc' },
+  { k: 'm_tgt', label: 'Man Tgts', dir: 'desc' }, { k: 'm_rec', label: 'Man Rec', dir: 'desc' }, { k: 'm_yds', label: 'Man Yds', dir: 'desc' },
+  { k: 'm_yprr', label: 'Man YPRR', d: 2, dir: 'desc' }, { k: 'm_epa', label: 'Man EPA', d: 2, dir: 'desc' },
+  { k: 'm_grade', label: 'Man Route Grade', d: 1, dir: 'desc' }, { k: 'm_catch', label: 'Man Catch %', d: 1, pct: true, dir: 'desc' },
+  { k: 'z_tgt', label: 'Zone Tgts', dir: 'desc' }, { k: 'z_rec', label: 'Zone Rec', dir: 'desc' }, { k: 'z_yds', label: 'Zone Yds', dir: 'desc' },
+  { k: 'z_yprr', label: 'Zone YPRR', d: 2, dir: 'desc' }, { k: 'z_epa', label: 'Zone EPA', d: 2, dir: 'desc' },
+  { k: 'z_grade', label: 'Zone Route Grade', d: 1, dir: 'desc' }, { k: 'z_catch', label: 'Zone Catch %', d: 1, pct: true, dir: 'desc' },
+];
+
+function setupManZoneControls(){
+  if(!PFFCOV){ $("leadTable").outerHTML = `<div class="empty" id="leadTable">No PFF man/zone data on this machine. Run pff_facets.py then pff_coverage.py.</div>`; return; }
+  if(season !== 2026){
+    $("innerTabs").innerHTML = '';
+    $("leadTable").outerHTML = `<div class="empty" id="leadTable">Man/zone data is only available for 2026.</div>`;
+    return;
+  }
+  const tabs = [['teams', 'Team Defense'], ['defenders', 'Defenders'], ['receivers', 'Receivers']];
+  $("innerTabs").innerHTML = tabs.map(([k, l]) => `<button role="tab" aria-selected="${k === mzView}" data-v="${k}">${l}</button>`).join('');
+  $("innerTabs").querySelectorAll("button").forEach(b => b.onclick = () => { mzView = b.dataset.v; mzSortKey = null; setupManZoneControls(); });
+  fiUpdated('2026 season to date · PFF');
+  renderManZoneTable();
+}
+
+function renderManZoneTable(){
+  try{
+    const cfg = mzView === 'teams' ? { rows: mzTeamRows(), cols: MZ_TEAM_COLS, first: 'm_ypt', who: 'Team' }
+              : mzView === 'defenders' ? { rows: mzDefenderRows(), cols: MZ_DEF_COLS, first: 'grade', who: 'Defender' }
+              : { rows: mzReceiverRows(), cols: MZ_REC_COLS, first: 'tgt', who: 'Receiver' };
+    if(!mzSortKey){ mzSortKey = cfg.first; mzSortDir = (cfg.cols.find(c => c.k === cfg.first) || {}).dir || 'desc'; }
+    const col = cfg.cols.find(c => c.k === mzSortKey) || cfg.cols[0];
+    const rows = cfg.rows.slice().sort((a, b) => {
+      const av = a[col.k], bv = b[col.k];
+      if(av == null && bv == null) return 0;
+      if(av == null) return 1; if(bv == null) return -1;
+      return mzSortDir === 'desc' ? bv - av : av - bv;
+    });
+    const head = `<thead><tr><th class="team-col">${cfg.who}</th>${mzView !== 'teams' ? '<th>Pos</th>' : ''}${cfg.cols.map(c =>
+      `<th data-key="${c.k}" class="${c.k === mzSortKey ? 'sorted' : ''}">${esc(c.label)}${c.k === mzSortKey ? (mzSortDir === 'desc' ? ' ▾' : ' ▴') : ''}</th>`).join('')}</tr></thead>`;
+    const body = '<tbody>' + rows.map((r, i) => `<tr>
+      <td class="team-col"><span class="rank-num">${i + 1}</span>${fiLogoHTML(r.code, 20)}${esc(mzView === 'teams' ? r.name : r.name + ' (' + r.code + ')')}</td>
+      ${mzView !== 'teams' ? `<td><span class="cell-val">${esc(r.pos || '—')}</span></td>` : ''}
+      ${cfg.cols.map(c => {
+        const v = r[c.k], rk = c.rk ? r[c.rk] : null;
+        const t = v == null ? '—' : (c.d != null ? MZ_NUM(v, c.d) : v) + (c.pct && v != null ? '%' : '');
+        return `<td><span class="cell-val">${t}${rk ? ` <span style="color:var(--text-dim);font-size:10px">#${rk}</span>` : ''}</span></td>`;
+      }).join('')}</tr>`).join('') + '</tbody>';
+    $("leadTable").innerHTML = head + body;
+    $("leadTable").querySelectorAll("thead th[data-key]").forEach(th => th.onclick = () => {
+      const k = th.dataset.key;
+      if(k === mzSortKey) mzSortDir = mzSortDir === 'desc' ? 'asc' : 'desc';
+      else { mzSortKey = k; mzSortDir = (cfg.cols.find(c => c.k === k) || {}).dir || 'desc'; }
+      renderManZoneTable();
+    });
+  }catch(err){
+    console.error("renderManZoneTable failed:", err);
+    $("leadTable").outerHTML = `<div class="empty" id="leadTable">Man/zone data looks malformed (${esc(err.message)}). Re-run pff_facets.py and pff_coverage.py, then reload.</div>`;
   }
 }
 

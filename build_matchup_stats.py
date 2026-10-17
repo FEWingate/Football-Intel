@@ -1072,7 +1072,7 @@ def build(week):
     print(f"Wrote {path} — {len(payload['games'])} games, {len(all_teams)} teams, {size:.0f} KB")
 
     build_context(week, all_teams, records, real_prior_stats, prior_games,
-                  out_team_def, out_pos_def)
+                  out_team_def, out_pos_def, out_team_off, out_pos_off)
     build_threats(week, all_teams, records, prior_stats, week_games,
                   carryover["gp"] if carryover else gp, carryover=carryover)
     build_games(week, all_teams, records, week_games, prior_games, stats)
@@ -1842,7 +1842,7 @@ def build_threats(week, all_teams, records, prior_stats, week_games, gp, carryov
 # tier faced in that specific category.
 # ==========================================================================
 def build_context(week, all_teams, records, prior_stats, prior_games,
-                  out_team_def, out_pos_def):
+                  out_team_def, out_pos_def, out_team_off=None, out_pos_off=None):
     raw_cols = RAW_COLS
 
     # opponent / venue / result per team per week
@@ -1898,6 +1898,29 @@ def build_context(week, all_teams, records, prior_stats, prior_games,
                 for m, (_lbl, dec) in LOG_POS[p].items():
                     drank = out_pos_def[p][LOG_POS_DEFKEY[p][m]][opp]["r"]
                     entry["off"][p][m] = {"v": round(pg[m], dec), "r": drank, "t": tier_of(drank)}
+
+            # ---- DEFENSE side (added 2026-10-17): what this team's DEFENSE allowed in
+            # this game (the opponent's production), tiered by the OPPONENT OFFENSE's
+            # season rank in the matching category. Rank 1 = best offense, so tier
+            # "top" = the strongest offenses faced, "bot" = the weakest.
+            if out_team_off is not None and out_pos_off is not None:
+                ts = (wk_team.loc[(opp, wk)].to_dict() if (opp, wk) in wk_team.index
+                      else {c: 0 for c in raw_cols})
+                opp_pts = int(info["score"].split("-")[1])
+                tg_a = team_game_metrics(ts, opp_pts)
+                entry["team_allowed"] = {}
+                for m, (_lbl, dec) in LOG_TEAM.items():
+                    orank = out_team_off[LOG_TEAM_DEFKEY[m]][opp]["r"]
+                    entry["team_allowed"][m] = {"v": round(tg_a[m], dec), "r": orank, "t": tier_of(orank)}
+                entry["def"] = {}
+                for p in POSITIONS:
+                    sp_a = (wk_pos.loc[(opp, p, wk)].to_dict() if (opp, p, wk) in wk_pos.index
+                            else {c: 0 for c in raw_cols})
+                    pg_a = pos_game_metrics(p, sp_a)
+                    entry["def"][p] = {}
+                    for m, (_lbl, dec) in LOG_POS[p].items():
+                        orank = out_pos_off[p][LOG_POS_DEFKEY[p][m]][opp]["r"]
+                        entry["def"][p][m] = {"v": round(pg_a[m], dec), "r": orank, "t": tier_of(orank)}
             log.append(entry)
 
         # ---- splits: average production against each defensive tier ----
@@ -1925,6 +1948,12 @@ def build_context(week, all_teams, records, prior_stats, prior_games,
         for p in POSITIONS:
             splits["off"][p] = split_for(lambda e, p=p: e["off"][p], LOG_POS[p])
 
+        if out_team_off is not None and out_pos_off is not None:
+            splits["team_allowed"] = split_for(lambda e: e["team_allowed"], LOG_TEAM)
+            splits["def"] = {}
+            for p in POSITIONS:
+                splits["def"][p] = split_for(lambda e, p=p: e["def"][p], LOG_POS[p])
+
         teams_out[t] = {"record": records[t], "log": log, "splits": splits}
 
     payload = {
@@ -1934,7 +1963,10 @@ def build_context(week, all_teams, records, prior_stats, prior_games,
                      "Each stat's tier is computed independently — a defense ranked "
                      "Top 5 against the pass may not be Top 5 against the run, so the "
                      "games counted (n) in the same tier column can genuinely differ "
-                     "row to row. This is not an error.",
+                     "row to row. This is not an error. DEFENSE-side blocks "
+                     "(team_allowed, def) use the OPPONENT OFFENSE's season rank in the "
+                     "matching category (rank 1 = best offense): 'top' = strongest "
+                     "offenses faced, 'bot' = weakest.",
         "labels": {
             "team": {m: LOG_TEAM[m][0] for m in LOG_TEAM},
             "pos": {p: {m: LOG_POS[p][m][0] for m in LOG_POS[p]} for p in POSITIONS},

@@ -178,6 +178,42 @@ def filter_intel_by_teams(intel_json, key, teams):
     return {team: section[team] for team in teams if team in section}
 
 
+def latest_season_section(json_obj, by_season_key):
+    """intel/coverage.json and intel/cb_rankings.json are keyed BY SEASON
+    ({"by_season": {"2025": {...}}} / {"players_by_season": {"2026": [...]}}).
+    The old code read top-level keys that no longer exist, so these blocks were
+    always empty. Returns (season_str, payload) for the newest season present,
+    or (None, None)."""
+    if not json_obj:
+        return None, None
+    by = json_obj.get(by_season_key) or {}
+    if not by:
+        return None, None
+    season = sorted(by.keys(), key=lambda x: int(x))[-1]
+    return season, by[season]
+
+
+_HR_FIELD = {"QB": "all_qb_home_road_by_season", "RB": "all_rb_home_road_by_season",
+             "WR": "all_wr_home_road_by_season", "TE": "all_te_home_road_by_season"}
+_TIER_HR_FIELD = {"QB": "qb_tier_home_road_by_season", "RB": "rb_tier_home_road_by_season",
+                  "WR": "wr_tier_home_road_by_season", "TE": "te_tier_home_road_by_season"}
+
+
+def home_road_for_player(players_json, pos, team, gsis_id, season):
+    """(home_road_entry, tier_buckets) for one season. QB data is keyed by TEAM
+    (one identified QB1 per team) and only used if the gsis_id matches; RB/WR/TE
+    are keyed by player id."""
+    hr = ((players_json.get(_HR_FIELD.get(pos, "")) or {}).get(str(season)) or {})
+    tr = ((players_json.get(_TIER_HR_FIELD.get(pos, "")) or {}).get(str(season)) or {})
+    if pos == "QB":
+        hr_e, tr_e = hr.get(team), tr.get(team)
+        hr_e = hr_e if (hr_e and hr_e.get("gsis_id") == gsis_id) else None
+        tr_e = tr_e if (tr_e and tr_e.get("gsis_id") == gsis_id) else None
+    else:
+        hr_e, tr_e = hr.get(gsis_id), tr.get(gsis_id)
+    return hr_e, ((tr_e or {}).get("buckets"))
+
+
 def main():
     current = load_json("matchup/current.json")
     if not current:
@@ -202,6 +238,8 @@ def main():
     injuries_json = load_json(f"injuries/{wk}.json")
     depth_json = load_json("depth_charts/latest.json")
     manual_inj_json = load_json(f"manual_injuries/{wk}.json")
+    players_prev_json = load_json(f"archive/{current['season'] - 1}/players/latest.json")
+    rosters_json = load_json("rosters/latest.json")
 
     required = {"games": games_json, "matchup": matchup_json,
                 "players": players_json}
@@ -209,6 +247,24 @@ def main():
     if missing:
         sys.exit(f"FATAL: required file(s) missing for {wk}: {missing}. "
                   f"Run build_matchup_stats.py all first.")
+
+    # Correct each player's team to the real current roster (trades/signings), same
+    # fix the bootstrap builder has had since 2026-09-09.
+    if rosters_json:
+        cur_team = {rp["gsis_id"]: t for t, rl in (rosters_json.get("teams") or {}).items()
+                    for rp in rl if rp.get("gsis_id")}
+        for plist in (players_json.get("players") or {}).values():
+            for p in plist:
+                rt = cur_team.get(p.get("gsis_id"))
+                if rt and rt != p.get("team"):
+                    p["team"] = rt
+    prev_season_by_id = {}
+    if players_prev_json:
+        for plist in (players_prev_json.get("players") or {}).values():
+            for p in plist:
+                if p.get("gsis_id"):
+                    prev_season_by_id[p["gsis_id"]] = p.get("season")
+    hr_seasons = players_json.get("home_road_splits_seasons") or []
 
     global_notes = []
     if dfs_json is None:
@@ -281,29 +337,47 @@ def main():
         players_block = {"away": [], "home": []}
         for pos, plist in (players_json.get("players", {}) or {}).items():
             for p in plist:
-                if p.get("team") == away:
-                    players_block["away"].append(p)
-                elif p.get("team") == home:
-                    players_block["home"].append(p)
+                if p.get("team") not in (away, home):
+                    continue
+                side_key = "away" if p.get("team") == away else "home"
+                venue = "road" if side_key == "away" else "home"   # the side that is TRUE this week
+                p_out = {**p, "season_2025": prev_season_by_id.get(p.get("gsis_id"))}
+                for idx, yr in enumerate(hr_seasons):
+                    hr_e, tier_b = home_road_for_player(players_json, pos, p.get("team"),
+                                                        p.get("gsis_id"), yr)
+                    suffix = "" if idx == 0 else f"_{yr}"
+                    p_out["home_road_split" + suffix] = (hr_e or {}).get(venue)
+                    if idx == 0:
+                        p_out["home_road_side"] = venue
+                        p_out["home_road_season"] = yr
+                    tiers = {t: tier_b.get(f"{t}_{venue}") for t in ("top", "mid", "bot")
+                             if tier_b and tier_b.get(f"{t}_{venue}")} if tier_b else {}
+                    p_out["tier_home_road_split" + suffix] = tiers or None
+                players_block[side_key].append(p_out)
 
         # ── Hidden Intelligence: QB run-vs-pass, RB rush-vs-pass, Blitz,
         # Coverage — filtered to just the two teams in this game
+        cov_season, cov = latest_season_section(coverage_json, "by_season")
+        cov = cov or {}
         hidden_intel = {
-            "qb_run_vs_pass": filter_intel_by_teams(intel_json, "qb_teams", teams),
+            "coverage_season": cov_season,
+            "team_coverage_rate": filter_intel_by_teams(cov, "team_coverage_rate", teams),
+            "qb_run_vs_pass": filter_intel_by_teams(intel_json, "teams", teams),
             "rb_rush_vs_pass": filter_intel_by_teams(intel_json, "rb_teams", teams),
             "blitz_qb": filter_intel_by_teams(blitz_json, "qb_teams", teams),
             "blitz_wr": filter_intel_by_teams(blitz_json, "wr_teams", teams),
-            "coverage_qb": filter_intel_by_teams(coverage_json, "qb_teams", teams),
-            "coverage_wr": filter_intel_by_teams(coverage_json, "wr_teams", teams),
-            "coverage_te": filter_intel_by_teams(coverage_json, "te_teams", teams),
+            "coverage_qb": filter_intel_by_teams(cov, "qb_teams", teams),
+            "coverage_wr": filter_intel_by_teams(cov, "wr_teams", teams),
+            "coverage_te": filter_intel_by_teams(cov, "te_teams", teams),
         }
 
         # ── CB/DB Coverage Rankings for defenders on both teams
         cbdb_block = []
         if cbdb_json and cbdb_json.get("available"):
-            cbdb_block = [p for p in cbdb_json.get("players", []) if p.get("team") in teams]
-        elif cbdb_json is not None:
-            notes.append("CB/DB rankings present but marked unavailable for this build")
+            for yr in sorted((cbdb_json.get("players_by_season") or {}).keys(), key=int, reverse=True):
+                for p in cbdb_json["players_by_season"][yr]:
+                    if p.get("team") in teams:
+                        cbdb_block.append({**p, "season": int(yr)})
 
         # ── DFS: read from dfs/wkNN.json — built by build_dfs.py, which
         # ports dfs_center.html's EXACT scoring and name-matching logic.
@@ -379,6 +453,25 @@ def main():
             notes.append("dfs/wkNN.json not found — run build_dfs.py before this script "
                          "for DFS evidence to be available")
 
+        # ── Team-level home/road, dome, travel and ATS context (teamstats/latest.json)
+        team_venue = {}
+        if teamstats_json:
+            for yr, tbl in (teamstats_json.get("all_team_home_road_by_season") or {}).items():
+                for side, team in (("away", away), ("home", home)):
+                    if team in tbl:
+                        team_venue.setdefault(side, {})[f"home_road_{yr}"] = tbl[team]
+            for yr, tbl in (teamstats_json.get("team_dome_splits_by_season") or {}).items():
+                for side, team in (("away", away), ("home", home)):
+                    if team in tbl:
+                        team_venue.setdefault(side, {})[f"dome_split_{yr}"] = tbl[team]
+            for side, team in (("away", away), ("home", home)):
+                ts_ = (teamstats_json.get("travel_splits") or {}).get(team)
+                if ts_:
+                    team_venue.setdefault(side, {})["travel_splits"] = ts_
+                ats = (teamstats_json.get("ats_records") or {}).get(team)
+                if ats:
+                    team_venue.setdefault(side, {})["ats_record"] = ats
+
         # ── Game info: schedule, lines, box score (from games/wkNN.json)
         game_info = dict(g)
 
@@ -388,6 +481,7 @@ def main():
             "game": game_info,
             "matchup": matchup_block,
             "team_context": context_block,
+            "team_venue_splits": team_venue,
             "down_distance": {
                 "away": down_distance_for_team(teamstats_json, away, dd_off_ranks, dd_def_ranks),
                 "home": down_distance_for_team(teamstats_json, home, dd_off_ranks, dd_def_ranks),

@@ -259,6 +259,11 @@ async function load(){
   }catch(e){ /* not present on this machine */ }
 
   try{
+    const resMZ = await fetch(`private/pff/coverage_context.json`, { cache: 'no-store' });
+    if(resMZ.ok) PFFCOV = await resMZ.json();
+  }catch(e){ /* not present on this machine */ }
+
+  try{
     const resD = await fetch(`intel/cb_rankings.json`, { cache: 'no-store' });
     if(resD.ok) CBDB = await resD.json();
   }catch(e){ console.error('intel/cb_rankings.json failed to load or parse:', e); }
@@ -630,6 +635,7 @@ function openTeam(t, source){
 }
 
 let PFF_SLOT = null;
+let PFFCOV = null;   // private/pff/coverage_context.json (local only)
 
 /* Slot coverage allowed: receiving yards this defense has given up to receivers lined up in the slot
    (PFF charting). Rank 1 = toughest, 32 = weakest, same as the matchup ranks elsewhere on the site.
@@ -660,6 +666,59 @@ function slotCoverageHTML(team){
     </tbody></table>
     <div class="empty" style="padding:4px 0 12px;text-align:left;font-size:10px">
       Yards allowed by defenders lined up in the slot (PFF charting) · rank 1 = toughest · small sample early in the season.
+    </div>`;
+}
+
+/* Man vs zone (PFF, private): how this defense splits its coverage snaps and what it allows against each. */
+function mzFmt(v, d, suffix){ return (v == null || isNaN(v)) ? '—' : (d != null ? Number(v).toFixed(d) : v) + (suffix || ''); }
+function manZoneHTML(team){
+  if(!PFFCOV || Number(statsYear) !== 2026) return '';
+  const m = (((PFFCOV.teams || {})[team] || {}).defense || {}).man_zone;
+  if(!m) return '';
+  const rk = r => r ? ` <span style="color:var(--text-dim);font-size:10px">#${r}</span>` : '';
+  const row = (label, k, d, suffix, rkKey) => `<tr><td>${label}</td>
+      <td class="num">${mzFmt(m.vs_man[k], d, suffix)}${rkKey ? rk(m.vs_man[rkKey]) : ''}</td>
+      <td class="num">${mzFmt(m.vs_zone[k], d, suffix)}${rkKey ? rk(m.vs_zone[rkKey]) : ''}</td></tr>`;
+  return `
+    <div class="subsect">Man vs Zone Coverage — PFF, ${esc(PFFCOV.season || 2026)} season to date</div>
+    <div style="display:flex;gap:0;border-radius:var(--radius);overflow:hidden;margin-bottom:6px;height:28px">
+      <div style="width:${m.zone_pct}%;background:rgba(163,230,53,.18);display:flex;align-items:center;padding:0 10px;
+        font-family:var(--font-mono);font-size:11px;white-space:nowrap">Zone ${m.zone_pct}%</div>
+      <div style="width:${m.man_pct}%;background:rgba(96,165,250,.18);display:flex;align-items:center;padding:0 10px;
+        font-family:var(--font-mono);font-size:11px;white-space:nowrap">Man ${m.man_pct}%${m.man_rate_rank_most_man_is_1 ? ` · #${m.man_rate_rank_most_man_is_1} most man` : ''}</div>
+    </div>
+    <table class="stat-table"><thead><tr><th>Allowed</th><th class="right">vs Man</th><th class="right">vs Zone</th></tr></thead><tbody>
+      ${row('Targets', 'targets')}${row('Receptions', 'receptions')}${row('Yards', 'yards')}
+      ${row('Yards / target', 'yards_per_target', 2, '', 'yards_per_target_rank')}
+      ${row('Catch rate', 'catch_rate', 1, '%')}${row('TDs', 'tds')}${row('INTs', 'ints')}
+    </tbody></table>
+    <div class="empty" style="padding:4px 0 12px;text-align:left;font-size:10px">
+      Sums the qualifying defenders PFF lists · rank 1 = best defense (fewest yards per target) · small sample early in the season.
+    </div>`;
+}
+
+/* This team's top coverage defenders (PFF): season line plus each one's man and zone coverage line. */
+function pffDefendersHTML(team){
+  if(!PFFCOV || Number(statsYear) !== 2026) return '';
+  const list = (((PFFCOV.teams || {})[team] || {}).defense || {}).defenders;
+  if(!list || !list.length) return '';
+  return `
+    <div class="subsect">Coverage Defenders — PFF, ${esc(PFFCOV.season || 2026)} season to date</div>
+    <div style="overflow-x:auto"><table class="stat-table"><thead><tr>
+      <th>Player</th><th class="right">Cov Snaps</th><th class="right">Grade</th><th class="right">Tgts</th><th class="right">Catch %</th>
+      <th class="right">Yds/Snap</th><th class="right">QB Rtg</th><th class="right">Man Grade</th><th class="right">Man QB Rtg</th>
+      <th class="right">Zone Grade</th><th class="right">Zone QB Rtg</th>
+    </tr></thead><tbody>
+      ${list.map(d => { const s = d.season || {}, m = d.man || {}, z = d.zone || {}; return `<tr>
+        <td>${esc(d.player)} <span style="color:var(--text-dim);font-size:10px">${esc(d.pos || '')}</span></td>
+        <td class="num">${mzFmt(d.coverage_snaps)}</td><td class="num">${mzFmt(s.grades_coverage_defense, 1)}</td>
+        <td class="num">${mzFmt(s.targets)}</td><td class="num">${mzFmt(s.catch_rate, 1, '%')}</td>
+        <td class="num">${mzFmt(s.yards_per_coverage_snap, 2)}</td><td class="num">${mzFmt(s.qb_rating_against, 1)}</td>
+        <td class="num">${mzFmt(m.grades_coverage_defense, 1)}</td><td class="num">${mzFmt(m.qb_rating_against, 1)}</td>
+        <td class="num">${mzFmt(z.grades_coverage_defense, 1)}</td><td class="num">${mzFmt(z.qb_rating_against, 1)}</td></tr>`; }).join('')}
+    </tbody></table></div>
+    <div class="empty" style="padding:4px 0 12px;text-align:left;font-size:10px">
+      PFF coverage grades are 0-100 · ${PFFCOV.source ? '' : ''}most-used coverage defenders first · man and zone columns show how each defender has fared in each scheme.
     </div>`;
 }
 
@@ -955,7 +1014,7 @@ function renderStats(){
   h += `<div class="empty" style="padding:8px 0 4px;text-align:left;font-size:10px">
     ${teamstats.data_horizon} · ${teamData.games} games played</div>`;
 
-  if(activeSec === 'defense') h += slotCoverageHTML(activeTeam) + coverageTendencyHTML(activeTeam);
+  if(activeSec === 'defense') h += slotCoverageHTML(activeTeam) + manZoneHTML(activeTeam) + coverageTendencyHTML(activeTeam);
 
   for(const [subgroup, cols] of Object.entries(labels)){
     h += `<div class="subsect">${esc(subgroup)}</div>
@@ -972,7 +1031,7 @@ function renderStats(){
     // CB/DB Coverage Rankings sits right under Pass Defense — same section
     // a person would already be looking at when they want individual
     // secondary detail, rather than floating at the top of the whole tab.
-    if(activeSec === 'defense' && subgroup === 'Pass Defense') h += cbDbRankingsHTML(activeTeam);
+    if(activeSec === 'defense' && subgroup === 'Pass Defense') h += pffDefendersHTML(activeTeam) + cbDbRankingsHTML(activeTeam);
   }
   box.innerHTML = h;
   $("teamStatsYear").addEventListener("change", e => {

@@ -180,6 +180,8 @@ const $ = id => document.getElementById(id);
 $("szn").value = String(season);
 $("szn").addEventListener("change", () => { season = Number($("szn").value); load(); });
 
+let PFFCOV = null;   // private/pff/coverage_context.json (local only)
+
 async function load(){
   fiStatus("Loading","loading");
   // Real reset needed since load() is now re-callable on a season
@@ -194,6 +196,12 @@ async function load(){
     const res = await fetch(seasonPath(season, `players/latest.json`));
     if(res.ok) PLAYERSTATS = await res.json();
   }catch(e){}
+
+  PFFCOV = null;
+  try{
+    const rc = await fetch('private/pff/coverage_context.json', { cache: 'no-store' });
+    if(rc.ok) PFFCOV = await rc.json();
+  }catch(e){ /* private PFF file not present - normal on the public site */ }
 
   if(!PLAYERSTATS){
     fiStatus("No data","error"); fiUpdated("");
@@ -351,6 +359,7 @@ function renderProfilePanel(){
       <button role="tab" data-sec="log" aria-selected="false">Game Log</button>
       <button role="tab" data-sec="advanced" aria-selected="false">Advanced</button>
       ${hasHomeRoad ? `<button role="tab" data-sec="homeroad" aria-selected="false">Home/Road</button>` : ''}
+      ${pffReceiverFor(p) ? `<button role="tab" data-sec="manzone" aria-selected="false">Man/Zone (PFF)</button>` : ''}
     </div>
     <div id="profileBody"></div>`;
 
@@ -360,6 +369,49 @@ function renderProfilePanel(){
     renderProfileBody();
   });
   renderProfileBody();
+}
+
+/* ── MAN / ZONE (PFF, private; local only) ──────────────────────────
+   Matches a player to PFF's receiver-vs-coverage-scheme line by team + normalized name (suffixes and
+   punctuation ignored). Only receivers PFF lists (3+ targets) have a line. */
+function pffNormName(n){
+  return String(n || '').toLowerCase().replace(/[.'’]/g, '').replace(/\b(jr|sr|ii|iii|iv|v)\b/g, '').replace(/[^a-z ]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+function pffReceiverFor(p){
+  if(!PFFCOV || Number(season) !== 2026) return null;
+  const list = (((PFFCOV.teams || {})[p.team] || {}).offense || {}).receivers || [];
+  const want = pffNormName(p.name);
+  return list.find(r => pffNormName(r.player) === want) || null;
+}
+const PFF_REC_ROWS = [
+  ['Targets', 'targets'], ['Receptions', 'receptions'], ['Yards', 'yards'], ['Touchdowns', 'touchdowns'],
+  ['Catch %', 'caught_percent', 1], ['Yards / reception', 'yards_per_reception', 1],
+  ['Yards / route run', 'yprr', 2], ['EPA', 'epa', 2], ['Positive EPA %', 'positive_epa_percent', 1],
+  ['Route grade', 'grades_pass_route', 1], ['Hands grade', 'grades_hands_drop', 1],
+  ['Routes run', 'routes'], ['Target % of routes', 'targets_percent', 1],
+  ['Avg depth of target', 'avg_depth_of_target', 1], ['YAC', 'yards_after_catch'], ['YAC / reception', 'yards_after_catch_per_reception', 1],
+  ['Avoided tackles', 'avoided_tackles'], ['First downs', 'first_downs'], ['Longest', 'longest'],
+  ['Contested targets', 'contested_targets'], ['Contested catches', 'contested_receptions'], ['Contested catch %', 'contested_catch_rate', 1],
+  ['Drops', 'drops'], ['Drop rate', 'drop_rate', 1], ['Interceptions on targets', 'interceptions'], ['Fumbles', 'fumbles'],
+  ['Targeted QB rating', 'targeted_qb_rating', 1], ['Pass plays', 'pass_plays'],
+];
+function renderManZoneTab(box, p){
+  const r = pffReceiverFor(p);
+  if(!r){ box.innerHTML = '<div class="empty">No PFF man/zone line for this player.</div>'; return; }
+  const m = r.vs_man || {}, z = r.vs_zone || {};
+  const known = new Set(PFF_REC_ROWS.map(x => x[1]));
+  const extra = [...new Set([...Object.keys(m), ...Object.keys(z)])].filter(k => !known.has(k) && (typeof m[k] === 'number' || typeof z[k] === 'number'))
+    .map(k => [k.replace(/_/g, ' ').replace(/^./, c => c.toUpperCase()), k, 2]);
+  const fmt = (v, d) => (v == null || v === '') ? '—' : (typeof v === 'number' && d != null ? v.toFixed(d) : v);
+  const rows = PFF_REC_ROWS.concat(extra).filter(([, k]) => m[k] != null || z[k] != null);
+  const small = (m.targets || 0) < 10 || (z.targets || 0) < 10;
+  box.innerHTML = `
+    <div class="empty" style="padding:6px 0;text-align:left;font-size:11px">PFF charting · ${esc(PFFCOV.season || 2026)} season to date · ${r.games ?? '—'} games · ${r.total_targets} targets in total</div>
+    <table class="stat-table"><thead><tr><th>Stat</th><th class="right">vs Man</th><th class="right">vs Zone</th></tr></thead><tbody>
+      ${rows.map(([label, k, d]) => `<tr><td>${esc(label)}</td><td class="num">${fmt(m[k], d)}</td><td class="num">${fmt(z[k], d)}</td></tr>`).join('')}
+    </tbody></table>
+    <div class="empty" style="padding:4px 0 12px;text-align:left;font-size:10px">
+      Private PFF data (local only)${small ? ' · under 10 targets in at least one split - treat as a small sample' : ''}.</div>`;
 }
 
 function fiTeamLogoInline(team){ return fiLogoHTML(team, 16); }
@@ -377,6 +429,7 @@ function renderProfileBody(){
     renderAdvanced(box, p); // async — updates box once real data arrives
   }
   else if(activeSec === 'homeroad') renderHomeRoadTab(box, p);
+  else if(activeSec === 'manzone') renderManZoneTab(box, p);
   else renderGameLogFull(box, p);
 }
 
