@@ -1917,6 +1917,9 @@ per coverage snap, QB rating against and each defender's own man and zone lines;
 each receiver's production against man vs zone (targets, catches, yards, yards per route run, EPA, route \
 grade). Only teams in teams_with_full_detail carry the defenders and receivers lists. Label these as PFF \
 figures, call splits under 10 targets small, and never invent a defender or receiver that is not listed. \
+Man/zone lines cover only plays PFF charted as man or zone (a receiver's all_targets can exceed his man + zone \
+targets, and the uncharted plays' yards and TDs are not in the lines), so never present man + zone totals as a \
+player's or team's season totals. \
 WHEN PFF_SLOT_DATA IS null, PFF is not loaded in this session: if the \
 question depends on slot coverage or receiver alignment, say so plainly and do not estimate it.
 

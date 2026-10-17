@@ -406,7 +406,7 @@ function renderManZoneTab(box, p){
   const rows = PFF_REC_ROWS.concat(extra).filter(([, k]) => m[k] != null || z[k] != null);
   const small = (m.targets || 0) < 10 || (z.targets || 0) < 10;
   box.innerHTML = `
-    <div class="empty" style="padding:6px 0;text-align:left;font-size:11px">PFF charting · ${esc(PFFCOV.season || 2026)} season to date · ${r.games ?? '—'} games · ${r.total_targets} targets in total</div>
+    <div class="empty" style="padding:6px 0;text-align:left;font-size:11px">PFF charting · ${esc(PFFCOV.season || 2026)} season to date · ${r.games ?? '—'} games · ${r.total_targets}${r.all_targets ? ' of ' + r.all_targets : ''} targets charted as man or zone${r.uncharted_targets > 0 ? ` (${r.uncharted_targets} targets, with their yards and TDs, aren't classified as man or zone and aren't in this table)` : ''}</div>
     <table class="stat-table"><thead><tr><th>Stat</th><th class="right">vs Man</th><th class="right">vs Zone</th></tr></thead><tbody>
       ${rows.map(([label, k, d]) => `<tr><td>${esc(label)}</td><td class="num">${fmt(m[k], d)}</td><td class="num">${fmt(z[k], d)}</td></tr>`).join('')}
     </tbody></table>

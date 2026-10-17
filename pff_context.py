@@ -92,6 +92,10 @@ zone (targets, catches, yards, yards per route run, EPA, route grade). Pair a re
 opposing defense's weaker split, and say which it is.
 - These PFF numbers take precedence over hidden_intelligence.coverage_* (older, 2025 data) wherever both exist; \
 cite the PFF figure and label it PFF. Small samples (under 10 targets in a split) must be called small.
+- The man/zone lines cover only plays PFF charted as man or zone. A receiver's all_targets can be larger than \
+his man + zone targets (uncharted_targets); the uncharted plays carry yards and TDs that are NOT in the man/zone \
+lines, so a man+zone total can be lower than his season total. Never present man+zone totals as his season totals; \
+use FI season stats for season totals.
 - Never say the coverage data is missing or empty for a game: if a team has no row, leave coverage out silently.
 """ + """
 

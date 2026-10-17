@@ -117,7 +117,7 @@ def main():
         s = a["man"]["snaps"] + a["zone"]["snaps"]
         out = {"man_pct": man_pct[t], "zone_pct": round(100 - man_pct[t], 1) if man_pct[t] is not None else None,
                "man_rate_rank_most_man_is_1": r_man_rate.get(t),
-               "rank_note": "rank 1 = best defense (fewest yards per target allowed)"}
+               "rank_note": "rank 1 = best defense (fewest yards per target allowed). Counts only plays PFF charted as man or zone; other plays are not in these totals."}
         for p in ("man", "zone"):
             q = a[p]
             out["vs_" + p] = {"targets": q["targets"], "receptions": q["rec"], "yards": q["yards"],
@@ -139,7 +139,7 @@ def main():
         if snaps < MIN_COV_SNAPS:
             continue
         d = {"player": r.get("player"), "pos": r.get("position"), "games": r.get("player_game_count"),
-             "coverage_snaps": snaps, "season": season_line(b),
+             "coverage_snaps": snaps, "all_coverage_snaps": r.get("base_snap_counts_coverage"), "season": season_line(b),
              "man": side(r, "man"), "zone": side(r, "zone")}
         per_team.setdefault(code(r.get("team")), []).append(d)
     for t, lst in per_team.items():
@@ -154,7 +154,9 @@ def main():
             continue
         rec_team.setdefault(code(r.get("team")), []).append(
             {"player": r.get("player"), "pos": r.get("position"), "games": r.get("player_game_count"),
-             "total_targets": tm, "vs_man": side(r, "man"), "vs_zone": side(r, "zone")})
+             "total_targets": tm, "all_targets": r.get("base_targets"),
+             "uncharted_targets": (r.get("base_targets") - tm) if isinstance(r.get("base_targets"), (int, float)) else None,
+             "vs_man": side(r, "man"), "vs_zone": side(r, "zone")})
     for t, lst in rec_team.items():
         lst.sort(key=lambda d: -d["total_targets"])
         T(t)["offense"]["receivers"] = lst[:20]
