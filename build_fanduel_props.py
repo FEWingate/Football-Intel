@@ -101,6 +101,29 @@ def current_week_game_codes():
     /odds endpoint happens to return (confirmed real gap: that endpoint
     returned 27 games spanning two full weeks, not just this one)."""
     pairs = set()
+    # REAL FIX (2026-10-16): evidence_bootstrap/ is local-only and was left on
+    # Week 5, so every Week 6 line was filtered out (0 games written). The
+    # latest game_breakdowns/wkNN/manifest.json is committed, always current,
+    # and is what generate_props_report.py actually reads, so it goes first
+    # whenever its week is >= the bootstrap's week.
+    try:
+        bwk = 0
+        try:
+            with open("evidence_bootstrap/manifest.json", encoding="utf-8") as bf:
+                bwk = int((json.load(bf).get("bootstrap_source") or {}).get("week") or 0)
+        except (OSError, ValueError):
+            bwk = 0
+        wks = sorted(glob.glob("game_breakdowns/wk*/manifest.json"))
+        if wks:
+            with open(wks[-1], encoding="utf-8") as gf:
+                gm = (json.load(gf).get("games") or {})
+            gp = {(g["away"], g["home"]) for g in gm.values()
+                  if g.get("away") and g.get("home")}
+            gwk = max([int(g.get("week") or 0) for g in gm.values()] or [0])
+            if gp and gwk >= bwk:
+                return gp
+    except (OSError, ValueError, KeyError, TypeError):
+        pass
     # REAL FIX (2026-10-07), per Frank's question: evidence_bootstrap/ keeps every
     # earlier week's {AWAY}_{HOME}.json files, so globbing the folder reported
     # weeks-old games as "this week's slate" (79 "games" when the week has 15).

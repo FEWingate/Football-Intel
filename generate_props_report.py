@@ -45,6 +45,7 @@ USAGE:
 
 import argparse
 import copy
+import glob
 import json
 import os
 import re
@@ -231,7 +232,14 @@ def load_evidence_for_game(away, home):
     generation itself uses. Returns (None, None) if neither exists,
     which is a real, reportable gap for this specific game, not
     something to silently paper over."""
-    for path in (f"evidence_bootstrap/{away}_{home}.json", f"evidence/current/{away}_{home}.json"):
+    # REAL FIX (2026-10-16): the Week 6 props run found 0 evidence packages
+    # because only the local, stale evidence_bootstrap/ (Week 5) and a
+    # nonexistent evidence/current/ were searched, while build_evidence_package.py
+    # writes evidence/wkNN/. Newest evidence/wkNN/ now goes first.
+    wk_paths = [f"{d}/{away}_{home}.json"
+                for d in sorted(glob.glob("evidence/wk*"), reverse=True)]
+    for path in wk_paths + [f"evidence_bootstrap/{away}_{home}.json",
+                            f"evidence/current/{away}_{home}.json"]:
         data = load_json(path)
         if data:
             return data, path
