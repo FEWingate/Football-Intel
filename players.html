@@ -389,10 +389,12 @@ function pffAlignFor(p){
   const want = pffNormName(p.name);
   return list.find(r => pffNormName(r.player) === want) || null;
 }
-function slotPctText(p){
+function alignPctText(p, key){
   const a = pffAlignFor(p);
-  return (a && a.slot_rate != null) ? `${Number(a.slot_rate).toFixed(1)}%` : '—';
+  return (a && a[key] != null) ? `${Number(a[key]).toFixed(1)}%` : '—';
 }
+const slotPctText = p => alignPctText(p, 'slot_rate');
+const inlinePctText = p => alignPctText(p, 'inline_rate');
 function alignmentLineHTML(p){
   const a = pffAlignFor(p);
   if(!a || a.slot_rate == null) return '';
@@ -883,7 +885,9 @@ function renderCommittee(){
     <div class="sect"><h3>Running backs — carry &amp; target share</h3><span class="rule"></span></div>
     <div id="committeeRB"></div>
     <div class="sect" style="margin-top:24px"><h3>Wide receivers — target share</h3><span class="rule"></span></div>
-    <div id="committeeWR"></div>`;
+    <div id="committeeWR"></div>
+    <div class="sect" style="margin-top:24px"><h3>Tight ends — target share &amp; alignment</h3><span class="rule"></span></div>
+    <div id="committeeTE"></div>`;
 
   $("committeeTeamSel").innerHTML = teams.map(t =>
     `<option value="${t}"${t===committeeTeam?' selected':''}>${FI_TEAM_NAME[t]||t}</option>`).join('');
@@ -897,7 +901,7 @@ function committeeTable(pos, cols){
     .filter(p => p.team === committeeTeam)
     .sort((a,b) => (b.season.m[cols[0].key]||0) - (a.season.m[cols[0].key]||0));
 
-  if(!rows.length) return `<div class="empty">No ${pos === 'RB' ? 'running backs' : 'wide receivers'} on this team this season.</div>`;
+  if(!rows.length) return `<div class="empty">No ${pos === 'RB' ? 'running backs' : pos === 'TE' ? 'tight ends' : 'wide receivers'} on this team this season.</div>`;
 
   let h = `<div class="lead-wrap" style="max-height:calc(100vh - 300px)"><table class="lead-table"><thead><tr>
     <th class="name-col">Player</th><th>GP</th>
@@ -939,10 +943,21 @@ function renderCommitteeTables(){
     { key:'rz_targets', label:'RZ Targets' },
   ]);
 
-  ['committeeRB','committeeWR'].forEach(id => {
+  $("committeeTE").innerHTML = committeeTable('TE', [
+    { key:'target_share', label:'Target Share', pct:true },
+    ...(PFFREC && Number(season) === 2026 ? [
+      { key:'slot_rate', label:'Slot % (PFF)', get: slotPctText },
+      { key:'inline_rate', label:'Inline % (PFF)', get: inlinePctText }] : []),
+    { key:'rec', label:'Receptions' },
+    { key:'rec_yds', label:'Rec Yds' },
+    { key:'rz_target_share', label:'RZ Target Share', pct:true },
+    { key:'rz_targets', label:'RZ Targets' },
+  ]);
+
+  ['committeeRB','committeeWR','committeeTE'].forEach(id => {
     $(id).querySelectorAll('tr[data-name]').forEach(el => {
       el.onclick = () => {
-        const pos = id === 'committeeRB' ? 'RB' : 'WR';
+        const pos = id === 'committeeRB' ? 'RB' : id === 'committeeTE' ? 'TE' : 'WR';
         const p = PLAYERSTATS.players[pos].find(x => x.name === el.dataset.name);
         // jump to profile view for this player
         $("viewTabs").querySelectorAll("button").forEach(x=>
