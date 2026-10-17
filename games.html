@@ -163,6 +163,22 @@
 .mu-lbl{text-align:center;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.08em;
   text-transform:uppercase;color:var(--text-dim)}
 
+/* Picks modal — Coeus props/parlay picks for one game */
+.pk-note{font-family:var(--font-mono);font-size:10px;color:var(--text-dim);letter-spacing:.04em;margin:0 0 12px;line-height:1.6}
+.pk{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 15px 13px;margin-bottom:10px}
+.pk-top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.pk-name{font-family:var(--font-display);font-weight:700;font-size:15px;letter-spacing:-.01em}
+.pk-price{margin-left:auto;font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--primary)}
+.pk-line{font-family:var(--font-mono);font-size:11.5px;color:var(--text);margin-top:4px}
+.pk-line b.over{color:var(--accent-green)} .pk-line b.under{color:var(--accent-red)}
+.pk-proj{font-family:var(--font-mono);font-size:10.5px;color:var(--text-mid);margin-top:3px}
+.pk-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.pk-tag{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;
+  padding:2px 7px;border-radius:99px;border:1px solid var(--border2);color:var(--text-mid)}
+.pk-tag.best{color:var(--accent-gold);border-color:var(--accent-gold)}
+.pk-tag.par{color:var(--accent-blue);border-color:var(--accent-blue)}
+.pk-why{font-size:12.5px;line-height:1.55;color:var(--text-mid);margin-top:8px}
+
 /* Threats modal — same cards as the Threat System page (threats.html), scoped to .tmod */
 .tmod .tier-nuclear{--tc:var(--accent-red)}
 .tmod .tier-elite{--tc:var(--accent-gold)}
@@ -251,6 +267,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/16.3.0/lib/marked.umd.min.js"></script>
 <script>
 let GAMES = null, THREATS = null, MATCHUP = null, GB_MANIFEST = null, PLAYERS = null;
+let PICKS = {}, PICKS_META = {};   // Coeus props/parlay picks keyed by 'AWAY_HOME'
 const main = fiShell({ page: 'games', pageLabel: 'Games', status: 'loading' });
 const $ = id => document.getElementById(id);
 const pad = n => String(n).padStart(2, '0');
@@ -325,6 +342,7 @@ async function load(week){
     const r4 = await fetch(`game_breakdowns/wk${pad(week)}/manifest.json`, { cache: 'no-store' });
     if (r4.ok) GB_MANIFEST = await r4.json();
   } catch (e){ /* no Game Breakdowns generated for this week yet — button disables per-game */ }
+  await loadPicks(week);
   // Real season-cumulative leaders (players/latest.json) — for the
   // Tue-Sat ticker state. Fetched every load regardless of current day,
   // since the day can roll over while the tab stays open.
@@ -338,6 +356,100 @@ async function load(week){
   render();
   renderTickers();
   startEspnPolling(); // re-armed on every week load/switch — resumes automatically if the newly loaded week has a live game
+}
+
+/* ── Coeus picks for the game cards: props_reports/wkNN/*.json (every batch + the
+   whole-week parlay file), matched to games through fanduel_props/latest.json's
+   canonical_event_id -> AWAY/HOME codes. Anything that can't be matched is skipped. ── */
+const PK_MARKETS = {
+  player_passing_yards:'Pass yds', player_rushing_yards:'Rush yds', player_receiving_yards:'Rec yds',
+  player_receptions:'Receptions', player_anytime_td:'Anytime TD', anytime_td:'Anytime TD',
+  h2h:'Moneyline', spreads:'Spread', totals:'Total'
+};
+function pkMarket(k){
+  if (PK_MARKETS[k]) return PK_MARKETS[k];
+  return String(k || '').replace(/^player_/, '').replace(/_/g, ' ');
+}
+function pkAmerican(d){
+  if (!d || d <= 1) return '';
+  return d >= 2 ? '+' + Math.round((d - 1) * 100) : String(Math.round(-100 / (d - 1)));
+}
+async function loadPicks(week){
+  PICKS = {}; PICKS_META = {};
+  try {
+    const wk = `wk${pad(week)}`;
+    const [mr, fr] = await Promise.all([
+      fetch(`props_reports/${wk}/manifest.json`, { cache: 'no-store' }),
+      fetch(`fanduel_props/latest.json`, { cache: 'no-store' })
+    ]);
+    if (!mr.ok || !fr.ok) return;
+    const manifest = await mr.json(), fd = await fr.json();
+    const eid = {};
+    for (const g of (fd.games || [])) eid[g.canonical_event_id] = `${g.away_code}_${g.home_code}`;
+    PICKS_META = { fanduel: fd.generated_at, report: null };
+    const add = (p, tag, cls) => {
+      const key = eid[p.canonical_event_id];
+      if (!key || !p.player) return;
+      const id = [p.canonical_event_id, p.market_key, p.player, p.side || '', p.line ?? p.point ?? ''].join('|');
+      const bucket = PICKS[key] || (PICKS[key] = {});
+      const e = bucket[id] || (bucket[id] = { p, tags: [], best: 99, edge: -1 });
+      if (!e.tags.some(t => t.t === tag)) e.tags.push({ t: tag, c: cls });
+      if (p.reason && !e.p.reason) e.p = Object.assign({}, e.p, { reason: p.reason });
+      if (p.projection != null && e.p.projection == null) e.p = Object.assign({}, e.p, { projection: p.projection, projection_edge: p.projection_edge });
+      if (p.rank != null && cls === 'best') e.best = Math.min(e.best, p.rank);
+      if (p.projection_edge != null) e.edge = Math.max(e.edge, Math.abs(p.projection_edge));
+    };
+    const legFamilies = { parlays: 'parlay', td_parlays: 'TD parlay', spread_parlays: 'spread parlay' };
+    for (const name of Object.keys(manifest.batches || {})) {
+      const r = await fetch(`props_reports/${wk}/${name}`, { cache: 'no-store' });
+      if (!r.ok) continue;
+      const d = await r.json();
+      if (d.generated_at && (!PICKS_META.report || d.generated_at > PICKS_META.report)) PICKS_META.report = d.generated_at;
+      for (const gm of ((d.prop_breakdown || {}).per_game || []))
+        for (const p of (gm.picks || [])) add(p, 'Prop pick', '');
+      for (const [side, list] of Object.entries(d.favorite_ou || {}))
+        if (Array.isArray(list))
+          for (const p of list) if (p && p.canonical_event_id)
+            add(p, side === 'overs' ? 'Favorite over' : side === 'unders' ? 'Favorite under' : 'Favorite', '');
+      for (const p of ((d.best_10 || {}).picks || [])) add(p, `Best 10 #${p.rank}`, 'best');
+      for (const [fam, label] of Object.entries(legFamilies))
+        for (const [n, par] of Object.entries(d[fam] || {}))
+          for (const leg of ((par && par.legs) || [])) add(leg, `${n}-leg ${label}`, 'par');
+    }
+    for (const k of Object.keys(PICKS)) PICKS[k] = Object.values(PICKS[k]).sort(
+      (a, b) => (a.best - b.best) || (b.edge - a.edge) || String(a.p.player).localeCompare(String(b.p.player)));
+  } catch (e){ PICKS = {}; /* no props report for this week — Picks button just disables */ }
+}
+function picksFor(g){ return PICKS[`${g.away}_${g.home}`] || []; }
+function openPicks(gid, source){
+  const g = GAMES.games.find(x => x.game_id === gid);
+  if (!g) return;
+  lastFocus = source;
+  const list = picksFor(g);
+  $('mTitle').innerHTML = `${fiLogoHTML(g.away, 34)} ${g.away} <em>at</em> ${g.home} ${fiLogoHTML(g.home, 34)}`;
+  $('mSub').textContent = `Coeus picks for this game \u00b7 ${list.length} pick${list.length === 1 ? '' : 's'}`;
+  const when = iso => iso ? new Date(iso).toLocaleString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' ET' : '';
+  const note = `<p class="pk-note">Every Coeus pick that involves this game \u2014 prop picks, favorite overs/unders, Best 10 and parlay legs. `
+    + `Prices are FanDuel as of ${esc(when(PICKS_META.fanduel))}; report generated ${esc(when(PICKS_META.report))}. Lines move before kickoff.</p>`;
+  const cards = list.map(({ p, tags }) => {
+    const mk = pkMarket(p.market_key), ln = p.line ?? p.point;
+    const side = p.side ? `<b class="${esc(p.side)}">${esc(p.side.toUpperCase())}</b> ` : '';
+    const lineTxt = p.market_key === 'player_anytime_td' || p.market_key === 'anytime_td'
+      ? 'Anytime TD' : `${side}${ln != null ? esc(String(ln)) + ' ' : ''}${esc(mk)}`;
+    const am = pkAmerican(p.price);
+    const proj = p.projection != null
+      ? `<div class="pk-proj">Coeus projection <b>${esc(String(p.projection))}</b>${p.projection_edge != null ? ` \u00b7 edge ${p.projection_edge > 0 ? '+' : ''}${esc(String(p.projection_edge))}` : ''}${p.games_2026 ? ` \u00b7 ${esc(String(p.games_2026))} games in 2026` : ''}</div>` : '';
+    return `<div class="pk">
+      <div class="pk-top"><span class="pk-name">${esc(p.player)}</span>
+        <span class="pk-price">${esc(am)}${p.price ? ` <span style="color:var(--text-dim);font-weight:500">(${esc(String(p.price))})</span>` : ''}</span></div>
+      <div class="pk-line">${lineTxt}</div>${proj}
+      <div class="pk-tags">${tags.map(t => `<span class="pk-tag ${t.c}">${esc(t.t)}</span>`).join('')}</div>
+      ${p.reason ? `<div class="pk-why">${esc(p.reason)}</div>` : ''}
+    </div>`;
+  }).join('');
+  $('mBody').innerHTML = note + (cards || '<div class="empty">No Coeus picks for this game.</div>');
+  $('scrim').classList.add('open'); $('modal').classList.add('open');
+  $('mClose').focus();
 }
 
 function threatCount(team){
@@ -744,6 +856,7 @@ function render(){
       const gameStarted = g.played || kickoffHasPassed(g);
       const hasGB = gbManifestHas && !gameStarted;
       const hasMatchup = MATCHUP && MATCHUP.teams && MATCHUP.teams[g.away] && MATCHUP.teams[g.home];
+      const hasPicks = picksFor(g).length > 0;
       const hasThreats = THREATS && THREATS.teams && (THREATS.teams[g.away] || THREATS.teams[g.home]);
 
       html += `<div class="gcard${totalThreats >= 4 ? ' hot' : ''}" data-gid="${g.game_id}"
@@ -780,6 +893,8 @@ function render(){
             title="${hasMatchup ? '' : 'Matchup stats not built for this week'}">Matchup</button>
           <button type="button" data-action="threats" ${hasThreats ? '' : 'disabled'}
             title="${hasThreats ? '' : 'No threat board for this week'}">Threats</button>
+          <button type="button" data-action="picks" ${hasPicks ? '' : 'disabled'}
+            title="${hasPicks ? '' : 'No Coeus picks for this game'}">Picks${hasPicks ? ` <i style="font-style:normal;opacity:.7">${picksFor(g).length}</i>` : ''}</button>
           <button type="button" data-action="box">Box score</button>
           <button type="button" data-action="breakdown" ${hasGB ? '' : 'disabled'}
             title="${hasGB ? '' : (gameStarted
@@ -809,6 +924,7 @@ function render(){
         const action = btn.dataset.action;
         if (action === 'matchup') openMatchup(gid, btn);
         else if (action === 'threats') openThreats(gid, btn);
+        else if (action === 'picks') openPicks(gid, btn);
         else if (action === 'box') openGame(gid, btn);
         else if (action === 'breakdown') openGameBreakdown(gid, btn);
         else if (action === 'cheatsheet') openCheatSheet(gid, btn);
