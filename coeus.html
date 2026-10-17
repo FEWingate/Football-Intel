@@ -1322,6 +1322,24 @@ function rankSlotDefenses(win, limit, worstFirst){
   return limit ? rows.slice(0, limit) : rows;
 }
 
+// The weak (or tough) slot defenses that actually play this week, with who they face — shown above the
+// player list so the question "bottom-5 defenses AND the players they face" is answered in one place.
+function slotDefensesThisWeek(spec){
+  const season = PFF?.slot?.season_to_date || {}, l3 = PFF?.slot?.last3?.teams || {};
+  const rows = [];
+  for(const [team, d] of Object.entries(season)){
+    const faces = TEAM_OPPONENT[team];
+    if(!faces || d.rank_yards_pg == null) continue;
+    if(spec.opponent_rank_min && d.rank_yards_pg < spec.opponent_rank_min) continue;
+    if(spec.opponent_rank_max && d.rank_yards_pg > spec.opponent_rank_max) continue;
+    rows.push({ team, faces, window: 'season', rank_slot_yards_pg: d.rank_yards_pg, slot_yards_pg: d.slot_yards_pg,
+      rank_yards_per_target: d.rank_yards_per_target, yards_per_target: d.yards_per_target,
+      slot_targets_pg: d.slot_targets_pg, catch_rate: d.catch_rate, games: d.games, last3_rank: l3[team]?.rank_yards_pg ?? null });
+  }
+  rows.sort((a, b) => spec.opponent_rank_max ? a.rank_slot_yards_pg - b.rank_slot_yards_pg : b.rank_slot_yards_pg - a.rank_slot_yards_pg);
+  return rows;
+}
+
 function findSlotMatchups(spec){
   const minSlot = spec.min_slot_rate ?? 40;
   const recs = PFF?.receivers?.teams || {}, slot = PFF?.slot?.season_to_date || {};
@@ -1396,9 +1414,9 @@ function pffContextForFreeform(spec){
 function renderSlotDefenseTable(rows){
   if(!rows.length) return `<div class="result-empty">No PFF slot-defense rows available.</div>`;
   return `<table class="result-table"><thead><tr>
-    <th>Defense</th><th>Slot yds/g (rank)</th><th>Yds/target (rank)</th><th>Targets/g</th><th>Catch %</th><th>Last 3 rank</th>
+    <th>Defense</th>${rows.some(r => r.faces) ? '<th>Faces this week</th>' : ''}<th>Slot yds/g (rank)</th><th>Yds/target (rank)</th><th>Targets/g</th><th>Catch %</th><th>Last 3 rank</th>
     </tr></thead><tbody>
-    ${rows.map(r => `<tr><td>${esc(r.team)}</td><td>${r.slot_yards_pg} (#${r.rank_slot_yards_pg})</td>
+    ${rows.map(r => `<tr><td>${esc(r.team)}</td>${rows.some(x => x.faces) ? `<td>${esc(r.faces || '')}</td>` : ''}<td>${r.slot_yards_pg} (#${r.rank_slot_yards_pg})</td>
       <td>${r.yards_per_target} (#${r.rank_yards_per_target})</td><td>${r.slot_targets_pg}</td>
       <td>${r.catch_rate ?? '—'}</td><td>${r.last3_rank != null ? '#' + r.last3_rank : '—'}</td></tr>`).join('')}
     </tbody></table>
@@ -1594,8 +1612,11 @@ for "which defenses are worst/best against the slot" questions. window is "seaso
 "slot_matchups" — this week's real slot receivers (PFF alignment) paired with the opposing defense's \
 slot coverage rank. Use for "which slot receivers have the best/worst matchup this week" questions. \
 opponent_rank_min follows the bottom-N convention (23 = bottom 10, 28 = bottom 5); use \
-opponent_rank_max for tough defenses (top N):
-{"mode":"slot_matchups","opponent_rank_min":23,"limit":15}
+opponent_rank_max for tough defenses (top N). min_slot_rate is the receiver's slot percentage floor \
+(default 40; "40% or more" -> 40, "primary slot" -> 50). The answer shows the matching defenses and the \
+receivers they face (WR, TE and RB all count). Bottom 5 -> 28, bottom 10 -> 23. Use a large limit (30) when \
+the person asks to see ALL matching players:
+{"mode":"slot_matchups","opponent_rank_min":28,"min_slot_rate":40,"limit":30}
 
 FIVE MORE REAL MODES — check for these too before defaulting to freeform:
 
@@ -2284,13 +2305,15 @@ async function ask(question, prebuiltSpec){
       const rows = spec.mode === 'slot_defense'
         ? rankSlotDefenses(spec.window === 'last3' ? 'last3' : 'season', spec.limit || 10, spec.worst_first !== false)
         : findSlotMatchups(spec);
+      const defRows = spec.mode === 'slot_matchups' ? slotDefensesThisWeek(spec) : [];
       const narration = rows.length
         ? await callClaude(NARRATE_SYSTEM + `\n\nThese rows come from PFF slot data. In slot-defense rows, rank 1 is the TOUGHEST slot defense (fewest slot yards allowed) and rank 32 the WEAKEST. Label figures as PFF slot figures.`,
-            `Question: ${question}\nReal results: ${JSON.stringify(rows)}`, 800)
+            `Question: ${question}\nReal results: ${JSON.stringify(spec.mode === 'slot_matchups' ? { defenses_this_week: defRows, receivers: rows } : rows)}`, 800)
         : '';
       box.innerHTML = `<div class="answer-q">${esc(question)}</div>
         <span class="answer-mode filter">PFF slot data (private, local) — computed, not guessed</span>
-        ${spec.mode === 'slot_defense' ? renderSlotDefenseTable(rows) : renderSlotMatchupTable(rows)}
+        ${spec.mode === 'slot_defense' ? renderSlotDefenseTable(rows)
+          : (defRows.length ? `<div class="freeform-caveat" style="margin:8px 0 4px">Slot defenses playing this week that match your filter:</div>${renderSlotDefenseTable(defRows)}<div class="freeform-caveat" style="margin:12px 0 4px">Receivers they face with a slot rate of ${esc(spec.min_slot_rate ?? 40)}% or more (min. 8 targets):</div>` : '') + renderSlotMatchupTable(rows)}
         ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
     } else if(spec.mode !== 'freeform' && spec.position){
       const rows = runFilter(spec);
@@ -2343,7 +2366,7 @@ const FEATURED_EXAMPLES = [
   { label: "Which defenses are weakest against the slot? (PFF, local only)",
     spec: { mode: 'slot_defense', window: 'season', limit: 10, worst_first: true } },
   { label: "Which slot receivers have the best matchup this week? (PFF, local only)",
-    spec: { mode: 'slot_matchups', opponent_rank_min: 23, limit: 15 } },
+    spec: { mode: 'slot_matchups', opponent_rank_min: 23, min_slot_rate: 40, limit: 30 } },
 ];
 
 async function init(){
