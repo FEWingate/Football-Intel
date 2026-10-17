@@ -22,10 +22,12 @@ THE RULE (ranks are 1 = best ... 32 = worst):
   * Hedged forms ("one of the league's worst", "among the league's best",
     "nearly the league's worst") need rank >= 27 (worst) / <= 6 (best).
   * "tied", "but one", "-tier" and already-qualified forms ("3rd-worst",
-    "2nd-best") are left alone.
-  * A wrong ABSOLUTE is rewritten:  league-worst  ->  3rd-worst
-                                    the league's worst -> the league's 3rd-worst
-                                    worst in the NFL  -> 3rd-worst in the NFL
+    "bottom-5") are left alone.
+  * A wrong ABSOLUTE is rewritten to a plain tier (rank 30-32 = bottom-3,
+    28-32 = bottom-5, 23-32 = bottom-10; top-3/5/10 on the best side):
+                                    league-worst   ->  bottom-3
+                                    the league's worst -> a bottom-3
+                                    worst in the NFL  -> bottom-3 in the NFL
   * A wrong HEDGE is not rewritten (the sentence needs a human look); it is
     reported as REVIEW.
   * An absolute with no rank next to it can't be checked; reported as
@@ -120,29 +122,43 @@ def scan(text):
                 if hedged:
                     rec["status"] = "OK" if rank >= 27 else "REVIEW"
                 else:
-                    rec["status"] = "OK" if rank >= TEAMS else ("FIX" if rank >= 17 else "REVIEW")
+                    rec["status"] = "OK" if rank >= TEAMS else ("FIX" if rank >= 23 else "REVIEW")
             else:
                 if hedged:
                     rec["status"] = "OK" if rank <= 6 else "REVIEW"
                 else:
-                    rec["status"] = "OK" if rank <= 1 else ("FIX" if rank <= 16 else "REVIEW")
+                    rec["status"] = "OK" if rank <= 1 else ("FIX" if rank <= 10 else "REVIEW")
             found.append(rec)
     return sorted(found, key=lambda r: r["span"][0])
 
 
+def _tier(n):
+    """Smallest of 3 / 5 / 10 that contains position n (1 = the extreme end), else None."""
+    for t in (3, 5, 10):
+        if n <= t:
+            return t
+    return None
+
+
 def _replacement(rec):
+    """Rewrites a wrong absolute superlative to a plain tier the rank supports:
+    rank 30-32 -> "bottom-3", 28-32 -> "bottom-5", 23-32 -> "bottom-10"
+    (and top-3 / top-5 / top-10 on the best side). The exact rank stays in the
+    parenthetical beside it, so nothing is lost."""
     r = rec["rank"]
     n = (TEAMS + 1 - r) if rec["kind"] == "worst" else r
-    word = f"{_ordinal(n)}-{rec['kind']}"
+    t = _tier(n)
+    word = f"{'bottom' if rec['kind'] == 'worst' else 'top'}-{t}"
     phrase = rec["phrase"]
     low = phrase.lower()
     if low.endswith("-ranked"):
         return word + "-ranked"
-    if "'s" in low or "’s" in low:
-        return re.sub(r"(worst|best)$", word, phrase, flags=re.I)
-    if low.startswith(("worst", "best")):
-        return re.sub(r"^(worst|best)", word, phrase, flags=re.I)
-    return word  # league-worst / NFL-best
+    if "'s" in low or "\u2019s" in low:      # the league's worst  ->  a bottom-3
+        return "a " + word
+    m = re.match(r"(?:worst|best)[- ]in[- ]the[- ](league|NFL)$", phrase, re.I)
+    if m:                                    # worst in the NFL  ->  bottom-3 in the NFL
+        return f"{word} in the {m.group(1)}"
+    return word                              # league-worst / and worst
 
 
 def fix_superlatives(text):

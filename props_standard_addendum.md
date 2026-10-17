@@ -120,20 +120,20 @@ beside it.
 - "league-worst", "worst in the league/NFL", "the league's worst" and
   "dead last" mean RANK 32 and nothing else. "league-best", "best in the
   league/NFL" and "the league's best" mean RANK 1 and nothing else.
-- If the rank is anything else, state the ordinal instead: 30th is the
-  "3rd-worst", 31st is the "2nd-worst", 2nd is the "2nd-best". Write
-  "ranked 30th (3rd-worst in the league)", never "league-worst (30th)".
-- Hedges are allowed only when true: "one of the league's worst" needs
-  rank 27 or lower; "one of the league's best" needs rank 6 or higher.
-  For anything between, just state the rank.
-- Every superlative must carry its rank in the SAME clause, in
-  parentheses, so it can be checked: "BUF allows 48.4 rec yds/gm to RBs
-  (30th, 3rd-worst)". A superlative with no rank beside it is a claim
-  nobody can verify — do not write one. When a later sentence refers back
-  to an earlier ranked number, repeat the rank or use "that 30th-ranked
-  ...", not a bare "league-worst".
+- For any other rank, use a simple tier instead: ranks 30-32 are
+  "bottom 3", 28-32 "bottom 5", 23-32 "bottom 10"; ranks 1-3 are "top 3",
+  1-5 "top 5", 1-10 "top 10". Pick the smallest tier that is true and
+  put the exact rank beside it: "BUF allows 48.4 rec yds/gm to RBs
+  (30th, bottom 3)", never "league-worst (30th)". Past 10th, just state
+  the rank; it is not a superlative.
+- Every tier or superlative must carry its rank in the SAME clause, in
+  parentheses, so it can be checked. A superlative with no rank beside it
+  is a claim nobody can verify — do not write one. When a later sentence
+  refers back to an earlier ranked number, repeat the rank ("that
+  30th-ranked slot defense"), not a bare "league-worst".
 - Tied ranks: say "tied for worst (31st)" only when the evidence shows
   the tie.
 - A script (superlative_fix.py) checks every superlative against the rank
   beside it after the report is written and rewrites any that contradict
-  it. Getting it right the first time keeps the sentence you meant.
+  it to the matching "bottom-N" / "top-N". Getting it right the first time
+  keeps the sentence you meant.
