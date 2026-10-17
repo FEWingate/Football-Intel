@@ -171,6 +171,8 @@
 .pk-price{margin-left:auto;font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--primary)}
 .pk-line{font-family:var(--font-mono);font-size:11.5px;color:var(--text);margin-top:4px}
 .pk-line b.over{color:var(--accent-green)} .pk-line b.under{color:var(--accent-red)}
+.pk-edge.pos{color:var(--accent-green);font-weight:700}
+.pk-edge.neg{color:var(--accent-red);font-weight:700}
 .pk-proj{font-family:var(--font-mono);font-size:10.5px;color:var(--text-mid);margin-top:3px}
 .pk-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
 .pk-tag{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;
@@ -439,13 +441,14 @@ function openPicks(gid, source){
     const am = pkAmerican(p.price);
     // The report stores projection_edge as an absolute value; the real signed edge is projection minus line
     // (negative for an under whose projection sits below the line).
-    let edgeTxt = '';
+    let edgeTxt = '', edgeCls = '';
     if (p.projection != null && ln != null && !isNaN(Number(ln))) {
       const e = Math.round((Number(p.projection) - Number(ln)) * 10) / 10;
       edgeTxt = (e > 0 ? '+' : e < 0 ? '\u2212' : '') + Math.abs(e);
+      edgeCls = e > 0 ? 'pos' : e < 0 ? 'neg' : '';
     } else if (p.projection_edge != null) edgeTxt = String(p.projection_edge);
     const proj = p.projection != null
-      ? `<div class="pk-proj">Coeus projection <b>${esc(String(p.projection))}</b>${edgeTxt ? ` \u00b7 edge ${edgeTxt}` : ''}${p.games_2026 ? ` \u00b7 ${esc(String(p.games_2026))} games in 2026` : ''}</div>` : '';
+      ? `<div class="pk-proj">Coeus projection <b>${esc(String(p.projection))}</b>${edgeTxt ? ` \u00b7 edge <span class="pk-edge ${edgeCls}">${edgeTxt}</span>` : ''}${p.games_2026 ? ` \u00b7 ${esc(String(p.games_2026))} games in 2026` : ''}</div>` : '';
     return `<div class="pk">
       <div class="pk-top"><span class="pk-name">${esc(p.player)}</span>
         <span class="pk-price">${esc(am)}${p.price ? ` <span style="color:var(--text-dim);font-weight:500">(${esc(String(p.price))})</span>` : ''}</span></div>
