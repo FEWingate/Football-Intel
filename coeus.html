@@ -139,6 +139,10 @@ let PLAYERS_2025_BY_ID = {};   // gsis_id -> real 2025 player record (for log lo
 let GB_GAMES = [];             // real Game Breakdowns discovered across every real week folder
 let TEAM_OPPONENT = {};      // {team: opponentTeam} for the current week
 let POSITION_RANKS = {};     // {team: {pos: [{...player, posRank}, ...]}}
+// PFF slot data is PRIVATE (gitignored, never published). It loads only when this page is served
+// from a machine that actually has private/pff/ (i.e. Frank's localhost server); on the public
+// site those files 404 and PFF stays null — every PFF feature below then says so instead of guessing.
+let PFF = null;              // { slot: slot_defense.json, receivers: receivers.json | null }
 
 const pad = n => String(n).padStart(2, '0');
 
@@ -304,6 +308,20 @@ async function loadData(){
     const dRes = await fetch(`dfs/wk${wk}.json`);
     if(dRes.ok) DFS_DATA = await dRes.json();
   }catch(e){ /* DFS_DATA stays null — handled explicitly wherever it's used */ }
+
+  // PRIVATE PFF data (optional — see PFF above). Written by pff_pull.py.
+  PFF = null;
+  try{
+    const [sr, rr] = await Promise.all([
+      fetch('private/pff/slot_defense.json', { cache: 'no-store' }),
+      fetch('private/pff/receivers.json', { cache: 'no-store' }),
+    ]);
+    if(sr.ok){
+      const slot = await sr.json();
+      if(slot && slot.season_to_date) PFF = { slot, receivers: rr.ok ? await rr.json() : null };
+    }
+  }catch(e){ PFF = null; }
+  renderPffStatus();
 
   TEAM_OPPONENT = {};
   for(const g of GAMES.games || []){
@@ -1262,6 +1280,122 @@ const MIN_RELEVANCE = { QB: 50, RB: 10, WR: 10, TE: 10 };
 // as every other position gets a real cap.
 const DEFAULT_POS_RANK_MAX = { QB: 1, RB: 1, WR: 3, TE: 2 };
 
+// ── PFF SLOT DATA (private; local only) ─────────────────────────────
+// Rank 1 = toughest defense vs the slot (fewest slot yards allowed), 32 = weakest — same direction
+// as every other defense rank on this site. Receivers' slot_rate/wide_rate/inline_rate are the share
+// of their snaps lined up in each spot.
+const PFF_ABSENT_NOTE = "PFF slot data isn't loaded in this session. It's private and only loads when "
+  + "Football Intel is served from the machine that has private/pff/ (run pff_pull.py there), so it "
+  + "isn't available on the public site.";
+
+function renderPffStatus(){
+  const el = $('pffStatus');
+  if(!el) return;
+  el.innerHTML = PFF
+    ? `● PFF slot data loaded (private, local) — through week ${esc(PFF.slot.through_week)}`
+    : '○ PFF slot data not loaded (private; local only)';
+  el.style.color = PFF ? 'var(--accent-green)' : 'var(--text-dim)';
+}
+
+function pffSlotWindow(win){
+  if(!PFF) return {};
+  return win === 'last3' ? ((PFF.slot.last3 || {}).teams || {}) : (PFF.slot.season_to_date || {});
+}
+
+function rankSlotDefenses(win, limit, worstFirst){
+  const cur = pffSlotWindow(win), season = PFF?.slot?.season_to_date || {}, l3 = PFF?.slot?.last3?.teams || {};
+  const rows = Object.keys(cur).filter(t => cur[t].rank_yards_pg != null).map(t => ({
+    team: t, window: win === 'last3' ? 'last 3 games' : 'season',
+    rank_slot_yards_pg: cur[t].rank_yards_pg, slot_yards_pg: cur[t].yards_pg ?? cur[t].slot_yards_pg,
+    rank_yards_per_target: cur[t].rank_yards_per_target, yards_per_target: cur[t].yards_per_target,
+    slot_targets_pg: cur[t].slot_targets_pg, catch_rate: cur[t].catch_rate, games: cur[t].games,
+    season_rank: season[t]?.rank_yards_pg ?? null, last3_rank: l3[t]?.rank_yards_pg ?? null,
+  }));
+  rows.sort((a, b) => worstFirst === false ? a.rank_slot_yards_pg - b.rank_slot_yards_pg
+                                            : b.rank_slot_yards_pg - a.rank_slot_yards_pg);
+  return limit ? rows.slice(0, limit) : rows;
+}
+
+function findSlotMatchups(spec){
+  const minSlot = spec.min_slot_rate ?? 40;
+  const recs = PFF?.receivers?.teams || {}, slot = PFF?.slot?.season_to_date || {};
+  const rows = [];
+  for(const team of Object.keys(TEAM_OPPONENT)){
+    const opp = TEAM_OPPONENT[team], d = slot[opp];
+    if(!d || !recs[team]) continue;
+    if(spec.opponent_rank_min && (d.rank_yards_pg ?? 0) < spec.opponent_rank_min) continue;
+    if(spec.opponent_rank_max && (d.rank_yards_pg ?? 99) > spec.opponent_rank_max) continue;
+    for(const r of recs[team]){
+      if((r.slot_rate || 0) < minSlot || (r.targets || 0) < 8) continue;
+      rows.push({
+        player: r.player, pos: r.pos, team, opponent: opp,
+        slot_rate: r.slot_rate, wide_rate: r.wide_rate, inline_rate: r.inline_rate,
+        role: r.slot_rate >= 50 ? 'primary slot' : 'hybrid (slot/wide mix)',
+        targets: r.targets, target_share: r.target_share, yprr: r.yprr,
+        opp_slot_yards_pg: d.slot_yards_pg, opp_slot_yards_pg_rank: d.rank_yards_pg,
+        opp_yards_per_target: d.yards_per_target, opp_yards_per_target_rank: d.rank_yards_per_target,
+      });
+    }
+  }
+  rows.sort((a, b) => spec.opponent_rank_max ? a.opp_slot_yards_pg_rank - b.opp_slot_yards_pg_rank
+                                             : (b.opp_slot_yards_pg_rank - a.opp_slot_yards_pg_rank) || (b.slot_rate - a.slot_rate));
+  return rows.slice(0, spec.limit || 15);
+}
+
+// Compact PFF block for the free-form prompt: every team's slot-coverage profile, every receiver who
+// really works the slot, and (for any team the question names, or its opponent) that offense's full
+// receiver alignment list. null when PFF isn't loaded.
+function pffContextForFreeform(spec){
+  if(!PFF) return null;
+  const season = PFF.slot.season_to_date || {}, l3 = PFF.slot.last3?.teams || {};
+  const defense = {};
+  for(const t of Object.keys(season)){
+    const s = season[t], r = l3[t] || {};
+    defense[t] = { season: { slot_yds_pg: s.slot_yards_pg, rank: s.rank_yards_pg,
+                             yds_per_target: s.yards_per_target, ypt_rank: s.rank_yards_per_target,
+                             targets_pg: s.slot_targets_pg, games: s.games },
+                   last3: { slot_yds_pg: r.slot_yards_pg, rank: r.rank_yards_pg } };
+  }
+  const named = new Set();
+  for(const t of (spec?.mentioned_teams || [])){ const u = t.trim().toUpperCase(); named.add(u); if(TEAM_OPPONENT[u]) named.add(TEAM_OPPONENT[u]); }
+  const recs = PFF.receivers?.teams || {}, receivers = {};
+  for(const t of Object.keys(recs)){
+    const list = recs[t].filter(r => named.has(t) || ((r.slot_rate || 0) >= 25 && (r.targets || 0) >= 8));
+    if(list.length) receivers[t] = list.map(r => ({ player: r.player, pos: r.pos, slot_rate: r.slot_rate,
+      wide_rate: r.wide_rate, inline_rate: r.inline_rate, targets: r.targets, target_share: r.target_share, yprr: r.yprr }));
+  }
+  return { through_week: PFF.slot.through_week, rank_direction: '1 = toughest slot defense, 32 = weakest',
+           slot_defense_by_team: defense, receivers_by_team: receivers,
+           this_week_opponent: TEAM_OPPONENT };
+}
+
+function renderSlotDefenseTable(rows){
+  if(!rows.length) return `<div class="result-empty">No PFF slot-defense rows available.</div>`;
+  return `<table class="result-table"><thead><tr>
+    <th>Defense</th><th>Slot yds/g (rank)</th><th>Yds/target (rank)</th><th>Targets/g</th><th>Catch %</th><th>Last 3 rank</th>
+    </tr></thead><tbody>
+    ${rows.map(r => `<tr><td>${esc(r.team)}</td><td>${r.slot_yards_pg} (#${r.rank_slot_yards_pg})</td>
+      <td>${r.yards_per_target} (#${r.rank_yards_per_target})</td><td>${r.slot_targets_pg}</td>
+      <td>${r.catch_rate ?? '—'}</td><td>${r.last3_rank != null ? '#' + r.last3_rank : '—'}</td></tr>`).join('')}
+    </tbody></table>
+    <div class="freeform-caveat">Source: PFF slot coverage allowed (private). Rank 1 = toughest, 32 = weakest.</div>`;
+}
+
+function renderSlotMatchupTable(rows){
+  if(!rows.length) return `<div class="result-empty">No slot receivers matched this filter in the PFF data.</div>`;
+  return `<table class="result-table"><thead><tr>
+    <th>Receiver</th><th>Team</th><th>vs.</th><th>Slot / Wide %</th><th>Role</th><th>Targets (share)</th><th>YPRR</th>
+    <th>Opp. slot yds/g (rank)</th><th>Opp. yds/target (rank)</th>
+    </tr></thead><tbody>
+    ${rows.map(r => `<tr><td>${esc(r.player)}</td><td>${esc(r.team)}</td><td>${esc(r.opponent)}</td>
+      <td>${r.slot_rate}% / ${r.wide_rate}%</td><td>${esc(r.role)}</td>
+      <td>${r.targets} (${r.target_share ?? '—'}%)</td><td>${r.yprr ?? '—'}</td>
+      <td>${r.opp_slot_yards_pg} (#${r.opp_slot_yards_pg_rank})</td>
+      <td>${r.opp_yards_per_target} (#${r.opp_yards_per_target_rank})</td></tr>`).join('')}
+    </tbody></table>
+    <div class="freeform-caveat">Source: PFF alignment and slot coverage (private). Rank 1 = toughest, 32 = weakest.</div>`;
+}
+
 function runFilter(spec){
   const pos = spec.position;
   const posPlayers = PLAYERS?.players?.[pos];
@@ -1425,6 +1559,19 @@ For a "which player has the MOST/HIGHEST/LEADS in X" ranking question (not a thr
 sort_by (the stat field to rank by) and limit (how many results, 1 for "which single player"):
 {"mode":"filter","position":"RB","metric_field":"rec_ypg","sort_by":"rec_ypg","limit":1,"opponent_rank_min":28}
 That example answers "which RB has the most receiving yards against a bottom-5 defense."
+
+TWO PRIVATE PFF SLOT MODES — only for questions about the SLOT (receivers who line up in the \
+slot, or defenses' coverage of the slot). "WR3" is NOT the slot; do not route WR3 questions here.
+
+"slot_defense" — ranks DEFENSES by how many yards they allow to receivers in the slot (PFF). Use \
+for "which defenses are worst/best against the slot" questions. window is "season" or "last3":
+{"mode":"slot_defense","window":"season","limit":10,"worst_first":true}
+
+"slot_matchups" — this week's real slot receivers (PFF alignment) paired with the opposing defense's \
+slot coverage rank. Use for "which slot receivers have the best/worst matchup this week" questions. \
+opponent_rank_min follows the bottom-N convention (23 = bottom 10, 28 = bottom 5); use \
+opponent_rank_max for tough defenses (top N):
+{"mode":"slot_matchups","opponent_rank_min":23,"limit":15}
 
 FIVE MORE REAL MODES — check for these too before defaulting to freeform:
 
@@ -1730,6 +1877,17 @@ specific matchup — Hidden Intelligence findings, Threat designations, real inj
 already worked out. Prefer it over re-deriving anything from the shallower data above when it's \
 directly relevant to the question, and never contradict what it already concluded.
 
+WHEN PFF_SLOT_DATA IS PRESENT (it is PRIVATE PFF data — label any figure from it as a PFF slot \
+figure): slot_defense_by_team is how many yards, targets and yards per target each defense allows to \
+receivers lined up in the slot (rank 1 = TOUGHEST slot defense, 32 = WEAKEST — same direction as every \
+other defense rank), season and last 3 games; receivers_by_team gives each receiver's slot_rate / \
+wide_rate / inline_rate (share of snaps in each spot). A slot_rate of 50 or more is a primary slot \
+receiver; anything in between is a hybrid and must be described as one. Cite only numbers present in \
+that block, never infer slot usage for a receiver who is not listed, and note slot-defense numbers \
+describe coverage allowed to the slot position, not any single defender's quality. A WR3 is not \
+automatically a slot receiver. WHEN PFF_SLOT_DATA IS null, PFF is not loaded in this session: if the \
+question depends on slot coverage or receiver alignment, say so plainly and do not estimate it.
+
 DATA (current week, real players, real opponents, real opponent defensive strength):
 ${JSON.stringify(grounding)}
 
@@ -1748,7 +1906,10 @@ ${JSON.stringify(deepTeamData)}
 DEEP_GAME_BREAKDOWN (your own real, complete prior write-up for the specific matchup this \
 question's mentioned teams point to, if one exists — null if no real breakdown has been \
 generated for that matchup yet):
-${deepGameBreakdown ? `${deepGameBreakdown.away} @ ${deepGameBreakdown.home}, ${deepGameBreakdown.week}:\n${deepGameBreakdown.text}` : 'null'}`;
+${deepGameBreakdown ? `${deepGameBreakdown.away} @ ${deepGameBreakdown.home}, ${deepGameBreakdown.week}:\n${deepGameBreakdown.text}` : 'null'}
+
+PFF_SLOT_DATA (private, local only — null when PFF isn't loaded):
+${JSON.stringify(pffContextForFreeform(spec))}`;
   return await callClaude(system, question, 8000);
 }
 
@@ -2080,6 +2241,22 @@ async function ask(question, prebuiltSpec){
         <span class="answer-mode filter">Fantasy points allowed — computed, not guessed</span>
         ${renderFantasyAllowedTable(rows, spec)}
         ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
+    } else if(spec.mode === 'slot_defense' || spec.mode === 'slot_matchups'){
+      if(!PFF){
+        box.innerHTML = `<div class="answer-q">${esc(question)}</div><div class="error">${esc(PFF_ABSENT_NOTE)}</div>`;
+        return;
+      }
+      const rows = spec.mode === 'slot_defense'
+        ? rankSlotDefenses(spec.window === 'last3' ? 'last3' : 'season', spec.limit || 10, spec.worst_first !== false)
+        : findSlotMatchups(spec);
+      const narration = rows.length
+        ? await callClaude(NARRATE_SYSTEM + `\n\nThese rows come from PFF slot data. In slot-defense rows, rank 1 is the TOUGHEST slot defense (fewest slot yards allowed) and rank 32 the WEAKEST. Label figures as PFF slot figures.`,
+            `Question: ${question}\nReal results: ${JSON.stringify(rows)}`, 800)
+        : '';
+      box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+        <span class="answer-mode filter">PFF slot data (private, local) — computed, not guessed</span>
+        ${spec.mode === 'slot_defense' ? renderSlotDefenseTable(rows) : renderSlotMatchupTable(rows)}
+        ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
     } else if(spec.mode !== 'freeform' && spec.position){
       const rows = runFilter(spec);
       const narration = rows.length
@@ -2128,6 +2305,10 @@ const FEATURED_EXAMPLES = [
     spec: { mode: 'historical_h2h' } },
   { label: "Which players have a target or snap share trending up?",
     spec: { mode: 'trending_share' } },
+  { label: "Which defenses are weakest against the slot? (PFF, local only)",
+    spec: { mode: 'slot_defense', window: 'season', limit: 10, worst_first: true } },
+  { label: "Which slot receivers have the best matchup this week? (PFF, local only)",
+    spec: { mode: 'slot_matchups', opponent_rank_min: 23, limit: 15 } },
 ];
 
 async function init(){
@@ -2146,6 +2327,7 @@ async function init(){
         <button id="keySave">Save Key</button>
       </div>
       <div class="key-status" id="keyStatus">${key ? '● Key saved in this browser' : ''}</div>
+      <div class="key-status" id="pffStatus"></div>
     </div>
 
     <div class="qa-section">
