@@ -1,1 +1,1 @@
-{"season": 2026, "week": 6, "players": []}
+{"season": 2026, "week": 6, "players": [{"player_id": 3912547, "name": "Sam Darnold", "team": "SEA", "qbr_total": 58.0, "pts_added": -0.2, "epa_total": 5.8, "pass_epa": 3.8, "run_epa": 1.8, "rank": 1.0, "qualified": true}, {"player_id": 4426338, "name": "Bo Nix", "team": "DEN", "qbr_total": 29.0, "pts_added": -2.9, "epa_total": 0.3, "pass_epa": 0.3, "run_epa": -0.7, "rank": 2.0, "qualified": true}]}
