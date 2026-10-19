@@ -11,6 +11,9 @@ Per team (FI team codes) it writes:
   defense.defenders     - the team's top coverage defenders (CB/S/LB) with PFF coverage grade, targets,
                           catch rate, yards/coverage snap, QB rating against, and each defender's man vs zone line
   offense.receivers     - the team's receivers' man vs zone lines (targets, catches, yards, yprr, EPA, route grade)
+  offense.passing_proxy - TEAM passing production vs man and vs zone, summed from every receiver's charted man/zone
+                          line (targets stand in for attempts). NOT QB-specific: it leaves out sacks, scrambles and
+                          throwaways, and mixes QBs if a team used more than one (flagged via multi_qb).
 Private data: never committed (private/pff/ is gitignored). Merged into the model input only, via pff_context.py.
 """
 import json
@@ -22,6 +25,14 @@ PRIV = os.path.join(ROOT, "private", "pff")
 PFF_TO_FI = {"ARZ": "ARI", "BLT": "BAL", "CLV": "CLE", "HST": "HOU", "JAC": "JAX", "WSH": "WAS", "LA": "LAR"}
 DB_POS = {"CB", "S", "FS", "SS", "LB", "SLOT"}
 MIN_COV_SNAPS = 15
+
+
+def current_season():
+    """PFF's facet files carry no season field, so take it from matchup/current.json (the site's own week pointer)."""
+    try:
+        return int(json.load(open(os.path.join(ROOT, "matchup", "current.json"))).get("season"))
+    except (OSError, ValueError, TypeError):
+        return None
 
 
 def load(name):
@@ -68,6 +79,74 @@ def season_line(b):
 def rank_dict(vals, reverse=False):
     ordered = sorted([k for k in vals if vals[k] is not None], key=lambda k: vals[k], reverse=reverse)
     return {k: i + 1 for i, k in enumerate(ordered)}
+
+
+SUM_KEYS = ("targets", "receptions", "yards", "touchdowns", "interceptions", "drops")
+
+
+def passer_rating(att, comp, yds, td, ints):
+    """NFL passer rating from attempts/completions/yards/TD/INT (targets stand in for attempts)."""
+    if not att:
+        return None
+    a = min(max((comp / att - 0.3) * 5, 0), 2.375)
+    b = min(max((yds / att - 3) * 0.25, 0), 2.375)
+    c = min(max(td / att * 20, 0), 2.375)
+    d = min(max(2.375 - ints / att * 25, 0), 2.375)
+    return round((a + b + c + d) / 6 * 100, 1)
+
+
+def passing_proxy(rcv_rows, qb_rows):
+    """Team passing production vs man/zone, summed from receivers. Returns {team: block}."""
+    agg = {}
+    have_int = False
+    for r in rcv_rows:
+        t = code(r.get("team"))
+        if not t:
+            continue
+        a = agg.setdefault(t, {p: dict.fromkeys(SUM_KEYS, 0) for p in ("man", "zone")})
+        for p in ("man", "zone"):
+            for k in SUM_KEYS:
+                v = r.get(p + "_" + k)
+                if isinstance(v, (int, float)):
+                    a[p][k] += v
+                    if k == "interceptions":
+                        have_int = True
+    qbs = {}
+    for r in qb_rows:
+        t = code(r.get("team"))
+        att = n(r.get("attempts")) or n(r.get("passing_snaps")) or n(r.get("dropbacks"))
+        if t and att:
+            qbs.setdefault(t, []).append({"player": r.get("player"), "attempts": int(att)})
+    out = {}
+    for t, a in agg.items():
+        block = {}
+        for p in ("man", "zone"):
+            q = a[p]
+            tg = q["targets"]
+            line = {k: (int(q[k]) if float(q[k]).is_integer() else q[k]) for k in SUM_KEYS}
+            line.update({"catch_pct": pct(q["receptions"], tg), "yards_per_target": rate(q["yards"], tg),
+                         "td_pct": pct(q["touchdowns"], tg),
+                         "passer_rating": passer_rating(tg, q["receptions"], q["yards"], q["touchdowns"], q["interceptions"])
+                         if have_int else None})
+            block[p] = line
+        tot = block["man"]["targets"] + block["zone"]["targets"]
+        block["man_share_pct"] = pct(block["man"]["targets"], tot)
+        lst = sorted(qbs.get(t, []), key=lambda x: -x["attempts"])
+        total_att = sum(x["attempts"] for x in lst)
+        for x in lst:
+            x["share_pct"] = pct(x["attempts"], total_att)
+        block["qbs"] = lst[:3]
+        block["multi_qb"] = len(lst) > 1 and lst[1]["attempts"] >= 0.15 * total_att
+        out[t] = block
+    for p in ("man", "zone"):
+        ranks = rank_dict({t: b[p]["yards_per_target"] for t, b in out.items()}, reverse=True)  # 1 = best offense
+        for t, b in out.items():
+            b[p]["yards_per_target_rank"] = ranks.get(t)
+    for t, b in out.items():
+        b["note"] = ("Summed from receivers' PFF man/zone charting (targets stand in for attempts). Not QB-specific: "
+                     "excludes sacks, scrambles and throwaways, and mixes QBs when a team used more than one. "
+                     "Rank 1 = best offense (most yards per target).")
+    return out
 
 
 def main():
@@ -161,8 +240,18 @@ def main():
         lst.sort(key=lambda d: -d["total_targets"])
         T(t)["offense"]["receivers"] = lst[:20]
 
+    # ---- team passing production vs man/zone, summed from receivers ----
+    psum = load("facet_passing_summary.json")
+    qb_rows = []
+    if psum:
+        pk = next((k for k, v in psum.items() if isinstance(v, list) and v and isinstance(v[0], dict)), None)
+        qb_rows = psum.get(pk, []) if pk else []
+    for t, blk in passing_proxy(rcv_rows, qb_rows).items():
+        T(t)["offense"]["passing_proxy"] = blk
+    print("passing_proxy: %d teams (QB rows: %d)" % (sum(1 for v in teams.values() if "passing_proxy" in v["offense"]), len(qb_rows)))
+
     out = {"source": "PFF (private) facet leaderboards, season-to-date",
-           "season": (cov or sch or rcv or {}).get("season"), "teams": teams}
+           "season": (cov or sch or rcv or {}).get("season") or current_season(), "teams": teams}
     json.dump(out, open(os.path.join(PRIV, "coverage_context.json"), "w"))
     print("Wrote private/pff/coverage_context.json - %d teams (defenders: %d teams, receivers: %d teams)"
           % (len(teams), len(per_team), len(rec_team)))

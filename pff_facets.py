@@ -11,7 +11,7 @@ import argparse, json, os, shutil, subprocess, sys
 ROOT = os.path.dirname(os.path.abspath(__file__))
 PRIVATE = os.path.join(ROOT, "private", "pff")
 FACETS = ["facet-defense-coverage", "facet-defense-coverage-scheme",
-          "facet-receiving-scheme", "facet-receiving-coverage"]
+          "facet-receiving-scheme", "facet-receiving-coverage", "facet-passing-summary"]
 
 
 def restish():

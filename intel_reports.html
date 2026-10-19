@@ -1258,7 +1258,7 @@ function pffNorm(n){
    nflverse version replaces the PFF one automatically. */
 function pffSeasonNum(){
   if(!PFFCOV) return null;
-  const s = Number(PFFCOV.season);
+  const s = Number(PFFCOV.season || (COVERAGE && COVERAGE.season) || (INTEL && INTEL.season));
   if(!s || ((COVERAGE && COVERAGE.seasons) || []).includes(s)) return null;
   return s;
 }
@@ -1299,7 +1299,6 @@ function renderCoverageReport(){
   const seasons = coverageSeasonList();
   if(coverageSeason == null || !seasons.includes(coverageSeason)) coverageSeason = seasons[0];
   const pffView = isPffSeason();
-  if(pffView && coveragePos === 'QB') coveragePos = 'WR';
 
   if(!seasons.length){
     $("body").innerHTML = `<div class="empty">
@@ -1314,13 +1313,16 @@ function renderCoverageReport(){
     <div class="report-intro">
       How is each receiver doing against man vs. zone coverage so far in ${coverageSeason}? This is PFF's play-by-play
       charting through the latest week, shown for every receiver with 10 or more charted targets. It splits
-      coverage into man and zone only; the call-by-call splits (Cover 1, Cover 2, Cover 3 and so on) and the
-      QB view come from the full-season ${seasons.find(x => x !== coverageSeason) || ''} retrospective. Only plays PFF classified as man or zone are
+      coverage into man and zone only; the call-by-call splits (Cover 1, Cover 2, Cover 3 and so on)
+      come from the full-season ${seasons.find(x => x !== coverageSeason) || ''} retrospective. Only plays PFF classified as man or zone are
       counted, so a receiver's man + zone targets can be lower than his total targets (each card shows both).
+      The QB tab is built from the receivers' numbers: each team's targets, catches, yards and touchdowns against man
+      and zone added together. It is a team-level proxy for the QB, not PFF's own QB split.
       Private PFF data, visible only on your local site.
     </div>
     <div class="report-controls">
       <div class="tabs" id="coveragePosTabs" role="tablist">
+        <button role="tab" data-p="QB" aria-selected="${coveragePos==='QB'}">QB (team)</button>
         <button role="tab" data-p="WR" aria-selected="${coveragePos==='WR'}">WR</button>
         <button role="tab" data-p="TE" aria-selected="${coveragePos==='TE'}">TE</button>
       </div>
@@ -1540,18 +1542,107 @@ function pffCardTableHTML(r){
       </tr>`).join('')}
     </tbody></table></div>`;
 }
+const PFF_QB_ROWS = [
+  ['Targets (≈ attempts)', 'targets', 0], ['Completions', 'receptions', 0], ['Catch %', 'catch_pct', 1],
+  ['Yards', 'yards', 0], ['Yards / target', 'yards_per_target', 1], ['Touchdowns', 'touchdowns', 0],
+  ['TD %', 'td_pct', 1], ['Interceptions', 'interceptions', 0], ['Passer rating', 'passer_rating', 1],
+];
+function renderPffQBGrid(){
+  const q = coverageSearchTerm;
+  const fmt = (v, d) => (v == null || v === '') ? '—' : (typeof v === 'number' ? (d ? v.toFixed(d) : String(Math.round(v))) : v);
+  let teams = Object.entries((PFFCOV && PFFCOV.teams) || {})
+    .map(([team, v]) => ({ team, pp: ((v || {}).offense || {}).passing_proxy }))
+    .filter(t => t.pp);
+  if(q) teams = teams.filter(t => t.team.toLowerCase().includes(q) || (t.pp.qbs || []).some(x => (x.player || '').toLowerCase().includes(q)));
+  teams.sort((a, b) => a.team.localeCompare(b.team));
+  $("coverageGrid").innerHTML = teams.map(({ team, pp }) => {
+    const qbs = pp.qbs || [], lead = qbs[0];
+    const hs = lead && PFFHEAD ? (PFFHEAD[pffNorm(lead.player)+'|'+team] || PFFHEAD[pffNorm(lead.player)] || '') : '';
+    const m = pp.man || {}, z = pp.zone || {};
+    const small = (m.targets || 0) < 30 || (z.targets || 0) < 30;
+    const oppCode = (INTEL && INTEL.teams && INTEL.teams[team]) ? INTEL.teams[team].upcoming_opponent : null;
+    const oppMZ = oppCode ? (((((PFFCOV || {}).teams || {})[oppCode] || {}).defense || {}).man_zone || null) : null;
+    let oppHTML = '';
+    if(oppMZ && oppMZ.man_pct != null){
+      const f1 = v => (v == null ? '—' : Number(v).toFixed(1));
+      const om = oppMZ.vs_man || {}, oz = oppMZ.vs_zone || {};
+      let lean = '';
+      if((m.targets || 0) >= 15 && (z.targets || 0) >= 15 && m.yards_per_target != null && z.yards_per_target != null){
+        const base = ((m.yards || 0) + (z.yards || 0)) / ((m.targets || 0) + (z.targets || 0));
+        const exp = oppMZ.man_pct / 100 * m.yards_per_target + oppMZ.zone_pct / 100 * z.yards_per_target;
+        const d = exp - base;
+        const verdict = Math.abs(d) < 0.15 ? 'about neutral' : (d > 0 ? 'favors the offense' : 'favors the defense');
+        lean = `<div style="margin-top:4px">Weighted by ${esc2(oppCode)}'s coverage mix, ${esc2(team)}'s passing offense projects to <b>${exp.toFixed(1)}</b> yards/target vs <b>${base.toFixed(1)}</b> overall (${d >= 0 ? '+' : ''}${d.toFixed(1)}) — ${verdict}.</div>`;
+      } else {
+        lean = `<div style="margin-top:4px">Too few charted targets in one split to estimate how the coverage mix affects ${esc2(team)}.</div>`;
+      }
+      oppHTML = `
+      <div class="ic-section-label" style="margin-top:8px">This week: vs ${fiLogoHTML(oppCode,14)}${esc2(oppCode)} defense</div>
+      <div style="font-size:11px;line-height:1.5">
+        Plays <b>${oppMZ.man_pct}% man</b> / ${oppMZ.zone_pct}% zone${oppMZ.man_rate_rank_most_man_is_1 ? ` (#${oppMZ.man_rate_rank_most_man_is_1} most man)` : ''}.
+        Allows ${f1(om.yards_per_target)} yards/target vs man${om.yards_per_target_rank ? ` (#${om.yards_per_target_rank})` : ''} and
+        ${f1(oz.yards_per_target)} vs zone${oz.yards_per_target_rank ? ` (#${oz.yards_per_target_rank})` : ''}
+        <span style="color:var(--text-mid)">(rank 1 = fewest allowed)</span>.
+        ${lean}
+      </div>`;
+    } else if(INTEL && INTEL.teams && INTEL.teams[team]){
+      oppHTML = `<div class="empty" style="padding:6px 4px;text-align:left;font-size:10px">${oppCode ? 'No man/zone data for ' + esc2(oppCode) + ' yet.' : 'Bye week: no opponent.'}</div>`;
+    }
+    const rk = (side) => side.yards_per_target_rank ? ` <span style="color:var(--text-mid)">(#${side.yards_per_target_rank})</span>` : '';
+    return `
+    <div class="intel-card">
+      <div class="ic-head">
+        <img class="ic-headshot" src="${esc2(hs)}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div>
+          <div class="ic-name">${esc2(lead ? lead.player : team + ' passing')}</div>
+          <div class="ic-team">${fiLogoHTML(team,14)}${esc2(team)} · team passing offense</div>
+          <div class="ic-team" style="color:var(--text-mid)">${pp.man_share_pct != null ? pp.man_share_pct + '% of charted targets came against man' : ''}</div>
+        </div>
+      </div>
+      <div class="ic-section-label">Man vs Zone (from receivers · PFF charting)</div>
+      <div class="lead-wrap" style="max-height:none"><table class="lead-table"><thead><tr>
+        <th class="name-col">Stat</th><th>vs Man</th><th>vs Zone</th>
+      </tr></thead><tbody>
+        ${PFF_QB_ROWS.map(([label, k, d]) => `<tr>
+          <td class="name-col">${label}</td>
+          <td><span class="cell-val">${fmt(m[k], d)}${k === 'yards_per_target' ? rk(m) : ''}</span></td>
+          <td><span class="cell-val">${fmt(z[k], d)}${k === 'yards_per_target' ? rk(z) : ''}</span></td>
+        </tr>`).join('')}
+      </tbody></table></div>
+      ${oppHTML}
+      <div class="empty" style="padding:6px 4px;text-align:left;font-size:10px">
+        Team-level proxy built from receivers' numbers, not the QB's own split: it leaves out sacks, scrambles and throwaways.
+        ${pp.multi_qb ? `<b>Mixed QBs:</b> ${qbs.map(x => esc2(x.player) + ' ' + x.share_pct + '%').join(', ')} of attempts. ` : ''}
+        ${small ? 'Under 30 targets in one split, so treat it as a small sample. ' : ''}
+        Rank in brackets: 1 = most yards per target in the league.
+      </div>
+    </div>`;
+  }).join('') || `<div class="empty">No team passing data yet. Run <b>python3 pff_weekly.py</b> to build it.</div>`;
+}
 function renderPffCoverageGrid(){
+  if(coveragePos === 'QB'){ renderPffQBGrid(); return; }
   let list = pffReceiverList();
   const q = coverageSearchTerm;
   if(q) list = list.filter(r => r.team.toLowerCase().includes(q) || (r.player || '').toLowerCase().includes(q));
+  // Group teammates together: teams A-Z, each team's receivers by targets (most first).
+  list.sort((x, y) => x.team.localeCompare(y.team) || y.total_targets - x.total_targets);
+  const teamCount = {};
+  list.forEach(r => { teamCount[r.team] = (teamCount[r.team] || 0) + 1; });
+  let prevTeam = null;
   $("coverageGrid").innerHTML = list.map(r => {
+    const teamHead = r.team !== prevTeam
+      ? `<div style="grid-column:1/-1;display:flex;align-items:center;gap:8px;margin-top:${prevTeam === null ? 0 : 10}px;padding:6px 2px;border-bottom:1px solid var(--border,#2a2f3a)">
+           ${fiLogoHTML(r.team,18)}<b>${esc2(r.team)}</b>
+           <span style="color:var(--text-mid)">${teamCount[r.team]} ${coveragePos}${teamCount[r.team] === 1 ? '' : 's'} with 10+ charted targets</span></div>`
+      : '';
+    prevTeam = r.team;
     const hs = (PFFHEAD && (PFFHEAD[pffNorm(r.player)+'|'+r.team] || PFFHEAD[pffNorm(r.player)])) || '';
     const un = r.uncharted_targets, all = r.all_targets;
     const m = r.vs_man || {}, z = r.vs_zone || {};
     const mz = (m.targets || 0) + (z.targets || 0);
     const manShare = mz ? Math.round(100 * (m.targets || 0) / mz) : null;
     const small = (m.targets || 0) < 10 || (z.targets || 0) < 10;
-    return `
+    return teamHead + `
     <div class="intel-card">
       <div class="ic-head">
         <img class="ic-headshot" src="${esc2(hs)}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">

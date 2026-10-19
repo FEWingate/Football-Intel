@@ -26,6 +26,23 @@ def _slot_receivers(rows):
     return sorted(out, key=lambda r: -(r.get("slot_rate") or 0))
 
 
+def _coverage_lean(pp, dz):
+    """Offense's yards/target projected from THIS defense's man/zone mix, vs the offense's overall number.
+    Needs >= 15 charted targets in each split; otherwise None (too thin to say anything)."""
+    try:
+        m, z = pp["man"], pp["zone"]
+        if (m["targets"] or 0) < 15 or (z["targets"] or 0) < 15 or not dz or dz.get("man_pct") is None:
+            return None
+        base = (m["yards"] + z["yards"]) / (m["targets"] + z["targets"])
+        exp = dz["man_pct"] / 100 * m["yards_per_target"] + dz["zone_pct"] / 100 * z["yards_per_target"]
+        diff = exp - base
+        return {"overall_yards_per_target": round(base, 2), "weighted_by_defense_mix": round(exp, 2),
+                "difference": round(diff, 2),
+                "reads_as": "about neutral" if abs(diff) < 0.15 else ("favors the offense" if diff > 0 else "favors the defense")}
+    except (KeyError, TypeError, ZeroDivisionError):
+        return None
+
+
 def build(away, home):
     slot = _load("slot_defense.json")
     rec = _load("receivers.json")
@@ -60,9 +77,16 @@ def build(away, home):
         for off, dfn in ((away, home), (home, away)):
             dz = ((cov.get("teams") or {}).get(dfn) or {}).get("defense", {}).get("man_zone")
             rcs = ((cov.get("teams") or {}).get(off) or {}).get("offense", {}).get("receivers") or []
-            if dz or rcs:
-                block["man_zone_matchups"].append({"offense": off, "defense": dfn, "defense_man_zone": dz,
-                                                   "offense_receivers_vs_man_zone": rcs[:6]})
+            pp = ((cov.get("teams") or {}).get(off) or {}).get("offense", {}).get("passing_proxy")
+            if dz or rcs or pp:
+                entry = {"offense": off, "defense": dfn, "defense_man_zone": dz,
+                         "offense_receivers_vs_man_zone": rcs[:6]}
+                if pp:
+                    entry["offense_team_passing_vs_man_zone"] = {k: v for k, v in pp.items() if k != "note"}
+                    lean = _coverage_lean(pp, dz)
+                    if lean:
+                        entry["projected_vs_this_defense"] = lean
+                block["man_zone_matchups"].append(entry)
     for off, dfn in ((away, home), (home, away)):
         d = block["slot_defense"].get(dfn, {}).get("season_to_date")
         slots = _slot_receivers(block["receivers"].get(off, []))
@@ -96,7 +120,31 @@ cite the PFF figure and label it PFF. Small samples (under 10 targets in a split
 his man + zone targets (uncharted_targets); the uncharted plays carry yards and TDs that are NOT in the man/zone \
 lines, so a man+zone total can be lower than his season total. Never present man+zone totals as his season totals; \
 use FI season stats for season totals.
+- pff.man_zone_matchups[].offense_team_passing_vs_man_zone is that OFFENSE's team passing production against \
+man and against zone (targets, completions, yards, yards per target, TDs, INTs, passer rating, man_share_pct), \
+summed from its receivers' PFF charting. It is a team-level proxy for the quarterback, NOT the QB's own split: \
+call it "the team's passing offense, per PFF receiver charting", never "Purdy's numbers against man". When \
+multi_qb is true, name the quarterbacks and their share of attempts. projected_vs_this_defense (when present) \
+weights that offense's man and zone yards per target by this defense's coverage mix: cite it as written.
 - Never say the coverage data is missing or empty for a game: if a team has no row, leave coverage out silently.
+
+MAN VS ZONE IS REQUIRED IN THIS BREAKDOWN (both sides of the ball, both directions):
+- Section 4 (Matchup Intelligence) must contain a clearly labeled "Man vs Zone" part. For EACH of the two \
+matchups (away offense vs home defense, then home offense vs away defense) state: (a) how often the defense \
+plays man vs zone (man_pct / zone_pct with its rank) and what it allows to each (yards per target, with rank); \
+(b) how the opposing offense has performed against man vs zone (team passing line, plus the one or two \
+receivers or tight ends whose split matters most, with the target counts); (c) which coverage the offense \
+prefers, which the defense leans on, and whether the two collide, using projected_vs_this_defense when present.
+- Add one bullet per matchup to the Coeus Cheat Sheet summarizing the man/zone edge (for example "WAS offense: \
++0.4 yards/target vs SF's 56% man mix per PFF").
+- ATTRIBUTION CHECK (applies to Section 4 AND the Cheat Sheet): every man/zone figure belongs to the team named \
+in its pff.coverage key or its man_zone_matchups row ("defense" = the team playing that coverage; "offense" = the \
+team whose receivers produced the split). Before writing each bullet, confirm the team name matches the entry the \
+number came from; never swap the two teams' coverage mixes. Describe offense figures as "team passing offense, per \
+PFF receiver charting" at least once per team.
+- Cite every figure as per PFF, give the rank next to each raw stat, call a split under 10 targets small, and \
+keep the season label (2026 to date) in the wording. If a particular number is absent, build the paragraph on \
+the numbers that exist and do not comment on what is missing.
 """ + """
 
 PFF SLOT DATA (private input - the "pff" key in the evidence below):
