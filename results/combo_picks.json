@@ -13,10 +13,10 @@
    "proj": 272.9,
    "sd": 65.3,
    "model_side": "OVER",
-   "model_lean": "PASS",
+   "model_lean": "NEUTRAL",
    "model_edge": -0.028,
-   "coeus_pick": "PASS",
-   "saved_at": "2026-10-19T17:39:46Z",
+   "coeus_pick": "NEUTRAL",
+   "saved_at": "2026-10-19T18:08:00Z",
    "graded": false
   },
   {
@@ -35,7 +35,7 @@
    "model_lean": "STRONG",
    "model_edge": 0.093,
    "coeus_pick": "UNDER",
-   "saved_at": "2026-10-19T17:39:46Z",
+   "saved_at": "2026-10-19T18:08:00Z",
    "graded": false
   },
   {
@@ -54,7 +54,7 @@
    "model_lean": "CHECK",
    "model_edge": 0.265,
    "coeus_pick": "UNDER",
-   "saved_at": "2026-10-19T17:39:46Z",
+   "saved_at": "2026-10-19T18:08:00Z",
    "graded": false
   }
  ]

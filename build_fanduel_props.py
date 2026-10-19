@@ -403,12 +403,75 @@ def reshape_props_rows(rows, market_to_stat_kind):
             bucket["alts"].append({"threshold": threshold, "over_price": row.get("over_price"),
                                     "under_price": row.get("under_price")})
 
+    known = _known_player_names()
+    for eid, entries in list(anytime_td.items()):
+        seen = {}
+        for entry in entries:
+            key = _name_key(entry["player"])
+            prior = seen.get(key)
+            if prior is None or ((entry["player"] in known, len(entry["player"])) >
+                                 (prior["player"] in known, len(prior["player"]))):
+                seen[key] = entry
+        anytime_td[eid] = list(seen.values())
     for eid, stats in players.items():
+        for stat in list(stats):
+            stats[stat] = merge_suffix_duplicates(stats[stat], known)
         for stat, by_player in stats.items():
             for name, bucket in by_player.items():
                 bucket["alts"].sort(key=lambda a: a["threshold"])
 
     return players, anytime_td
+
+
+# REAL FIX (2026-10-19): the provider sends the same player's plain line under
+# one spelling and (some) alt ladders under another, e.g. "Michael Penix" vs
+# "Michael Penix Jr.", "Luther Burden" vs "Luther Burden III". They landed as two
+# separate players, so the alt ladder attached to only one of them. Confirmed in
+# the live 2026-10-16 file: ~20 such pairs, all with identical lines/prices.
+NAME_SUFFIX_RE = re.compile(r"\s+(jr\.?|sr\.?|ii|iii|iv|v)$", re.IGNORECASE)
+
+
+def _name_key(name):
+    return NAME_SUFFIX_RE.sub("", (name or "").strip()).lower()
+
+
+def _known_player_names(path="players/latest.json"):
+    """Spellings the site itself uses (players/latest.json), so a merged player
+    keeps the name the rest of Football Intel matches on. Empty set if absent."""
+    try:
+        with open(path, encoding="utf-8") as handle:
+            data = json.load(handle)
+        return {p.get("name") for plist in (data.get("players") or {}).values()
+                for p in plist if isinstance(p, dict) and p.get("name")}
+    except (OSError, ValueError, AttributeError):
+        return set()
+
+
+def merge_suffix_duplicates(by_player, known_names=frozenset()):
+    """Merge entries whose names differ only by a Jr./Sr./II/III/IV/V suffix.
+    Display name: the spelling the site uses if known, else the one carrying
+    the alt ladder, else the longer spelling. The plain line is kept from
+    whichever entry has one; alts are the union by threshold."""
+    groups = {}
+    for name, bucket in by_player.items():
+        groups.setdefault(_name_key(name), []).append((name, bucket))
+    merged = {}
+    for variants in groups.values():
+        if len(variants) == 1:
+            merged[variants[0][0]] = variants[0][1]
+            continue
+        def rank(item):
+            n, b = item
+            return (n in known_names, bool(b.get("alts")), len(n))
+        display = max(variants, key=rank)[0]
+        line, alts = None, {}
+        for n, b in sorted(variants, key=rank, reverse=True):
+            if line is None and b.get("line"):
+                line = b["line"]
+            for alt in b.get("alts") or []:
+                alts.setdefault(alt["threshold"], alt)
+        merged[display] = {"line": line, "alts": sorted(alts.values(), key=lambda a: a["threshold"])}
+    return merged
 
 
 def parse_timestamp(value):

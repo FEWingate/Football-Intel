@@ -7,7 +7,7 @@ weekly player stats once the games are final (nflverse usually posts them by Tue
 
 For each saved pick it records the real combined total, then whether the MODEL's side (STRONG/LEAN
 only) and COEUS's pick (OVER/UNDER only) won, plus profit in units at the saved price (1 unit risked).
-PASS and CHECK rows are tracked but not counted as model plays.
+NEUTRAL and CHECK (amber) rows are tracked but not counted as model plays.
 
 USAGE:  python3 grade_combo_props.py          # grade everything that is final
         python3 grade_combo_props.py --week 6 # only one week
@@ -93,7 +93,7 @@ def main():
     plays = [r for r in g if r.get("model_lean") in ("STRONG", "LEAN")]
     print("Model STRONG/LEAN plays: %s" % tally(plays, "model_result", "model_units"))
     print("Coeus OVER/UNDER picks : %s" % tally([r for r in g if r.get("coeus_result")], "coeus_result", "coeus_units"))
-    print("(PASS/CHECK rows are saved and graded but not counted as model plays)")
+    print("(NEUTRAL and amber-flagged rows are saved and graded but not counted as model plays)")
 
 
 if __name__ == "__main__":

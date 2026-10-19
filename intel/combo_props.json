@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-19T17:39:46Z",
+ "generated_at": "2026-10-19T18:08:00Z",
  "season": 2026,
  "week": 6,
  "method": {
@@ -71,6 +71,67 @@
       "league_pg": 17.4
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 234.6,
+      "rank": 18,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 247.8,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 281.3
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 4,
+       "avg": 234.2
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 10.2,
+      "rank": 6,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 2.8,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 4,
+       "avg": 0.2
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 6,
+       "avg": 4.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 244.8,
+     "rank": 14,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 250.7,
+     "player_games": 6,
+     "expected_vs_tiers": 281.5,
+     "min_tier_games": 3,
+     "prev_player_avg": 211.4,
+     "prev_player_games": 16,
+     "expected_vs_tiers_prev": 238.2,
+     "min_tier_games_prev": 4
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -199,6 +260,76 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 100.4,
+      "rank": 21,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 24.0,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 2,
+       "avg": 24.5
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 3,
+       "avg": 41.3
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 18.8,
+      "rank": 5,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 15.2,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 3,
+       "avg": 12.0
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 3,
+       "avg": 12.0,
+       "prev": {
+        "games": 0,
+        "avg": null
+       }
+      },
+      "vs_tier_prev": {
+       "games": 1,
+       "avg": 2.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 119.2,
+     "rank": 13,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 39.2,
+     "player_games": 5,
+     "expected_vs_tiers": 36.5,
+     "min_tier_games": 2,
+     "prev_player_avg": 59.7,
+     "prev_player_games": 11,
+     "expected_vs_tiers_prev": 43.3,
+     "min_tier_games_prev": 1
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -325,6 +456,76 @@
       "league_pg": 30.7
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 86.4,
+      "rank": 14,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 52.2,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 35.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 4,
+       "avg": 41.8
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 48.4,
+      "rank": 30,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 41.8,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 4,
+       "avg": 49.8
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 1,
+       "avg": 36.0,
+       "prev": {
+        "games": 2,
+        "avg": 17.0
+       }
+      },
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 17.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 134.8,
+     "rank": 23,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": null,
+     "player_avg": 94.0,
+     "player_games": 6,
+     "expected_vs_tiers": 84.8,
+     "min_tier_games": 2,
+     "prev_player_avg": 77.7,
+     "prev_player_games": 17,
+     "expected_vs_tiers_prev": 58.8,
+     "min_tier_games_prev": 2
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -453,6 +654,85 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 72.0,
+      "rank": 4,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 64.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 56.0
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 1,
+       "avg": 39.0,
+       "prev": {
+        "games": 3,
+        "avg": 13.3
+       }
+      },
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 24.0
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 17.0,
+      "rank": 3,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 21.0,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 35.0
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 1,
+       "avg": 48.0,
+       "prev": {
+        "games": 1,
+        "avg": 0.0
+       }
+      },
+      "vs_tier_prev": {
+       "games": 4,
+       "avg": -0.2
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 89.0,
+     "rank": 2,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": "Top 5",
+     "player_avg": 85.7,
+     "player_games": 6,
+     "expected_vs_tiers": 91.0,
+     "min_tier_games": 2,
+     "prev_player_avg": 27.5,
+     "prev_player_games": 13,
+     "expected_vs_tiers_prev": 23.8,
+     "min_tier_games_prev": 4
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -579,6 +859,67 @@
       "league_pg": 30.7
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 81.8,
+      "rank": 10,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 106.8,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 1,
+       "avg": 61.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 66.6
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 27.8,
+      "rank": 14,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 24.0,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 4,
+       "avg": 5.5
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 65.2
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 109.6,
+     "rank": 11,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 130.8,
+     "player_games": 6,
+     "expected_vs_tiers": 66.5,
+     "min_tier_games": 1,
+     "prev_player_avg": 135.2,
+     "prev_player_games": 17,
+     "expected_vs_tiers_prev": 131.8,
+     "min_tier_games_prev": 5
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -707,6 +1048,67 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 110.0,
+      "rank": 27,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 37.2,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 28.5
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 3,
+       "avg": 89.3
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 23.2,
+      "rank": 8,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 15.2,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 15.5
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 4,
+       "avg": -1.2
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 133.2,
+     "rank": 22,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 52.3,
+     "player_games": 6,
+     "expected_vs_tiers": 44.0,
+     "min_tier_games": 2,
+     "prev_player_avg": 47.9,
+     "prev_player_games": 16,
+     "expected_vs_tiers_prev": 88.1,
+     "min_tier_games_prev": 3
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -834,6 +1236,67 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 79.8,
+      "rank": 9,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 52.3,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 68.5
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 1,
+       "avg": 30.0
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 40.0,
+      "rank": 27,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 7.5,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 1,
+       "avg": 26.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 8.5
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 119.8,
+     "rank": 14,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 59.8,
+     "player_games": 6,
+     "expected_vs_tiers": 94.5,
+     "min_tier_games": 1,
+     "prev_player_avg": 23.2,
+     "prev_player_games": 4,
+     "expected_vs_tiers_prev": 38.5,
+     "min_tier_games_prev": 1
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -951,6 +1414,76 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 266.0,
+      "rank": 28,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 239.2,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 1,
+       "avg": 297.0
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 0,
+       "avg": null,
+       "prev": {
+        "games": 1,
+        "avg": 295.0
+       }
+      },
+      "vs_tier_prev": {
+       "games": 3,
+       "avg": 263.3
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 21.6,
+      "rank": 23,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 25.6,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 3,
+       "avg": 21.3
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 1,
+       "avg": 28.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 287.6,
+     "rank": 28,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": "Bottom 5",
+     "player_avg": 264.8,
+     "player_games": 5,
+     "expected_vs_tiers": 318.3,
+     "min_tier_games": 1,
+     "prev_player_avg": 257.1,
+     "prev_player_games": 9,
+     "expected_vs_tiers_prev": 291.3,
+     "min_tier_games_prev": 1
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -1041,14 +1574,14 @@
     "best_p": 0.502,
     "edge": -0.028,
     "edge_yards": 0.4,
-    "lean": "PASS"
+    "lean": "NEUTRAL"
    },
    "under_price_assumed": false,
    "alts_eval": [],
    "coeus": {
-    "pick": "PASS",
-    "confidence": 1,
-    "reasoning": "Projection (272.9) is essentially identical to the line (272.5), a 0.1% gap with edge under 3 points. Recent games are wildly inconsistent (127 to 339 total yards) giving no directional signal, so there's no edge to lean on here.",
+    "pick": "NEUTRAL",
+    "confidence": 2,
+    "reasoning": "Model projection (272.9) sits almost exactly on FanDuel's line (272.5) with only a 0.4-yard edge, so there's no real statistical lean. Recent totals swing widely (148 to 339) and while WAS ranks bottom-10 against the combined category (287.6 allowed/g), Purdy's own 5-game average (264.8) is already below the line, offsetting the plus matchup. Too thin an edge to pick a side.",
     "model": "claude-sonnet-5"
    }
   },
@@ -1095,6 +1628,67 @@
       "league_pg": 17.4
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 248.4,
+      "rank": 23,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 309.8,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 3,
+       "avg": 299.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 230.6
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 15.8,
+      "rank": 16,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 5.0,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 2,
+       "avg": 8.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 6,
+       "avg": 22.5
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 264.2,
+     "rank": 21,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 314.8,
+     "player_games": 5,
+     "expected_vs_tiers": 307.0,
+     "min_tier_games": 2,
+     "prev_player_avg": 201.7,
+     "prev_player_games": 16,
+     "expected_vs_tiers_prev": 253.1,
+     "min_tier_games_prev": 5
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -1223,6 +1817,76 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 90.8,
+      "rank": 17,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 75.3,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 45.5
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 4,
+       "avg": 53.8
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 40.0,
+      "rank": 28,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 12.3,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 1,
+       "avg": 3.0
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 1,
+       "avg": 3.0,
+       "prev": {
+        "games": 1,
+        "avg": 102.0
+       }
+      },
+      "vs_tier_prev": {
+       "games": 3,
+       "avg": 49.7
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 130.8,
+     "rank": 21,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 87.7,
+     "player_games": 6,
+     "expected_vs_tiers": 48.5,
+     "min_tier_games": 1,
+     "prev_player_avg": 86.5,
+     "prev_player_games": 10,
+     "expected_vs_tiers_prev": 103.5,
+     "min_tier_games_prev": 3
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -1349,6 +2013,76 @@
       "league_pg": 17.4
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 261.4,
+      "rank": 27,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 237.3,
+      "player_games": 3,
+      "vs_tier": {
+       "games": 1,
+       "avg": 305.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 6,
+       "avg": 280.7
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 4.8,
+      "rank": 1,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 36.7,
+      "player_games": 3,
+      "vs_tier": {
+       "games": 1,
+       "avg": 3.0
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 1,
+       "avg": 3.0,
+       "prev": {
+        "games": 2,
+        "avg": 15.5
+       }
+      },
+      "vs_tier_prev": {
+       "games": 9,
+       "avg": 23.2
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 266.2,
+     "rank": 23,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": null,
+     "player_avg": 274.0,
+     "player_games": 3,
+     "expected_vs_tiers": 308.0,
+     "min_tier_games": 1,
+     "prev_player_avg": 254.7,
+     "prev_player_games": 17,
+     "expected_vs_tiers_prev": 303.9,
+     "min_tier_games_prev": 6
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -1477,6 +2211,76 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 133.4,
+      "rank": 32,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 58.8,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 2,
+       "avg": 69.5
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 1,
+       "avg": 81.0,
+       "prev": {
+        "games": 1,
+        "avg": -3.0
+       }
+      },
+      "vs_tier_prev": {
+       "games": 1,
+       "avg": -3.0
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 27.4,
+      "rank": 13,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 15.8,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 1,
+       "avg": 12.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 36.5
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 160.8,
+     "rank": 32,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": "Bottom 5",
+     "player_avg": 74.6,
+     "player_games": 5,
+     "expected_vs_tiers": 81.5,
+     "min_tier_games": 1,
+     "prev_player_avg": 77.1,
+     "prev_player_games": 8,
+     "expected_vs_tiers_prev": 33.5,
+     "min_tier_games_prev": 1
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -1603,6 +2407,76 @@
       "league_pg": 17.4
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 268.0,
+      "rank": 29,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 166.3,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 151.7
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 1,
+       "avg": 102.0,
+       "prev": {
+        "games": 2,
+        "avg": 239.0
+       }
+      },
+      "vs_tier_prev": {
+       "games": 4,
+       "avg": 228.2
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 24.4,
+      "rank": 26,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 11.0,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 4.5
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 27.5
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 292.4,
+     "rank": 30,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": "Bottom 5",
+     "player_avg": 177.3,
+     "player_games": 6,
+     "expected_vs_tiers": 156.2,
+     "min_tier_games": 2,
+     "prev_player_avg": 204.1,
+     "prev_player_games": 16,
+     "expected_vs_tiers_prev": 255.7,
+     "min_tier_games_prev": 2
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -1737,6 +2611,67 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 73.6,
+      "rank": 6,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 57.2,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 1,
+       "avg": 68.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 6,
+       "avg": 56.2
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 30.2,
+      "rank": 18,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 27.4,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 1,
+       "avg": 15.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 8,
+       "avg": 62.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 103.8,
+     "rank": 8,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": null,
+     "player_avg": 84.6,
+     "player_games": 5,
+     "expected_vs_tiers": 83.0,
+     "min_tier_games": 1,
+     "prev_player_avg": 125.1,
+     "prev_player_games": 17,
+     "expected_vs_tiers_prev": 118.2,
+     "min_tier_games_prev": 6
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -1834,7 +2769,7 @@
    "coeus": {
     "pick": "UNDER",
     "confidence": 4,
-    "reasoning": "Model projects 95.9 vs a 106.5 line, a 10% gap with a 9.3-point edge favoring UNDER. His last five games (88, 66, 116, 70, 83) average only ~84.6 total yards, well below the line, and WAS's rush/pass defense allowance is only marginally above league average (opp_factor ~1.02), not enough to push him over. The -7.5 spread and 29.5 implied points could mean positive game script and more touches, but the recent yardage trend and projection gap are strong enough to still favor the UNDER.",
+    "reasoning": "Projection (95.9) is 10% below FanDuel's 106.5 line, and his last five games (88, 66, 116, 70, 83) average just 84.6, matching the projection far more than the inflated line. WAS ranks top-10 against the run (rank 6, 73.6 allowed/g) and mid-tier against receiving backs, and CMC's vs-tier average (83.0 expected) reinforces the lower number. San Francisco being a 7.5-point home favorite with a 29.5 implied total doesn't change the recent usage pattern enough to flip this.",
     "model": "claude-sonnet-5"
    }
   },
@@ -1881,6 +2816,67 @@
       "league_pg": 30.7
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 100.4,
+      "rank": 22,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 85.2,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 2,
+       "avg": 121.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 7,
+       "avg": 36.1
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 27.2,
+      "rank": 12,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 17.0,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 3,
+       "avg": 16.7
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 6,
+       "avg": 16.8
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 127.6,
+     "rank": 18,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 102.2,
+     "player_games": 5,
+     "expected_vs_tiers": 137.7,
+     "min_tier_games": 2,
+     "prev_player_avg": 48.9,
+     "prev_player_games": 15,
+     "expected_vs_tiers_prev": 52.9,
+     "min_tier_games_prev": 6
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -2009,6 +3005,76 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 274.0,
+      "rank": 30,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 285.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 251.0
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 3,
+       "avg": 251.0,
+       "prev": {
+        "games": 3,
+        "avg": 229.7
+       }
+      },
+      "vs_tier_prev": {
+       "games": 7,
+       "avg": 243.9
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 14.4,
+      "rank": 14,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 12.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 8.3
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 8,
+       "avg": 13.1
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 288.4,
+     "rank": 29,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": "Bottom 5",
+     "player_avg": 298.3,
+     "player_games": 6,
+     "expected_vs_tiers": 259.3,
+     "min_tier_games": 3,
+     "prev_player_avg": 232.1,
+     "prev_player_games": 14,
+     "expected_vs_tiers_prev": 257.0,
+     "min_tier_games_prev": 7
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -2135,6 +3201,76 @@
       "league_pg": 17.4
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 199.4,
+      "rank": 5,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 273.2,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 216.5
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 1,
+       "avg": 258.0,
+       "prev": {
+        "games": 2,
+        "avg": 269.0
+       }
+      },
+      "vs_tier_prev": {
+       "games": 6,
+       "avg": 286.5
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 19.8,
+      "rank": 21,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 12.2,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 13.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 13.4
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 219.2,
+     "rank": 7,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": null,
+     "player_avg": 285.3,
+     "player_games": 6,
+     "expected_vs_tiers": 229.5,
+     "min_tier_games": 2,
+     "prev_player_avg": 278.2,
+     "prev_player_games": 17,
+     "expected_vs_tiers_prev": 299.9,
+     "min_tier_games_prev": 5
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -2263,6 +3399,76 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 120.0,
+      "rank": 31,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 24.5,
+      "player_games": 2,
+      "vs_tier": {
+       "games": 1,
+       "avg": 35.0
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 1,
+       "avg": 35.0,
+       "prev": {
+        "games": 0,
+        "avg": null
+       }
+      },
+      "vs_tier_prev": {
+       "games": 0,
+       "avg": null
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 37.5,
+      "rank": 22,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 6.5,
+      "player_games": 2,
+      "vs_tier": {
+       "games": 1,
+       "avg": 15.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 0,
+       "avg": null
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 157.5,
+     "rank": 31,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": "Bottom 5",
+     "player_avg": 31.0,
+     "player_games": 2,
+     "expected_vs_tiers": 50.0,
+     "min_tier_games": 1,
+     "prev_player_avg": 12.0,
+     "prev_player_games": 3,
+     "expected_vs_tiers_prev": null,
+     "min_tier_games_prev": 0
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -2333,6 +3539,67 @@
       "league_pg": 30.7
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 73.8,
+      "rank": 7,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 66.3,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 44.5
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 1,
+       "avg": 45.0
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 26.6,
+      "rank": 11,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 23.3,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 5,
+       "avg": 17.2
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 26.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 100.4,
+     "rank": 6,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": null,
+     "player_avg": 89.7,
+     "player_games": 6,
+     "expected_vs_tiers": 61.7,
+     "min_tier_games": 2,
+     "prev_player_avg": 86.6,
+     "prev_player_games": 16,
+     "expected_vs_tiers_prev": 71.0,
+     "min_tier_games_prev": 1
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -2461,6 +3728,67 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 228.6,
+      "rank": 14,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 215.0,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 4,
+       "avg": 228.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 263.4
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 15.6,
+      "rank": 15,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 9.2,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 14.7
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 6,
+       "avg": 9.5
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 244.2,
+     "rank": 12,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 224.2,
+     "player_games": 6,
+     "expected_vs_tiers": 242.7,
+     "min_tier_games": 3,
+     "prev_player_avg": 266.8,
+     "prev_player_games": 12,
+     "expected_vs_tiers_prev": 272.9,
+     "min_tier_games_prev": 5
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -2587,6 +3915,67 @@
       "league_pg": 30.7
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 106.8,
+      "rank": 26,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 89.0,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 71.7
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 7,
+       "avg": 94.0
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 19.2,
+      "rank": 6,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 10.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 2.7
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 9.6
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 126.0,
+     "rank": 17,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 99.7,
+     "player_games": 6,
+     "expected_vs_tiers": 74.4,
+     "min_tier_games": 3,
+     "prev_player_avg": 102.6,
+     "prev_player_games": 17,
+     "expected_vs_tiers_prev": 103.6,
+     "min_tier_games_prev": 5
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -2715,6 +4104,61 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 238.0,
+      "rank": 19,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 195.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 4,
+       "avg": 203.5
+      },
+      "fine": null,
+      "vs_tier_prev": null
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 16.2,
+      "rank": 17,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 32.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 35.7
+      },
+      "fine": null,
+      "vs_tier_prev": null
+     }
+    ],
+    "combined": {
+     "allowed_pg": 254.2,
+     "rank": 19,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 228.3,
+     "player_games": 6,
+     "expected_vs_tiers": 239.2,
+     "min_tier_games": 3,
+     "prev_player_avg": null,
+     "prev_player_games": 0,
+     "expected_vs_tiers_prev": null,
+     "min_tier_games_prev": 0
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2026,
@@ -2809,6 +4253,76 @@
       "league_pg": 17.4
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 195.4,
+      "rank": 4,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 243.8,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 206.5
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 2,
+       "avg": 206.5,
+       "prev": {
+        "games": 4,
+        "avg": 242.8
+       }
+      },
+      "vs_tier_prev": {
+       "games": 4,
+       "avg": 242.8
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 13.6,
+      "rank": 12,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 30.8,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 4,
+       "avg": 30.2
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 7,
+       "avg": 24.6
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 209.0,
+     "rank": 4,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": "Top 5",
+     "player_avg": 274.7,
+     "player_games": 6,
+     "expected_vs_tiers": 236.7,
+     "min_tier_games": 2,
+     "prev_player_avg": 284.9,
+     "prev_player_games": 17,
+     "expected_vs_tiers_prev": 267.4,
+     "min_tier_games_prev": 4
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -2937,6 +4451,61 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 99.0,
+      "rank": 19,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 15.5,
+      "player_games": 4,
+      "vs_tier": {
+       "games": 2,
+       "avg": 10.5
+      },
+      "fine": null,
+      "vs_tier_prev": null
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 25.0,
+      "rank": 9,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 20.5,
+      "player_games": 4,
+      "vs_tier": {
+       "games": 1,
+       "avg": 18.0
+      },
+      "fine": null,
+      "vs_tier_prev": null
+     }
+    ],
+    "combined": {
+     "allowed_pg": 124.0,
+     "rank": 16,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 36.0,
+     "player_games": 4,
+     "expected_vs_tiers": 28.5,
+     "min_tier_games": 1,
+     "prev_player_avg": null,
+     "prev_player_games": 0,
+     "expected_vs_tiers_prev": null,
+     "min_tier_games_prev": 0
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2026,
@@ -3007,6 +4576,67 @@
       "league_pg": 17.4
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 222.6,
+      "rank": 10,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 222.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 249.5
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 6,
+       "avg": 210.0
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 10.6,
+      "rank": 8,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 7.0,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 3.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 8.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 233.2,
+     "rank": 8,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": null,
+     "player_avg": 229.7,
+     "player_games": 6,
+     "expected_vs_tiers": 252.5,
+     "min_tier_games": 2,
+     "prev_player_avg": 208.9,
+     "prev_player_games": 15,
+     "expected_vs_tiers_prev": 218.0,
+     "min_tier_games_prev": 2
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -3135,6 +4765,85 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 165.0,
+      "rank": 1,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 221.3,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 5,
+       "avg": 207.2
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 2,
+       "avg": 156.5,
+       "prev": {
+        "games": 0,
+        "avg": null
+       }
+      },
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 264.0
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 35.2,
+      "rank": 30,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 10.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 4,
+       "avg": 11.5
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 2,
+       "avg": 10.0,
+       "prev": {
+        "games": 1,
+        "avg": 4.0
+       }
+      },
+      "vs_tier_prev": {
+       "games": 4,
+       "avg": 7.8
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 200.2,
+     "rank": 2,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": "Top 5",
+     "player_avg": 232.0,
+     "player_games": 6,
+     "expected_vs_tiers": 218.7,
+     "min_tier_games": 4,
+     "prev_player_avg": 294.3,
+     "prev_player_games": 12,
+     "expected_vs_tiers_prev": 271.8,
+     "min_tier_games_prev": 2
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -3262,6 +4971,61 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 233.6,
+      "rank": 17,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 167.0,
+      "player_games": 3,
+      "vs_tier": {
+       "games": 2,
+       "avg": 176.5
+      },
+      "fine": null,
+      "vs_tier_prev": null
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 11.2,
+      "rank": 9,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 39.0,
+      "player_games": 3,
+      "vs_tier": {
+       "games": 1,
+       "avg": 39.0
+      },
+      "fine": null,
+      "vs_tier_prev": null
+     }
+    ],
+    "combined": {
+     "allowed_pg": 244.8,
+     "rank": 13,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 206.0,
+     "player_games": 3,
+     "expected_vs_tiers": 215.5,
+     "min_tier_games": 1,
+     "prev_player_avg": null,
+     "prev_player_games": 0,
+     "expected_vs_tiers_prev": null,
+     "min_tier_games_prev": 0
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2026,
@@ -3332,6 +5096,67 @@
       "league_pg": 17.4
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 228.2,
+      "rank": 12,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 191.4,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 2,
+       "avg": 135.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 1,
+       "avg": 366.0
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 17.6,
+      "rank": 19,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 9.2,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 2,
+       "avg": 9.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 0,
+       "avg": null
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 245.8,
+     "rank": 16,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 200.6,
+     "player_games": 5,
+     "expected_vs_tiers": 144.0,
+     "min_tier_games": 2,
+     "prev_player_avg": 295.0,
+     "prev_player_games": 2,
+     "expected_vs_tiers_prev": null,
+     "min_tier_games_prev": 0
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -3435,6 +5260,76 @@
       "league_pg": 30.7
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 116.0,
+      "rank": 29,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 104.5,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 1,
+       "avg": 95.0
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 1,
+       "avg": 95.0,
+       "prev": {
+        "games": 2,
+        "avg": 106.0
+       }
+      },
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 117.8
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 29.0,
+      "rank": 16,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 14.8,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 1,
+       "avg": 58.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 7,
+       "avg": 8.7
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 145.0,
+     "rank": 28,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": "Bottom 5",
+     "player_avg": 119.3,
+     "player_games": 6,
+     "expected_vs_tiers": 153.0,
+     "min_tier_games": 1,
+     "prev_player_avg": 118.6,
+     "prev_player_games": 16,
+     "expected_vs_tiers_prev": 126.5,
+     "min_tier_games_prev": 5
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -3562,6 +5457,67 @@
       "league_pg": 30.7
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 100.8,
+      "rank": 23,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 52.8,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 1,
+       "avg": 41.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 8,
+       "avg": 85.1
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 35.4,
+      "rank": 20,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 17.2,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 15.3
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 8,
+       "avg": 11.5
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 136.2,
+     "rank": 25,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": null,
+     "player_avg": 70.0,
+     "player_games": 6,
+     "expected_vs_tiers": 56.3,
+     "min_tier_games": 1,
+     "prev_player_avg": 83.6,
+     "prev_player_games": 16,
+     "expected_vs_tiers_prev": 96.6,
+     "min_tier_games_prev": 8
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -3696,6 +5652,76 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 210.8,
+      "rank": 8,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 153.0,
+      "player_games": 3,
+      "vs_tier": {
+       "games": 1,
+       "avg": 199.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 3,
+       "avg": 169.7
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 6.6,
+      "rank": 2,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 67.7,
+      "player_games": 3,
+      "vs_tier": {
+       "games": 0,
+       "avg": null
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 0,
+       "avg": null,
+       "prev": {
+        "games": 0,
+        "avg": null
+       }
+      },
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 16.5
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 217.4,
+     "rank": 6,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": null,
+     "player_avg": 220.7,
+     "player_games": 3,
+     "expected_vs_tiers": null,
+     "min_tier_games": 0,
+     "prev_player_avg": 220.0,
+     "prev_player_games": 7,
+     "expected_vs_tiers_prev": 186.2,
+     "min_tier_games_prev": 2
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -3792,8 +5818,8 @@
    "alts_eval": [],
    "coeus": {
     "pick": "UNDER",
-    "confidence": 3,
-    "reasoning": "Model flags this as CHECK with a steep 20.7% gap (201.7 projection vs 254.5 line), but the underlying data supports the lean: his weighted passing average is only 157.2 yards and SF's rushing defense allows just 10.2 ypg (opp_factor 0.792) versus his 56.9 rushing average, pulling the rushing component down to 45.1. His last 10 games show only one real outlier (302 total vs NYG) while most sit in the 165-270 range, and a 22.0 implied team total on the road as a 7.5-point underdog against a tough SF defense supports a lower-than-usual combined total, though the thin/volatile sample keeps confidence moderate rather than max.",
+    "confidence": 4,
+    "reasoning": "Model projection (201.7) is well below the 254.5 line (20.7% gap, flagged CHECK), but the underlying matchup data backs the lower number: SF ranks top-10 against QB passing (rank 8, 210.8 allowed/g) and is elite against QB rushing (rank 2, just 6.6 allowed/g), which directly suppresses Daniels' usual rushing upside (weighted avg 56.9 cut to a 45.1 projection). Washington is a 7.5-point road underdog with only a 22.0 implied team total, a negative script that typically limits called runs even if it bumps pass attempts, and his last meeting vs a similar top defense level produced modest marks. The data supports the model's lean despite the large gap, so UNDER is the call, though the CHECK flag keeps confidence short of max.",
     "model": "claude-sonnet-5"
    }
   },
@@ -3840,6 +5866,76 @@
       "league_pg": 30.7
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 60.0,
+      "rank": 2,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 76.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 46.3
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 1,
+       "avg": 50.0,
+       "prev": {
+        "games": 2,
+        "avg": 47.5
+       }
+      },
+      "vs_tier_prev": {
+       "games": 6,
+       "avg": 45.8
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 35.6,
+      "rank": 21,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 43.0,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 34.7
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 3,
+       "avg": 15.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 95.6,
+     "rank": 4,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": "Top 5",
+     "player_avg": 119.7,
+     "player_games": 6,
+     "expected_vs_tiers": 81.0,
+     "min_tier_games": 3,
+     "prev_player_avg": 80.7,
+     "prev_player_games": 16,
+     "expected_vs_tiers_prev": 60.8,
+     "min_tier_games_prev": 3
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -3968,6 +6064,67 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 94.4,
+      "rank": 18,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 82.0,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 79.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 7,
+       "avg": 104.6
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 25.6,
+      "rank": 10,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 27.2,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 28.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 29.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 120.0,
+     "rank": 15,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 109.2,
+     "player_games": 6,
+     "expected_vs_tiers": 107.0,
+     "min_tier_games": 3,
+     "prev_player_avg": 115.5,
+     "prev_player_games": 17,
+     "expected_vs_tiers_prev": 133.6,
+     "min_tier_games_prev": 5
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -4094,6 +6251,76 @@
       "league_pg": 17.4
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 231.8,
+      "rank": 16,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 280.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 280.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 7,
+       "avg": 208.0
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 42.2,
+      "rank": 32,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 1.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 1,
+       "avg": 12.0
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 1,
+       "avg": 12.0,
+       "prev": {
+        "games": 5,
+        "avg": 13.8
+       }
+      },
+      "vs_tier_prev": {
+       "games": 6,
+       "avg": 13.5
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 274.0,
+     "rank": 26,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": null,
+     "player_avg": 282.3,
+     "player_games": 6,
+     "expected_vs_tiers": 292.0,
+     "min_tier_games": 1,
+     "prev_player_avg": 238.7,
+     "prev_player_games": 15,
+     "expected_vs_tiers_prev": 221.5,
+     "min_tier_games_prev": 6
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -4222,6 +6449,67 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 253.2,
+      "rank": 25,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 250.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 279.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 4,
+       "avg": 271.2
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 20.4,
+      "rank": 22,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 40.0,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 1,
+       "avg": 1.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 7,
+       "avg": 47.4
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 273.6,
+     "rank": 24,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": null,
+     "player_avg": 290.7,
+     "player_games": 6,
+     "expected_vs_tiers": 280.0,
+     "min_tier_games": 1,
+     "prev_player_avg": 265.4,
+     "prev_player_games": 16,
+     "expected_vs_tiers_prev": 318.6,
+     "min_tier_games_prev": 4
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -4349,6 +6637,67 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 106.8,
+      "rank": 26,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 22.2,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 13.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 3,
+       "avg": -3.7
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 19.2,
+      "rank": 6,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 9.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 10.3
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 4,
+       "avg": 19.5
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 126.0,
+     "rank": 17,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 31.8,
+     "player_games": 6,
+     "expected_vs_tiers": 23.3,
+     "min_tier_games": 3,
+     "prev_player_avg": 32.5,
+     "prev_player_games": 8,
+     "expected_vs_tiers_prev": 15.8,
+     "min_tier_games_prev": 3
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -4435,6 +6784,67 @@
       "league_pg": 17.4
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 229.0,
+      "rank": 15,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 190.2,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 1,
+       "avg": 204.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 6,
+       "avg": 206.8
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 17.0,
+      "rank": 18,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 28.0,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 15.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 7,
+       "avg": 22.1
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 246.0,
+     "rank": 17,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 218.2,
+     "player_games": 6,
+     "expected_vs_tiers": 219.0,
+     "min_tier_games": 1,
+     "prev_player_avg": 264.1,
+     "prev_player_games": 16,
+     "expected_vs_tiers_prev": 228.9,
+     "min_tier_games_prev": 6
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -4563,6 +6973,76 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 69.0,
+      "rank": 3,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 23.2,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 21.5
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 1,
+       "avg": 4.0,
+       "prev": {
+        "games": 2,
+        "avg": 10.5
+       }
+      },
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 10.5
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 38.2,
+      "rank": 23,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 8.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 4.3
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 4,
+       "avg": 7.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 107.2,
+     "rank": 9,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": null,
+     "player_avg": 31.8,
+     "player_games": 6,
+     "expected_vs_tiers": 25.8,
+     "min_tier_games": 2,
+     "prev_player_avg": 36.5,
+     "prev_player_games": 11,
+     "expected_vs_tiers_prev": 17.5,
+     "min_tier_games_prev": 2
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -4681,6 +7161,67 @@
       "league_pg": 30.7
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 99.0,
+      "rank": 19,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 133.0,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 2,
+       "avg": 122.5
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 8,
+       "avg": 65.9
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 25.0,
+      "rank": 9,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 19.0,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 1,
+       "avg": 11.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 4,
+       "avg": 15.5
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 124.0,
+     "rank": 16,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 152.0,
+     "player_games": 5,
+     "expected_vs_tiers": 133.5,
+     "min_tier_games": 1,
+     "prev_player_avg": 77.0,
+     "prev_player_games": 17,
+     "expected_vs_tiers_prev": 81.4,
+     "min_tier_games_prev": 4
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -4809,6 +7350,76 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 69.0,
+      "rank": 3,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 27.2,
+      "player_games": 4,
+      "vs_tier": {
+       "games": 2,
+       "avg": 23.0
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 1,
+       "avg": 21.0,
+       "prev": {
+        "games": 2,
+        "avg": 12.5
+       }
+      },
+      "vs_tier_prev": {
+       "games": 4,
+       "avg": 19.5
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 38.2,
+      "rank": 23,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 10.8,
+      "player_games": 4,
+      "vs_tier": {
+       "games": 3,
+       "avg": 10.7
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 3,
+       "avg": 24.7
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 107.2,
+     "rank": 9,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": null,
+     "player_avg": 38.0,
+     "player_games": 4,
+     "expected_vs_tiers": 33.7,
+     "min_tier_games": 2,
+     "prev_player_avg": 64.9,
+     "prev_player_games": 12,
+     "expected_vs_tiers_prev": 44.2,
+     "min_tier_games_prev": 3
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -4935,6 +7546,76 @@
       "league_pg": 17.4
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 295.8,
+      "rank": 31,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 263.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 1,
+       "avg": 313.0
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 1,
+       "avg": 313.0,
+       "prev": {
+        "games": 0,
+        "avg": null
+       }
+      },
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 285.0
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 18.6,
+      "rank": 20,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": -0.3,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 1.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 4,
+       "avg": 1.2
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 314.4,
+     "rank": 31,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": "Bottom 5",
+     "player_avg": 263.3,
+     "player_games": 6,
+     "expected_vs_tiers": 314.0,
+     "min_tier_games": 1,
+     "prev_player_avg": 188.8,
+     "prev_player_games": 9,
+     "expected_vs_tiers_prev": 286.2,
+     "min_tier_games_prev": 2
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -5063,6 +7744,67 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 110.0,
+      "rank": 27,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 65.5,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 69.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 3,
+       "avg": 72.0
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 23.2,
+      "rank": 8,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 36.2,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 14.5
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 4,
+       "avg": 10.2
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 133.2,
+     "rank": 22,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 101.7,
+     "player_games": 6,
+     "expected_vs_tiers": 83.5,
+     "min_tier_games": 2,
+     "prev_player_avg": 90.2,
+     "prev_player_games": 17,
+     "expected_vs_tiers_prev": 82.2,
+     "min_tier_games_prev": 3
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -5190,6 +7932,66 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 118.0,
+      "rank": 30,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 20.3,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 15.0
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 1,
+       "avg": 10.0
+      },
+      "vs_tier_prev": null
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 21.2,
+      "rank": 7,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 9.2,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 0.0
+      },
+      "fine": null,
+      "vs_tier_prev": null
+     }
+    ],
+    "combined": {
+     "allowed_pg": 139.2,
+     "rank": 26,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": null,
+     "player_avg": 29.5,
+     "player_games": 6,
+     "expected_vs_tiers": 15.0,
+     "min_tier_games": 2,
+     "prev_player_avg": null,
+     "prev_player_games": 0,
+     "expected_vs_tiers_prev": null,
+     "min_tier_games_prev": 0
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2026,
@@ -5284,6 +8086,67 @@
       "league_pg": 17.4
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 252.4,
+      "rank": 24,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 299.0,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 307.3
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 8,
+       "avg": 292.0
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 12.8,
+      "rank": 10,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 3.5,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": -0.5
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 7,
+       "avg": 0.7
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 265.2,
+     "rank": 22,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 302.5,
+     "player_games": 6,
+     "expected_vs_tiers": 306.8,
+     "min_tier_games": 2,
+     "prev_player_avg": 276.9,
+     "prev_player_games": 17,
+     "expected_vs_tiers_prev": 292.7,
+     "min_tier_games_prev": 7
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -5412,6 +8275,67 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 228.6,
+      "rank": 13,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 236.0,
+      "player_games": 4,
+      "vs_tier": {
+       "games": 3,
+       "avg": 229.3
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 173.5
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 13.8,
+      "rank": 13,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 1.2,
+      "player_games": 4,
+      "vs_tier": {
+       "games": 4,
+       "avg": 1.2
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 1,
+       "avg": 19.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 242.4,
+     "rank": 11,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 237.2,
+     "player_games": 4,
+     "expected_vs_tiers": 230.5,
+     "min_tier_games": 3,
+     "prev_player_avg": 228.0,
+     "prev_player_games": 9,
+     "expected_vs_tiers_prev": 192.5,
+     "min_tier_games_prev": 1
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -5538,6 +8462,76 @@
       "league_pg": 30.7
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 69.0,
+      "rank": 3,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 48.2,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 31.5
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 1,
+       "avg": 18.0,
+       "prev": {
+        "games": 2,
+        "avg": 49.5
+       }
+      },
+      "vs_tier_prev": {
+       "games": 4,
+       "avg": 52.0
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 38.2,
+      "rank": 23,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 9.3,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 9.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 10.5
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 107.2,
+     "rank": 9,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": null,
+     "player_avg": 57.5,
+     "player_games": 6,
+     "expected_vs_tiers": 40.5,
+     "min_tier_games": 2,
+     "prev_player_avg": 81.9,
+     "prev_player_games": 9,
+     "expected_vs_tiers_prev": 62.5,
+     "min_tier_games_prev": 2
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -5666,6 +8660,67 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 205.0,
+      "rank": 6,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 261.8,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 2,
+       "avg": 228.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 208.8
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 10.6,
+      "rank": 7,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 11.4,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 2,
+       "avg": 8.5
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 31.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 215.6,
+     "rank": 5,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": "Top 5",
+     "player_avg": 273.2,
+     "player_games": 5,
+     "expected_vs_tiers": 236.5,
+     "min_tier_games": 2,
+     "prev_player_avg": 286.4,
+     "prev_player_games": 14,
+     "expected_vs_tiers_prev": 239.8,
+     "min_tier_games_prev": 2
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -5793,6 +8848,66 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 118.0,
+      "rank": 30,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 17.5,
+      "player_games": 2,
+      "vs_tier": {
+       "games": 1,
+       "avg": 28.0
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 1,
+       "avg": 28.0
+      },
+      "vs_tier_prev": null
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 21.2,
+      "rank": 7,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 25.0,
+      "player_games": 2,
+      "vs_tier": {
+       "games": 1,
+       "avg": 39.0
+      },
+      "fine": null,
+      "vs_tier_prev": null
+     }
+    ],
+    "combined": {
+     "allowed_pg": 139.2,
+     "rank": 26,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": null,
+     "player_avg": 42.5,
+     "player_games": 2,
+     "expected_vs_tiers": 67.0,
+     "min_tier_games": 1,
+     "prev_player_avg": null,
+     "prev_player_games": 0,
+     "expected_vs_tiers_prev": null,
+     "min_tier_games_prev": 0
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2026,
@@ -5855,6 +8970,67 @@
       "league_pg": 30.7
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 102.2,
+      "rank": 25,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 43.8,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 50.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 8,
+       "avg": 47.4
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 28.4,
+      "rank": 15,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 18.5,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 21.7
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 3,
+       "avg": 27.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 130.6,
+     "rank": 20,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 62.3,
+     "player_games": 6,
+     "expected_vs_tiers": 71.7,
+     "min_tier_games": 2,
+     "prev_player_avg": 67.7,
+     "prev_player_games": 14,
+     "expected_vs_tiers_prev": 74.4,
+     "min_tier_games_prev": 3
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -5983,6 +9159,76 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 60.0,
+      "rank": 2,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 25.7,
+      "player_games": 3,
+      "vs_tier": {
+       "games": 3,
+       "avg": 25.7
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 1,
+       "avg": 40.0,
+       "prev": {
+        "games": 3,
+        "avg": 34.3
+       }
+      },
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 28.4
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 35.6,
+      "rank": 21,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 12.3,
+      "player_games": 3,
+      "vs_tier": {
+       "games": 2,
+       "avg": 7.5
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 6,
+       "avg": 14.3
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 95.6,
+     "rank": 4,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": "Top 5",
+     "player_avg": 38.0,
+     "player_games": 3,
+     "expected_vs_tiers": 33.2,
+     "min_tier_games": 2,
+     "prev_player_avg": 80.8,
+     "prev_player_games": 17,
+     "expected_vs_tiers_prev": 42.7,
+     "min_tier_games_prev": 5
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -6110,6 +9356,76 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 242.5,
+      "rank": 21,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 215.0,
+      "player_games": 1,
+      "vs_tier": {
+       "games": 1,
+       "avg": 215.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 0,
+       "avg": null
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 36.5,
+      "rank": 31,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 0.0,
+      "player_games": 1,
+      "vs_tier": {
+       "games": 1,
+       "avg": 0.0
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 1,
+       "avg": 0.0,
+       "prev": {
+        "games": 0,
+        "avg": null
+       }
+      },
+      "vs_tier_prev": {
+       "games": 1,
+       "avg": 3.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 279.0,
+     "rank": 27,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": null,
+     "player_avg": 215.0,
+     "player_games": 1,
+     "expected_vs_tiers": 215.0,
+     "min_tier_games": 1,
+     "prev_player_avg": 244.0,
+     "prev_player_games": 1,
+     "expected_vs_tiers_prev": null,
+     "min_tier_games_prev": 0
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -6172,6 +9488,76 @@
       "league_pg": 30.7
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 99.6,
+      "rank": 20,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 58.2,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 4,
+       "avg": 65.5
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 95.2
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 52.8,
+      "rank": 32,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 4.0,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 1,
+       "avg": 0.0
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 1,
+       "avg": 0.0,
+       "prev": {
+        "games": 0,
+        "avg": null
+       }
+      },
+      "vs_tier_prev": {
+       "games": 3,
+       "avg": 9.7
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 152.4,
+     "rank": 30,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": "Bottom 5",
+     "player_avg": 62.2,
+     "player_games": 6,
+     "expected_vs_tiers": 65.5,
+     "min_tier_games": 1,
+     "prev_player_avg": 75.8,
+     "prev_player_games": 17,
+     "expected_vs_tiers_prev": 104.9,
+     "min_tier_games_prev": 3
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -6300,6 +9686,76 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 256.2,
+      "rank": 26,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 246.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 318.5
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 7,
+       "avg": 241.7
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 7.2,
+      "rank": 4,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 11.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 13.0
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 2,
+       "avg": 7.0,
+       "prev": {
+        "games": 5,
+        "avg": 18.0
+       }
+      },
+      "vs_tier_prev": {
+       "games": 6,
+       "avg": 18.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 263.4,
+     "rank": 20,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 258.3,
+     "player_games": 6,
+     "expected_vs_tiers": 331.5,
+     "min_tier_games": 2,
+     "prev_player_avg": 256.8,
+     "prev_player_games": 17,
+     "expected_vs_tiers_prev": 259.7,
+     "min_tier_games_prev": 6
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -6427,6 +9883,76 @@
      }
     ]
    },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 239.8,
+      "rank": 20,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 183.0,
+      "player_games": 2,
+      "vs_tier": {
+       "games": 1,
+       "avg": 165.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 127.0
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 7.2,
+      "rank": 3,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 24.0,
+      "player_games": 2,
+      "vs_tier": {
+       "games": 2,
+       "avg": 24.0
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 2,
+       "avg": 24.0,
+       "prev": {
+        "games": 0,
+        "avg": null
+       }
+      },
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 49.5
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 247.0,
+     "rank": 18,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 207.0,
+     "player_games": 2,
+     "expected_vs_tiers": 189.0,
+     "min_tier_games": 1,
+     "prev_player_avg": 145.0,
+     "prev_player_games": 4,
+     "expected_vs_tiers_prev": 176.5,
+     "min_tier_games_prev": 2
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
    "log": [
     {
      "season": 2025,
@@ -6513,6 +10039,76 @@
       "league_pg": 17.4
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 209.6,
+      "rank": 7,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 240.5,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 120.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 0,
+       "avg": null
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 27.2,
+      "rank": 28,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 17.3,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 20.0
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 1,
+       "avg": 32.0,
+       "prev": {
+        "games": 0,
+        "avg": null
+       }
+      },
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 28.2
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 236.8,
+     "rank": 10,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": null,
+     "player_avg": 257.8,
+     "player_games": 6,
+     "expected_vs_tiers": 140.0,
+     "min_tier_games": 2,
+     "prev_player_avg": 257.0,
+     "prev_player_games": 10,
+     "expected_vs_tiers_prev": null,
+     "min_tier_games_prev": 0
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {
@@ -6640,6 +10236,76 @@
       "league_pg": 30.7
      }
     ]
+   },
+   "matchup": {
+    "through_week": 5,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to RBs",
+      "allowed_pg": 42.0,
+      "rank": 1,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 34.2,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 1,
+       "avg": 56.0
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 1,
+       "avg": 56.0,
+       "prev": {
+        "games": 4,
+        "avg": 33.0
+       }
+      },
+      "vs_tier_prev": {
+       "games": 10,
+       "avg": 42.1
+      }
+     },
+     {
+      "key": "b",
+      "name": "Receiving",
+      "opp_label": "Receiving yds allowed to RBs",
+      "allowed_pg": 39.6,
+      "rank": 25,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 13.2,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 9.7
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 21.2
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 81.6,
+     "rank": 1,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": "Top 5",
+     "player_avg": 47.3,
+     "player_games": 6,
+     "expected_vs_tiers": 65.7,
+     "min_tier_games": 1,
+     "prev_player_avg": 56.9,
+     "prev_player_games": 16,
+     "expected_vs_tiers_prev": 63.3,
+     "min_tier_games_prev": 5
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
    "log": [
     {

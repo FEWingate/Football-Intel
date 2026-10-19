@@ -49,6 +49,7 @@ MANUAL = os.path.join(ROOT, "manual_combo_lines.json")
 OUT = os.path.join(ROOT, "intel", "combo_props.json")
 PLAYERS = os.path.join(ROOT, "players", "latest.json")
 CURRENT = os.path.join(ROOT, "matchup", "current.json")
+MATCHUP_DIR = os.path.join(ROOT, "matchup")
 
 URL = "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_%d.csv"
 TEAM_FIX = {"LA": "LAR", "JAC": "JAX", "WSH": "WAS", "ARZ": "ARI", "BLT": "BAL", "CLV": "CLE", "HST": "HOU"}
@@ -61,6 +62,10 @@ LEAN_EDGE = 0.04
 STRONG_EDGE = 0.08
 DEFAULT_PRICE = -113
 MAX_GAP = 0.12          # projection more than 12% away from the line -> flag CHECK instead of LEAN/STRONG
+
+# If the FanDuel feed ever carries a real combined market, its lines are used automatically (manual lines still win).
+# Only these exact family names are accepted - never a sum of separate markets.
+FEED_COMBO_FAMILY = {"pass_rush": "passing_rushing_yards", "rush_rec": "rushing_receiving_yards"}
 
 MARKETS = {
     "pass_rush": {"pos": "QB", "label": "Passing + Rushing Yds", "a": "passing_yards", "b": "rushing_yards",
@@ -216,12 +221,163 @@ def evaluate(mean, sd, point, over_price, under_price):
     be_o, be_u = price_to_prob(over_price), price_to_prob(under_price)
     e_o, e_u = p_over - be_o, p_under - be_u
     side, edge, p = ("OVER", e_o, p_over) if e_o >= e_u else ("UNDER", e_u, p_under)
-    lean = "STRONG" if edge >= STRONG_EDGE else ("LEAN" if edge >= LEAN_EDGE else "PASS")
+    lean = "STRONG" if edge >= STRONG_EDGE else ("LEAN" if edge >= LEAN_EDGE else "NEUTRAL")
     gap = abs(mean - point) / point if point else 0.0
-    if lean != "PASS" and gap > MAX_GAP:
+    if lean != "NEUTRAL" and gap > MAX_GAP:
         lean = "CHECK"   # the model is far from the market: more likely a model blind spot than a real edge
     return {"market_gap_pct": round(100 * gap, 1), "p_over": round(p_over, 3), "p_under": round(p_under, 3), "best_side": side, "best_p": round(p, 3),
             "edge": round(edge, 3), "edge_yards": round(mean - point, 1), "lean": lean}
+
+
+# ---------------------------------------------------------------- opponent tiers (same cutoffs as the rest of the site)
+def tier_broad(rank):
+    """Site definition (build_matchup_stats.tier_of): rank 1 = toughest defense."""
+    return "top" if rank <= 10 else ("mid" if rank <= 22 else "bot")
+
+
+def tier_fine(rank):
+    return "top5" if rank <= 5 else ("bottom5" if rank >= 28 else None)
+
+
+TIER_LABEL = {"top": "Top 10", "mid": "Mid 12", "bot": "Bottom 10", "top5": "Top 5", "bottom5": "Bottom 5"}
+
+
+def rank_asc(values):
+    """{team: value} -> {team: rank}, rank 1 = lowest value (fewest yards allowed = toughest)."""
+    order = sorted(values.items(), key=lambda kv: kv[1])
+    return {t: i + 1 for i, (t, _) in enumerate(order)}
+
+
+def load_matchup(week):
+    for name in ("wk%02d.json" % week, "current.json"):
+        d = load_json(os.path.join(MATCHUP_DIR, name))
+        if d and d.get("teams"):
+            return d
+    return None
+
+
+def horizon_week(mu):
+    m = re.search(r"(\d+)\D*$", str((mu or {}).get("data_horizon") or ""))
+    return int(m.group(1)) if m else None
+
+
+def qb_rush_allowed(df, through):
+    """Yards of rushing each defense allowed to QBs per game (this season, same weeks as the site's ranks)."""
+    if df is None:
+        return {}
+    x = df[df["week"] <= through] if through else df
+    games = x.groupby("opponent_team")["week"].nunique()
+    qb = x[x["position"] == "QB"].groupby("opponent_team")["rushing_yards"].sum()
+    return {t: round(float(qb.get(t, 0.0)) / int(games[t]), 1) for t in games.index if int(games[t]) > 0}
+
+
+def season_ranks(df, pos):
+    """Final-season ranks (1 = fewest yards allowed per game to this position group) for the two stats the
+    combo props use. Used to place LAST season's opponents into tiers the same way the site places this season's."""
+    if df is None:
+        return None
+    stats = ["passing_yards", "rushing_yards"] if pos == "QB" else ["rushing_yards", "receiving_yards"]
+    games = df.groupby("opponent_team")["week"].nunique()
+    x = df[df["position"] == pos]
+    out = []
+    for st in stats:
+        tot = x.groupby("opponent_team")[st].sum()
+        out.append(rank_asc({t: float(tot.get(t, 0.0)) / int(games[t]) for t in games.index if int(games[t]) > 0}))
+    return out
+
+
+def matchup_block(row_pos, mk, opp, log26, mu, qb_rush_pg, prev_log=None, prev_ranks=None):
+    """Per-half and combined: what the player averages, what the opponent allows (with rank and tier), and
+    what the player has averaged against defenses in that same tier this season."""
+    if not mu or not opp or opp not in mu.get("teams", {}):
+        return None
+    cfg = MARKETS[mk]
+    teams = mu["teams"]
+    pos = row_pos
+    if pos == "RB":
+        src = [("rush_ypg", "Rushing", "Rushing yds allowed to RBs"), ("rec_ypg", "Receiving", "Receiving yds allowed to RBs")]
+        vals = [{t: (v["def"].get("RB", {}).get(src[i][0]) or {}).get("v") for t, v in teams.items()} for i in (0, 1)]
+        ranks = [{t: (v["def"].get("RB", {}).get(src[i][0]) or {}).get("r") for t, v in teams.items()} for i in (0, 1)]
+    else:
+        src = [("pass_ypg", "Passing", "Passing yds allowed to QBs"), (None, "Rushing", "Rushing yds allowed to QBs")]
+        vals = [{t: (v["def"].get("QB", {}).get("pass_ypg") or {}).get("v") for t, v in teams.items()},
+                dict(qb_rush_pg)]
+        ranks = [{t: (v["def"].get("QB", {}).get("pass_ypg") or {}).get("r") for t, v in teams.items()},
+                 rank_asc(qb_rush_pg) if qb_rush_pg else {}]
+    if opp not in vals[0] or opp not in vals[1] or vals[0].get(opp) is None or vals[1].get(opp) is None:
+        return None
+    comb_vals = {t: vals[0][t] + vals[1][t] for t in vals[0] if t in vals[1] and vals[0][t] is not None and vals[1][t] is not None}
+    comb_rank = rank_asc(comb_vals)
+
+    stat_keys = [cfg["a"], cfg["b"]]
+    games = []   # (opp, a, b)
+    for g in log26:
+        games.append(g)
+    cats = []
+    for i in (0, 1):
+        r_opp = ranks[i].get(opp)
+        if r_opp is None:
+            return None
+        tb = tier_broad(r_opp)
+        tf = tier_fine(r_opp)
+
+        def avg_for(pred, glist=None, rmap=None):
+            glist = games if glist is None else glist
+            rmap = ranks[i] if rmap is None else rmap
+            xs = [g["a" if i == 0 else "b"] for g in glist
+                  if rmap.get(g["opp"]) is not None and pred(rmap[g["opp"]])]
+            return {"games": len(xs), "avg": round(sum(xs) / len(xs), 1) if xs else None}
+        pr_map = prev_ranks[i] if prev_ranks else None
+        all_xs = [g["a" if i == 0 else "b"] for g in games]
+        cat = {"key": "ab"[i], "name": src[i][1], "opp_label": src[i][2], "allowed_pg": round(vals[i][opp], 1),
+               "rank": int(r_opp), "tier": tb, "tier_label": TIER_LABEL[tb],
+               "player_avg": round(sum(all_xs) / len(all_xs), 1) if all_xs else None, "player_games": len(all_xs),
+               "vs_tier": avg_for(lambda r, tb=tb: tier_broad(r) == tb),
+               "fine": None, "vs_tier_prev": None}
+        if pr_map and prev_log:
+            cat["vs_tier_prev"] = avg_for(lambda r, tb=tb: tier_broad(r) == tb, prev_log, pr_map)
+        if tf:
+            cat["fine"] = {"tier": tf, "label": TIER_LABEL[tf],
+                           **avg_for(lambda r, tf=tf: tier_fine(r) == tf)}
+            if pr_map and prev_log:
+                cat["fine"]["prev"] = avg_for(lambda r, tf=tf: tier_fine(r) == tf, prev_log, pr_map)
+        cats.append(cat)
+    c_rank = comb_rank.get(opp)
+    both = cats[0]["vs_tier"]["avg"] is not None and cats[1]["vs_tier"]["avg"] is not None
+    comb = {"allowed_pg": round(comb_vals[opp], 1), "rank": c_rank, "tier": tier_broad(c_rank), "tier_label": TIER_LABEL[tier_broad(c_rank)],
+            "fine_label": TIER_LABEL[tier_fine(c_rank)] if tier_fine(c_rank) else None,
+            "player_avg": round(sum(g["a"] + g["b"] for g in games) / len(games), 1) if games else None,
+            "player_games": len(games),
+            "expected_vs_tiers": round(cats[0]["vs_tier"]["avg"] + cats[1]["vs_tier"]["avg"], 1) if both else None,
+            "min_tier_games": min(cats[0]["vs_tier"]["games"], cats[1]["vs_tier"]["games"]),
+            "prev_player_avg": (round(sum(g["a"] + g["b"] for g in prev_log) / len(prev_log), 1) if prev_log else None),
+            "prev_player_games": len(prev_log) if prev_log else 0,
+            "expected_vs_tiers_prev": (round(cats[0]["vs_tier_prev"]["avg"] + cats[1]["vs_tier_prev"]["avg"], 1)
+                                       if cats[0].get("vs_tier_prev") and cats[1].get("vs_tier_prev")
+                                       and cats[0]["vs_tier_prev"]["avg"] is not None and cats[1]["vs_tier_prev"]["avg"] is not None else None),
+            "min_tier_games_prev": (min(cats[0]["vs_tier_prev"]["games"], cats[1]["vs_tier_prev"]["games"])
+                                    if cats[0].get("vs_tier_prev") and cats[1].get("vs_tier_prev") else 0)}
+    return {"through_week": horizon_week(mu), "categories": cats, "combined": comb,
+            "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."}
+
+
+def season_log(df, pid, mk):
+    """Every real game this season for the matchup splits (usage floor only filters garbage appearances)."""
+    cfg = MARKETS[mk]
+    out = []
+    if df is None:
+        return out
+    x = df[df["player_id"] == pid].sort_values("week")
+    for _, r in x.iterrows():
+        if cfg["pos"] == "QB":
+            if (r.get("attempts", 0) or 0) < 10:
+                continue
+        else:
+            if (r.get("carries", 0) or 0) + (r.get("targets", 0) or 0) < 3:
+                continue
+        out.append({"week": int(r["week"]), "opp": r["opponent_team"],
+                    "a": float(r.get(cfg["a"], 0) or 0), "b": float(r.get(cfg["b"], 0) or 0)})
+    return out
 
 
 def game_context(feed):
@@ -284,6 +440,9 @@ def main():
     allowed = {"QB": allowed_table(frames, "QB", ["passing_yards", "rushing_yards"]),
                "RB": allowed_table(frames, "RB", ["rushing_yards", "receiving_yards"])}
     ctx = game_context(feed)
+    mu = load_matchup(week)
+    qb_rush_pg = qb_rush_allowed(frames["cur"], horizon_week(mu))
+    prev_rank_cache = {pos: season_ranks(frames["prev"], pos) for pos in ("QB", "RB")}
 
     # --- candidate list: every manual line + every feed player with both halves posted
     cands = {}
@@ -300,6 +459,16 @@ def main():
         for mk, cfg in MARKETS.items():
             A = pp.get(cfg["feed_a"]) or {}
             B = pp.get(cfg["feed_b"]) or {}
+            for name, v in (pp.get(FEED_COMBO_FAMILY[mk]) or {}).items():
+                ln = (v or {}).get("line") or {}
+                info = ident.get(norm(name))
+                if not info or info["pos"] != cfg["pos"] or ln.get("point") is None:
+                    continue
+                c = add(name, mk, game)
+                c["line"] = {"point": ln["point"], "over_price": ln.get("over_price"), "under_price": ln.get("under_price"),
+                             "alts": [{"line": x.get("threshold"), "over_price": x.get("over_price"), "under_price": x.get("under_price")}
+                                      for x in (v.get("alts") or [])],
+                             "source": "fanduel feed", "source_market_key": ln.get("source_market_key")}
             for name in set(A) & set(B):
                 info = ident.get(norm(name))
                 if not info or info["pos"] != cfg["pos"]:
@@ -347,6 +516,8 @@ def main():
                "feed_halves": {"a": c["feed_a"], "b": c["feed_b"]},
                "implied_line": (round(c["feed_a"] + c["feed_b"], 1) if c["feed_a"] is not None and c["feed_b"] is not None else None),
                "line": c["line"], "projection": proj,
+               "matchup": matchup_block(info["pos"], mk, opp, season_log(frames["cur"], info["id"], mk), mu, qb_rush_pg,
+                                        season_log(frames["prev"], info["id"], mk), prev_rank_cache.get(info["pos"])),
                "log": [{"season": x["season"], "week": x["week"], "opp": x["opp"], "a": x["a"], "b": x["b"], "total": x["total"]}
                        for x in log[-10:]]}
         if proj and c["line"] and c["line"].get("point") is not None:
@@ -363,7 +534,8 @@ def main():
         rows.append(row)
         if row.get("eval"):
             print("  %-22s %-9s proj %-6s sd %-5s line %-6s -> %s %s (edge %+.1f pts, gap %.0f%%)" % (
-                info["name"], mk, proj["proj_total"], proj["sd"], c["line"]["point"], row["eval"]["lean"],
+                info["name"], mk, proj["proj_total"], proj["sd"], c["line"]["point"],
+                ("flagged (far from line)" if row["eval"]["lean"] == "CHECK" else row["eval"]["lean"]),
                 row["eval"]["best_side"], 100 * row["eval"]["edge"], row["eval"]["market_gap_pct"]))
 
     print("  (%d more candidates have both halves posted but no real combo line yet)" % sum(1 for r in rows if not r.get("eval")))
@@ -427,20 +599,21 @@ def save_picks(out):
 
 COEUS_SYSTEM = """You are Coeus, the NFL prop analyst inside Football Intel. You are given rows for FanDuel's combined
 yardage props (QB passing + rushing yards, RB rushing + receiving yards). Each row has a statistical projection,
-the FanDuel line, the player's recent games, opponent factors and game script (spread, total, team implied points).
+the FanDuel line, the player's recent games, opponent factors, the opponent's rank/tier against each half
+(rank 1 = toughest defense; Top 10, Mid 12, Bottom 10) with what the player has averaged against that tier, and game script (spread, total, team implied points).
 
-For every row return a pick: OVER, UNDER or PASS. Rules:
+For every row return a pick: OVER, UNDER or NEUTRAL (NEUTRAL = no meaningful edge on either side; the line looks about right). Rules:
 - Treat the model projection as one input, not the answer. It does not know about injuries, role changes, blowout
   risk or game script beyond what is shown; weigh those and say so when they change your view.
 - Use only the numbers provided. Never invent injuries, news or stats. Do not mention data that is absent.
-- A model lean of CHECK means the projection is more than 12% away from FanDuel's line; treat that as a warning
+- A model flag of CHECK means the projection is more than 12% away from FanDuel's line; treat that as a warning
   that the model may be missing something (role change, game script) and only side with the model if the data shown supports it.
-- If edge is under about 3 percentage points or the sample is thin, prefer PASS unless a clear football reason
+- If edge is under about 3 percentage points or the sample is thin, prefer NEUTRAL unless a clear football reason
   supports a side.
 - confidence is an integer 1-5 (5 = strongest).
 - reasoning: 2-4 plain sentences naming the specific numbers that drive the pick (projection vs line, recent
   totals, opponent allowance, script).
-Return ONLY JSON: {"picks": [{"player": "...", "market": "pass_rush|rush_rec", "pick": "OVER|UNDER|PASS",
+Return ONLY JSON: {"picks": [{"player": "...", "market": "pass_rush|rush_rec", "pick": "OVER|UNDER|NEUTRAL",
 "confidence": 1-5, "reasoning": "..."}]}"""
 
 
@@ -458,7 +631,8 @@ def coeus_picks(out, model):
         items.append({"player": r["player"], "team": r["team"], "opp": r["opp"], "home": r["home"], "market": r["market"],
                       "fanduel_line": r["line"]["point"], "over_price": r["line"].get("over_price"),
                       "under_price": r["line"].get("under_price"), "game": r["game"],
-                      "projection": r["projection"], "model": r["eval"], "recent_games_oldest_to_newest": r["log"]})
+                      "projection": r["projection"], "model": r["eval"], "opponent_tiers_and_player_splits": r.get("matchup"),
+                      "recent_games_oldest_to_newest": r["log"]})
     if not items:
         print("Coeus: no rows with a real FanDuel line yet - nothing to pick.")
         return
@@ -478,7 +652,7 @@ def coeus_picks(out, model):
     for r in out["rows"]:
         p = by.get((norm(r["player"]), r["market"]))
         if p:
-            r["coeus"] = {"pick": p.get("pick"), "confidence": p.get("confidence"), "reasoning": p.get("reasoning"),
+            r["coeus"] = {"pick": ("NEUTRAL" if str(p.get("pick")).upper() == "PASS" else p.get("pick")), "confidence": p.get("confidence"), "reasoning": p.get("reasoning"),
                           "model": model}
     u = getattr(resp, "usage", None)
     if u:

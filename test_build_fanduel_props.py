@@ -91,5 +91,24 @@ class CoverageProtectionTests(unittest.TestCase):
         self.assertFalse(warnings)
 
 
+class SuffixMergeTests(unittest.TestCase):
+    def test_penix_plain_and_alts_merge(self):
+        from build_fanduel_props import merge_suffix_duplicates
+        line = {"point": 236.5, "over_price": 1.9, "under_price": 1.9}
+        out = merge_suffix_duplicates({
+            "Michael Penix": {"line": line, "alts": []},
+            "Michael Penix Jr.": {"line": line, "alts": [{"threshold": 200}, {"threshold": 250}]},
+            "Aaron Rodgers": {"line": line, "alts": []}})
+        self.assertEqual(set(out), {"Michael Penix Jr.", "Aaron Rodgers"})
+        self.assertEqual(len(out["Michael Penix Jr."]["alts"]), 2)
+        self.assertEqual(out["Michael Penix Jr."]["line"], line)
+
+    def test_known_name_wins(self):
+        from build_fanduel_props import merge_suffix_duplicates
+        b = {"line": None, "alts": []}
+        out = merge_suffix_duplicates({"Brian Robinson": dict(b), "Brian Robinson Jr.": dict(b)}, {"Brian Robinson"})
+        self.assertEqual(set(out), {"Brian Robinson"})
+
+
 if __name__ == "__main__":
     unittest.main()
