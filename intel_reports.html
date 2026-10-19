@@ -158,6 +158,8 @@ const main = fiShell({ page:'reports', pageLabel:'Intel Reports', status:'loadin
 let INTEL = null;
 let BLITZ = null;
 let COVERAGE = null;
+let PFFCOV = null;   // private/pff/coverage_context.json (local only; 404 on the public site)
+let PFFHEAD = null;  // name|team -> headshot, from players/latest.json (only loaded when PFFCOV exists)
 let activeReport = 'gb'; // 'gb' | 'qb' | 'rb' | 'blitz' | 'coverage' | 'cbdb'
 let gbWeekFilter = 'all'; // set to the real current NFL week once GB_GAMES loads
 let sortKey = 'watch';
@@ -266,6 +268,22 @@ async function load(){
     const resC = await fetch(`intel/coverage.json`);
     if(resC.ok) COVERAGE = await resC.json();
   }catch(e){}
+  try{
+    const resP = await fetch(`private/pff/coverage_context.json`, {cache:'no-store'});
+    if(resP.ok){
+      PFFCOV = await resP.json();
+      try{
+        const rp = await fetch(`players/latest.json`);
+        if(rp.ok){
+          const pj = await rp.json();
+          PFFHEAD = {};
+          Object.values(pj.players || {}).forEach(list => (list||[]).forEach(p => {
+            if(p && p.headshot){ PFFHEAD[pffNorm(p.name)+'|'+p.team] = p.headshot; PFFHEAD[pffNorm(p.name)] = PFFHEAD[pffNorm(p.name)] || p.headshot; }
+          }));
+        }
+      }catch(e){}
+    }
+  }catch(e){ PFFCOV = null; }
   try{
     const res2 = await fetch(`intel/blitz.json`);
     if(res2.ok) BLITZ = await res2.json();
@@ -944,6 +962,24 @@ function openBlitzGameLog(team){
 }
 
 /* ── COVERAGE BREAKDOWN REPORT (historical, season retrospective) ──── */
+function pffNorm(n){
+  return String(n || '').toLowerCase().replace(/[.'’]/g, '').replace(/\b(jr|sr|ii|iii|iv|v)\b/g, '').replace(/[^a-z ]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+/* The current season only has PFF man/zone charting (nflverse's participation file isn't
+   released until the season ends). Once nflverse publishes that season, the complete
+   nflverse version replaces the PFF one automatically. */
+function pffSeasonNum(){
+  if(!PFFCOV) return null;
+  const s = Number(PFFCOV.season);
+  if(!s || ((COVERAGE && COVERAGE.seasons) || []).includes(s)) return null;
+  return s;
+}
+function coverageSeasonList(){
+  const base = ((COVERAGE && COVERAGE.seasons) || []).slice();
+  const ps = pffSeasonNum();
+  return ps ? [ps, ...base] : base;
+}
+function isPffSeason(){ return pffSeasonNum() != null && coverageSeason === pffSeasonNum(); }
 function coverageSeasonData(){
   return (COVERAGE && coverageSeason != null &&
     (COVERAGE.by_season || {})[coverageSeason]) || {};
@@ -972,10 +1008,12 @@ function renderCoverageReport(){
   // Splits and CB/DB Rankings) — this adds the matching season dropdown
   // so a real, complete prior season stays visible while the current one
   // fills in.
-  const seasons = (COVERAGE && COVERAGE.seasons) || [];
+  const seasons = coverageSeasonList();
   if(coverageSeason == null || !seasons.includes(coverageSeason)) coverageSeason = seasons[0];
+  const pffView = isPffSeason();
+  if(pffView && coveragePos === 'QB') coveragePos = 'WR';
 
-  if(!COVERAGE || !seasons.length){
+  if(!seasons.length){
     $("body").innerHTML = `<div class="empty">
       No Coverage Breakdown data available yet.<br>
       This report uses nflverse's participation data, which is only released after the full season
@@ -983,7 +1021,29 @@ function renderCoverageReport(){
       <b>python3 build_matchup_stats.py all</b> again once that season is fully over.</div>`;
     return;
   }
-  $("body").innerHTML = `
+  $("body").innerHTML = pffView ? `
+    <div class="sect"><h3>Coverage Breakdown — ${coverageSeason} Season To Date</h3><span class="rule"></span></div>
+    <div class="report-intro">
+      How is each receiver doing against man vs. zone coverage so far in ${coverageSeason}? This is PFF's play-by-play
+      charting through the latest week, shown for every receiver with 10 or more charted targets. It splits
+      coverage into man and zone only; the call-by-call splits (Cover 1, Cover 2, Cover 3 and so on) and the
+      QB view come from the full-season ${seasons.find(x => x !== coverageSeason) || ''} retrospective. Only plays PFF classified as man or zone are
+      counted, so a receiver's man + zone targets can be lower than his total targets (each card shows both).
+      Private PFF data, visible only on your local site.
+    </div>
+    <div class="report-controls">
+      <div class="tabs" id="coveragePosTabs" role="tablist">
+        <button role="tab" data-p="WR" aria-selected="${coveragePos==='WR'}">WR</button>
+        <button role="tab" data-p="TE" aria-selected="${coveragePos==='TE'}">TE</button>
+      </div>
+      <div class="season-controls">
+        <label class="lbl" for="coverageSeasonSel">Season</label>
+        <select id="coverageSeasonSel">${seasons.map(s =>
+          `<option value="${s}" ${s===coverageSeason?'selected':''}>${s}${s===pffSeasonNum()?' · to date (local only)':''}</option>`).join('')}</select>
+      </div>
+      <input class="search-box" id="coverageSearchBox" placeholder="Search player or team…">
+    </div>
+    <div class="intel-grid" id="coverageGrid"></div>` : `
     <div class="sect"><h3>Coverage Breakdown — ${coverageSeason} Season Retrospective</h3><span class="rule"></span></div>
     <div class="report-intro">
       How did each team's starting QB (and their target leader) actually perform against man vs. zone
@@ -994,14 +1054,14 @@ function renderCoverageReport(){
     </div>
     <div class="report-controls">
       <div class="tabs" id="coveragePosTabs" role="tablist">
-        <button role="tab" data-p="QB" aria-selected="true">QB</button>
-        <button role="tab" data-p="WR" aria-selected="false">WR</button>
-        <button role="tab" data-p="TE" aria-selected="false">TE</button>
+        <button role="tab" data-p="QB" aria-selected="${coveragePos==='QB'}">QB</button>
+        <button role="tab" data-p="WR" aria-selected="${coveragePos==='WR'}">WR</button>
+        <button role="tab" data-p="TE" aria-selected="${coveragePos==='TE'}">TE</button>
       </div>
       <div class="season-controls">
         <label class="lbl" for="coverageSeasonSel">Season</label>
         <select id="coverageSeasonSel">${seasons.map(s =>
-          `<option value="${s}" ${s===coverageSeason?'selected':''}>${s}</option>`).join('')}</select>
+          `<option value="${s}" ${s===coverageSeason?'selected':''}>${s}${s===pffSeasonNum()?' · to date (local only)':''}</option>`).join('')}</select>
       </div>
       <input class="search-box" id="coverageSearchBox" placeholder="Search team or player…">
     </div>
@@ -1159,7 +1219,69 @@ function seasonAvgLineHTML(t, pos){
   return `${t.season_rec_yds_avg} rec yds/gm · ${t.season_rec_pg} rec/gm`;
 }
 
+const PFF_CARD_ROWS = [
+  ['Targets', 'targets', 0], ['Receptions', 'receptions', 0], ['Yards', 'yards', 0], ['Touchdowns', 'touchdowns', 0],
+  ['Yards / target', '_ypt', 1], ['Catch %', 'caught_percent', 1], ['Yards / route run', 'yprr', 2],
+  ['EPA', 'epa', 2], ['Route grade', 'grades_pass_route', 1], ['Targeted QB rating', 'targeted_qb_rating', 1],
+  ['Drop rate', 'drop_rate', 1], ['Avg depth of target', 'avg_depth_of_target', 1],
+];
+function pffReceiverList(){
+  const out = [];
+  Object.entries((PFFCOV && PFFCOV.teams) || {}).forEach(([team, v]) => {
+    (((v || {}).offense || {}).receivers || []).forEach(r => {
+      if((r.pos || '') !== coveragePos || (r.total_targets || 0) < 10) return;
+      out.push({ team, ...r });
+    });
+  });
+  out.sort((a, b) => b.total_targets - a.total_targets);
+  return out;
+}
+function pffCardTableHTML(r){
+  const m = Object.assign({}, r.vs_man || {}), z = Object.assign({}, r.vs_zone || {});
+  m._ypt = m.targets ? m.yards / m.targets : null;
+  z._ypt = z.targets ? z.yards / z.targets : null;
+  const fmt = (v, d) => (v == null || v === '') ? '—' : (typeof v === 'number' ? (d ? v.toFixed(d) : String(Math.round(v))) : v);
+  return `
+    <div class="lead-wrap" style="max-height:none"><table class="lead-table"><thead><tr>
+      <th class="name-col">Stat</th><th>vs Man</th><th>vs Zone</th>
+    </tr></thead><tbody>
+      ${PFF_CARD_ROWS.map(([label, k, d]) => `<tr>
+        <td class="name-col">${label}</td>
+        <td><span class="cell-val">${fmt(m[k], d)}</span></td>
+        <td><span class="cell-val">${fmt(z[k], d)}</span></td>
+      </tr>`).join('')}
+    </tbody></table></div>`;
+}
+function renderPffCoverageGrid(){
+  let list = pffReceiverList();
+  const q = coverageSearchTerm;
+  if(q) list = list.filter(r => r.team.toLowerCase().includes(q) || (r.player || '').toLowerCase().includes(q));
+  $("coverageGrid").innerHTML = list.map(r => {
+    const hs = (PFFHEAD && (PFFHEAD[pffNorm(r.player)+'|'+r.team] || PFFHEAD[pffNorm(r.player)])) || '';
+    const un = r.uncharted_targets, all = r.all_targets;
+    const m = r.vs_man || {}, z = r.vs_zone || {};
+    const mz = (m.targets || 0) + (z.targets || 0);
+    const manShare = mz ? Math.round(100 * (m.targets || 0) / mz) : null;
+    const small = (m.targets || 0) < 10 || (z.targets || 0) < 10;
+    return `
+    <div class="intel-card">
+      <div class="ic-head">
+        <img class="ic-headshot" src="${esc2(hs)}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div>
+          <div class="ic-name">${esc2(r.player)}</div>
+          <div class="ic-team">${fiLogoHTML(r.team,14)}${esc2(r.team)} · ${esc2(r.pos)} · ${r.games ?? '—'} games</div>
+          <div class="ic-team" style="color:var(--text-mid)">${r.total_targets}${all ? ' of '+all : ''} targets charted${manShare!=null ? ' · '+manShare+'% faced man' : ''}</div>
+        </div>
+      </div>
+      <div class="ic-section-label">Man vs Zone (PFF charting)</div>
+      ${pffCardTableHTML(r)}
+      ${(un > 0 || small) ? `<div class="empty" style="padding:6px 4px;text-align:left;font-size:10px">${un > 0 ? `${un} targets (with their yards and TDs) aren't classified as man or zone and aren't counted here. ` : ''}${small ? 'Under 10 targets in one split, so treat it as a small sample.' : ''}</div>` : ''}
+    </div>`;
+  }).join('') || `<div class="empty">No receivers match that search.</div>`;
+}
+
 function renderCoverageGrid(){
+  if(isPffSeason()){ renderPffCoverageGrid(); return; }
   const dataset = coverageDataset(coveragePos);
   let teams = Object.entries(dataset).map(([team, v]) => ({ team, ...v }));
   teams = teams.filter(t =>
