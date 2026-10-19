@@ -1,0 +1,61 @@
+{
+ "picks": [
+  {
+   "season": 2026,
+   "week": 6,
+   "player": "Brock Purdy",
+   "team": "SF",
+   "opp": "WAS",
+   "market": "pass_rush",
+   "line": 272.5,
+   "over_price": -113.0,
+   "under_price": -113.0,
+   "proj": 272.9,
+   "sd": 65.3,
+   "model_side": "OVER",
+   "model_lean": "PASS",
+   "model_edge": -0.028,
+   "coeus_pick": "PASS",
+   "saved_at": "2026-10-19T17:39:46Z",
+   "graded": false
+  },
+  {
+   "season": 2026,
+   "week": 6,
+   "player": "Christian McCaffrey",
+   "team": "SF",
+   "opp": "WAS",
+   "market": "rush_rec",
+   "line": 106.5,
+   "over_price": -113.0,
+   "under_price": null,
+   "proj": 95.9,
+   "sd": 33.7,
+   "model_side": "UNDER",
+   "model_lean": "STRONG",
+   "model_edge": 0.093,
+   "coeus_pick": "UNDER",
+   "saved_at": "2026-10-19T17:39:46Z",
+   "graded": false
+  },
+  {
+   "season": 2026,
+   "week": 6,
+   "player": "Jayden Daniels",
+   "team": "WAS",
+   "opp": "SF",
+   "market": "pass_rush",
+   "line": 254.5,
+   "over_price": -113.0,
+   "under_price": -113.0,
+   "proj": 201.7,
+   "sd": 64.0,
+   "model_side": "UNDER",
+   "model_lean": "CHECK",
+   "model_edge": 0.265,
+   "coeus_pick": "UNDER",
+   "saved_at": "2026-10-19T17:39:46Z",
+   "graded": false
+  }
+ ]
+}

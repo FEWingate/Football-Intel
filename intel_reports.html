@@ -244,6 +244,7 @@ main.innerHTML = `
     <button role="tab" data-r="blitz" aria-selected="false">Blitz Impact</button>
     <button role="tab" data-r="coverage" aria-selected="false">Coverage Breakdown</button>
     <button role="tab" data-r="cbdb" aria-selected="false">CB/DB Coverage Rankings</button>
+    <button role="tab" data-r="combo" aria-selected="false">Combo Props</button>
   </div>
   <div id="body"></div>
   <div class="modal-overlay" id="scrim"></div>
@@ -287,6 +288,14 @@ async function load(){
   try{
     const res2 = await fetch(`intel/blitz.json`);
     if(res2.ok) BLITZ = await res2.json();
+  }catch(e){}
+  try{
+    const resCb = await fetch(`intel/combo_props.json`, {cache:'no-store'});
+    if(resCb.ok) COMBO = await resCb.json();
+  }catch(e){}
+  try{
+    const resCh = await fetch(`results/combo_picks.json`, {cache:'no-store'});
+    if(resCh.ok) COMBO_HIST = await resCh.json();
   }catch(e){}
   try{
     const res3 = await fetch(`intel/cb_rankings.json`);
@@ -389,7 +398,246 @@ function render(){
   else if(activeReport === 'blitz') renderBlitzReport();
   else if(activeReport === 'coverage') renderCoverageReport();
   else if(activeReport === 'gb') renderGbReport();
+  else if(activeReport === 'combo') renderComboReport();
   else renderCbDbReport();
+}
+
+/* ── COMBO PROPS (RB rushing + receiving, QB passing + rushing) ──────── */
+let COMBO = null;
+let COMBO_HIST = null;
+let comboPos = 'QB';
+let comboOnlyLine = null;   // null = decide from data on first render
+let comboSearch = '';
+const COMBO_STORE = 'fi_combo_lines_v1';
+const COMBO_MAX_GAP = 0.12, COMBO_LEAN = 0.04, COMBO_STRONG = 0.08;
+
+function comboOverrides(){
+  try{ return JSON.parse(localStorage.getItem(COMBO_STORE) || '{}'); }catch(e){ return {}; }
+}
+function comboSetOverride(key, val){
+  const s = comboOverrides();
+  if(val == null) delete s[key]; else s[key] = val;
+  try{ localStorage.setItem(COMBO_STORE, JSON.stringify(s)); }catch(e){}
+}
+function comboKey(r){ return r.player + '|' + r.market; }
+function comboPhi(z){
+  const x = Math.abs(z) / Math.SQRT2, t = 1 / (1 + 0.3275911 * x);
+  const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
+  return 0.5 * (1 + (z < 0 ? -y : y));
+}
+function comboBreakEven(p){
+  if(p == null || p === '') p = -113;
+  p = Number(p);
+  if(Math.abs(p) >= 100) return p < 0 ? (-p) / (-p + 100) : 100 / (p + 100);
+  return p > 1 ? 1 / p : 0.5;
+}
+function comboEval(r, point, overP, underP){
+  const pr = r.projection; if(!pr || point == null || isNaN(point)) return null;
+  const z = (point - pr.proj_total) / pr.sd;
+  const pOver = 1 - comboPhi(z), pUnder = comboPhi(z);
+  const eO = pOver - comboBreakEven(overP), eU = pUnder - comboBreakEven(underP);
+  const over = eO >= eU;
+  const edge = over ? eO : eU, p = over ? pOver : pUnder;
+  const gap = Math.abs(pr.proj_total - point) / point;
+  let lean = edge >= COMBO_STRONG ? 'STRONG' : (edge >= COMBO_LEAN ? 'LEAN' : 'PASS');
+  if(lean !== 'PASS' && gap > COMBO_MAX_GAP) lean = 'CHECK';
+  return { side: over ? 'OVER' : 'UNDER', p, edge, lean, gap, pOver, pUnder, diff: pr.proj_total - point };
+}
+function comboEffLine(r){
+  const o = comboOverrides()[comboKey(r)];
+  if(o && o.line != null) return { point: Number(o.line), over_price: r.line ? r.line.over_price : null,
+                                   under_price: r.line ? r.line.under_price : null, edited: true };
+  if(r.line && r.line.point != null) return { point: Number(r.line.point), over_price: r.line.over_price,
+                                              under_price: r.line.under_price, edited: false };
+  return null;
+}
+function comboChip(ev){
+  if(!ev) return `<span class="fav-badge mid">NEEDS LINE</span>`;
+  if(ev.lean === 'PASS') return `<span class="fav-badge mid">PASS</span>`;
+  if(ev.lean === 'CHECK') return `<span class="fav-badge" style="color:var(--accent-gold);background:rgba(250,204,21,.1);border:1px solid rgba(250,204,21,.35)">CHECK · ${ev.side}</span>`;
+  const cls = ev.side === 'OVER' ? 'yes' : 'no';
+  return `<span class="fav-badge ${cls}">${ev.lean} ${ev.side}</span>`;
+}
+function comboResultHTML(r){
+  const L = comboEffLine(r), pr = r.projection;
+  if(!pr) return `<div class="empty" style="padding:6px 0;text-align:left">No projection (no usable games found).</div>`;
+  const ev = L ? comboEval(r, L.point, L.over_price, L.under_price) : null;
+  let h = `<div class="ic-row"><span class="ic-row-label">Projection</span><span class="cell-val">${pr.proj_total} <span class="rank-chip">± ${pr.sd}</span></span></div>`;
+  if(ev){
+    h += `<div class="ic-row"><span class="ic-row-label">Model vs line</span><span class="cell-val">${ev.diff >= 0 ? '+' : ''}${ev.diff.toFixed(1)} yds (${(100 * ev.gap).toFixed(0)}%)</span></div>
+          <div class="ic-row"><span class="ic-row-label">Best side</span><span>${comboChip(ev)} <span class="rank-chip">${(100 * ev.p).toFixed(0)}% · edge ${ev.edge >= 0 ? '+' : ''}${(100 * ev.edge).toFixed(1)} pts</span></span></div>`;
+    if(ev.lean === 'CHECK') h += `<div class="empty" style="padding:4px 0 0;text-align:left;font-size:10px">The projection is more than 12% away from the line. That usually means the model is missing something (game script, role change), not that the book is wrong by that much. Read the card before trusting it.</div>`;
+    if(L.edited) h += `<div class="empty" style="padding:4px 0 0;text-align:left;font-size:10px">Using the line you typed. Coeus's note below was written for the saved line.</div>`;
+  } else {
+    h += `<div class="ic-row"><span class="ic-row-label">Best side</span><span>${comboChip(null)}</span></div>`;
+  }
+  return h;
+}
+function comboCoeusHTML(r){
+  const c = r.coeus; if(!c) return '';
+  const col = c.pick === 'OVER' ? 'var(--accent-green)' : (c.pick === 'UNDER' ? 'var(--accent-red)' : 'var(--text-mid)');
+  return `<div class="ic-section-label">Coeus pick</div>
+    <div class="ic-row"><span style="color:${col};font-weight:700">${esc2(c.pick || '—')}</span><span class="rank-chip">confidence ${esc2(c.confidence ?? '—')}/5</span></div>
+    <div class="empty" style="padding:2px 0 0;text-align:left;font-size:11px;line-height:1.5;color:var(--text-mid)">${esc2(c.reasoning || '')}</div>`;
+}
+function comboRows(){
+  if(!COMBO) return [];
+  const pos = comboPos === 'QB' ? 'pass_rush' : 'rush_rec';
+  let rows = (COMBO.rows || []).filter(r => r.market === pos);
+  const hasLine = r => !!comboEffLine(r);
+  if(comboOnlyLine === null) comboOnlyLine = rows.some(hasLine);
+  if(comboOnlyLine) rows = rows.filter(hasLine);
+  const q = comboSearch;
+  if(q) rows = rows.filter(r => r.player.toLowerCase().includes(q) || (r.team || '').toLowerCase().includes(q) || (r.opp || '').toLowerCase().includes(q));
+  const score = r => {
+    const L = comboEffLine(r); if(!L || !r.projection) return -1;
+    const ev = comboEval(r, L.point, L.over_price, L.under_price);
+    return ev ? ev.edge : -1;
+  };
+  rows.sort((a, b) => (score(b) - score(a)) || ((b.projection ? b.projection.proj_total : 0) - (a.projection ? a.projection.proj_total : 0)));
+  return rows;
+}
+function comboCardHTML(r, i){
+  const L = comboEffLine(r), g = r.game;
+  const sp = g && g.team_spread != null ? (g.team_spread > 0 ? '+' : '') + g.team_spread : '—';
+  const halves = r.feed_halves && r.feed_halves.a != null && r.feed_halves.b != null
+    ? `${r.feed_halves.a} + ${r.feed_halves.b} = ${(r.feed_halves.a + r.feed_halves.b).toFixed(1)}` : '—';
+  const names = r.projection ? r.projection.components.map(c => c.name) : ['', ''];
+  return `<div class="intel-card" data-i="${i}">
+    <div class="ic-head">
+      <img class="ic-headshot" src="${esc2(r.headshot || '')}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+      <div>
+        <div class="ic-name">${esc2(r.player)}</div>
+        <div class="ic-team">${fiLogoHTML(r.team, 14)}${esc2(r.team)} ${r.home ? 'vs' : '@'} ${r.opp ? fiLogoHTML(r.opp, 14) + esc2(r.opp) : '—'} · ${esc2(r.market_label)}</div>
+        <div class="ic-team" style="color:var(--text-mid)">spread ${sp} · total ${g && g.total != null ? g.total : '—'} · team implied ${g && g.team_implied != null ? g.team_implied : '—'}</div>
+      </div>
+    </div>
+    <div class="prop-input-row" style="margin-bottom:8px" onclick="event.stopPropagation()">
+      <label for="cl_${i}">FANDUEL LINE</label>
+      <input class="prop-input" id="cl_${i}" type="number" step="0.5" inputmode="decimal" value="${L ? L.point : ''}" placeholder="enter line" data-i="${i}">
+      ${L && L.edited ? `<button class="prop-clear" data-clear="${i}" onclick="event.stopPropagation()" title="Back to the saved line">reset</button>` : ''}
+    </div>
+    <div id="cres_${i}">${comboResultHTML(r)}</div>
+    <div class="ic-section-label">The two halves (FanDuel's separate lines)</div>
+    <div class="ic-row"><span class="ic-row-label">${esc2(names[0])} + ${esc2(names[1])}</span><span class="cell-val">${halves}</span></div>
+    ${comboCoeusHTML(r)}
+  </div>`;
+}
+function comboRecordHTML(){
+  const all = (COMBO_HIST && COMBO_HIST.picks) || [];
+  const g = all.filter(p => p.graded);
+  if(!g.length) return `<span class="rank-chip">${all.length} picks saved · none graded yet (run grade_combo_props.py after the games)</span>`;
+  const tally = (rows, key, ukey) => {
+    const w = rows.filter(r => r[key] === 'WIN').length, l = rows.filter(r => r[key] === 'LOSS').length;
+    const u = rows.reduce((a, r) => a + (r[ukey] || 0), 0);
+    return `${w}-${l} · ${u >= 0 ? '+' : ''}${u.toFixed(2)}u`;
+  };
+  const plays = g.filter(r => r.model_lean === 'STRONG' || r.model_lean === 'LEAN');
+  const cp = g.filter(r => r.coeus_result);
+  return `<span class="rank-chip">Graded record — Coeus: ${tally(cp, 'coeus_result', 'coeus_units')} · Model STRONG/LEAN: ${tally(plays, 'model_result', 'model_units')}</span>`;
+}
+function renderComboReport(){
+  if(!COMBO || !(COMBO.rows || []).length){
+    $("body").innerHTML = `<div class="empty">No Combo Props data yet.<br>Run <b>python3 build_combo_props.py</b> and refresh this page.</div>`;
+    return;
+  }
+  const rows0 = (COMBO.rows || []);
+  if(comboOnlyLine === null) comboOnlyLine = rows0.some(r => !!comboEffLine(r));
+  $("body").innerHTML = `
+    <div class="sect"><h3>Combo Props — Week ${esc2(COMBO.week)} · RB Rushing + Receiving, QB Passing + Rushing</h3><span class="rule"></span></div>
+    <div class="report-intro">
+      FanDuel's combined yardage props, projected from each player's real game log (recent games weighted most),
+      scaled by how many yards the opponent allows to that position, and compared with the FanDuel line.
+      Type the real FanDuel line into a card and the edge updates; it is remembered in this browser. Our odds feed
+      only carries the separate lines, so a saved line only exists for players added with
+      <b>python3 build_combo_props.py --add "Name" pass_rush|rush_rec LINE</b>. The two separate lines added together
+      are shown for reference only: on 10/19 FanDuel's real combo lines ran 7.5 to 11.5 yards above that sum.
+      The projection does not model game script or injuries, so a gap of more than 12% from the line is flagged CHECK.
+      Coeus makes the final call and every pick is saved and graded afterward.
+    </div>
+    <div class="report-controls">
+      <div class="tabs" id="comboTabs" role="tablist">
+        <button role="tab" data-p="QB" aria-selected="${comboPos === 'QB'}">QB · Pass + Rush</button>
+        <button role="tab" data-p="RB" aria-selected="${comboPos === 'RB'}">RB · Rush + Rec</button>
+      </div>
+      <label class="lbl" style="font-size:11px;color:var(--text-mid);display:flex;align-items:center;gap:6px">
+        <input type="checkbox" id="comboOnly" ${comboOnlyLine ? 'checked' : ''}> only players with a FanDuel line
+      </label>
+      <input class="search-box" id="comboSearch" placeholder="Search player or team…" value="${esc2(comboSearch)}">
+      <span class="rank-chip">built ${esc2((COMBO.generated_at || '').replace('T', ' ').replace('Z', ' UTC'))}</span>
+      ${comboRecordHTML()}
+    </div>
+    <div class="intel-grid" id="comboGrid"></div>`;
+  $("comboTabs").querySelectorAll("button").forEach(b => b.onclick = () => {
+    comboPos = b.dataset.p;
+    $("comboTabs").querySelectorAll("button").forEach(x => x.setAttribute("aria-selected", String(x === b)));
+    renderComboGrid();
+  });
+  $("comboOnly").onchange = e => { comboOnlyLine = e.target.checked; renderComboGrid(); };
+  $("comboSearch").oninput = e => { comboSearch = e.target.value.toLowerCase(); renderComboGrid(); };
+  renderComboGrid();
+}
+let COMBO_VIEW = [];
+function renderComboGrid(){
+  COMBO_VIEW = comboRows();
+  $("comboGrid").innerHTML = COMBO_VIEW.map((r, i) => comboCardHTML(r, i)).join('') ||
+    `<div class="empty">${comboOnlyLine ? 'No players with a FanDuel line yet. Add one with <b>--add</b> or untick the box to see every player with both halves posted.' : 'No players match.'}</div>`;
+  $("comboGrid").querySelectorAll('.intel-card').forEach(el => { el.onclick = () => openComboModal(Number(el.dataset.i)); });
+  $("comboGrid").querySelectorAll('input.prop-input').forEach(inp => {
+    inp.oninput = () => {
+      const i = Number(inp.dataset.i), r = COMBO_VIEW[i], v = inp.value === '' ? null : Number(inp.value);
+      comboSetOverride(comboKey(r), v == null || isNaN(v) ? null : { line: v });
+      $("cres_" + i).innerHTML = comboResultHTML(r);
+    };
+  });
+  $("comboGrid").querySelectorAll('[data-clear]').forEach(b => b.onclick = () => {
+    comboSetOverride(comboKey(COMBO_VIEW[Number(b.dataset.clear)]), null); renderComboGrid();
+  });
+}
+function openComboModal(i){
+  const r = COMBO_VIEW[i]; if(!r) return;
+  const L = comboEffLine(r), pr = r.projection;
+  $("mTitle").textContent = `${r.player} — ${r.team} ${r.home ? 'vs' : '@'} ${r.opp || '—'}`;
+  $("mSub").textContent = `${r.market_label} · projection ${pr ? pr.proj_total : '—'} ± ${pr ? pr.sd : '—'} · ${pr ? pr.games_used : 0} games used`;
+  const comp = pr ? `<div class="lead-wrap" style="max-height:none"><table class="lead-table"><thead><tr>
+      <th class="name-col">Half</th><th>Recent avg</th><th>Opp allows / gm</th><th>League / gm</th><th>Opp factor</th><th>Projection</th><th>FanDuel half line</th>
+    </tr></thead><tbody>${pr.components.map((c, k) => `<tr>
+      <td class="name-col">${esc2(c.name)}</td><td><span class="cell-val">${c.weighted_avg}</span></td>
+      <td><span class="cell-val">${c.opp_allowed_pg ?? '—'}</span></td><td><span class="cell-val">${c.league_pg ?? '—'}</span></td>
+      <td><span class="cell-val">${c.opp_factor}</span></td><td><span class="cell-val">${c.proj}</span></td>
+      <td><span class="cell-val">${(k === 0 ? r.feed_halves.a : r.feed_halves.b) ?? '—'}</span></td></tr>`).join('')}
+    </tbody></table></div>` : '';
+  const logRows = (r.log || []).slice().reverse().map(g => {
+    const cls = L ? (g.total > L.point ? 'log-hit' : 'log-miss') : '';
+    return `<tr><td class="name-col">${g.season} wk ${g.week}</td><td>${esc2(g.opp || '—')}</td>
+      <td><span class="cell-val">${g.a}</span></td><td><span class="cell-val">${g.b}</span></td>
+      <td><span class="cell-val ${cls}">${g.total}</span></td></tr>`;
+  }).join('');
+  const names = pr ? pr.components.map(c => c.name) : ['A', 'B'];
+  $("mBody").innerHTML = `
+    <div class="ic-section-label">How the projection is built</div>${comp}
+    <div class="ic-section-label">Recent games (green = over the line${L ? ' ' + L.point : ''}, red = under)</div>
+    <div class="lead-wrap" style="max-height:none"><table class="lead-table"><thead><tr>
+      <th class="name-col">Game</th><th>Opp</th><th>${esc2(names[0])}</th><th>${esc2(names[1])}</th><th>Total</th></tr></thead>
+      <tbody>${logRows || '<tr><td class="name-col">No games</td><td></td><td></td><td></td><td></td></tr>'}</tbody></table></div>
+    <div class="ic-section-label">Alt line tester</div>
+    <div class="prop-input-row" onclick="event.stopPropagation()">
+      <label>LINE</label><input class="prop-input" id="altLine" type="number" step="0.5" value="${L ? L.point : ''}">
+      <label>OVER PRICE</label><input class="prop-input" id="altPrice" type="number" step="1" value="-113">
+    </div>
+    <div id="altOut" style="margin-top:8px"></div>
+    ${r.under_price_assumed ? `<div class="empty" style="padding:6px 0;text-align:left;font-size:10px">The under price wasn't saved for this line, so −113 is assumed for it.</div>` : ''}
+    ${comboCoeusHTML(r)}`;
+  const upd = () => {
+    const ln = Number($("altLine").value), pr0 = Number($("altPrice").value);
+    const ev = comboEval(r, ln, pr0, null);
+    if(!ev){ $("altOut").innerHTML = ''; return; }
+    $("altOut").innerHTML = `<div class="ic-row"><span class="ic-row-label">P(over ${ln})</span><span class="cell-val">${(100 * ev.pOver).toFixed(0)}%</span></div>
+      <div class="ic-row"><span class="ic-row-label">Break-even at ${pr0}</span><span class="cell-val">${(100 * comboBreakEven(pr0)).toFixed(0)}%</span></div>
+      <div class="ic-row"><span class="ic-row-label">Over edge</span><span class="cell-val">${((ev.pOver - comboBreakEven(pr0)) * 100).toFixed(1)} pts</span></div>`;
+  };
+  $("altLine").oninput = upd; $("altPrice").oninput = upd; upd();
+  $("scrim").classList.add("open"); $("modal").classList.add("open"); $("mClose").focus();
 }
 
 function esc2(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }

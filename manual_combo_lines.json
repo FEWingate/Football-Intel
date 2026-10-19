@@ -1,0 +1,31 @@
+{
+ "lines": [
+  {
+   "player": "Jayden Daniels",
+   "market": "pass_rush",
+   "line": 254.5,
+   "over_price": -113.0,
+   "under_price": -113.0,
+   "source": "manual (typed from FanDuel)",
+   "week": 6
+  },
+  {
+   "player": "Brock Purdy",
+   "market": "pass_rush",
+   "line": 272.5,
+   "over_price": -113.0,
+   "under_price": -113.0,
+   "source": "manual (typed from FanDuel)",
+   "week": 6
+  },
+  {
+   "player": "Christian McCaffrey",
+   "market": "rush_rec",
+   "line": 106.5,
+   "over_price": -113.0,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 6
+  }
+ ]
+}

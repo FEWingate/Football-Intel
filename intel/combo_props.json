@@ -1,0 +1,6728 @@
+{
+ "generated_at": "2026-10-19T17:39:46Z",
+ "season": 2026,
+ "week": 6,
+ "method": {
+  "half_life_games": 3.0,
+  "opp_shrink": 0.5,
+  "lean_edge": 0.04,
+  "strong_edge": 0.08,
+  "note": "Uncalibrated projection; outcomes are tracked in results/combo_picks.json"
+ },
+ "allowed": {
+  "QB": {
+   "passing_yards": {
+    "league_pg": 229.6
+   },
+   "rushing_yards": {
+    "league_pg": 17.4
+   }
+  },
+  "RB": {
+   "rushing_yards": {
+    "league_pg": 92.4
+   },
+   "receiving_yards": {
+    "league_pg": 30.7
+   }
+  }
+ },
+ "rows": [
+  {
+   "player": "Aaron Rodgers",
+   "team": "PIT",
+   "opp": "TB",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/dypvakakxhccxs67tb0y",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": -2.5,
+    "total": 38.5,
+    "team_implied": 20.5
+   },
+   "feed_halves": {
+    "a": 226.5,
+    "b": 0.5
+   },
+   "implied_line": 227.0,
+   "line": null,
+   "projection": {
+    "proj_total": 257.5,
+    "sd": 50.8,
+    "games_used": 22,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 245.3,
+      "opp_factor": 1.036,
+      "proj": 254.1,
+      "opp_allowed_pg": 246.2,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 3.8,
+      "opp_factor": 0.914,
+      "proj": 3.5,
+      "opp_allowed_pg": 14.5,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "MIA",
+     "a": 224.0,
+     "b": 0.0,
+     "total": 224.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "DET",
+     "a": 266.0,
+     "b": 9.0,
+     "total": 275.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "CLE",
+     "a": 168.0,
+     "b": 6.0,
+     "total": 174.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "BAL",
+     "a": 294.0,
+     "b": 20.0,
+     "total": 314.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "ATL",
+     "a": 221.0,
+     "b": -3.0,
+     "total": 218.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "NE",
+     "a": 187.0,
+     "b": 5.0,
+     "total": 192.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "CIN",
+     "a": 292.0,
+     "b": 10.0,
+     "total": 302.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "CLE",
+     "a": 299.0,
+     "b": 0.0,
+     "total": 299.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "IND",
+     "a": 235.0,
+     "b": 6.0,
+     "total": 241.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "TB",
+     "a": 253.0,
+     "b": -1.0,
+     "total": 252.0
+    }
+   ]
+  },
+  {
+   "player": "Alvin Kamara",
+   "team": "NO",
+   "opp": "NYG",
+   "home": false,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hedvtdbdgdyf4lo5e12p",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": -1.5,
+    "total": 45.5,
+    "team_implied": 23.5
+   },
+   "feed_halves": {
+    "a": 23.5,
+    "b": 11.5
+   },
+   "implied_line": 35.0,
+   "line": null,
+   "projection": {
+    "proj_total": 57.7,
+    "sd": 25.6,
+    "games_used": 14,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 33.8,
+      "opp_factor": 1.106,
+      "proj": 37.4,
+      "opp_allowed_pg": 112.0,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 22.1,
+      "opp_factor": 0.918,
+      "proj": 20.3,
+      "opp_allowed_pg": 25.7,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 5,
+     "opp": "NYG",
+     "a": 27.0,
+     "b": 28.0,
+     "total": 55.0
+    },
+    {
+     "season": 2025,
+     "week": 6,
+     "opp": "NE",
+     "a": 31.0,
+     "b": 45.0,
+     "total": 76.0
+    },
+    {
+     "season": 2025,
+     "week": 7,
+     "opp": "CHI",
+     "a": 28.0,
+     "b": 1.0,
+     "total": 29.0
+    },
+    {
+     "season": 2025,
+     "week": 8,
+     "opp": "TB",
+     "a": 21.0,
+     "b": 24.0,
+     "total": 45.0
+    },
+    {
+     "season": 2025,
+     "week": 9,
+     "opp": "LAR",
+     "a": 14.0,
+     "b": 3.0,
+     "total": 17.0
+    },
+    {
+     "season": 2025,
+     "week": 10,
+     "opp": "CAR",
+     "a": 83.0,
+     "b": 32.0,
+     "total": 115.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "BAL",
+     "a": 15.0,
+     "b": 7.0,
+     "total": 22.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "LV",
+     "a": 36.0,
+     "b": 5.0,
+     "total": 41.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "ATL",
+     "a": 23.0,
+     "b": 35.0,
+     "total": 58.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "NYG",
+     "a": 34.0,
+     "b": 35.0,
+     "total": 69.0
+    }
+   ]
+  },
+  {
+   "player": "Ashton Jeanty",
+   "team": "LV",
+   "opp": "BUF",
+   "home": true,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/syspis1mntov9kgspb7r",
+   "game": {
+    "commence_time": "2026-10-18T20:25:00Z",
+    "team_spread": 5.5,
+    "total": 53.5,
+    "team_implied": 24.0
+   },
+   "feed_halves": {
+    "a": 55.5,
+    "b": 25.5
+   },
+   "implied_line": 81.0,
+   "line": null,
+   "projection": {
+    "proj_total": 89.0,
+    "sd": 34.6,
+    "games_used": 23,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 48.9,
+      "opp_factor": 1.014,
+      "proj": 49.6,
+      "opp_allowed_pg": 95.1,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 37.9,
+      "opp_factor": 1.04,
+      "proj": 39.4,
+      "opp_allowed_pg": 33.2,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "PHI",
+     "a": 35.0,
+     "b": 7.0,
+     "total": 42.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "HOU",
+     "a": 128.0,
+     "b": 60.0,
+     "total": 188.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "NYG",
+     "a": 60.0,
+     "b": 13.0,
+     "total": 73.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "KC",
+     "a": 87.0,
+     "b": 7.0,
+     "total": 94.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "MIA",
+     "a": 102.0,
+     "b": 45.0,
+     "total": 147.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "LAC",
+     "a": 48.0,
+     "b": 15.0,
+     "total": 63.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "NO",
+     "a": 56.0,
+     "b": 37.0,
+     "total": 93.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "KC",
+     "a": 58.0,
+     "b": 68.0,
+     "total": 126.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "NE",
+     "a": 27.0,
+     "b": 50.0,
+     "total": 77.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "BUF",
+     "a": 22.0,
+     "b": 36.0,
+     "total": 58.0
+    }
+   ]
+  },
+  {
+   "player": "Bhayshul Tuten",
+   "team": "JAX",
+   "opp": "HOU",
+   "home": true,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ryjnphuyjbedmgpx5qqj",
+   "game": {
+    "commence_time": "2026-10-18T13:30:00Z",
+    "team_spread": -2.5,
+    "total": 42.5,
+    "team_implied": 22.5
+   },
+   "feed_halves": {
+    "a": 63.5,
+    "b": 9.5
+   },
+   "implied_line": 73.0,
+   "line": null,
+   "projection": {
+    "proj_total": 68.9,
+    "sd": 26.7,
+    "games_used": 13,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 54.8,
+      "opp_factor": 0.904,
+      "proj": 49.5,
+      "opp_allowed_pg": 74.6,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 20.7,
+      "opp_factor": 0.937,
+      "proj": 19.4,
+      "opp_allowed_pg": 26.9,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 10,
+     "opp": "HOU",
+     "a": 5.0,
+     "b": 5.0,
+     "total": 10.0
+    },
+    {
+     "season": 2025,
+     "week": 11,
+     "opp": "LAC",
+     "a": 74.0,
+     "b": 0.0,
+     "total": 74.0
+    },
+    {
+     "season": 2025,
+     "week": 12,
+     "opp": "ARI",
+     "a": 17.0,
+     "b": 0.0,
+     "total": 17.0
+    },
+    {
+     "season": 2025,
+     "week": 13,
+     "opp": "TEN",
+     "a": 17.0,
+     "b": 2.0,
+     "total": 19.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "CLE",
+     "a": 66.0,
+     "b": 22.0,
+     "total": 88.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "DEN",
+     "a": 65.0,
+     "b": -3.0,
+     "total": 62.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "NE",
+     "a": 73.0,
+     "b": 17.0,
+     "total": 90.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "CIN",
+     "a": 73.0,
+     "b": 18.0,
+     "total": 91.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "PHI",
+     "a": 72.0,
+     "b": 24.0,
+     "total": 96.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "HOU",
+     "a": 39.0,
+     "b": 48.0,
+     "total": 87.0
+    }
+   ]
+  },
+  {
+   "player": "Bijan Robinson",
+   "team": "ATL",
+   "opp": "CHI",
+   "home": true,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zaxetgy0p0ul6evlsf63",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": 1.5,
+    "total": 51.5,
+    "team_implied": 25.0
+   },
+   "feed_halves": {
+    "a": 90.5,
+    "b": 28.5
+   },
+   "implied_line": 119.0,
+   "line": null,
+   "projection": {
+    "proj_total": 120.4,
+    "sd": 56.5,
+    "games_used": 23,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 100.3,
+      "opp_factor": 0.994,
+      "proj": 99.7,
+      "opp_allowed_pg": 91.4,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 22.8,
+      "opp_factor": 0.908,
+      "proj": 20.7,
+      "opp_allowed_pg": 25.1,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "TB",
+     "a": 93.0,
+     "b": 82.0,
+     "total": 175.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "ARI",
+     "a": 76.0,
+     "b": 92.0,
+     "total": 168.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "LAR",
+     "a": 195.0,
+     "b": 34.0,
+     "total": 229.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "NO",
+     "a": 33.0,
+     "b": 10.0,
+     "total": 43.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "PIT",
+     "a": 83.0,
+     "b": 90.0,
+     "total": 173.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "CAR",
+     "a": 72.0,
+     "b": 9.0,
+     "total": 81.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "GB",
+     "a": 194.0,
+     "b": 19.0,
+     "total": 213.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "NO",
+     "a": 145.0,
+     "b": 2.0,
+     "total": 147.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "BAL",
+     "a": 86.0,
+     "b": 32.0,
+     "total": 118.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "CHI",
+     "a": 61.0,
+     "b": -8.0,
+     "total": 53.0
+    }
+   ]
+  },
+  {
+   "player": "Blake Corum",
+   "team": "LAR",
+   "opp": "ARI",
+   "home": true,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/axzqbqjkrbwfzodwwakq",
+   "game": {
+    "commence_time": "2026-10-18T20:05:00Z",
+    "team_spread": -12.5,
+    "total": 51.5,
+    "team_implied": 32.0
+   },
+   "feed_halves": {
+    "a": 42.5,
+    "b": 6.5
+   },
+   "implied_line": 49.0,
+   "line": null,
+   "projection": {
+    "proj_total": 57.3,
+    "sd": 26.3,
+    "games_used": 19,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 38.4,
+      "opp_factor": 1.096,
+      "proj": 42.1,
+      "opp_allowed_pg": 110.1,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 15.5,
+      "opp_factor": 0.983,
+      "proj": 15.3,
+      "opp_allowed_pg": 29.7,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "DET",
+     "a": 71.0,
+     "b": 0.0,
+     "total": 71.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "SEA",
+     "a": 48.0,
+     "b": 13.0,
+     "total": 61.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "ATL",
+     "a": 18.0,
+     "b": 0.0,
+     "total": 18.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "ARI",
+     "a": 59.0,
+     "b": 10.0,
+     "total": 69.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "SF",
+     "a": 54.0,
+     "b": 0.0,
+     "total": 54.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "NYG",
+     "a": 79.0,
+     "b": 13.0,
+     "total": 92.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "DEN",
+     "a": 15.0,
+     "b": 0.0,
+     "total": 15.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "PHI",
+     "a": 14.0,
+     "b": 7.0,
+     "total": 21.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "BUF",
+     "a": 19.0,
+     "b": 53.0,
+     "total": 72.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "ARI",
+     "a": 42.0,
+     "b": 18.0,
+     "total": 60.0
+    }
+   ]
+  },
+  {
+   "player": "Braelon Allen",
+   "team": "NYJ",
+   "opp": "NE",
+   "home": false,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/x78ebxfvyyuemrxyank1",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": 7.5,
+    "total": 43.5,
+    "team_implied": 18.0
+   },
+   "feed_halves": {
+    "a": 65.5,
+    "b": 14.5
+   },
+   "implied_line": 80.0,
+   "line": null,
+   "projection": {
+    "proj_total": 64.9,
+    "sd": 35.7,
+    "games_used": 8,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 58.5,
+      "opp_factor": 0.931,
+      "proj": 54.5,
+      "opp_allowed_pg": 79.6,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 9.8,
+      "opp_factor": 1.063,
+      "proj": 10.4,
+      "opp_allowed_pg": 34.6,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 1,
+     "opp": "PIT",
+     "a": 9.0,
+     "b": 0.0,
+     "total": 9.0
+    },
+    {
+     "season": 2025,
+     "week": 3,
+     "opp": "TB",
+     "a": 30.0,
+     "b": 17.0,
+     "total": 47.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "TEN",
+     "a": 40.0,
+     "b": 0.0,
+     "total": 40.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "GB",
+     "a": 7.0,
+     "b": 8.0,
+     "total": 15.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "DET",
+     "a": 14.0,
+     "b": 3.0,
+     "total": 17.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "CHI",
+     "a": 59.0,
+     "b": 8.0,
+     "total": 67.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "CLE",
+     "a": 116.0,
+     "b": 0.0,
+     "total": 116.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "NE",
+     "a": 78.0,
+     "b": 26.0,
+     "total": 104.0
+    }
+   ]
+  },
+  {
+   "player": "Brock Purdy",
+   "team": "SF",
+   "opp": "WAS",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xs2fyj1sqdgwvt9ihbri",
+   "game": {
+    "commence_time": "2026-10-20T00:15:00Z",
+    "team_spread": -7.5,
+    "total": 51.5,
+    "team_implied": 29.5
+   },
+   "feed_halves": {
+    "a": 246.5,
+    "b": 16.5
+   },
+   "implied_line": 263.0,
+   "line": {
+    "point": 272.5,
+    "over_price": -113.0,
+    "under_price": -113.0,
+    "alts": [],
+    "source": "manual (typed from FanDuel)"
+   },
+   "projection": {
+    "proj_total": 272.9,
+    "sd": 65.3,
+    "games_used": 14,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 232.7,
+      "opp_factor": 1.069,
+      "proj": 248.8,
+      "opp_allowed_pg": 261.2,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 22.1,
+      "opp_factor": 1.09,
+      "proj": 24.1,
+      "opp_allowed_pg": 20.6,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 13,
+     "opp": "CLE",
+     "a": 168.0,
+     "b": 4.0,
+     "total": 172.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "TEN",
+     "a": 295.0,
+     "b": 44.0,
+     "total": 339.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "IND",
+     "a": 295.0,
+     "b": 11.0,
+     "total": 306.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "CHI",
+     "a": 303.0,
+     "b": 28.0,
+     "total": 331.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "SEA",
+     "a": 127.0,
+     "b": 21.0,
+     "total": 148.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "LAR",
+     "a": 205.0,
+     "b": 29.0,
+     "total": 234.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "MIA",
+     "a": 287.0,
+     "b": 30.0,
+     "total": 317.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "ARI",
+     "a": 297.0,
+     "b": 34.0,
+     "total": 331.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "DEN",
+     "a": 218.0,
+     "b": 29.0,
+     "total": 247.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "SEA",
+     "a": 189.0,
+     "b": 6.0,
+     "total": 195.0
+    }
+   ],
+   "eval": {
+    "market_gap_pct": 0.1,
+    "p_over": 0.502,
+    "p_under": 0.498,
+    "best_side": "OVER",
+    "best_p": 0.502,
+    "edge": -0.028,
+    "edge_yards": 0.4,
+    "lean": "PASS"
+   },
+   "under_price_assumed": false,
+   "alts_eval": [],
+   "coeus": {
+    "pick": "PASS",
+    "confidence": 1,
+    "reasoning": "Projection (272.9) is essentially identical to the line (272.5), a 0.1% gap with edge under 3 points. Recent games are wildly inconsistent (127 to 339 total yards) giving no directional signal, so there's no edge to lean on here.",
+    "model": "claude-sonnet-5"
+   }
+  },
+  {
+   "player": "Bryce Young",
+   "team": "CAR",
+   "opp": "PHI",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vcvhmxvxw2a3armle0af",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": -3.5,
+    "total": 38.5,
+    "team_implied": 21.0
+   },
+   "feed_halves": {
+    "a": 234.5,
+    "b": 10.5
+   },
+   "implied_line": 245.0,
+   "line": null,
+   "projection": {
+    "proj_total": 276.7,
+    "sd": 73.3,
+    "games_used": 21,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 268.4,
+      "opp_factor": 0.999,
+      "proj": 268.1,
+      "opp_allowed_pg": 229.2,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 8.3,
+      "opp_factor": 1.04,
+      "proj": 8.6,
+      "opp_allowed_pg": 18.8,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 13,
+     "opp": "LAR",
+     "a": 206.0,
+     "b": 23.0,
+     "total": 229.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "NO",
+     "a": 163.0,
+     "b": 49.0,
+     "total": 212.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "TB",
+     "a": 191.0,
+     "b": 20.0,
+     "total": 211.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "SEA",
+     "a": 54.0,
+     "b": 27.0,
+     "total": 81.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "TB",
+     "a": 266.0,
+     "b": -1.0,
+     "total": 265.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "CHI",
+     "a": 361.0,
+     "b": 10.0,
+     "total": 371.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "ATL",
+     "a": 287.0,
+     "b": 6.0,
+     "total": 293.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "CLE",
+     "a": 291.0,
+     "b": 0.0,
+     "total": 291.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "DET",
+     "a": 329.0,
+     "b": 3.0,
+     "total": 332.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "PHI",
+     "a": 281.0,
+     "b": 6.0,
+     "total": 287.0
+    }
+   ]
+  },
+  {
+   "player": "Bucky Irving",
+   "team": "TB",
+   "opp": "PIT",
+   "home": true,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vkc00rvnix3f2b96vkwo",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": 2.5,
+    "total": 38.5,
+    "team_implied": 18.0
+   },
+   "feed_halves": {
+    "a": 64.5,
+    "b": 10.5
+   },
+   "implied_line": 75.0,
+   "line": null,
+   "projection": {
+    "proj_total": 86.1,
+    "sd": 42.9,
+    "games_used": 16,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 74.7,
+      "opp_factor": 0.994,
+      "proj": 74.2,
+      "opp_allowed_pg": 91.3,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 11.5,
+      "opp_factor": 1.038,
+      "proj": 11.9,
+      "opp_allowed_pg": 33.1,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "ATL",
+     "a": 60.0,
+     "b": 11.0,
+     "total": 71.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "CAR",
+     "a": 71.0,
+     "b": 0.0,
+     "total": 71.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "MIA",
+     "a": 19.0,
+     "b": 14.0,
+     "total": 33.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "CAR",
+     "a": 85.0,
+     "b": 13.0,
+     "total": 98.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "CIN",
+     "a": 45.0,
+     "b": 48.0,
+     "total": 93.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "CLE",
+     "a": 89.0,
+     "b": 1.0,
+     "total": 90.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "MIN",
+     "a": 46.0,
+     "b": 12.0,
+     "total": 58.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "GB",
+     "a": 61.0,
+     "b": 0.0,
+     "total": 61.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "DAL",
+     "a": 165.0,
+     "b": 10.0,
+     "total": 175.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "PIT",
+     "a": 46.0,
+     "b": 3.0,
+     "total": 49.0
+    }
+   ]
+  },
+  {
+   "player": "Caleb Williams",
+   "team": "CHI",
+   "opp": "ATL",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/h4qs11kutwiw7whekmyt",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": -1.5,
+    "total": 51.5,
+    "team_implied": 26.5
+   },
+   "feed_halves": {
+    "a": 225.5,
+    "b": 18.5
+   },
+   "implied_line": 244.0,
+   "line": null,
+   "projection": {
+    "proj_total": 269.2,
+    "sd": 64.0,
+    "games_used": 20,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 239.8,
+      "opp_factor": 1.034,
+      "proj": 248.0,
+      "opp_allowed_pg": 245.3,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 24.8,
+      "opp_factor": 0.855,
+      "proj": 21.2,
+      "opp_allowed_pg": 12.4,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 12,
+     "opp": "PIT",
+     "a": 239.0,
+     "b": 21.0,
+     "total": 260.0
+    },
+    {
+     "season": 2025,
+     "week": 13,
+     "opp": "PHI",
+     "a": 154.0,
+     "b": 13.0,
+     "total": 167.0
+    },
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "GB",
+     "a": 186.0,
+     "b": 15.0,
+     "total": 201.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "CLE",
+     "a": 242.0,
+     "b": 13.0,
+     "total": 255.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "GB",
+     "a": 250.0,
+     "b": 30.0,
+     "total": 280.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "SF",
+     "a": 330.0,
+     "b": 18.0,
+     "total": 348.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "DET",
+     "a": 212.0,
+     "b": 1.0,
+     "total": 213.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "CAR",
+     "a": 269.0,
+     "b": 65.0,
+     "total": 334.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "MIN",
+     "a": 138.0,
+     "b": 42.0,
+     "total": 180.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "ATL",
+     "a": 305.0,
+     "b": 3.0,
+     "total": 308.0
+    }
+   ]
+  },
+  {
+   "player": "Cam Skattebo",
+   "team": "NYG",
+   "opp": "NO",
+   "home": true,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hlggiqdfvj1f4kntkafr",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": 1.5,
+    "total": 45.5,
+    "team_implied": 22.0
+   },
+   "feed_halves": {
+    "a": 53.5,
+    "b": 11.5
+   },
+   "implied_line": 65.0,
+   "line": null,
+   "projection": {
+    "proj_total": 84.9,
+    "sd": 22.8,
+    "games_used": 11,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 61.0,
+      "opp_factor": 1.094,
+      "proj": 66.8,
+      "opp_allowed_pg": 109.8,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 19.4,
+      "opp_factor": 0.938,
+      "proj": 18.2,
+      "opp_allowed_pg": 26.9,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 3,
+     "opp": "KC",
+     "a": 60.0,
+     "b": 61.0,
+     "total": 121.0
+    },
+    {
+     "season": 2025,
+     "week": 4,
+     "opp": "LAC",
+     "a": 79.0,
+     "b": 11.0,
+     "total": 90.0
+    },
+    {
+     "season": 2025,
+     "week": 5,
+     "opp": "NO",
+     "a": 59.0,
+     "b": 45.0,
+     "total": 104.0
+    },
+    {
+     "season": 2025,
+     "week": 6,
+     "opp": "PHI",
+     "a": 98.0,
+     "b": 12.0,
+     "total": 110.0
+    },
+    {
+     "season": 2025,
+     "week": 7,
+     "opp": "DEN",
+     "a": 60.0,
+     "b": 34.0,
+     "total": 94.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "DAL",
+     "a": 81.0,
+     "b": 0.0,
+     "total": 81.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "LAR",
+     "a": 36.0,
+     "b": 19.0,
+     "total": 55.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "TEN",
+     "a": 60.0,
+     "b": 40.0,
+     "total": 100.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "ARI",
+     "a": 58.0,
+     "b": 8.0,
+     "total": 66.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "WAS",
+     "a": 59.0,
+     "b": 12.0,
+     "total": 71.0
+    }
+   ]
+  },
+  {
+   "player": "Cam Ward",
+   "team": "TEN",
+   "opp": "IND",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/l7iuimdeqgmmhdzdhl67",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": 6.5,
+    "total": 44.5,
+    "team_implied": 19.0
+   },
+   "feed_halves": {
+    "a": 200.5,
+    "b": 11.5
+   },
+   "implied_line": 212.0,
+   "line": null,
+   "projection": {
+    "proj_total": 188.5,
+    "sd": 52.1,
+    "games_used": 22,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 170.8,
+      "opp_factor": 1.047,
+      "proj": 178.8,
+      "opp_allowed_pg": 251.4,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 9.9,
+      "opp_factor": 0.983,
+      "proj": 9.7,
+      "opp_allowed_pg": 16.9,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "CLE",
+     "a": 117.0,
+     "b": 4.0,
+     "total": 121.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "SF",
+     "a": 170.0,
+     "b": 2.0,
+     "total": 172.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "KC",
+     "a": 228.0,
+     "b": 9.0,
+     "total": 237.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "NO",
+     "a": 251.0,
+     "b": 10.0,
+     "total": 261.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "NYJ",
+     "a": 140.0,
+     "b": 21.0,
+     "total": 161.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "PHI",
+     "a": 183.0,
+     "b": 7.0,
+     "total": 190.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "NYG",
+     "a": 181.0,
+     "b": 2.0,
+     "total": 183.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "BAL",
+     "a": 222.0,
+     "b": 27.0,
+     "total": 249.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "HOU",
+     "a": 170.0,
+     "b": 2.0,
+     "total": 172.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "IND",
+     "a": 102.0,
+     "b": 7.0,
+     "total": 109.0
+    }
+   ]
+  },
+  {
+   "player": "Christian McCaffrey",
+   "team": "SF",
+   "opp": "WAS",
+   "home": true,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/st82s2ytyzanatcmkqck",
+   "game": {
+    "commence_time": "2026-10-20T00:15:00Z",
+    "team_spread": -7.5,
+    "total": 51.5,
+    "team_implied": 29.5
+   },
+   "feed_halves": {
+    "a": 59.5,
+    "b": 39.5
+   },
+   "implied_line": 99.0,
+   "line": {
+    "point": 106.5,
+    "over_price": -113.0,
+    "under_price": null,
+    "alts": [],
+    "source": "manual (typed from FanDuel)"
+   },
+   "projection": {
+    "proj_total": 95.9,
+    "sd": 33.7,
+    "games_used": 22,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 64.5,
+      "opp_factor": 1.022,
+      "proj": 66.0,
+      "opp_allowed_pg": 96.4,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 29.6,
+      "opp_factor": 1.013,
+      "proj": 30.0,
+      "opp_allowed_pg": 31.5,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 13,
+     "opp": "CLE",
+     "a": 53.0,
+     "b": 21.0,
+     "total": 74.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "TEN",
+     "a": 73.0,
+     "b": 14.0,
+     "total": 87.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "IND",
+     "a": 117.0,
+     "b": 29.0,
+     "total": 146.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "CHI",
+     "a": 140.0,
+     "b": 41.0,
+     "total": 181.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "SEA",
+     "a": 23.0,
+     "b": 34.0,
+     "total": 57.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "LAR",
+     "a": 68.0,
+     "b": 20.0,
+     "total": 88.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "MIA",
+     "a": 23.0,
+     "b": 43.0,
+     "total": 66.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "ARI",
+     "a": 75.0,
+     "b": 41.0,
+     "total": 116.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "DEN",
+     "a": 52.0,
+     "b": 18.0,
+     "total": 70.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "SEA",
+     "a": 68.0,
+     "b": 15.0,
+     "total": 83.0
+    }
+   ],
+   "eval": {
+    "market_gap_pct": 10.0,
+    "p_over": 0.377,
+    "p_under": 0.623,
+    "best_side": "UNDER",
+    "best_p": 0.623,
+    "edge": 0.093,
+    "edge_yards": -10.6,
+    "lean": "STRONG"
+   },
+   "under_price_assumed": true,
+   "alts_eval": [],
+   "coeus": {
+    "pick": "UNDER",
+    "confidence": 4,
+    "reasoning": "Model projects 95.9 vs a 106.5 line, a 10% gap with a 9.3-point edge favoring UNDER. His last five games (88, 66, 116, 70, 83) average only ~84.6 total yards, well below the line, and WAS's rush/pass defense allowance is only marginally above league average (opp_factor ~1.02), not enough to push him over. The -7.5 spread and 29.5 implied points could mean positive game script and more touches, but the recent yardage trend and projection gap are strong enough to still favor the UNDER.",
+    "model": "claude-sonnet-5"
+   }
+  },
+  {
+   "player": "Chuba Hubbard",
+   "team": "CAR",
+   "opp": "PHI",
+   "home": false,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rzsvnt0pxsaize2ndhxm",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": -3.5,
+    "total": 38.5,
+    "team_implied": 21.0
+   },
+   "feed_halves": {
+    "a": 70.5,
+    "b": 17.5
+   },
+   "implied_line": 88.0,
+   "line": null,
+   "projection": {
+    "proj_total": 89.6,
+    "sd": 39.7,
+    "games_used": 19,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 73.8,
+      "opp_factor": 1.04,
+      "proj": 76.7,
+      "opp_allowed_pg": 99.8,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 13.1,
+      "opp_factor": 0.989,
+      "proj": 12.9,
+      "opp_allowed_pg": 30.1,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 13,
+     "opp": "LAR",
+     "a": 83.0,
+     "b": 41.0,
+     "total": 124.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "NO",
+     "a": 29.0,
+     "b": 9.0,
+     "total": 38.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "TB",
+     "a": 27.0,
+     "b": 7.0,
+     "total": 34.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "SEA",
+     "a": 12.0,
+     "b": 6.0,
+     "total": 18.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "TB",
+     "a": 10.0,
+     "b": 7.0,
+     "total": 17.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "CHI",
+     "a": 49.0,
+     "b": 38.0,
+     "total": 87.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "ATL",
+     "a": 53.0,
+     "b": 11.0,
+     "total": 64.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "CLE",
+     "a": 82.0,
+     "b": 28.0,
+     "total": 110.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "DET",
+     "a": 122.0,
+     "b": 7.0,
+     "total": 129.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "PHI",
+     "a": 120.0,
+     "b": 1.0,
+     "total": 121.0
+    }
+   ]
+  },
+  {
+   "player": "C.J. Stroud",
+   "team": "HOU",
+   "opp": "JAX",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tt4zrtxlhifaljhj0rn7",
+   "game": {
+    "commence_time": "2026-10-18T13:30:00Z",
+    "team_spread": 2.5,
+    "total": 42.5,
+    "team_implied": 20.0
+   },
+   "feed_halves": {
+    "a": 256.5,
+    "b": 9.5
+   },
+   "implied_line": 266.0,
+   "line": null,
+   "projection": {
+    "proj_total": 296.6,
+    "sd": 68.7,
+    "games_used": 19,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 272.0,
+      "opp_factor": 1.057,
+      "proj": 287.6,
+      "opp_allowed_pg": 255.8,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 9.8,
+      "opp_factor": 0.922,
+      "proj": 9.0,
+      "opp_allowed_pg": 14.7,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "ARI",
+     "a": 260.0,
+     "b": 10.0,
+     "total": 270.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "LV",
+     "a": 187.0,
+     "b": 0.0,
+     "total": 187.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "LAC",
+     "a": 244.0,
+     "b": 0.0,
+     "total": 244.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "IND",
+     "a": 169.0,
+     "b": 5.0,
+     "total": 174.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "BUF",
+     "a": 274.0,
+     "b": 15.0,
+     "total": 289.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "CIN",
+     "a": 353.0,
+     "b": 29.0,
+     "total": 382.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "IND",
+     "a": 167.0,
+     "b": 10.0,
+     "total": 177.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "DAL",
+     "a": 347.0,
+     "b": 12.0,
+     "total": 359.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "TEN",
+     "a": 261.0,
+     "b": 5.0,
+     "total": 266.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "JAX",
+     "a": 312.0,
+     "b": 5.0,
+     "total": 317.0
+    }
+   ]
+  },
+  {
+   "player": "Dak Prescott",
+   "team": "DAL",
+   "opp": "GB",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yvscmqq1qki8zfsemmcd",
+   "game": {
+    "commence_time": "2026-10-19T00:20:00Z",
+    "team_spread": 1.5,
+    "total": 52.5,
+    "team_implied": 25.5
+   },
+   "feed_halves": {
+    "a": 278.5,
+    "b": 9.5
+   },
+   "implied_line": 288.0,
+   "line": null,
+   "projection": {
+    "proj_total": 281.3,
+    "sd": 50.6,
+    "games_used": 22,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 284.6,
+      "opp_factor": 0.953,
+      "proj": 271.2,
+      "opp_allowed_pg": 208.0,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 10.5,
+      "opp_factor": 0.961,
+      "proj": 10.1,
+      "opp_allowed_pg": 16.1,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "DET",
+     "a": 376.0,
+     "b": 14.0,
+     "total": 390.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "MIN",
+     "a": 294.0,
+     "b": 2.0,
+     "total": 296.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "LAC",
+     "a": 244.0,
+     "b": 14.0,
+     "total": 258.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "WAS",
+     "a": 307.0,
+     "b": 24.0,
+     "total": 331.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "NYG",
+     "a": 175.0,
+     "b": 14.0,
+     "total": 189.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "WAS",
+     "a": 279.0,
+     "b": 26.0,
+     "total": 305.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "BAL",
+     "a": 276.0,
+     "b": 19.0,
+     "total": 295.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "HOU",
+     "a": 335.0,
+     "b": 7.0,
+     "total": 342.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "TB",
+     "a": 316.0,
+     "b": 0.0,
+     "total": 316.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "GB",
+     "a": 258.0,
+     "b": 7.0,
+     "total": 265.0
+    }
+   ]
+  },
+  {
+   "player": "Dameon Pierce",
+   "team": "PHI",
+   "opp": "CAR",
+   "home": true,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/oai3defivyfyofxxh4ux",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": 3.5,
+    "total": 38.5,
+    "team_implied": 17.5
+   },
+   "feed_halves": {
+    "a": 58.5,
+    "b": 11.5
+   },
+   "implied_line": 70.0,
+   "line": null,
+   "projection": {
+    "proj_total": 31.7,
+    "sd": 14.4,
+    "games_used": 3,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 24.5,
+      "opp_factor": 1.067,
+      "proj": 26.1,
+      "opp_allowed_pg": 104.8,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 5.5,
+      "opp_factor": 1.004,
+      "proj": 5.6,
+      "opp_allowed_pg": 31.0,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 5,
+     "opp": "BAL",
+     "a": 21.0,
+     "b": 0.0,
+     "total": 21.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "JAX",
+     "a": 14.0,
+     "b": -2.0,
+     "total": 12.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "CAR",
+     "a": 35.0,
+     "b": 15.0,
+     "total": 50.0
+    }
+   ]
+  },
+  {
+   "player": "D'Andre Swift",
+   "team": "CHI",
+   "opp": "ATL",
+   "home": false,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/owpmwzoilitcodc6cmxo",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": -1.5,
+    "total": 51.5,
+    "team_implied": 26.5
+   },
+   "feed_halves": {
+    "a": 66.5,
+    "b": 15.5
+   },
+   "implied_line": 82.0,
+   "line": null,
+   "projection": {
+    "proj_total": 80.3,
+    "sd": 23.3,
+    "games_used": 22,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 60.0,
+      "opp_factor": 0.979,
+      "proj": 58.7,
+      "opp_allowed_pg": 88.6,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 21.4,
+      "opp_factor": 1.006,
+      "proj": 21.5,
+      "opp_allowed_pg": 31.1,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "CLE",
+     "a": 98.0,
+     "b": -2.0,
+     "total": 96.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "GB",
+     "a": 58.0,
+     "b": 12.0,
+     "total": 70.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "SF",
+     "a": 54.0,
+     "b": 25.0,
+     "total": 79.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "DET",
+     "a": 40.0,
+     "b": 8.0,
+     "total": 48.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "CAR",
+     "a": 124.0,
+     "b": 10.0,
+     "total": 134.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "MIN",
+     "a": 45.0,
+     "b": 54.0,
+     "total": 99.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "PHI",
+     "a": 84.0,
+     "b": 4.0,
+     "total": 88.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "NYJ",
+     "a": 58.0,
+     "b": 16.0,
+     "total": 74.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "GB",
+     "a": 43.0,
+     "b": 30.0,
+     "total": 73.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "ATL",
+     "a": 44.0,
+     "b": 26.0,
+     "total": 70.0
+    }
+   ]
+  },
+  {
+   "player": "Daniel Jones",
+   "team": "IND",
+   "opp": "TEN",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yslz8jcyiekbmm7iguxm",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": -6.5,
+    "total": 44.5,
+    "team_implied": 25.5
+   },
+   "feed_halves": {
+    "a": 234.5,
+    "b": 6.5
+   },
+   "implied_line": 241.0,
+   "line": null,
+   "projection": {
+    "proj_total": 248.8,
+    "sd": 58.9,
+    "games_used": 18,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 230.0,
+      "opp_factor": 1.027,
+      "proj": 236.2,
+      "opp_allowed_pg": 241.8,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 12.2,
+      "opp_factor": 1.036,
+      "proj": 12.6,
+      "opp_allowed_pg": 18.7,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 9,
+     "opp": "PIT",
+     "a": 342.0,
+     "b": 4.0,
+     "total": 346.0
+    },
+    {
+     "season": 2025,
+     "week": 10,
+     "opp": "ATL",
+     "a": 255.0,
+     "b": 53.0,
+     "total": 308.0
+    },
+    {
+     "season": 2025,
+     "week": 12,
+     "opp": "KC",
+     "a": 181.0,
+     "b": 16.0,
+     "total": 197.0
+    },
+    {
+     "season": 2025,
+     "week": 13,
+     "opp": "HOU",
+     "a": 201.0,
+     "b": 1.0,
+     "total": 202.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "BAL",
+     "a": 166.0,
+     "b": 4.0,
+     "total": 170.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "KC",
+     "a": 210.0,
+     "b": 10.0,
+     "total": 220.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "HOU",
+     "a": 235.0,
+     "b": 5.0,
+     "total": 240.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "WAS",
+     "a": 143.0,
+     "b": 2.0,
+     "total": 145.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "PIT",
+     "a": 267.0,
+     "b": 4.0,
+     "total": 271.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "TEN",
+     "a": 269.0,
+     "b": 30.0,
+     "total": 299.0
+    }
+   ]
+  },
+  {
+   "player": "Derrick Henry",
+   "team": "BAL",
+   "opp": "CLE",
+   "home": false,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tm79x0iknqg6hms3ypyt",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": -3.0,
+    "total": 39.5,
+    "team_implied": 21.2
+   },
+   "feed_halves": {
+    "a": 89.5,
+    "b": 6.5
+   },
+   "implied_line": 96.0,
+   "line": null,
+   "projection": {
+    "proj_total": 102.2,
+    "sd": 37.8,
+    "games_used": 23,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 92.4,
+      "opp_factor": 1.027,
+      "proj": 94.9,
+      "opp_allowed_pg": 97.5,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 8.5,
+      "opp_factor": 0.858,
+      "proj": 7.3,
+      "opp_allowed_pg": 22.0,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "CIN",
+     "a": 100.0,
+     "b": 0.0,
+     "total": 100.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "NE",
+     "a": 128.0,
+     "b": 0.0,
+     "total": 128.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "GB",
+     "a": 216.0,
+     "b": 0.0,
+     "total": 216.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "PIT",
+     "a": 126.0,
+     "b": 0.0,
+     "total": 126.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "IND",
+     "a": 144.0,
+     "b": 19.0,
+     "total": 163.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "NO",
+     "a": 68.0,
+     "b": 19.0,
+     "total": 87.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "DAL",
+     "a": 89.0,
+     "b": 0.0,
+     "total": 89.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "TEN",
+     "a": 73.0,
+     "b": 6.0,
+     "total": 79.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "ATL",
+     "a": 102.0,
+     "b": 18.0,
+     "total": 120.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "CLE",
+     "a": 58.0,
+     "b": 2.0,
+     "total": 60.0
+    }
+   ]
+  },
+  {
+   "player": "Deshaun Watson",
+   "team": "CLE",
+   "opp": "BAL",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/private/f_auto,q_auto/league/otfs2docj6eahaebo5xn",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": 3.0,
+    "total": 39.5,
+    "team_implied": 18.2
+   },
+   "feed_halves": {
+    "a": 206.5,
+    "b": 28.5
+   },
+   "implied_line": 235.0,
+   "line": null,
+   "projection": {
+    "proj_total": 227.3,
+    "sd": 50.4,
+    "games_used": 6,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 188.9,
+      "opp_factor": 1.028,
+      "proj": 194.2,
+      "opp_allowed_pg": 242.3,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 32.4,
+      "opp_factor": 1.022,
+      "proj": 33.1,
+      "opp_allowed_pg": 18.2,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "JAX",
+     "a": 205.0,
+     "b": 38.0,
+     "total": 243.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "TB",
+     "a": 238.0,
+     "b": 22.0,
+     "total": 260.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "CAR",
+     "a": 144.0,
+     "b": 45.0,
+     "total": 189.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "PIT",
+     "a": 268.0,
+     "b": 22.0,
+     "total": 290.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "NYJ",
+     "a": 155.0,
+     "b": 40.0,
+     "total": 195.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "BAL",
+     "a": 164.0,
+     "b": 29.0,
+     "total": 193.0
+    }
+   ]
+  },
+  {
+   "player": "Drake Maye",
+   "team": "NE",
+   "opp": "NYJ",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mkauzrg7vo8lfziigsbg",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": -7.5,
+    "total": 43.5,
+    "team_implied": 25.5
+   },
+   "feed_halves": {
+    "a": 236.5,
+    "b": 27.5
+   },
+   "implied_line": 264.0,
+   "line": null,
+   "projection": {
+    "proj_total": 277.4,
+    "sd": 67.7,
+    "games_used": 23,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 257.5,
+      "opp_factor": 0.964,
+      "proj": 248.2,
+      "opp_allowed_pg": 213.1,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 29.3,
+      "opp_factor": 0.995,
+      "proj": 29.2,
+      "opp_allowed_pg": 17.3,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "BUF",
+     "a": 155.0,
+     "b": 43.0,
+     "total": 198.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "BAL",
+     "a": 380.0,
+     "b": 25.0,
+     "total": 405.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "NYJ",
+     "a": 256.0,
+     "b": 22.0,
+     "total": 278.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "MIA",
+     "a": 191.0,
+     "b": 41.0,
+     "total": 232.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "SEA",
+     "a": 178.0,
+     "b": 47.0,
+     "total": 225.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "PIT",
+     "a": 208.0,
+     "b": 17.0,
+     "total": 225.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "JAX",
+     "a": 199.0,
+     "b": 18.0,
+     "total": 217.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "BUF",
+     "a": 269.0,
+     "b": 54.0,
+     "total": 323.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "LV",
+     "a": 374.0,
+     "b": 25.0,
+     "total": 399.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "NYJ",
+     "a": 235.0,
+     "b": 24.0,
+     "total": 259.0
+    }
+   ]
+  },
+  {
+   "player": "Emmett Johnson",
+   "team": "KC",
+   "opp": "LAC",
+   "home": true,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/avdz4njz1slqn7ktqcuq",
+   "game": {
+    "commence_time": "2026-10-18T20:25:00Z",
+    "team_spread": -7.5,
+    "total": 41.5,
+    "team_implied": 24.5
+   },
+   "feed_halves": {
+    "a": 14.5,
+    "b": 6.5
+   },
+   "implied_line": 21.0,
+   "line": null,
+   "projection": {
+    "proj_total": 31.5,
+    "sd": 16.4,
+    "games_used": 3,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 14.3,
+      "opp_factor": 1.011,
+      "proj": 14.4,
+      "opp_allowed_pg": 94.5,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 18.9,
+      "opp_factor": 0.904,
+      "proj": 17.1,
+      "opp_allowed_pg": 24.8,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "DEN",
+     "a": 24.0,
+     "b": 44.0,
+     "total": 68.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "MIA",
+     "a": 17.0,
+     "b": 0.0,
+     "total": 17.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "LAC",
+     "a": 6.0,
+     "b": 18.0,
+     "total": 24.0
+    }
+   ]
+  },
+  {
+   "player": "Geno Smith",
+   "team": "NYJ",
+   "opp": "NE",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/q8wfqvmy7cwxdi35dtby",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": 7.5,
+    "total": 43.5,
+    "team_implied": 18.0
+   },
+   "feed_halves": {
+    "a": 216.5,
+    "b": 7.5
+   },
+   "implied_line": 224.0,
+   "line": null,
+   "projection": {
+    "proj_total": 209.7,
+    "sd": 64.2,
+    "games_used": 21,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 211.4,
+      "opp_factor": 0.972,
+      "proj": 205.5,
+      "opp_allowed_pg": 217.0,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 4.9,
+      "opp_factor": 0.857,
+      "proj": 4.2,
+      "opp_allowed_pg": 12.5,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 13,
+     "opp": "LAC",
+     "a": 165.0,
+     "b": -6.0,
+     "total": 159.0
+    },
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "DEN",
+     "a": 116.0,
+     "b": 4.0,
+     "total": 120.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "HOU",
+     "a": 201.0,
+     "b": 0.0,
+     "total": 201.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "NYG",
+     "a": 176.0,
+     "b": 1.0,
+     "total": 177.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "TEN",
+     "a": 215.0,
+     "b": 7.0,
+     "total": 222.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "GB",
+     "a": 247.0,
+     "b": 17.0,
+     "total": 264.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "DET",
+     "a": 321.0,
+     "b": 12.0,
+     "total": 333.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "CHI",
+     "a": 119.0,
+     "b": 0.0,
+     "total": 119.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "CLE",
+     "a": 182.0,
+     "b": 7.0,
+     "total": 189.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "NE",
+     "a": 252.0,
+     "b": -1.0,
+     "total": 251.0
+    }
+   ]
+  },
+  {
+   "player": "Jacoby Brissett",
+   "team": "ARI",
+   "opp": "LAR",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qjswiunczrn5xmdiqhlz",
+   "game": {
+    "commence_time": "2026-10-18T20:05:00Z",
+    "team_spread": 12.5,
+    "total": 51.5,
+    "team_implied": 19.5
+   },
+   "feed_halves": {
+    "a": 237.5,
+    "b": 6.5
+   },
+   "implied_line": 244.0,
+   "line": null,
+   "projection": {
+    "proj_total": 231.4,
+    "sd": 64.8,
+    "games_used": 18,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 232.5,
+      "opp_factor": 0.943,
+      "proj": 219.3,
+      "opp_allowed_pg": 203.4,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 10.7,
+      "opp_factor": 1.139,
+      "proj": 12.1,
+      "opp_allowed_pg": 22.3,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "HOU",
+     "a": 249.0,
+     "b": 6.0,
+     "total": 255.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "ATL",
+     "a": 203.0,
+     "b": 5.0,
+     "total": 208.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "CIN",
+     "a": 212.0,
+     "b": 0.0,
+     "total": 212.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "LAR",
+     "a": 243.0,
+     "b": 19.0,
+     "total": 262.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "LAC",
+     "a": 277.0,
+     "b": 14.0,
+     "total": 291.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "SEA",
+     "a": 95.0,
+     "b": 7.0,
+     "total": 102.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "SF",
+     "a": 280.0,
+     "b": 4.0,
+     "total": 284.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "NYG",
+     "a": 166.0,
+     "b": 18.0,
+     "total": 184.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "DET",
+     "a": 292.0,
+     "b": 19.0,
+     "total": 311.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "LAR",
+     "a": 218.0,
+     "b": 2.0,
+     "total": 220.0
+    }
+   ]
+  },
+  {
+   "player": "Jalon Daniels",
+   "team": "TB",
+   "opp": "PIT",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hwhfl6i5drktwjvslfpn",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": 2.5,
+    "total": 38.5,
+    "team_implied": 18.0
+   },
+   "feed_halves": {
+    "a": 176.5,
+    "b": 36.5
+   },
+   "implied_line": 213.0,
+   "line": null,
+   "projection": {
+    "proj_total": 208.3,
+    "sd": 44.2,
+    "games_used": 3,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 168.0,
+      "opp_factor": 1.026,
+      "proj": 172.4,
+      "opp_allowed_pg": 241.5,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 37.9,
+      "opp_factor": 0.946,
+      "proj": 35.9,
+      "opp_allowed_pg": 15.6,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "GB",
+     "a": 148.0,
+     "b": 55.0,
+     "total": 203.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "DAL",
+     "a": 189.0,
+     "b": 23.0,
+     "total": 212.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "PIT",
+     "a": 164.0,
+     "b": 39.0,
+     "total": 203.0
+    }
+   ]
+  },
+  {
+   "player": "Jameis Winston",
+   "team": "NYG",
+   "opp": "NO",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/e5qyxnibbyawi0pvfpjl",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": 1.5,
+    "total": 45.5,
+    "team_implied": 22.0
+   },
+   "feed_halves": {
+    "a": 218.5,
+    "b": 4.5
+   },
+   "implied_line": 223.0,
+   "line": null,
+   "projection": {
+    "proj_total": 224.0,
+    "sd": 84.7,
+    "games_used": 7,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 215.4,
+      "opp_factor": 0.992,
+      "proj": 213.6,
+      "opp_allowed_pg": 226.1,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 10.1,
+      "opp_factor": 1.023,
+      "proj": 10.4,
+      "opp_allowed_pg": 18.2,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 11,
+     "opp": "GB",
+     "a": 201.0,
+     "b": 10.0,
+     "total": 211.0
+    },
+    {
+     "season": 2025,
+     "week": 12,
+     "opp": "DET",
+     "a": 366.0,
+     "b": 13.0,
+     "total": 379.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "LAR",
+     "a": 111.0,
+     "b": 1.0,
+     "total": 112.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "TEN",
+     "a": 118.0,
+     "b": 14.0,
+     "total": 132.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "ARI",
+     "a": 250.0,
+     "b": 0.0,
+     "total": 250.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "WAS",
+     "a": 326.0,
+     "b": 27.0,
+     "total": 353.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "NO",
+     "a": 152.0,
+     "b": 4.0,
+     "total": 156.0
+    }
+   ]
+  },
+  {
+   "player": "James Cook",
+   "team": "BUF",
+   "opp": "LV",
+   "home": false,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/anjbznqb9i21wzcgrtbs",
+   "game": {
+    "commence_time": "2026-10-18T20:25:00Z",
+    "team_spread": -5.5,
+    "total": 53.5,
+    "team_implied": 29.5
+   },
+   "feed_halves": {
+    "a": 92.5,
+    "b": 7.5
+   },
+   "implied_line": 100.0,
+   "line": null,
+   "projection": {
+    "proj_total": 130.3,
+    "sd": 35.0,
+    "games_used": 22,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 102.9,
+      "opp_factor": 1.072,
+      "proj": 110.3,
+      "opp_allowed_pg": 105.7,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 19.4,
+      "opp_factor": 1.03,
+      "proj": 20.0,
+      "opp_allowed_pg": 32.6,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "CIN",
+     "a": 80.0,
+     "b": 31.0,
+     "total": 111.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "NE",
+     "a": 107.0,
+     "b": 4.0,
+     "total": 111.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "CLE",
+     "a": 117.0,
+     "b": 17.0,
+     "total": 134.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "PHI",
+     "a": 74.0,
+     "b": 3.0,
+     "total": 77.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "HOU",
+     "a": 57.0,
+     "b": 12.0,
+     "total": 69.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "DET",
+     "a": 135.0,
+     "b": 4.0,
+     "total": 139.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "LAC",
+     "a": 154.0,
+     "b": 0.0,
+     "total": 154.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "NE",
+     "a": 75.0,
+     "b": 8.0,
+     "total": 83.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "LAR",
+     "a": 111.0,
+     "b": 7.0,
+     "total": 118.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "LV",
+     "a": 95.0,
+     "b": 58.0,
+     "total": 153.0
+    }
+   ]
+  },
+  {
+   "player": "Javonte Williams",
+   "team": "DAL",
+   "opp": "GB",
+   "home": false,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xvwroirev2kie6oiphtz",
+   "game": {
+    "commence_time": "2026-10-19T00:20:00Z",
+    "team_spread": 1.5,
+    "total": 52.5,
+    "team_implied": 25.5
+   },
+   "feed_halves": {
+    "a": 69.5,
+    "b": 13.5
+   },
+   "implied_line": 83.0,
+   "line": null,
+   "projection": {
+    "proj_total": 69.3,
+    "sd": 21.1,
+    "games_used": 22,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 55.5,
+      "opp_factor": 1.017,
+      "proj": 56.5,
+      "opp_allowed_pg": 95.7,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 12.9,
+      "opp_factor": 0.992,
+      "proj": 12.8,
+      "opp_allowed_pg": 30.3,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "DET",
+     "a": 67.0,
+     "b": 0.0,
+     "total": 67.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "MIN",
+     "a": 91.0,
+     "b": 0.0,
+     "total": 91.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "LAC",
+     "a": 34.0,
+     "b": 9.0,
+     "total": 43.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "WAS",
+     "a": 54.0,
+     "b": 0.0,
+     "total": 54.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "NYG",
+     "a": 41.0,
+     "b": 31.0,
+     "total": 72.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "WAS",
+     "a": 30.0,
+     "b": 20.0,
+     "total": 50.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "BAL",
+     "a": 98.0,
+     "b": 5.0,
+     "total": 103.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "HOU",
+     "a": 62.0,
+     "b": 21.0,
+     "total": 83.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "TB",
+     "a": 45.0,
+     "b": 17.0,
+     "total": 62.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "GB",
+     "a": 41.0,
+     "b": 9.0,
+     "total": 50.0
+    }
+   ]
+  },
+  {
+   "player": "Jayden Daniels",
+   "team": "WAS",
+   "opp": "SF",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gfz8k5onuqjrche9ogqc",
+   "game": {
+    "commence_time": "2026-10-20T00:15:00Z",
+    "team_spread": 7.5,
+    "total": 51.5,
+    "team_implied": 22.0
+   },
+   "feed_halves": {
+    "a": 205.5,
+    "b": 37.5
+   },
+   "implied_line": 243.0,
+   "line": {
+    "point": 254.5,
+    "over_price": -113.0,
+    "under_price": -113.0,
+    "alts": [],
+    "source": "manual (typed from FanDuel)"
+   },
+   "projection": {
+    "proj_total": 201.7,
+    "sd": 64.0,
+    "games_used": 10,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 157.2,
+      "opp_factor": 0.996,
+      "proj": 156.6,
+      "opp_allowed_pg": 227.7,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 56.9,
+      "opp_factor": 0.792,
+      "proj": 45.1,
+      "opp_allowed_pg": 10.2,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 1,
+     "opp": "NYG",
+     "a": 233.0,
+     "b": 68.0,
+     "total": 301.0
+    },
+    {
+     "season": 2025,
+     "week": 2,
+     "opp": "GB",
+     "a": 200.0,
+     "b": 17.0,
+     "total": 217.0
+    },
+    {
+     "season": 2025,
+     "week": 5,
+     "opp": "LAC",
+     "a": 231.0,
+     "b": 39.0,
+     "total": 270.0
+    },
+    {
+     "season": 2025,
+     "week": 6,
+     "opp": "CHI",
+     "a": 211.0,
+     "b": 52.0,
+     "total": 263.0
+    },
+    {
+     "season": 2025,
+     "week": 7,
+     "opp": "DAL",
+     "a": 156.0,
+     "b": 35.0,
+     "total": 191.0
+    },
+    {
+     "season": 2025,
+     "week": 9,
+     "opp": "SEA",
+     "a": 153.0,
+     "b": 51.0,
+     "total": 204.0
+    },
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "MIN",
+     "a": 78.0,
+     "b": 16.0,
+     "total": 94.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "PHI",
+     "a": 164.0,
+     "b": 31.0,
+     "total": 195.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "DAL",
+     "a": 96.0,
+     "b": 69.0,
+     "total": 165.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "NYG",
+     "a": 199.0,
+     "b": 103.0,
+     "total": 302.0
+    }
+   ],
+   "eval": {
+    "market_gap_pct": 20.7,
+    "p_over": 0.205,
+    "p_under": 0.795,
+    "best_side": "UNDER",
+    "best_p": 0.795,
+    "edge": 0.265,
+    "edge_yards": -52.8,
+    "lean": "CHECK"
+   },
+   "under_price_assumed": false,
+   "alts_eval": [],
+   "coeus": {
+    "pick": "UNDER",
+    "confidence": 3,
+    "reasoning": "Model flags this as CHECK with a steep 20.7% gap (201.7 projection vs 254.5 line), but the underlying data supports the lean: his weighted passing average is only 157.2 yards and SF's rushing defense allows just 10.2 ypg (opp_factor 0.792) versus his 56.9 rushing average, pulling the rushing component down to 45.1. His last 10 games show only one real outlier (302 total vs NYG) while most sit in the 165-270 range, and a 22.0 implied team total on the road as a 7.5-point underdog against a tough SF defense supports a lower-than-usual combined total, though the thin/volatile sample keeps confidence moderate rather than max.",
+    "model": "claude-sonnet-5"
+   }
+  },
+  {
+   "player": "Jaylen Warren",
+   "team": "PIT",
+   "opp": "TB",
+   "home": false,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/dkiteytgnxar1mpaxcxv",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": -2.5,
+    "total": 38.5,
+    "team_implied": 20.5
+   },
+   "feed_halves": {
+    "a": 60.5,
+    "b": 28.5
+   },
+   "implied_line": 89.0,
+   "line": null,
+   "projection": {
+    "proj_total": 112.6,
+    "sd": 47.7,
+    "games_used": 22,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 74.9,
+      "opp_factor": 0.889,
+      "proj": 66.6,
+      "opp_allowed_pg": 71.9,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 38.4,
+      "opp_factor": 1.199,
+      "proj": 46.0,
+      "opp_allowed_pg": 42.9,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "MIA",
+     "a": 33.0,
+     "b": 15.0,
+     "total": 48.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "DET",
+     "a": 143.0,
+     "b": 8.0,
+     "total": 151.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "CLE",
+     "a": 64.0,
+     "b": 0.0,
+     "total": 64.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "BAL",
+     "a": 66.0,
+     "b": 33.0,
+     "total": 99.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "ATL",
+     "a": 46.0,
+     "b": 27.0,
+     "total": 73.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "NE",
+     "a": 43.0,
+     "b": 34.0,
+     "total": 77.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "CIN",
+     "a": 127.0,
+     "b": 49.0,
+     "total": 176.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "CLE",
+     "a": 93.0,
+     "b": 33.0,
+     "total": 126.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "IND",
+     "a": 101.0,
+     "b": 87.0,
+     "total": 188.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "TB",
+     "a": 50.0,
+     "b": 28.0,
+     "total": 78.0
+    }
+   ]
+  },
+  {
+   "player": "Jonathan Taylor",
+   "team": "IND",
+   "opp": "TEN",
+   "home": true,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/d7pmatz5wylijbsplnkg",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": -6.5,
+    "total": 44.5,
+    "team_implied": 25.5
+   },
+   "feed_halves": {
+    "a": 89.5,
+    "b": 17.5
+   },
+   "implied_line": 107.0,
+   "line": null,
+   "projection": {
+    "proj_total": 105.8,
+    "sd": 38.4,
+    "games_used": 23,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 77.8,
+      "opp_factor": 1.014,
+      "proj": 78.9,
+      "opp_allowed_pg": 95.1,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 27.9,
+      "opp_factor": 0.965,
+      "proj": 27.0,
+      "opp_allowed_pg": 28.6,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "SEA",
+     "a": 87.0,
+     "b": 14.0,
+     "total": 101.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "SF",
+     "a": 46.0,
+     "b": 33.0,
+     "total": 79.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "JAX",
+     "a": 70.0,
+     "b": 14.0,
+     "total": 84.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "HOU",
+     "a": 26.0,
+     "b": 13.0,
+     "total": 39.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "BAL",
+     "a": 98.0,
+     "b": 23.0,
+     "total": 121.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "KC",
+     "a": 92.0,
+     "b": 40.0,
+     "total": 132.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "HOU",
+     "a": 68.0,
+     "b": 4.0,
+     "total": 72.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "WAS",
+     "a": 95.0,
+     "b": 2.0,
+     "total": 97.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "PIT",
+     "a": 45.0,
+     "b": 37.0,
+     "total": 82.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "TEN",
+     "a": 94.0,
+     "b": 57.0,
+     "total": 151.0
+    }
+   ]
+  },
+  {
+   "player": "Jordan Love",
+   "team": "GB",
+   "opp": "DAL",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/thz8stjkbjwddxqnozi5",
+   "game": {
+    "commence_time": "2026-10-19T00:20:00Z",
+    "team_spread": -1.5,
+    "total": 52.5,
+    "team_implied": 27.0
+   },
+   "feed_halves": {
+    "a": 274.5,
+    "b": 5.5
+   },
+   "implied_line": 280.0,
+   "line": null,
+   "projection": {
+    "proj_total": 291.4,
+    "sd": 78.0,
+    "games_used": 20,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 270.1,
+      "opp_factor": 1.05,
+      "proj": 283.6,
+      "opp_allowed_pg": 252.6,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 5.7,
+      "opp_factor": 1.368,
+      "proj": 7.7,
+      "opp_allowed_pg": 30.3,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 12,
+     "opp": "MIN",
+     "a": 139.0,
+     "b": 15.0,
+     "total": 154.0
+    },
+    {
+     "season": 2025,
+     "week": 13,
+     "opp": "DET",
+     "a": 234.0,
+     "b": 4.0,
+     "total": 238.0
+    },
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "CHI",
+     "a": 234.0,
+     "b": -1.0,
+     "total": 233.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "DEN",
+     "a": 276.0,
+     "b": 29.0,
+     "total": 305.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "MIN",
+     "a": 387.0,
+     "b": 0.0,
+     "total": 387.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "NYJ",
+     "a": 145.0,
+     "b": 0.0,
+     "total": 145.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "ATL",
+     "a": 312.0,
+     "b": 0.0,
+     "total": 312.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "TB",
+     "a": 197.0,
+     "b": -8.0,
+     "total": 189.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "CHI",
+     "a": 367.0,
+     "b": 6.0,
+     "total": 373.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "DAL",
+     "a": 276.0,
+     "b": 12.0,
+     "total": 288.0
+    }
+   ]
+  },
+  {
+   "player": "Josh Allen",
+   "team": "BUF",
+   "opp": "LV",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ynrhq9iv30ysjpwmrfdv",
+   "game": {
+    "commence_time": "2026-10-18T20:25:00Z",
+    "team_spread": -5.5,
+    "total": 53.5,
+    "team_implied": 29.5
+   },
+   "feed_halves": {
+    "a": 236.5,
+    "b": 33.5
+   },
+   "implied_line": 270.0,
+   "line": null,
+   "projection": {
+    "proj_total": 277.0,
+    "sd": 57.4,
+    "games_used": 22,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 237.2,
+      "opp_factor": 1.009,
+      "proj": 239.3,
+      "opp_allowed_pg": 233.9,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 38.8,
+      "opp_factor": 0.97,
+      "proj": 37.6,
+      "opp_allowed_pg": 16.4,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "CIN",
+     "a": 251.0,
+     "b": 78.0,
+     "total": 329.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "NE",
+     "a": 193.0,
+     "b": 48.0,
+     "total": 241.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "CLE",
+     "a": 130.0,
+     "b": 17.0,
+     "total": 147.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "PHI",
+     "a": 262.0,
+     "b": 27.0,
+     "total": 289.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "HOU",
+     "a": 334.0,
+     "b": 23.0,
+     "total": 357.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "DET",
+     "a": 248.0,
+     "b": 69.0,
+     "total": 317.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "LAC",
+     "a": 204.0,
+     "b": 22.0,
+     "total": 226.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "NE",
+     "a": 253.0,
+     "b": 4.0,
+     "total": 257.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "LAR",
+     "a": 210.0,
+     "b": 121.0,
+     "total": 331.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "LV",
+     "a": 255.0,
+     "b": 1.0,
+     "total": 256.0
+    }
+   ]
+  },
+  {
+   "player": "Justice Hill",
+   "team": "BAL",
+   "opp": "CLE",
+   "home": false,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fuodbrwvianete2gy5ag",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": -3.0,
+    "total": 39.5,
+    "team_implied": 21.2
+   },
+   "feed_halves": {
+    "a": 11.5,
+    "b": 9.5
+   },
+   "implied_line": 21.0,
+   "line": null,
+   "projection": {
+    "proj_total": 57.8,
+    "sd": 28.0,
+    "games_used": 5,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 41.6,
+      "opp_factor": 1.027,
+      "proj": 42.7,
+      "opp_allowed_pg": 97.5,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 17.5,
+      "opp_factor": 0.858,
+      "proj": 15.0,
+      "opp_allowed_pg": 22.0,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 2,
+     "opp": "CLE",
+     "a": 7.0,
+     "b": 18.0,
+     "total": 25.0
+    },
+    {
+     "season": 2025,
+     "week": 4,
+     "opp": "KC",
+     "a": 76.0,
+     "b": 41.0,
+     "total": 117.0
+    },
+    {
+     "season": 2025,
+     "week": 6,
+     "opp": "LAR",
+     "a": 16.0,
+     "b": 28.0,
+     "total": 44.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "IND",
+     "a": 18.0,
+     "b": 10.0,
+     "total": 28.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "ATL",
+     "a": 73.0,
+     "b": 5.0,
+     "total": 78.0
+    }
+   ]
+  },
+  {
+   "player": "Justin Herbert",
+   "team": "LAC",
+   "opp": "KC",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jnkspnntgebegzp4ghve",
+   "game": {
+    "commence_time": "2026-10-18T20:25:00Z",
+    "team_spread": 7.5,
+    "total": 41.5,
+    "team_implied": 17.0
+   },
+   "feed_halves": {
+    "a": 192.5,
+    "b": 24.5
+   },
+   "implied_line": 217.0,
+   "line": null,
+   "projection": {
+    "proj_total": 219.8,
+    "sd": 48.3,
+    "games_used": 22,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 193.9,
+      "opp_factor": 0.965,
+      "proj": 187.2,
+      "opp_allowed_pg": 213.7,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 31.2,
+      "opp_factor": 1.047,
+      "proj": 32.7,
+      "opp_allowed_pg": 19.1,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "PHI",
+     "a": 139.0,
+     "b": 66.0,
+     "total": 205.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "KC",
+     "a": 210.0,
+     "b": 0.0,
+     "total": 210.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "DAL",
+     "a": 300.0,
+     "b": 42.0,
+     "total": 342.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "HOU",
+     "a": 236.0,
+     "b": 37.0,
+     "total": 273.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "ARI",
+     "a": 209.0,
+     "b": 29.0,
+     "total": 238.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "LV",
+     "a": 192.0,
+     "b": 2.0,
+     "total": 194.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "BUF",
+     "a": 226.0,
+     "b": 17.0,
+     "total": 243.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "SEA",
+     "a": 189.0,
+     "b": 40.0,
+     "total": 229.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "DEN",
+     "a": 121.0,
+     "b": 54.0,
+     "total": 175.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "KC",
+     "a": 204.0,
+     "b": 26.0,
+     "total": 230.0
+    }
+   ]
+  },
+  {
+   "player": "Keaton Mitchell",
+   "team": "LAC",
+   "opp": "KC",
+   "home": false,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ztciwwpbyaffmckwrzdk",
+   "game": {
+    "commence_time": "2026-10-18T20:25:00Z",
+    "team_spread": 7.5,
+    "total": 41.5,
+    "team_implied": 17.0
+   },
+   "feed_halves": {
+    "a": 18.5,
+    "b": 15.5
+   },
+   "implied_line": 34.0,
+   "line": null,
+   "projection": {
+    "proj_total": 41.2,
+    "sd": 16.4,
+    "games_used": 9,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 32.9,
+      "opp_factor": 0.904,
+      "proj": 29.7,
+      "opp_allowed_pg": 74.7,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 11.3,
+      "opp_factor": 1.019,
+      "proj": 11.5,
+      "opp_allowed_pg": 31.9,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 11,
+     "opp": "CLE",
+     "a": 31.0,
+     "b": 23.0,
+     "total": 54.0
+    },
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "PIT",
+     "a": 76.0,
+     "b": 0.0,
+     "total": 76.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "CIN",
+     "a": 66.0,
+     "b": 0.0,
+     "total": 66.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "NE",
+     "a": 13.0,
+     "b": 0.0,
+     "total": 13.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "GB",
+     "a": 31.0,
+     "b": 7.0,
+     "total": 38.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "LV",
+     "a": 24.0,
+     "b": 15.0,
+     "total": 39.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "BUF",
+     "a": 52.0,
+     "b": -5.0,
+     "total": 47.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "SEA",
+     "a": 39.0,
+     "b": 24.0,
+     "total": 63.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "DEN",
+     "a": 11.0,
+     "b": 18.0,
+     "total": 29.0
+    }
+   ]
+  },
+  {
+   "player": "Kenneth Walker III",
+   "team": "KC",
+   "opp": "LAC",
+   "home": true,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vk6nruaqdewdglofcwwg",
+   "game": {
+    "commence_time": "2026-10-18T20:25:00Z",
+    "team_spread": -7.5,
+    "total": 41.5,
+    "team_implied": 24.5
+   },
+   "feed_halves": {
+    "a": 90.5,
+    "b": 20.5
+   },
+   "implied_line": 111.0,
+   "line": null,
+   "projection": {
+    "proj_total": 128.9,
+    "sd": 51.1,
+    "games_used": 22,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 111.5,
+      "opp_factor": 1.011,
+      "proj": 112.7,
+      "opp_allowed_pg": 94.5,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 18.0,
+      "opp_factor": 0.904,
+      "proj": 16.2,
+      "opp_allowed_pg": 24.8,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "ATL",
+     "a": 29.0,
+     "b": -1.0,
+     "total": 28.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "IND",
+     "a": 17.0,
+     "b": 2.0,
+     "total": 19.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "LAR",
+     "a": 100.0,
+     "b": 64.0,
+     "total": 164.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "CAR",
+     "a": 51.0,
+     "b": 6.0,
+     "total": 57.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "SF",
+     "a": 97.0,
+     "b": 36.0,
+     "total": 133.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "DEN",
+     "a": 173.0,
+     "b": 18.0,
+     "total": 191.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "IND",
+     "a": 117.0,
+     "b": 61.0,
+     "total": 178.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "MIA",
+     "a": 70.0,
+     "b": 3.0,
+     "total": 73.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "LV",
+     "a": 177.0,
+     "b": 2.0,
+     "total": 179.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "LAC",
+     "a": 128.0,
+     "b": 11.0,
+     "total": 139.0
+    }
+   ]
+  },
+  {
+   "player": "Kimani Vidal",
+   "team": "LAC",
+   "opp": "KC",
+   "home": false,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tqdctdun0bv60d5ziwtl",
+   "game": {
+    "commence_time": "2026-10-18T20:25:00Z",
+    "team_spread": 7.5,
+    "total": 41.5,
+    "team_implied": 17.0
+   },
+   "feed_halves": {
+    "a": 17.5,
+    "b": 8.5
+   },
+   "implied_line": 26.0,
+   "line": null,
+   "projection": {
+    "proj_total": 56.4,
+    "sd": 32.6,
+    "games_used": 12,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 46.0,
+      "opp_factor": 0.904,
+      "proj": 41.5,
+      "opp_allowed_pg": 74.7,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 14.5,
+      "opp_factor": 1.019,
+      "proj": 14.8,
+      "opp_allowed_pg": 31.9,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 8,
+     "opp": "MIN",
+     "a": 117.0,
+     "b": 10.0,
+     "total": 127.0
+    },
+    {
+     "season": 2025,
+     "week": 9,
+     "opp": "TEN",
+     "a": 30.0,
+     "b": 0.0,
+     "total": 30.0
+    },
+    {
+     "season": 2025,
+     "week": 10,
+     "opp": "PIT",
+     "a": 95.0,
+     "b": 13.0,
+     "total": 108.0
+    },
+    {
+     "season": 2025,
+     "week": 11,
+     "opp": "JAX",
+     "a": 13.0,
+     "b": -1.0,
+     "total": 12.0
+    },
+    {
+     "season": 2025,
+     "week": 13,
+     "opp": "LV",
+     "a": 126.0,
+     "b": 11.0,
+     "total": 137.0
+    },
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "PHI",
+     "a": 44.0,
+     "b": 60.0,
+     "total": 104.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "KC",
+     "a": 33.0,
+     "b": 15.0,
+     "total": 48.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "SEA",
+     "a": 25.0,
+     "b": 11.0,
+     "total": 36.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "DEN",
+     "a": 57.0,
+     "b": -1.0,
+     "total": 56.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "KC",
+     "a": 21.0,
+     "b": 19.0,
+     "total": 40.0
+    }
+   ]
+  },
+  {
+   "player": "Kirk Cousins",
+   "team": "LV",
+   "opp": "BUF",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/za7cynvpwlsro1tsaijk",
+   "game": {
+    "commence_time": "2026-10-18T20:25:00Z",
+    "team_spread": 5.5,
+    "total": 53.5,
+    "team_implied": 24.0
+   },
+   "feed_halves": {
+    "a": 249.5,
+    "b": 2.5
+   },
+   "implied_line": 252.0,
+   "line": null,
+   "projection": {
+    "proj_total": 263.6,
+    "sd": 70.5,
+    "games_used": 14,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 260.7,
+      "opp_factor": 1.011,
+      "proj": 263.5,
+      "opp_allowed_pg": 234.5,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 0.0,
+      "opp_factor": 1.032,
+      "proj": 0.0,
+      "opp_allowed_pg": 18.6,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "TB",
+     "a": 373.0,
+     "b": 0.0,
+     "total": 373.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "ARI",
+     "a": 197.0,
+     "b": -3.0,
+     "total": 194.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "LAR",
+     "a": 126.0,
+     "b": 1.0,
+     "total": 127.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "NO",
+     "a": 180.0,
+     "b": 0.0,
+     "total": 180.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "MIA",
+     "a": 160.0,
+     "b": -6.0,
+     "total": 154.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "LAC",
+     "a": 253.0,
+     "b": 1.0,
+     "total": 254.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "NO",
+     "a": 248.0,
+     "b": 3.0,
+     "total": 251.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "KC",
+     "a": 365.0,
+     "b": 0.0,
+     "total": 365.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "NE",
+     "a": 243.0,
+     "b": 0.0,
+     "total": 243.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "BUF",
+     "a": 313.0,
+     "b": 0.0,
+     "total": 313.0
+    }
+   ]
+  },
+  {
+   "player": "Kyren Williams",
+   "team": "LAR",
+   "opp": "ARI",
+   "home": true,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xti3pek6rmojqchakxpy",
+   "game": {
+    "commence_time": "2026-10-18T20:05:00Z",
+    "team_spread": -12.5,
+    "total": 51.5,
+    "team_implied": 32.0
+   },
+   "feed_halves": {
+    "a": 69.5,
+    "b": 19.5
+   },
+   "implied_line": 89.0,
+   "line": null,
+   "projection": {
+    "proj_total": 102.6,
+    "sd": 34.8,
+    "games_used": 23,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 65.9,
+      "opp_factor": 1.096,
+      "proj": 72.2,
+      "opp_allowed_pg": 110.1,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 30.9,
+      "opp_factor": 0.983,
+      "proj": 30.4,
+      "opp_allowed_pg": 29.7,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "DET",
+     "a": 78.0,
+     "b": 10.0,
+     "total": 88.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "SEA",
+     "a": 70.0,
+     "b": 15.0,
+     "total": 85.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "ATL",
+     "a": 92.0,
+     "b": 38.0,
+     "total": 130.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "ARI",
+     "a": 60.0,
+     "b": 21.0,
+     "total": 81.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "SF",
+     "a": 41.0,
+     "b": 24.0,
+     "total": 65.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "NYG",
+     "a": 85.0,
+     "b": 12.0,
+     "total": 97.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "DEN",
+     "a": 88.0,
+     "b": 70.0,
+     "total": 158.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "PHI",
+     "a": 80.0,
+     "b": 67.0,
+     "total": 147.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "BUF",
+     "a": 49.0,
+     "b": 27.0,
+     "total": 76.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "ARI",
+     "a": 50.0,
+     "b": 17.0,
+     "total": 67.0
+    }
+   ]
+  },
+  {
+   "player": "MarShawn Lloyd",
+   "team": "GB",
+   "opp": "DAL",
+   "home": true,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xp8sd4enimuk4zd0aqgu",
+   "game": {
+    "commence_time": "2026-10-19T00:20:00Z",
+    "team_spread": -1.5,
+    "total": 52.5,
+    "team_implied": 27.0
+   },
+   "feed_halves": {
+    "a": 42.5,
+    "b": 11.5
+   },
+   "implied_line": 54.0,
+   "line": null,
+   "projection": {
+    "proj_total": 29.0,
+    "sd": 13.1,
+    "games_used": 6,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 18.7,
+      "opp_factor": 1.04,
+      "proj": 19.4,
+      "opp_allowed_pg": 99.8,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 9.2,
+      "opp_factor": 1.048,
+      "proj": 9.6,
+      "opp_allowed_pg": 33.7,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "MIN",
+     "a": 37.0,
+     "b": 0.0,
+     "total": 37.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "NYJ",
+     "a": 20.0,
+     "b": 6.0,
+     "total": 26.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "ATL",
+     "a": 11.0,
+     "b": 7.0,
+     "total": 18.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "TB",
+     "a": 13.0,
+     "b": 36.0,
+     "total": 49.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "CHI",
+     "a": 31.0,
+     "b": 6.0,
+     "total": 37.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "DAL",
+     "a": 10.0,
+     "b": 0.0,
+     "total": 10.0
+    }
+   ]
+  },
+  {
+   "player": "Matthew Stafford",
+   "team": "LAR",
+   "opp": "ARI",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jwpkjfrkzufdyh8u1mg7",
+   "game": {
+    "commence_time": "2026-10-18T20:05:00Z",
+    "team_spread": -12.5,
+    "total": 51.5,
+    "team_implied": 32.0
+   },
+   "feed_halves": {
+    "a": 279.5,
+    "b": 1.5
+   },
+   "implied_line": 281.0,
+   "line": null,
+   "projection": {
+    "proj_total": 313.2,
+    "sd": 82.8,
+    "games_used": 23,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 300.7,
+      "opp_factor": 1.034,
+      "proj": 310.9,
+      "opp_allowed_pg": 245.1,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 2.8,
+      "opp_factor": 0.797,
+      "proj": 2.3,
+      "opp_allowed_pg": 10.4,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "DET",
+     "a": 368.0,
+     "b": 2.0,
+     "total": 370.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "SEA",
+     "a": 457.0,
+     "b": 6.0,
+     "total": 463.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "ATL",
+     "a": 269.0,
+     "b": 0.0,
+     "total": 269.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "ARI",
+     "a": 259.0,
+     "b": 3.0,
+     "total": 262.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "SF",
+     "a": 155.0,
+     "b": -1.0,
+     "total": 154.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "NYG",
+     "a": 327.0,
+     "b": -1.0,
+     "total": 326.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "DEN",
+     "a": 390.0,
+     "b": 13.0,
+     "total": 403.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "PHI",
+     "a": 317.0,
+     "b": 10.0,
+     "total": 327.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "BUF",
+     "a": 383.0,
+     "b": 0.0,
+     "total": 383.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "ARI",
+     "a": 222.0,
+     "b": 0.0,
+     "total": 222.0
+    }
+   ]
+  },
+  {
+   "player": "Michael Penix Jr.",
+   "team": "ATL",
+   "opp": "CHI",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mip4kogkqxwkkya6mvmh",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": 1.5,
+    "total": 51.5,
+    "team_implied": 25.0
+   },
+   "feed_halves": {
+    "a": 236.5,
+    "b": 2.5
+   },
+   "implied_line": 239.0,
+   "line": null,
+   "projection": {
+    "proj_total": 231.0,
+    "sd": 42.4,
+    "games_used": 13,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 225.1,
+      "opp_factor": 1.009,
+      "proj": 227.1,
+      "opp_allowed_pg": 233.6,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 3.8,
+      "opp_factor": 1.001,
+      "proj": 3.8,
+      "opp_allowed_pg": 17.5,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 4,
+     "opp": "WAS",
+     "a": 313.0,
+     "b": 2.0,
+     "total": 315.0
+    },
+    {
+     "season": 2025,
+     "week": 6,
+     "opp": "BUF",
+     "a": 250.0,
+     "b": 6.0,
+     "total": 256.0
+    },
+    {
+     "season": 2025,
+     "week": 7,
+     "opp": "SF",
+     "a": 241.0,
+     "b": 6.0,
+     "total": 247.0
+    },
+    {
+     "season": 2025,
+     "week": 9,
+     "opp": "NE",
+     "a": 221.0,
+     "b": 19.0,
+     "total": 240.0
+    },
+    {
+     "season": 2025,
+     "week": 10,
+     "opp": "IND",
+     "a": 177.0,
+     "b": -1.0,
+     "total": 176.0
+    },
+    {
+     "season": 2025,
+     "week": 11,
+     "opp": "CAR",
+     "a": 175.0,
+     "b": 9.0,
+     "total": 184.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "GB",
+     "a": 256.0,
+     "b": -2.0,
+     "total": 254.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "NO",
+     "a": 223.0,
+     "b": -2.0,
+     "total": 221.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "BAL",
+     "a": 240.0,
+     "b": 8.0,
+     "total": 248.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "CHI",
+     "a": 225.0,
+     "b": 1.0,
+     "total": 226.0
+    }
+   ]
+  },
+  {
+   "player": "Omarion Hampton",
+   "team": "LAC",
+   "opp": "KC",
+   "home": false,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/lf2jxvxnbexlinoydbej",
+   "game": {
+    "commence_time": "2026-10-18T20:25:00Z",
+    "team_spread": 7.5,
+    "total": 41.5,
+    "team_implied": 17.0
+   },
+   "feed_halves": {
+    "a": 31.5,
+    "b": 6.5
+   },
+   "implied_line": 38.0,
+   "line": null,
+   "projection": {
+    "proj_total": 54.4,
+    "sd": 26.4,
+    "games_used": 15,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 45.6,
+      "opp_factor": 0.904,
+      "proj": 41.2,
+      "opp_allowed_pg": 74.7,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 12.9,
+      "opp_factor": 1.019,
+      "proj": 13.2,
+      "opp_allowed_pg": 31.9,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "PHI",
+     "a": 56.0,
+     "b": 11.0,
+     "total": 67.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "KC",
+     "a": 61.0,
+     "b": 4.0,
+     "total": 65.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "DAL",
+     "a": 85.0,
+     "b": 10.0,
+     "total": 95.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "HOU",
+     "a": 29.0,
+     "b": 31.0,
+     "total": 60.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "ARI",
+     "a": 43.0,
+     "b": 0.0,
+     "total": 43.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "LV",
+     "a": 94.0,
+     "b": 21.0,
+     "total": 115.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "BUF",
+     "a": 56.0,
+     "b": 0.0,
+     "total": 56.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "SEA",
+     "a": 45.0,
+     "b": 8.0,
+     "total": 53.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "DEN",
+     "a": 33.0,
+     "b": 6.0,
+     "total": 39.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "KC",
+     "a": 18.0,
+     "b": 21.0,
+     "total": 39.0
+    }
+   ]
+  },
+  {
+   "player": "Patrick Mahomes",
+   "team": "KC",
+   "opp": "LAC",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/wdckwtob1lybvkmxnf7p",
+   "game": {
+    "commence_time": "2026-10-18T20:25:00Z",
+    "team_spread": -7.5,
+    "total": 41.5,
+    "team_implied": 24.5
+   },
+   "feed_halves": {
+    "a": 226.5,
+    "b": 14.5
+   },
+   "implied_line": 241.0,
+   "line": null,
+   "projection": {
+    "proj_total": 256.9,
+    "sd": 62.2,
+    "games_used": 19,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 255.7,
+      "opp_factor": 0.947,
+      "proj": 242.1,
+      "opp_allowed_pg": 205.3,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 15.8,
+      "opp_factor": 0.931,
+      "proj": 14.7,
+      "opp_allowed_pg": 15.0,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 11,
+     "opp": "DEN",
+     "a": 276.0,
+     "b": 3.0,
+     "total": 279.0
+    },
+    {
+     "season": 2025,
+     "week": 12,
+     "opp": "IND",
+     "a": 352.0,
+     "b": 30.0,
+     "total": 382.0
+    },
+    {
+     "season": 2025,
+     "week": 13,
+     "opp": "DAL",
+     "a": 261.0,
+     "b": 30.0,
+     "total": 291.0
+    },
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "HOU",
+     "a": 160.0,
+     "b": 59.0,
+     "total": 219.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "LAC",
+     "a": 189.0,
+     "b": 15.0,
+     "total": 204.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "DEN",
+     "a": 184.0,
+     "b": 23.0,
+     "total": 207.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "IND",
+     "a": 382.0,
+     "b": 17.0,
+     "total": 399.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "MIA",
+     "a": 246.0,
+     "b": 1.0,
+     "total": 247.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "LV",
+     "a": 225.0,
+     "b": 0.0,
+     "total": 225.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "LAC",
+     "a": 272.0,
+     "b": 16.0,
+     "total": 288.0
+    }
+   ]
+  },
+  {
+   "player": "Pierre Strong",
+   "team": "GB",
+   "opp": "DAL",
+   "home": true,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/aa0nufst85vutgor1fqv",
+   "game": {
+    "commence_time": "2026-10-19T00:20:00Z",
+    "team_spread": -1.5,
+    "total": 52.5,
+    "team_implied": 27.0
+   },
+   "feed_halves": {
+    "a": 18.5,
+    "b": 11.5
+   },
+   "implied_line": 30.0,
+   "line": null,
+   "projection": {
+    "proj_total": 47.3,
+    "sd": 20.3,
+    "games_used": 2,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 18.7,
+      "opp_factor": 1.04,
+      "proj": 19.5,
+      "opp_allowed_pg": 99.8,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 26.6,
+      "opp_factor": 1.048,
+      "proj": 27.9,
+      "opp_allowed_pg": 33.7,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "CHI",
+     "a": 7.0,
+     "b": 11.0,
+     "total": 18.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "DAL",
+     "a": 28.0,
+     "b": 39.0,
+     "total": 67.0
+    }
+   ]
+  },
+  {
+   "player": "Rhamondre Stevenson",
+   "team": "NE",
+   "opp": "NYJ",
+   "home": true,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/x9dlpy3i5fciajd4w9ij",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": -7.5,
+    "total": 43.5,
+    "team_implied": 25.5
+   },
+   "feed_halves": {
+    "a": 62.5,
+    "b": 19.5
+   },
+   "implied_line": 82.0,
+   "line": null,
+   "projection": {
+    "proj_total": 70.5,
+    "sd": 30.9,
+    "games_used": 20,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 48.2,
+      "opp_factor": 1.084,
+      "proj": 52.2,
+      "opp_allowed_pg": 107.9,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 18.5,
+      "opp_factor": 0.986,
+      "proj": 18.2,
+      "opp_allowed_pg": 29.8,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "BUF",
+     "a": 50.0,
+     "b": 27.0,
+     "total": 77.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "BAL",
+     "a": 51.0,
+     "b": 27.0,
+     "total": 78.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "NYJ",
+     "a": 47.0,
+     "b": 55.0,
+     "total": 102.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "MIA",
+     "a": 131.0,
+     "b": 22.0,
+     "total": 153.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "SEA",
+     "a": 51.0,
+     "b": 44.0,
+     "total": 95.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "PIT",
+     "a": 43.0,
+     "b": 3.0,
+     "total": 46.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "JAX",
+     "a": 22.0,
+     "b": 16.0,
+     "total": 38.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "BUF",
+     "a": 47.0,
+     "b": 27.0,
+     "total": 74.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "LV",
+     "a": 64.0,
+     "b": 21.0,
+     "total": 85.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "NYJ",
+     "a": 36.0,
+     "b": 0.0,
+     "total": 36.0
+    }
+   ]
+  },
+  {
+   "player": "Rico Dowdle",
+   "team": "PIT",
+   "opp": "TB",
+   "home": false,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mx2bxccuzmdvzbksypws",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": -2.5,
+    "total": 38.5,
+    "team_implied": 20.5
+   },
+   "feed_halves": {
+    "a": 20.5,
+    "b": 7.5
+   },
+   "implied_line": 28.0,
+   "line": null,
+   "projection": {
+    "proj_total": 50.5,
+    "sd": 29.6,
+    "games_used": 20,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 37.1,
+      "opp_factor": 0.889,
+      "proj": 33.0,
+      "opp_allowed_pg": 71.9,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 14.6,
+      "opp_factor": 1.199,
+      "proj": 17.6,
+      "opp_allowed_pg": 42.9,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 11,
+     "opp": "ATL",
+     "a": 45.0,
+     "b": 55.0,
+     "total": 100.0
+    },
+    {
+     "season": 2025,
+     "week": 12,
+     "opp": "SF",
+     "a": 38.0,
+     "b": 36.0,
+     "total": 74.0
+    },
+    {
+     "season": 2025,
+     "week": 13,
+     "opp": "LAR",
+     "a": 58.0,
+     "b": 21.0,
+     "total": 79.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "NO",
+     "a": 49.0,
+     "b": 5.0,
+     "total": 54.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "TB",
+     "a": 29.0,
+     "b": 14.0,
+     "total": 43.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "SEA",
+     "a": 59.0,
+     "b": 4.0,
+     "total": 63.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "TB",
+     "a": 10.0,
+     "b": 20.0,
+     "total": 30.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "ATL",
+     "a": 15.0,
+     "b": 6.0,
+     "total": 21.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "NE",
+     "a": 22.0,
+     "b": 22.0,
+     "total": 44.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "TB",
+     "a": 40.0,
+     "b": 9.0,
+     "total": 49.0
+    }
+   ]
+  },
+  {
+   "player": "Tanner McKee",
+   "team": "PHI",
+   "opp": "CAR",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": 3.5,
+    "total": 38.5,
+    "team_implied": 17.5
+   },
+   "feed_halves": {
+    "a": 198.5,
+    "b": 8.5
+   },
+   "implied_line": 207.0,
+   "line": null,
+   "projection": {
+    "proj_total": 225.7,
+    "sd": 52.3,
+    "games_used": 2,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 226.5,
+      "opp_factor": 0.99,
+      "proj": 224.2,
+      "opp_allowed_pg": 225.1,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 1.3,
+      "opp_factor": 1.107,
+      "proj": 1.5,
+      "opp_allowed_pg": 21.2,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "WAS",
+     "a": 241.0,
+     "b": 3.0,
+     "total": 244.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "CAR",
+     "a": 215.0,
+     "b": 0.0,
+     "total": 215.0
+    }
+   ]
+  },
+  {
+   "player": "Tony Pollard",
+   "team": "TEN",
+   "opp": "IND",
+   "home": false,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/u4poetcrbxffcuyglmj8",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": 6.5,
+    "total": 44.5,
+    "team_implied": 19.0
+   },
+   "feed_halves": {
+    "a": 54.5,
+    "b": 10.5
+   },
+   "implied_line": 65.0,
+   "line": null,
+   "projection": {
+    "proj_total": 69.2,
+    "sd": 24.5,
+    "games_used": 23,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 64.3,
+      "opp_factor": 0.994,
+      "proj": 63.9,
+      "opp_allowed_pg": 91.3,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 5.0,
+      "opp_factor": 1.066,
+      "proj": 5.3,
+      "opp_allowed_pg": 34.8,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "SF",
+     "a": 104.0,
+     "b": 8.0,
+     "total": 112.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "KC",
+     "a": 102.0,
+     "b": 0.0,
+     "total": 102.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "NO",
+     "a": 85.0,
+     "b": 10.0,
+     "total": 95.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "JAX",
+     "a": 48.0,
+     "b": 17.0,
+     "total": 65.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "NYJ",
+     "a": 35.0,
+     "b": -1.0,
+     "total": 34.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "PHI",
+     "a": 64.0,
+     "b": 1.0,
+     "total": 65.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "NYG",
+     "a": 74.0,
+     "b": 22.0,
+     "total": 96.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "BAL",
+     "a": 48.0,
+     "b": 2.0,
+     "total": 50.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "HOU",
+     "a": 52.0,
+     "b": 0.0,
+     "total": 52.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "IND",
+     "a": 76.0,
+     "b": 0.0,
+     "total": 76.0
+    }
+   ]
+  },
+  {
+   "player": "Trevor Lawrence",
+   "team": "JAX",
+   "opp": "HOU",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/k9uzdernqkx7oquy7dkg",
+   "game": {
+    "commence_time": "2026-10-18T13:30:00Z",
+    "team_spread": -2.5,
+    "total": 42.5,
+    "team_implied": 22.5
+   },
+   "feed_halves": {
+    "a": 228.5,
+    "b": 13.5
+   },
+   "implied_line": 242.0,
+   "line": null,
+   "projection": {
+    "proj_total": 277.2,
+    "sd": 61.3,
+    "games_used": 23,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 260.9,
+      "opp_factor": 1.01,
+      "proj": 263.5,
+      "opp_allowed_pg": 234.3,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 15.3,
+      "opp_factor": 0.894,
+      "proj": 13.7,
+      "opp_allowed_pg": 13.7,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "NYJ",
+     "a": 330.0,
+     "b": 51.0,
+     "total": 381.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "DEN",
+     "a": 279.0,
+     "b": 20.0,
+     "total": 299.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "IND",
+     "a": 263.0,
+     "b": 26.0,
+     "total": 289.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "TEN",
+     "a": 255.0,
+     "b": 11.0,
+     "total": 266.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "CLE",
+     "a": 245.0,
+     "b": 3.0,
+     "total": 248.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "DEN",
+     "a": 189.0,
+     "b": 6.0,
+     "total": 195.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "NE",
+     "a": 182.0,
+     "b": 25.0,
+     "total": 207.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "CIN",
+     "a": 227.0,
+     "b": 0.0,
+     "total": 227.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "PHI",
+     "a": 331.0,
+     "b": 25.0,
+     "total": 356.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "HOU",
+     "a": 306.0,
+     "b": 11.0,
+     "total": 317.0
+    }
+   ]
+  },
+  {
+   "player": "Tyler Huntley",
+   "team": "BAL",
+   "opp": "CLE",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fxyjf9d5qkwqjdd8ypvv",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": -3.0,
+    "total": 39.5,
+    "team_implied": 21.2
+   },
+   "feed_halves": {
+    "a": 161.5,
+    "b": 23.5
+   },
+   "implied_line": 185.0,
+   "line": null,
+   "projection": {
+    "proj_total": 177.6,
+    "sd": 44.1,
+    "games_used": 5,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 154.2,
+      "opp_factor": 0.952,
+      "proj": 146.8,
+      "opp_allowed_pg": 207.4,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 37.2,
+      "opp_factor": 0.828,
+      "proj": 30.8,
+      "opp_allowed_pg": 11.5,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 6,
+     "opp": "LAR",
+     "a": 68.0,
+     "b": 39.0,
+     "total": 107.0
+    },
+    {
+     "season": 2025,
+     "week": 8,
+     "opp": "CHI",
+     "a": 186.0,
+     "b": 53.0,
+     "total": 239.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "GB",
+     "a": 107.0,
+     "b": 60.0,
+     "total": 167.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "ATL",
+     "a": 201.0,
+     "b": 20.0,
+     "total": 221.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "CLE",
+     "a": 165.0,
+     "b": 28.0,
+     "total": 193.0
+    }
+   ]
+  },
+  {
+   "player": "Tyler Shough",
+   "team": "NO",
+   "opp": "NYG",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vu51ogqu4i3abbwpj2fl",
+   "game": {
+    "commence_time": "2026-10-18T17:00:00Z",
+    "team_spread": -1.5,
+    "total": 45.5,
+    "team_implied": 23.5
+   },
+   "feed_halves": {
+    "a": 232.5,
+    "b": 11.5
+   },
+   "implied_line": 244.0,
+   "line": null,
+   "projection": {
+    "proj_total": 236.4,
+    "sd": 86.3,
+    "games_used": 16,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 220.8,
+      "opp_factor": 0.965,
+      "proj": 213.0,
+      "opp_allowed_pg": 213.7,
+      "league_pg": 229.6
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 18.7,
+      "opp_factor": 1.253,
+      "proj": 23.4,
+      "opp_allowed_pg": 26.3,
+      "league_pg": 17.4
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "CAR",
+     "a": 272.0,
+     "b": 32.0,
+     "total": 304.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "NYJ",
+     "a": 308.0,
+     "b": 8.0,
+     "total": 316.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "TEN",
+     "a": 333.0,
+     "b": 6.0,
+     "total": 339.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "ATL",
+     "a": 259.0,
+     "b": 34.0,
+     "total": 293.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "DET",
+     "a": 410.0,
+     "b": 8.0,
+     "total": 418.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "BAL",
+     "a": 252.0,
+     "b": 23.0,
+     "total": 275.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "LV",
+     "a": 255.0,
+     "b": 36.0,
+     "total": 291.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "ATL",
+     "a": 286.0,
+     "b": 5.0,
+     "total": 291.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "MIN",
+     "a": 96.0,
+     "b": 0.0,
+     "total": 96.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "NYG",
+     "a": 144.0,
+     "b": 32.0,
+     "total": 176.0
+    }
+   ]
+  },
+  {
+   "player": "Woody Marks",
+   "team": "HOU",
+   "opp": "JAX",
+   "home": false,
+   "pos": "RB",
+   "market": "rush_rec",
+   "market_label": "Rushing + Receiving Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ksk0fjj4bl9jvfh2s0rm",
+   "game": {
+    "commence_time": "2026-10-18T13:30:00Z",
+    "team_spread": 2.5,
+    "total": 42.5,
+    "team_implied": 20.0
+   },
+   "feed_halves": {
+    "a": 46.5,
+    "b": 14.5
+   },
+   "implied_line": 61.0,
+   "line": null,
+   "projection": {
+    "proj_total": 49.4,
+    "sd": 25.3,
+    "games_used": 20,
+    "components": [
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 42.8,
+      "opp_factor": 0.822,
+      "proj": 35.2,
+      "opp_allowed_pg": 59.6,
+      "league_pg": 92.4
+     },
+     {
+      "name": "Receiving yds",
+      "weighted_avg": 13.2,
+      "opp_factor": 1.074,
+      "proj": 14.2,
+      "opp_allowed_pg": 35.3,
+      "league_pg": 30.7
+     }
+    ]
+   },
+   "log": [
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "KC",
+     "a": 68.0,
+     "b": 8.0,
+     "total": 76.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "ARI",
+     "a": 30.0,
+     "b": 8.0,
+     "total": 38.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "LAC",
+     "a": 71.0,
+     "b": 4.0,
+     "total": 75.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "IND",
+     "a": 48.0,
+     "b": 0.0,
+     "total": 48.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "BUF",
+     "a": 42.0,
+     "b": -2.0,
+     "total": 40.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "CIN",
+     "a": 8.0,
+     "b": 27.0,
+     "total": 35.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "IND",
+     "a": 15.0,
+     "b": 6.0,
+     "total": 21.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "DAL",
+     "a": 22.0,
+     "b": 0.0,
+     "total": 22.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "TEN",
+     "a": 62.0,
+     "b": 23.0,
+     "total": 85.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "JAX",
+     "a": 56.0,
+     "b": 25.0,
+     "total": 81.0
+    }
+   ]
+  }
+ ]
+}
