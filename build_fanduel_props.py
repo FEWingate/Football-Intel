@@ -571,6 +571,121 @@ def protect_against_coverage_collapse(games, previous_payload, generated_at):
 
     return coverage, warnings
 
+# ---------------------------------------------------------------------------
+# COMBINED-YARDAGE PROPS (added 2026-10-19, confirmed by parlay-api.com support)
+#
+# FanDuel's Rushing + Receiving Yds is carried under player_rush_reception_yds
+# (main line only, no alts). It can NOT be found through discovery: /props and
+# /props/markets only look at lines from the LAST 60 MINUTES, and FanDuel's
+# lines for this market arrive in bursts, so the key is often missing from the
+# market list even though it exists. So it is requested by exact key, always.
+# FanDuel's Passing + Rushing Yds is not carried by the provider at all (their
+# statement), so it is reported as unavailable and never guessed.
+# Lines are NEVER built by adding separate markets together.
+# They live in each game's "combo_props" (not "player_props") so the existing
+# report and Prop Center code never sees them.
+COMBO_KEYS = {"player_rush_reception_yds": "rushing_receiving_yards"}   # exact aliases only
+COMBO_UNAVAILABLE = {"passing_rushing_yards":
+                     "Not carried by ParlayAPI's FanDuel feed (provider confirmed 2026-10-19)."}
+PARTIAL_PERIOD_MARKERS = ("1h", "2h", "half", "q1", "q2", "q3", "q4", "quarter", "1st", "2nd", "3rd", "4th")
+
+
+def fetch_combo_rows():
+    """Direct request for the combo keys, filtered to FanDuel server-side. Optional: a failure here never
+    stops the main build."""
+    try:
+        data = _get(f"sports/{NFL_SPORT_KEY}/props",
+                    {"markets": ",".join(COMBO_KEYS), "bookmakers": "fanduel",
+                     "oddsFormat": "decimal", "limit": PROPS_ROW_LIMIT})
+    except SystemExit as error:
+        print(f"  WARNING: combined-yardage request failed ({error}); continuing without it this run.")
+        return []
+    rows = [r for r in data if isinstance(r, dict)] if isinstance(data, list) else []
+    rows = [r for r in rows if r.get("bookmaker") == "fanduel"]
+    print(f"  Combined-yardage rows from FanDuel: {len(rows)}")
+    return rows
+
+
+def _num(value):
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    return number if number == number else None
+
+
+def valid_combo_row(row):
+    """Reject anything that is not an authentic full-game FanDuel row under an approved exact key."""
+    if row.get("bookmaker") != "fanduel" or row.get("market_key") not in COMBO_KEYS:
+        return False
+    if not row.get("canonical_event_id") or not row.get("player") or row.get("player") == "Defense":
+        return False
+    period = str(row.get("period") or "").lower()
+    if any(marker in period for marker in PARTIAL_PERIOD_MARKERS):
+        return False
+    if _num(row.get("line")) is None:
+        return False
+    if _num(row.get("over_price")) is None and _num(row.get("under_price")) is None:
+        return False
+    return True
+
+
+def shape_combo_rows(rows, fetched_at):
+    """{event_id: {family: {player: {"line": {...}, "alts": []}}}} - provider values only, never summed."""
+    out = {}
+    for row in rows:
+        if not valid_combo_row(row):
+            continue
+        family = COMBO_KEYS[row["market_key"]]
+        bucket = out.setdefault(row["canonical_event_id"], {}).setdefault(family, {})
+        bucket[row["player"]] = {"line": {
+            "point": _num(row.get("line")), "over_price": row.get("over_price"), "under_price": row.get("under_price"),
+            "source_market_key": row["market_key"], "period": row.get("period") or "FULL",
+            "last_update": row.get("last_update"), "fetched_at": fetched_at, "stale": False}, "alts": []}
+    known = _known_player_names()
+    for families in out.values():
+        for family in list(families):
+            families[family] = merge_suffix_duplicates(families[family], known)
+    return out
+
+
+def carry_combo_forward(games, previous_payload, generated_at):
+    """The provider's FanDuel combo lines arrive in bursts, so a run can come back empty between them.
+    Keep a player's last real line from the previous file until kickoff or 6 hours, marked stale with its
+    original timestamp. Returns {family: coverage dict}."""
+    now = parse_timestamp(generated_at) or datetime.now(timezone.utc)
+    previous = {g.get("canonical_event_id"): g for g in (previous_payload or {}).get("games", [])
+                if g.get("canonical_event_id")}
+    families = list(COMBO_KEYS.values())
+    coverage = {}
+    for family in families:
+        fresh = carried = 0
+        newest = None
+        for game in games:
+            current = game.setdefault("combo_props", {}).setdefault(family, {})
+            fresh += len(current)
+            kickoff = parse_timestamp(game.get("commence_time"))
+            before_kickoff = kickoff is None or now < kickoff
+            old = ((previous.get(game.get("canonical_event_id")) or {}).get("combo_props") or {}).get(family) or {}
+            for name, entry in old.items():
+                if name in current or not before_kickoff:
+                    continue
+                line = dict((entry or {}).get("line") or {})
+                fetched = parse_timestamp(line.get("fetched_at"))
+                if not fetched or not (0 <= (now - fetched).total_seconds() <= STALE_MAX_AGE_SECONDS):
+                    continue
+                line["stale"] = True
+                current[name] = {"line": line, "alts": []}
+                carried += 1
+                newest = max(newest, fetched) if newest else fetched
+        status = "current" if fresh else ("stale_last_known_good" if carried else "unavailable")
+        coverage[family] = {"status": status, "current_player_count": fresh, "carried_player_count": carried,
+                            "newest_carried_fetch": newest.isoformat() if newest else None,
+                            "note": "Main line only; the provider does not carry FanDuel's alternate lines for this market."}
+    for family, reason in COMBO_UNAVAILABLE.items():
+        coverage[family] = {"status": "unavailable", "current_player_count": 0, "carried_player_count": 0, "note": reason}
+    return coverage
+
 
 def write_json_atomic(payload, path):
     temp_path = f"{path}.tmp"
@@ -663,6 +778,9 @@ def main():
     print("Fetching anytime TD props...")
     all_rows.extend(fetch_props([ANYTIME_TD_KEY]))
 
+    print("Fetching combined-yardage props (exact key, not discovered)...")
+    combo_by_event = shape_combo_rows(fetch_combo_rows(), generated_at)
+
     players, anytime_td = reshape_props_rows(all_rows, market_to_stat_kind)
 
     games = []
@@ -684,6 +802,7 @@ def main():
             "game_lines": {k: e["markets"].get(k, []) for k in GAME_LINE_MARKETS},
             "player_props": players.get(eid, {stat: {} for stat in STAT_FAMILIES}),
             "anytime_td": anytime_td.get(eid, []),
+            "combo_props": combo_by_event.get(eid, {}),
         })
     if excluded:
         print(f"  Excluded {excluded} real event(s) outside this week's slate (confirmed against "
@@ -706,12 +825,17 @@ def main():
     )
     for warning in warnings:
         print(f"  WARNING: {warning}")
+    combo_coverage = carry_combo_forward(games, previous_payload, generated_at)
+    for family, meta in combo_coverage.items():
+        print(f"  Combined yardage / {family}: {meta['status']} "
+              f"(fresh {meta['current_player_count']}, carried {meta['carried_player_count']})")
 
     os.makedirs("fanduel_props", exist_ok=True)
     payload = {
         "generated_at": generated_at,
         "bookmaker": "fanduel",
         "coverage": coverage,
+        "combo_coverage": combo_coverage,
         "warnings": warnings,
         "games": games,
     }

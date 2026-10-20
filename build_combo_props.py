@@ -459,7 +459,8 @@ def main():
         for mk, cfg in MARKETS.items():
             A = pp.get(cfg["feed_a"]) or {}
             B = pp.get(cfg["feed_b"]) or {}
-            for name, v in (pp.get(FEED_COMBO_FAMILY[mk]) or {}).items():
+            fam = FEED_COMBO_FAMILY[mk]
+            for name, v in (((g.get("combo_props") or {}).get(fam)) or pp.get(fam) or {}).items():
                 ln = (v or {}).get("line") or {}
                 info = ident.get(norm(name))
                 if not info or info["pos"] != cfg["pos"] or ln.get("point") is None:
@@ -468,7 +469,10 @@ def main():
                 c["line"] = {"point": ln["point"], "over_price": ln.get("over_price"), "under_price": ln.get("under_price"),
                              "alts": [{"line": x.get("threshold"), "over_price": x.get("over_price"), "under_price": x.get("under_price")}
                                       for x in (v.get("alts") or [])],
-                             "source": "fanduel feed", "source_market_key": ln.get("source_market_key")}
+                             "source": "fanduel feed" + (" (stale)" if ln.get("stale") else ""),
+                             "source_market_key": ln.get("source_market_key"),
+                             "stale": bool(ln.get("stale")), "last_update": ln.get("last_update"),
+                             "fetched_at": ln.get("fetched_at")}
             for name in set(A) & set(B):
                 info = ident.get(norm(name))
                 if not info or info["pos"] != cfg["pos"]:
@@ -479,6 +483,10 @@ def main():
     for ln in manual.get("lines", []):
         mk = ln.get("market")
         if mk not in MARKETS:
+            continue
+        # A typed line belongs to the week it was added for. Last week's
+        # lines would show as empty cards (no game, no projection) now.
+        if ln.get("week") is not None and week and int(ln["week"]) != week:
             continue
         info = ident.get(norm(ln.get("player")))
         game = None

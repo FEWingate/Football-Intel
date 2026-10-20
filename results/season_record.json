@@ -171,15 +171,101 @@
         "ungraded": 0,
         "units": 0.0
       }
+    },
+    "wk06": {
+      "prop_breakdown": {
+        "w": 27,
+        "l": 21,
+        "p": 3,
+        "ungraded": 0,
+        "units": 2.76
+      },
+      "best_10": {
+        "w": 8,
+        "l": 2,
+        "p": 0,
+        "ungraded": 0,
+        "units": 5.04
+      },
+      "td_parlays": {
+        "w": 0,
+        "l": 0,
+        "p": 0,
+        "ungraded": 0,
+        "units": 0.0
+      },
+      "parlays": {
+        "w": 2,
+        "l": 1,
+        "p": 0,
+        "ungraded": 0,
+        "units": 7.13
+      },
+      "overall": {
+        "w": 24,
+        "l": 20,
+        "p": 2,
+        "ungraded": 0,
+        "units": 1.12
+      },
+      "favorite_ou": {
+        "w": 15,
+        "l": 14,
+        "p": 2,
+        "ungraded": 0,
+        "units": -0.8
+      },
+      "spread_parlays": {
+        "w": 0,
+        "l": 0,
+        "p": 0,
+        "ungraded": 0,
+        "units": 0.0
+      },
+      "unique": {
+        "w": 24,
+        "l": 20,
+        "p": 2,
+        "ungraded": 0,
+        "units": 1.12
+      },
+      "entries": {
+        "w": 58,
+        "l": 38,
+        "p": 5,
+        "ungraded": 0,
+        "units": 0.0
+      },
+      "parlays_legs": {
+        "w": 3,
+        "l": 1,
+        "p": 0,
+        "ungraded": 0,
+        "units": 1.64
+      },
+      "td_parlays_legs": {
+        "w": 0,
+        "l": 0,
+        "p": 0,
+        "ungraded": 0,
+        "units": 0.0
+      },
+      "spread_parlays_legs": {
+        "w": 0,
+        "l": 0,
+        "p": 0,
+        "ungraded": 0,
+        "units": 0.0
+      }
     }
   },
   "season_totals": {
-    "overall": {
-      "w": 46,
-      "l": 56,
-      "p": 0,
+    "prop_breakdown": {
+      "w": 80,
+      "l": 83,
+      "p": 3,
       "ungraded": 0,
-      "units": -16.12
+      "units": -12.86
     },
     "td_parlays": {
       "w": 3,
@@ -188,54 +274,19 @@
       "ungraded": 0,
       "units": -9.2
     },
-    "td_parlays_legs": {
-      "w": 12,
-      "l": 14,
-      "p": 0,
-      "ungraded": 0,
-      "units": -2.57
-    },
-    "parlays": {
-      "w": 5,
-      "l": 23,
-      "p": 0,
-      "ungraded": 0,
-      "units": 4.1
-    },
     "entries": {
-      "w": 238,
-      "l": 241,
-      "p": 1,
+      "w": 296,
+      "l": 279,
+      "p": 6,
       "ungraded": 0,
       "units": 0.0
     },
-    "parlays_legs": {
-      "w": 19,
+    "parlays": {
+      "w": 7,
       "l": 24,
       "p": 0,
       "ungraded": 0,
-      "units": -7.39
-    },
-    "favorite_ou": {
-      "w": 31,
-      "l": 32,
-      "p": 0,
-      "ungraded": 0,
-      "units": -4.83
-    },
-    "unique": {
-      "w": 46,
-      "l": 56,
-      "p": 0,
-      "ungraded": 0,
-      "units": -16.12
-    },
-    "best_10": {
-      "w": 3,
-      "l": 7,
-      "p": 0,
-      "ungraded": 0,
-      "units": -4.55
+      "units": 11.23
     },
     "spread_parlays_legs": {
       "w": 10,
@@ -244,12 +295,47 @@
       "ungraded": 0,
       "units": 0.2
     },
-    "prop_breakdown": {
-      "w": 53,
-      "l": 62,
+    "overall": {
+      "w": 70,
+      "l": 76,
+      "p": 2,
+      "ungraded": 0,
+      "units": -15.0
+    },
+    "unique": {
+      "w": 70,
+      "l": 76,
+      "p": 2,
+      "ungraded": 0,
+      "units": -15.0
+    },
+    "td_parlays_legs": {
+      "w": 12,
+      "l": 14,
       "p": 0,
       "ungraded": 0,
-      "units": -15.62
+      "units": -2.57
+    },
+    "parlays_legs": {
+      "w": 22,
+      "l": 25,
+      "p": 0,
+      "ungraded": 0,
+      "units": -5.75
+    },
+    "best_10": {
+      "w": 11,
+      "l": 9,
+      "p": 0,
+      "ungraded": 0,
+      "units": 0.49
+    },
+    "favorite_ou": {
+      "w": 46,
+      "l": 46,
+      "p": 2,
+      "ungraded": 0,
+      "units": -5.63
     },
     "spread_parlays": {
       "w": 0,
@@ -259,5 +345,5 @@
       "units": -14.0
     }
   },
-  "generated_at": "2026-10-13T21:51:08.748974+00:00"
+  "generated_at": "2026-10-20T22:00:42.568186+00:00"
 }

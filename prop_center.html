@@ -983,6 +983,7 @@ function gradeBadgeHTML(grade, actual){
   const a = actual ? ` · ${esc(actual)}` : '';
   if(grade === 'W') return `<span class="grade-badge win">✓ Hit${a}</span>`;
   if(grade === 'L') return `<span class="grade-badge loss">✗ Miss${a}</span>`;
+  if(grade === 'P' && actual === 'DNP') return `<span class="grade-badge push" title="Player did not play; sportsbooks refund this bet">Void · DNP</span>`;
   if(grade === 'P') return `<span class="grade-badge push">Push${a}</span>`;
   return `<span class="grade-badge pending">Pending</span>`;
 }

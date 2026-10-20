@@ -1,0 +1,956 @@
+{
+  "generated_at": "2026-10-17T00:16:36.664853+00:00",
+  "games_included": [
+    "TEN_IND",
+    "NYJ_NE",
+    "NO_NYG",
+    "CAR_PHI"
+  ],
+  "coverage": {
+    "passing_yards": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 0,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-16T23:25:21.290828+00:00",
+      "source_age_seconds": 0
+    },
+    "rushing_yards": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 0,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-16T23:25:21.290828+00:00",
+      "source_age_seconds": 0
+    },
+    "receiving_yards": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 0,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-16T23:25:21.290828+00:00",
+      "source_age_seconds": 0
+    },
+    "receptions": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 0,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-16T23:25:21.290828+00:00",
+      "source_age_seconds": 0
+    },
+    "anytime_td": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 0,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-16T23:25:21.290828+00:00",
+      "source_age_seconds": 0
+    }
+  },
+  "stake_used_for_payout_examples": 10,
+  "markdown": "REAL DATA COVERAGE CHECK: All five stat families (Passing Yards, Rushing Yards, Receiving Yards, Receptions, Anytime TD) are LIVE across all 13 games this week \u2014 no stat family is STALE or UNAVAILABLE, so no picks are omitted or flagged for data-reliability reasons anywhere below.\n\n```json\nPROP_BREAKDOWN\n{\n  \"per_game\": [\n    {\"away\": \"Tennessee Titans\", \"home\": \"Indianapolis Colts\", \"picks\": [\n      {\"player\": \"Wan'Dale Robinson\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"fa038d4d087c4c3b\", \"price\": 1.877, \"side\": \"over\", \"line\": 36.5, \"reason\": \"35.2 rec yds/gm (21.0% target share, 78.1% slot rate) against IND's worst slot defense in the league (88.2 slot yds/gm allowed, ranked 32nd).\", \"projection\": 42, \"games_2026\": 5, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"IND\",\"pos\":\"WR\",\"stat\":\"slot_yards_pg\",\"role\":\"def\",\"claimed_rank\":32}]},\n      {\"player\": \"Tyler Warren\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"fa038d4d087c4c3b\", \"price\": 1.877, \"side\": \"under\", \"line\": 50.5, \"reason\": \"42.6 rec yds/gm already sits below this line, and TEN's tight end defense is 3rd-best in the NFL at 29.4 yds/gm allowed.\", \"projection\": 36, \"games_2026\": 5, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"TEN\",\"pos\":\"TE\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":3}]},\n      {\"player\": \"Tony Pollard\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"fa038d4d087c4c3b\", \"price\": 1.877, \"side\": \"over\", \"line\": 54.5, \"reason\": \"54.6 rush yds/gm against IND's 27th-ranked rush defense (129.6 yds/gm allowed), a soft matchup if he's fully active.\", \"projection\": 62, \"games_2026\": 5, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"IND\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"def\",\"claimed_rank\":27}]}\n    ]},\n    {\"away\": \"New York Jets\", \"home\": \"New England Patriots\", \"picks\": [\n      {\"player\": \"Rhamondre Stevenson\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"29e69c87ffc2fcad\", \"price\": 1.877, \"side\": \"under\", \"line\": 62.5, \"reason\": \"45.4 rush yds/gm ranks 30th among RBs, well below this 62.5 line even against a middling NYJ run defense (102.2 yds/gm allowed, ranked 25th).\", \"projection\": 47, \"games_2026\": 5, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NYJ\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"def\",\"claimed_rank\":25}]},\n      {\"player\": \"Drake Maye\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"29e69c87ffc2fcad\", \"price\": 1.877, \"side\": \"under\", \"line\": 236.5, \"reason\": \"245.6 pass yds/gm season average, but he's posted 0 pass TD/gm across his two top-tier-defense games this year, and NYJ's pass defense ranks 4th in yards allowed (195.4/gm); game total of 43.5 doesn't argue for a shootout.\", \"projection\": 205, \"games_2026\": 5, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NYJ\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":4}]},\n      {\"player\": \"Hunter Henry\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"29e69c87ffc2fcad\", \"price\": 1.877, \"side\": \"under\", \"line\": 31.5, \"reason\": \"35.4 rec yds/gm ranks 19th among TEs, but NYJ's TE defense ranks 7th-best in the league (36.6 yds/gm allowed).\", \"projection\": 24, \"games_2026\": 5, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NYJ\",\"pos\":\"TE\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":7}]}\n    ]},\n    {\"away\": \"New Orleans Saints\", \"home\": \"New York Giants\", \"picks\": [\n      {\"player\": \"Isaiah Likely\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"e9f629a0addfb6b4\", \"price\": 1.877, \"side\": \"over\", \"line\": 51.5, \"reason\": \"56.8 rec yds/gm ranks 5th among TEs (Elite Threat convergence) against a New Orleans defense that ranks 26th against tight ends (71.2 yds/gm allowed).\", \"projection\": 64, \"games_2026\": 5, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"TE\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":26}]},\n      {\"player\": \"Cam Skattebo\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"e9f629a0addfb6b4\", \"price\": 1.877, \"side\": \"over\", \"line\": 53.5, \"reason\": \"58.8 rush yds/gm against New Orleans' run defense, which is dead last in the NFL against running backs at 133.4 yds/gm allowed.\", \"projection\": 67, \"games_2026\": 5, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"def\",\"claimed_rank\":32}]},\n      {\"player\": \"Devaughn Vele\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"e9f629a0addfb6b4\", \"price\": 1.877, \"side\": \"under\", \"line\": 41.5, \"reason\": \"50.4 rec yds/gm season average, but he's a true slot receiver (53.8% slot rate) walking into NYG's 6th-best slot defense (32.6 slot yds/gm allowed).\", \"projection\": 33, \"games_2026\": 5, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NYG\",\"pos\":\"WR\",\"stat\":\"slot_yards_pg\",\"role\":\"def\",\"claimed_rank\":6}]}\n    ]},\n    {\"away\": \"Carolina Panthers\", \"home\": \"Philadelphia Eagles\", \"picks\": [\n      {\"player\": \"Tetairoa McMillan\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"20ca55788c5c6c41\", \"price\": 1.877, \"side\": \"over\", \"line\": 64.5, \"reason\": \"96.25 rec yds/gm ranks 7th in the league (Quadruple Threat convergence) against Philadelphia's defense, which ranks 25th against WRs (170.6 yds/gm allowed).\", \"projection\": 88, \"games_2026\": 4, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"PHI\",\"pos\":\"WR\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":25}]},\n      {\"player\": \"Chuba Hubbard\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"20ca55788c5c6c41\", \"price\": 1.877, \"side\": \"over\", \"line\": 70.5, \"reason\": \"76.5 rush yds/gm ranks 11th among RBs against a Philadelphia run defense ranked 22nd (100.4 yds/gm allowed).\", \"projection\": 80, \"games_2026\": 4, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"PHI\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"def\",\"claimed_rank\":22}]},\n      {\"player\": \"Dontayvion Wicks\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"20ca55788c5c6c41\", \"price\": 1.877, \"side\": \"over\", \"line\": 30.5, \"reason\": \"52.0 rec yds/gm sits well above this 30.5 line against a Carolina defense that ranks only 17th against WRs (151.8 yds/gm allowed).\", \"projection\": 46, \"games_2026\": 5, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CAR\",\"pos\":\"WR\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":17}]}\n    ]}\n  ],\n  \"per_position\": {\n    \"QB\": {\"player\": \"Bryce Young\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"20ca55788c5c6c41\", \"price\": 1.877, \"side\": \"over\", \"line\": 234.5, \"reason\": \"317.0 pass yds/gm leads the NFL (Standard Triple Threat) against a PHI pass defense ranked 23rd (248.4 yds/gm allowed), and his 40.5 attempts/gm (3rd-most) sustains volume even with a modest 38.5 game total.\", \"projection\": 302, \"games_2026\": 4, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"PHI\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":23}]},\n    \"RB\": {\"player\": \"Cam Skattebo\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"e9f629a0addfb6b4\", \"price\": 1.877, \"side\": \"over\", \"line\": 53.5, \"reason\": \"58.8 rush yds/gm against New Orleans' run defense, which is dead last in the NFL against running backs at 133.4 yds/gm allowed.\", \"projection\": 67, \"games_2026\": 5, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"def\",\"claimed_rank\":32}]},\n    \"WR\": {\"player\": \"Tetairoa McMillan\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"20ca55788c5c6c41\", \"price\": 1.877, \"side\": \"over\", \"line\": 64.5, \"reason\": \"96.25 rec yds/gm ranks 7th in the league (Quadruple Threat convergence) against Philadelphia's defense, which ranks 25th against WRs (170.6 yds/gm allowed).\", \"projection\": 88, \"games_2026\": 4, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"PHI\",\"pos\":\"WR\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":25}]},\n    \"TE\": {\"player\": \"Isaiah Likely\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"e9f629a0addfb6b4\", \"price\": 1.877, \"side\": \"over\", \"line\": 51.5, \"reason\": \"56.8 rec yds/gm ranks 5th among TEs (Elite Threat convergence) against a New Orleans defense that ranks 26th against tight ends (71.2 yds/gm allowed).\", \"projection\": 64, \"games_2026\": 5, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"TE\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":26}]}\n  }\n}\n```\n\n```json\nFAVORITE_OU\n{\n  \"overs\": [\n    {\"player\": \"Bryce Young\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"20ca55788c5c6c41\", \"price\": 1.877, \"side\": \"over\", \"line\": 234.5, \"reason\": \"317.0 pass yds/gm leads the NFL against a PHI pass defense ranked 23rd (248.4 yds/gm allowed), with elite attempt volume (3rd-most) sustaining it regardless of game script.\", \"projection\": 302, \"games_2026\": 4, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"PHI\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":23}]},\n    {\"player\": \"Isaiah Likely\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"e9f629a0addfb6b4\", \"price\": 1.877, \"side\": \"over\", \"line\": 51.5, \"reason\": \"56.8 rec yds/gm ranks 5th among TEs (Elite Threat convergence) against New Orleans' 26th-ranked TE defense (71.2 yds/gm allowed).\", \"projection\": 64, \"games_2026\": 5, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"TE\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":26}]},\n    {\"player\": \"Tetairoa McMillan\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"20ca55788c5c6c41\", \"price\": 1.877, \"side\": \"over\", \"line\": 64.5, \"reason\": \"96.25 rec yds/gm ranks 7th (Quadruple Threat) against Philadelphia's 25th-ranked WR defense (170.6 yds/gm allowed).\", \"projection\": 88, \"games_2026\": 4, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"PHI\",\"pos\":\"WR\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":25}]},\n    {\"player\": \"Cam Skattebo\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"e9f629a0addfb6b4\", \"price\": 1.877, \"side\": \"over\", \"line\": 53.5, \"reason\": \"58.8 rush yds/gm against New Orleans' run defense, dead last in the NFL against RBs at 133.4 yds/gm allowed.\", \"projection\": 67, \"games_2026\": 5, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NO\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"def\",\"claimed_rank\":32}]},\n    {\"player\": \"Wan'Dale Robinson\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"fa038d4d087c4c3b\", \"price\": 1.877, \"side\": \"over\", \"line\": 36.5, \"reason\": \"35.2 rec yds/gm as a slot-heavy receiver (78.1% slot rate) against IND's worst slot defense in the league (88.2 slot yds/gm allowed, ranked 32nd).\", \"projection\": 42, \"games_2026\": 5, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"IND\",\"pos\":\"WR\",\"stat\":\"slot_yards_pg\",\"role\":\"def\",\"claimed_rank\":32}]}\n  ],\n  \"unders\": [\n    {\"player\": \"Tyler Warren\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"fa038d4d087c4c3b\", \"price\": 1.877, \"side\": \"under\", \"line\": 50.5, \"reason\": \"42.6 rec yds/gm already sits below this line, and TEN's tight end defense is 3rd-best in the NFL at 29.4 yds/gm allowed.\", \"projection\": 36, \"games_2026\": 5, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"TEN\",\"pos\":\"TE\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":3}]},\n    {\"player\": \"Drake Maye\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"29e69c87ffc2fcad\", \"price\": 1.877, \"side\": \"under\", \"line\": 236.5, \"reason\": \"0 pass TD/gm across his two top-tier-pass-defense games this season, and NYJ's pass defense ranks 4th in yards allowed (195.4/gm); the 43.5 game total doesn't argue for a shootout.\", \"projection\": 205, \"games_2026\": 5, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NYJ\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":4}]},\n    {\"player\": \"Rhamondre Stevenson\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"29e69c87ffc2fcad\", \"price\": 1.877, \"side\": \"under\", \"line\": 62.5, \"reason\": \"45.4 rush yds/gm ranks 30th among RBs, well below this 62.5 line even against a middling NYJ run defense (102.2 yds/gm allowed, ranked 25th).\", \"projection\": 47, \"games_2026\": 5, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NYJ\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"def\",\"claimed_rank\":25}]},\n    {\"player\": \"Devaughn Vele\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"e9f629a0addfb6b4\", \"price\": 1.877, \"side\": \"under\", \"line\": 41.5, \"reason\": \"Slot-heavy usage (53.8% slot rate) runs into NYG's 6th-best slot defense (32.6 slot yds/gm allowed), a tougher matchup than his 50.4 season average suggests.\", \"projection\": 33, \"games_2026\": 5, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NYG\",\"pos\":\"WR\",\"stat\":\"slot_yards_pg\",\"role\":\"def\",\"claimed_rank\":6}]},\n    {\"player\": \"Hunter Henry\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"29e69c87ffc2fcad\", \"price\": 1.877, \"side\": \"under\", \"line\": 31.5, \"reason\": \"35.4 rec yds/gm ranks 19th among TEs, but NYJ's TE defense ranks 7th-best in the league (36.6 yds/gm allowed).\", \"projection\": 24, \"games_2026\": 5, \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NYJ\",\"pos\":\"TE\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":7}]}\n  ]\n}\n```",
+  "prop_breakdown": {
+    "per_game": [
+      {
+        "away": "Tennessee Titans",
+        "home": "Indianapolis Colts",
+        "picks": [
+          {
+            "player": "Wan'Dale Robinson",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "fa038d4d087c4c3b",
+            "price": 1.877,
+            "side": "over",
+            "line": 36.5,
+            "reason": "35.2 rec yds/gm (21.0% target share, 78.1% slot rate) against IND's worst slot defense in the league (88.2 slot yds/gm allowed, ranked 32nd).",
+            "projection": 42,
+            "games_2026": 5,
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "IND",
+                "pos": "WR",
+                "stat": "slot_yards_pg",
+                "role": "def",
+                "claimed_rank": 32
+              }
+            ],
+            "projection_edge": 5.5,
+            "evidence_mismatches": [
+              "evidence_check cites IND's current WR def slot_yards_pg rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+            ],
+            "grade": "L",
+            "actual": 22.0,
+            "actual_label": "22 rec yds"
+          },
+          {
+            "player": "Tyler Warren",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "fa038d4d087c4c3b",
+            "price": 1.877,
+            "side": "under",
+            "line": 50.5,
+            "reason": "42.6 rec yds/gm already sits below this line, and TEN's tight end defense is 3rd-best in the NFL at 29.4 yds/gm allowed.",
+            "projection": 36,
+            "games_2026": 5,
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "TEN",
+                "pos": "TE",
+                "stat": "rec_ypg",
+                "role": "def",
+                "claimed_rank": 3
+              }
+            ],
+            "projection_edge": 14.5,
+            "grade": "P",
+            "void_reason": "Did not play: game is final, no stat line - bet voided (refund)",
+            "void": true,
+            "actual": null,
+            "actual_label": "DNP"
+          },
+          {
+            "player": "Tony Pollard",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "fa038d4d087c4c3b",
+            "price": 1.877,
+            "side": "over",
+            "line": 54.5,
+            "reason": "54.6 rush yds/gm against IND's 27th-ranked rush defense (129.6 yds/gm allowed), a soft matchup if he's fully active.",
+            "projection": 62,
+            "games_2026": 5,
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "IND",
+                "pos": "RB",
+                "stat": "rush_ypg",
+                "role": "def",
+                "claimed_rank": 27
+              }
+            ],
+            "projection_edge": 7.5,
+            "evidence_mismatches": [
+              "REAL MISMATCH: IND's real current RB def rush_ypg rank is #18 or #20 \u2014 the report claimed #27."
+            ],
+            "grade": "W",
+            "actual": 76.0,
+            "actual_label": "76 rush yds"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "New York Jets",
+        "home": "New England Patriots",
+        "picks": [
+          {
+            "player": "Rhamondre Stevenson",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "29e69c87ffc2fcad",
+            "price": 1.877,
+            "side": "under",
+            "line": 62.5,
+            "reason": "45.4 rush yds/gm ranks 30th among RBs, well below this 62.5 line even against a middling NYJ run defense (102.2 yds/gm allowed, ranked 25th).",
+            "projection": 47,
+            "games_2026": 5,
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NYJ",
+                "pos": "RB",
+                "stat": "rush_ypg",
+                "role": "def",
+                "claimed_rank": 25
+              }
+            ],
+            "projection_edge": 15.5,
+            "grade": "W",
+            "actual": 36.0,
+            "actual_label": "36 rush yds"
+          },
+          {
+            "player": "Drake Maye",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "29e69c87ffc2fcad",
+            "price": 1.877,
+            "side": "under",
+            "line": 236.5,
+            "reason": "245.6 pass yds/gm season average, but he's posted 0 pass TD/gm across his two top-tier-defense games this year, and NYJ's pass defense ranks 4th in yards allowed (195.4/gm); game total of 43.5 doesn't argue for a shootout.",
+            "projection": 205,
+            "games_2026": 5,
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NYJ",
+                "pos": "QB",
+                "stat": "pass_ypg",
+                "role": "def",
+                "claimed_rank": 4
+              }
+            ],
+            "projection_edge": 31.5,
+            "grade": "W",
+            "actual": 235.0,
+            "actual_label": "235 pass yds"
+          },
+          {
+            "player": "Hunter Henry",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "29e69c87ffc2fcad",
+            "price": 1.877,
+            "side": "under",
+            "line": 31.5,
+            "reason": "35.4 rec yds/gm ranks 19th among TEs, but NYJ's TE defense ranks 7th-best in the league (36.6 yds/gm allowed).",
+            "projection": 24,
+            "games_2026": 5,
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NYJ",
+                "pos": "TE",
+                "stat": "rec_ypg",
+                "role": "def",
+                "claimed_rank": 7
+              }
+            ],
+            "projection_edge": 7.5,
+            "grade": "L",
+            "actual": 48.0,
+            "actual_label": "48 rec yds"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "New Orleans Saints",
+        "home": "New York Giants",
+        "picks": [
+          {
+            "player": "Isaiah Likely",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "e9f629a0addfb6b4",
+            "price": 1.877,
+            "side": "over",
+            "line": 51.5,
+            "reason": "56.8 rec yds/gm ranks 5th among TEs (Elite Threat convergence) against a New Orleans defense that ranks 26th against tight ends (71.2 yds/gm allowed).",
+            "projection": 64,
+            "games_2026": 5,
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NO",
+                "pos": "TE",
+                "stat": "rec_ypg",
+                "role": "def",
+                "claimed_rank": 26
+              }
+            ],
+            "projection_edge": 12.5,
+            "grade": "W",
+            "actual": 99.0,
+            "actual_label": "99 rec yds"
+          },
+          {
+            "player": "Cam Skattebo",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "e9f629a0addfb6b4",
+            "price": 1.877,
+            "side": "over",
+            "line": 53.5,
+            "reason": "58.8 rush yds/gm against New Orleans' run defense, which is dead last in the NFL against running backs at 133.4 yds/gm allowed.",
+            "projection": 67,
+            "games_2026": 5,
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NO",
+                "pos": "RB",
+                "stat": "rush_ypg",
+                "role": "def",
+                "claimed_rank": 32
+              }
+            ],
+            "projection_edge": 13.5,
+            "grade": "P",
+            "void_reason": "Did not play: game is final, no stat line - bet voided (refund)",
+            "void": true,
+            "actual": null,
+            "actual_label": "DNP"
+          },
+          {
+            "player": "Devaughn Vele",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "e9f629a0addfb6b4",
+            "price": 1.877,
+            "side": "under",
+            "line": 41.5,
+            "reason": "50.4 rec yds/gm season average, but he's a true slot receiver (53.8% slot rate) walking into NYG's 6th-best slot defense (32.6 slot yds/gm allowed).",
+            "projection": 33,
+            "games_2026": 5,
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NYG",
+                "pos": "WR",
+                "stat": "slot_yards_pg",
+                "role": "def",
+                "claimed_rank": 6
+              }
+            ],
+            "projection_edge": 8.5,
+            "evidence_mismatches": [
+              "evidence_check cites NYG's current WR def slot_yards_pg rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+            ],
+            "grade": "L",
+            "actual": 42.0,
+            "actual_label": "42 rec yds"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "Carolina Panthers",
+        "home": "Philadelphia Eagles",
+        "picks": [
+          {
+            "player": "Tetairoa McMillan",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "20ca55788c5c6c41",
+            "price": 1.877,
+            "side": "over",
+            "line": 64.5,
+            "reason": "96.25 rec yds/gm ranks 7th in the league (Quadruple Threat convergence) against Philadelphia's defense, which ranks 25th against WRs (170.6 yds/gm allowed).",
+            "projection": 88,
+            "games_2026": 4,
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "PHI",
+                "pos": "WR",
+                "stat": "rec_ypg",
+                "role": "def",
+                "claimed_rank": 25
+              }
+            ],
+            "projection_edge": 23.5,
+            "grade": "W",
+            "actual": 86.0,
+            "actual_label": "86 rec yds"
+          },
+          {
+            "player": "Chuba Hubbard",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "20ca55788c5c6c41",
+            "price": 1.877,
+            "side": "over",
+            "line": 70.5,
+            "reason": "76.5 rush yds/gm ranks 11th among RBs against a Philadelphia run defense ranked 22nd (100.4 yds/gm allowed).",
+            "projection": 80,
+            "games_2026": 4,
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "PHI",
+                "pos": "RB",
+                "stat": "rush_ypg",
+                "role": "def",
+                "claimed_rank": 22
+              }
+            ],
+            "projection_edge": 9.5,
+            "grade": "W",
+            "actual": 120.0,
+            "actual_label": "120 rush yds"
+          },
+          {
+            "player": "Dontayvion Wicks",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "20ca55788c5c6c41",
+            "price": 1.877,
+            "side": "over",
+            "line": 30.5,
+            "reason": "52.0 rec yds/gm sits well above this 30.5 line against a Carolina defense that ranks only 17th against WRs (151.8 yds/gm allowed).",
+            "projection": 46,
+            "games_2026": 5,
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "CAR",
+                "pos": "WR",
+                "stat": "rec_ypg",
+                "role": "def",
+                "claimed_rank": 17
+              }
+            ],
+            "projection_edge": 15.5,
+            "grade": "L",
+            "actual": 24.0,
+            "actual_label": "24 rec yds"
+          }
+        ],
+        "mismatch_count": 0
+      }
+    ],
+    "per_position": {
+      "QB": {
+        "player": "Bryce Young",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "20ca55788c5c6c41",
+        "price": 1.877,
+        "side": "over",
+        "line": 234.5,
+        "reason": "317.0 pass yds/gm leads the NFL (Standard Triple Threat) against a PHI pass defense ranked 23rd (248.4 yds/gm allowed), and his 40.5 attempts/gm (3rd-most) sustains volume even with a modest 38.5 game total.",
+        "projection": 302,
+        "games_2026": 4,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "PHI",
+            "pos": "QB",
+            "stat": "pass_ypg",
+            "role": "def",
+            "claimed_rank": 23
+          }
+        ],
+        "projection_edge": 67.5,
+        "grade": "W",
+        "actual": 281.0,
+        "actual_label": "281 pass yds"
+      },
+      "RB": {
+        "player": "Cam Skattebo",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "e9f629a0addfb6b4",
+        "price": 1.877,
+        "side": "over",
+        "line": 53.5,
+        "reason": "58.8 rush yds/gm against New Orleans' run defense, which is dead last in the NFL against running backs at 133.4 yds/gm allowed.",
+        "projection": 67,
+        "games_2026": 5,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NO",
+            "pos": "RB",
+            "stat": "rush_ypg",
+            "role": "def",
+            "claimed_rank": 32
+          }
+        ],
+        "projection_edge": 13.5,
+        "grade": "P",
+        "void_reason": "Did not play: game is final, no stat line - bet voided (refund)",
+        "void": true,
+        "actual": null,
+        "actual_label": "DNP"
+      },
+      "WR": {
+        "player": "Tetairoa McMillan",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "20ca55788c5c6c41",
+        "price": 1.877,
+        "side": "over",
+        "line": 64.5,
+        "reason": "96.25 rec yds/gm ranks 7th in the league (Quadruple Threat convergence) against Philadelphia's defense, which ranks 25th against WRs (170.6 yds/gm allowed).",
+        "projection": 88,
+        "games_2026": 4,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "PHI",
+            "pos": "WR",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 25
+          }
+        ],
+        "projection_edge": 23.5,
+        "grade": "W",
+        "actual": 86.0,
+        "actual_label": "86 rec yds"
+      },
+      "TE": {
+        "player": "Isaiah Likely",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "e9f629a0addfb6b4",
+        "price": 1.877,
+        "side": "over",
+        "line": 51.5,
+        "reason": "56.8 rec yds/gm ranks 5th among TEs (Elite Threat convergence) against a New Orleans defense that ranks 26th against tight ends (71.2 yds/gm allowed).",
+        "projection": 64,
+        "games_2026": 5,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NO",
+            "pos": "TE",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 26
+          }
+        ],
+        "projection_edge": 12.5,
+        "grade": "W",
+        "actual": 99.0,
+        "actual_label": "99 rec yds"
+      }
+    }
+  },
+  "prop_breakdown_errors": [
+    "Tennessee Titans@Indianapolis Colts \u2014 Wan'Dale Robinson: evidence_check cites IND's current WR def slot_yards_pg rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "Tennessee Titans@Indianapolis Colts \u2014 Tony Pollard: REAL MISMATCH: IND's real current RB def rush_ypg rank is #18 or #20 \u2014 the report claimed #27.",
+    "New Orleans Saints@New York Giants \u2014 Devaughn Vele: evidence_check cites NYG's current WR def slot_yards_pg rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+  ],
+  "favorite_ou": {
+    "overs": [
+      {
+        "player": "Bryce Young",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "20ca55788c5c6c41",
+        "price": 1.877,
+        "side": "over",
+        "line": 234.5,
+        "reason": "317.0 pass yds/gm leads the NFL against a PHI pass defense ranked 23rd (248.4 yds/gm allowed), with elite attempt volume (3rd-most) sustaining it regardless of game script.",
+        "projection": 302,
+        "games_2026": 4,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "PHI",
+            "pos": "QB",
+            "stat": "pass_ypg",
+            "role": "def",
+            "claimed_rank": 23
+          }
+        ],
+        "projection_edge": 67.5,
+        "grade": "W",
+        "actual": 281.0,
+        "actual_label": "281 pass yds"
+      },
+      {
+        "player": "Isaiah Likely",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "e9f629a0addfb6b4",
+        "price": 1.877,
+        "side": "over",
+        "line": 51.5,
+        "reason": "56.8 rec yds/gm ranks 5th among TEs (Elite Threat convergence) against New Orleans' 26th-ranked TE defense (71.2 yds/gm allowed).",
+        "projection": 64,
+        "games_2026": 5,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NO",
+            "pos": "TE",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 26
+          }
+        ],
+        "projection_edge": 12.5,
+        "grade": "W",
+        "actual": 99.0,
+        "actual_label": "99 rec yds"
+      },
+      {
+        "player": "Tetairoa McMillan",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "20ca55788c5c6c41",
+        "price": 1.877,
+        "side": "over",
+        "line": 64.5,
+        "reason": "96.25 rec yds/gm ranks 7th (Quadruple Threat) against Philadelphia's 25th-ranked WR defense (170.6 yds/gm allowed).",
+        "projection": 88,
+        "games_2026": 4,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "PHI",
+            "pos": "WR",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 25
+          }
+        ],
+        "projection_edge": 23.5,
+        "grade": "W",
+        "actual": 86.0,
+        "actual_label": "86 rec yds"
+      },
+      {
+        "player": "Cam Skattebo",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "e9f629a0addfb6b4",
+        "price": 1.877,
+        "side": "over",
+        "line": 53.5,
+        "reason": "58.8 rush yds/gm against New Orleans' run defense, dead last in the NFL against RBs at 133.4 yds/gm allowed.",
+        "projection": 67,
+        "games_2026": 5,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NO",
+            "pos": "RB",
+            "stat": "rush_ypg",
+            "role": "def",
+            "claimed_rank": 32
+          }
+        ],
+        "projection_edge": 13.5,
+        "grade": "P",
+        "void_reason": "Did not play: game is final, no stat line - bet voided (refund)",
+        "void": true,
+        "actual": null,
+        "actual_label": "DNP"
+      },
+      {
+        "player": "Wan'Dale Robinson",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "fa038d4d087c4c3b",
+        "price": 1.877,
+        "side": "over",
+        "line": 36.5,
+        "reason": "35.2 rec yds/gm as a slot-heavy receiver (78.1% slot rate) against IND's worst slot defense in the league (88.2 slot yds/gm allowed, ranked 32nd).",
+        "projection": 42,
+        "games_2026": 5,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "IND",
+            "pos": "WR",
+            "stat": "slot_yards_pg",
+            "role": "def",
+            "claimed_rank": 32
+          }
+        ],
+        "projection_edge": 5.5,
+        "evidence_mismatches": [
+          "evidence_check cites IND's current WR def slot_yards_pg rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+        ],
+        "grade": "L",
+        "actual": 22.0,
+        "actual_label": "22 rec yds"
+      }
+    ],
+    "unders": [
+      {
+        "player": "Tyler Warren",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "fa038d4d087c4c3b",
+        "price": 1.877,
+        "side": "under",
+        "line": 50.5,
+        "reason": "42.6 rec yds/gm already sits below this line, and TEN's tight end defense is 3rd-best in the NFL at 29.4 yds/gm allowed.",
+        "projection": 36,
+        "games_2026": 5,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "TEN",
+            "pos": "TE",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 3
+          }
+        ],
+        "projection_edge": 14.5,
+        "grade": "P",
+        "void_reason": "Did not play: game is final, no stat line - bet voided (refund)",
+        "void": true,
+        "actual": null,
+        "actual_label": "DNP"
+      },
+      {
+        "player": "Drake Maye",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "29e69c87ffc2fcad",
+        "price": 1.877,
+        "side": "under",
+        "line": 236.5,
+        "reason": "0 pass TD/gm across his two top-tier-pass-defense games this season, and NYJ's pass defense ranks 4th in yards allowed (195.4/gm); the 43.5 game total doesn't argue for a shootout.",
+        "projection": 205,
+        "games_2026": 5,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NYJ",
+            "pos": "QB",
+            "stat": "pass_ypg",
+            "role": "def",
+            "claimed_rank": 4
+          }
+        ],
+        "projection_edge": 31.5,
+        "grade": "W",
+        "actual": 235.0,
+        "actual_label": "235 pass yds"
+      },
+      {
+        "player": "Rhamondre Stevenson",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "29e69c87ffc2fcad",
+        "price": 1.877,
+        "side": "under",
+        "line": 62.5,
+        "reason": "45.4 rush yds/gm ranks 30th among RBs, well below this 62.5 line even against a middling NYJ run defense (102.2 yds/gm allowed, ranked 25th).",
+        "projection": 47,
+        "games_2026": 5,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NYJ",
+            "pos": "RB",
+            "stat": "rush_ypg",
+            "role": "def",
+            "claimed_rank": 25
+          }
+        ],
+        "projection_edge": 15.5,
+        "grade": "W",
+        "actual": 36.0,
+        "actual_label": "36 rush yds"
+      },
+      {
+        "player": "Devaughn Vele",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "e9f629a0addfb6b4",
+        "price": 1.877,
+        "side": "under",
+        "line": 41.5,
+        "reason": "Slot-heavy usage (53.8% slot rate) runs into NYG's 6th-best slot defense (32.6 slot yds/gm allowed), a tougher matchup than his 50.4 season average suggests.",
+        "projection": 33,
+        "games_2026": 5,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NYG",
+            "pos": "WR",
+            "stat": "slot_yards_pg",
+            "role": "def",
+            "claimed_rank": 6
+          }
+        ],
+        "projection_edge": 8.5,
+        "evidence_mismatches": [
+          "evidence_check cites NYG's current WR def slot_yards_pg rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+        ],
+        "grade": "L",
+        "actual": 42.0,
+        "actual_label": "42 rec yds"
+      },
+      {
+        "player": "Hunter Henry",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "29e69c87ffc2fcad",
+        "price": 1.877,
+        "side": "under",
+        "line": 31.5,
+        "reason": "35.4 rec yds/gm ranks 19th among TEs, but NYJ's TE defense ranks 7th-best in the league (36.6 yds/gm allowed).",
+        "projection": 24,
+        "games_2026": 5,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NYJ",
+            "pos": "TE",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 7
+          }
+        ],
+        "projection_edge": 7.5,
+        "grade": "L",
+        "actual": 48.0,
+        "actual_label": "48 rec yds"
+      }
+    ]
+  },
+  "favorite_ou_errors": [
+    "Wan'Dale Robinson: evidence_check cites IND's current WR def slot_yards_pg rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "Devaughn Vele: evidence_check cites NYG's current WR def slot_yards_pg rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+  ],
+  "parlays": {},
+  "td_parlays": {},
+  "spread_parlays": {},
+  "ats_records": {
+    "CAR": {
+      "since": 2020,
+      "overall": {
+        "w": 47,
+        "l": 56,
+        "p": 2,
+        "pct": 45.6
+      },
+      "home": {
+        "w": 23,
+        "l": 28,
+        "p": 1,
+        "pct": 45.1
+      },
+      "away": {
+        "w": 24,
+        "l": 28,
+        "p": 1,
+        "pct": 46.2
+      }
+    },
+    "IND": {
+      "since": 2020,
+      "overall": {
+        "w": 54,
+        "l": 52,
+        "p": 0,
+        "pct": 50.9
+      },
+      "home": {
+        "w": 24,
+        "l": 29,
+        "p": 0,
+        "pct": 45.3
+      },
+      "away": {
+        "w": 30,
+        "l": 23,
+        "p": 0,
+        "pct": 56.6
+      }
+    },
+    "NE": {
+      "since": 2020,
+      "overall": {
+        "w": 51,
+        "l": 51,
+        "p": 4,
+        "pct": 50.0
+      },
+      "home": {
+        "w": 25,
+        "l": 27,
+        "p": 1,
+        "pct": 48.1
+      },
+      "away": {
+        "w": 26,
+        "l": 24,
+        "p": 3,
+        "pct": 52.0
+      }
+    },
+    "NO": {
+      "since": 2020,
+      "overall": {
+        "w": 49,
+        "l": 56,
+        "p": 1,
+        "pct": 46.7
+      },
+      "home": {
+        "w": 21,
+        "l": 32,
+        "p": 0,
+        "pct": 39.6
+      },
+      "away": {
+        "w": 28,
+        "l": 24,
+        "p": 1,
+        "pct": 53.8
+      }
+    },
+    "NYG": {
+      "since": 2020,
+      "overall": {
+        "w": 54,
+        "l": 51,
+        "p": 1,
+        "pct": 51.4
+      },
+      "home": {
+        "w": 27,
+        "l": 25,
+        "p": 1,
+        "pct": 51.9
+      },
+      "away": {
+        "w": 27,
+        "l": 26,
+        "p": 0,
+        "pct": 50.9
+      }
+    },
+    "NYJ": {
+      "since": 2020,
+      "overall": {
+        "w": 42,
+        "l": 62,
+        "p": 2,
+        "pct": 40.4
+      },
+      "home": {
+        "w": 24,
+        "l": 29,
+        "p": 0,
+        "pct": 45.3
+      },
+      "away": {
+        "w": 18,
+        "l": 33,
+        "p": 2,
+        "pct": 35.3
+      }
+    },
+    "PHI": {
+      "since": 2020,
+      "overall": {
+        "w": 51,
+        "l": 52,
+        "p": 3,
+        "pct": 49.5
+      },
+      "home": {
+        "w": 26,
+        "l": 24,
+        "p": 2,
+        "pct": 52.0
+      },
+      "away": {
+        "w": 25,
+        "l": 28,
+        "p": 1,
+        "pct": 47.2
+      }
+    },
+    "TEN": {
+      "since": 2020,
+      "overall": {
+        "w": 44,
+        "l": 58,
+        "p": 4,
+        "pct": 43.1
+      },
+      "home": {
+        "w": 23,
+        "l": 28,
+        "p": 3,
+        "pct": 45.1
+      },
+      "away": {
+        "w": 21,
+        "l": 30,
+        "p": 1,
+        "pct": 41.2
+      }
+    }
+  },
+  "graded_at": "2026-10-20T22:00:42.564271+00:00"
+}

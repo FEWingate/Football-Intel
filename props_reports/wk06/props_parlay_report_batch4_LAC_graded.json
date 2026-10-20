@@ -1,0 +1,957 @@
+{
+  "generated_at": "2026-10-17T00:13:28.183592+00:00",
+  "games_included": [
+    "LAC_KC",
+    "PIT_TB",
+    "BUF_LV",
+    "WAS_SF"
+  ],
+  "coverage": {
+    "passing_yards": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 0,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-16T23:25:21.290828+00:00",
+      "source_age_seconds": 0
+    },
+    "rushing_yards": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 0,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-16T23:25:21.290828+00:00",
+      "source_age_seconds": 0
+    },
+    "receiving_yards": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 0,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-16T23:25:21.290828+00:00",
+      "source_age_seconds": 0
+    },
+    "receptions": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 0,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-16T23:25:21.290828+00:00",
+      "source_age_seconds": 0
+    },
+    "anytime_td": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 0,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-16T23:25:21.290828+00:00",
+      "source_age_seconds": 0
+    }
+  },
+  "stake_used_for_payout_examples": 10,
+  "markdown": "REAL DATA COVERAGE CHECK: All five market families (passing yards, rushing yards, receiving yards, receptions, anytime TD) are LIVE across all 13 real events \u2014 full coverage, nothing stale or unavailable this run. No stat family or player is missing real market data on this slate.\n\n```json\nPROP_BREAKDOWN\n{\n  \"per_game\": [\n    {\"away\": \"LAC\", \"home\": \"KC\", \"picks\": [\n      {\"player\": \"Patrick Mahomes\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"95ef63c604474262\", \"price\": 1.877, \"side\": \"over\", \"line\": 226.5, \"projection\": 242, \"games_2026\": 4, \"reason\": \"Mahomes is averaging 259.2 pass yds/gm (9th) and this 41.5-total game sees him facing a LAC pass defense (205.0 ypg allowed, 6th) that's missing/limiting four secondary pieces this week.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"LAC\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":6}]},\n      {\"player\": \"Kenneth Walker III\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"95ef63c604474262\", \"price\": 1.877, \"side\": \"over\", \"line\": 90.5, \"projection\": 118, \"games_2026\": 4, \"reason\": \"Walker ranks 1st in the league at 134.2 rush yds/gm against a LAC run defense allowing 99.0 ypg to backs (19th, a mid-tier matchup he comfortably clears).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"LAC\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":19}]},\n      {\"player\": \"Xavier Worthy\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"95ef63c604474262\", \"price\": 1.877, \"side\": \"under\", \"line\": 48.5, \"projection\": 34, \"games_2026\": 4, \"reason\": \"Worthy's own 33.2 rec yds/gm (league rank 63rd) sits well under this line even before factoring LAC's stingy 132.0 ypg WR defense (11th).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"LAC\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":11}]}\n    ]},\n    {\"away\": \"PIT\", \"home\": \"TB\", \"picks\": [\n      {\"player\": \"Jaylen Warren\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"f5ce239b2a4db49c\", \"price\": 1.877, \"side\": \"over\", \"line\": 28.5, \"projection\": 42, \"games_2026\": 5, \"reason\": \"Warren's 46.0 rec yds/gm ranks 2nd among all backs and TB allows 35.6 rec yds/gm to RBs (21st), the exact mismatch the deterministic Threat Engine flagged this week.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"TB\",\"pos\":\"RB\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":21}]},\n      {\"player\": \"Bucky Irving\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"f5ce239b2a4db49c\", \"price\": 1.877, \"side\": \"over\", \"line\": 64.5, \"projection\": 75, \"games_2026\": 5, \"reason\": \"Irving's 81.2 rush yds/gm (8th among backs) clears this line comfortably against a PIT run defense that allows 90.8 ypg to backs (17th, no real funnel either way).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"PIT\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":17}]},\n      {\"player\": \"DK Metcalf\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"f5ce239b2a4db49c\", \"price\": 1.877, \"side\": \"under\", \"line\": 50.5, \"projection\": 44, \"games_2026\": 5, \"reason\": \"Metcalf's season rate (45.0 rec yds/gm) already sits under this line even though TB's WR defense (138.8 ypg allowed, 14th) isn't a clear funnel either direction, so confidence here is limited.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"TB\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":14}]}\n    ]},\n    {\"away\": \"BUF\", \"home\": \"LV\", \"picks\": [\n      {\"player\": \"James Cook\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"7de7dbcbfe482639\", \"price\": 1.877, \"side\": \"over\", \"line\": 92.5, \"projection\": 115, \"games_2026\": 5, \"reason\": \"Cook's 106.4 rush yds/gm (3rd leaguewide) lines up against an LV run defense allowing 116.0 ypg to backs (29th), an Elite-tier Threat convergence.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"LV\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":29}]},\n      {\"player\": \"Brock Bowers\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7de7dbcbfe482639\", \"price\": 1.877, \"side\": \"over\", \"line\": 79.5, \"projection\": 95, \"games_2026\": 3, \"reason\": \"Bowers is averaging 104.0 rec yds/gm since returning and BUF's tight end defense allows 60.0 ypg (23rd), the first real bottom-tier matchup of his season.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"BUF\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":23}]},\n      {\"player\": \"Ashton Jeanty\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7de7dbcbfe482639\", \"price\": 1.877, \"side\": \"over\", \"line\": 25.5, \"projection\": 40, \"games_2026\": 5, \"reason\": \"Jeanty's 43.0 rec yds/gm ranks 4th among backs and BUF allows a 3rd-worst 48.4 rec yds/gm to RBs (30th), an Elite-tier Quadruple Threat convergence.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"BUF\",\"pos\":\"RB\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":30}]}\n    ]},\n    {\"away\": \"WAS\", \"home\": \"SF\", \"picks\": [\n      {\"player\": \"George Kittle\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"f0019c9c135601e7\", \"price\": 1.877, \"side\": \"over\", \"line\": 63.5, \"projection\": 72, \"games_2026\": 5, \"reason\": \"Kittle ranks 8th in receiving yards and WAS allows 74.4 TE rec yds/gm (28th), a Standard-tier Threat convergence that lines up with his own bottom-tier-matchup average of 77.3.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":28}]},\n      {\"player\": \"Mike Evans\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"f0019c9c135601e7\", \"price\": 1.877, \"side\": \"under\", \"line\": 72.5, \"projection\": 68, \"games_2026\": 5, \"reason\": \"Evans' season rate (65.2 rec yds/gm) sits below this line even against a generous-but-not-explosive WAS WR defense (164.2 ypg allowed, 22nd, 2nd-fewest yards per reception).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":22}]},\n      {\"player\": \"Jayden Daniels\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"f0019c9c135601e7\", \"price\": 1.877, \"side\": \"under\", \"line\": 205.5, \"projection\": 165, \"games_2026\": 3, \"reason\": \"Daniels' 153.0 pass yds/gm sits well under this line against SF's elite pass defense (210.8 ypg allowed, 8th), and this 51.5-total game is SF's to control on the ground and clock.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"SF\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":8}]}\n    ]}\n  ],\n  \"per_position\": {\n    \"QB\": {\"player\": \"Kirk Cousins\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"7de7dbcbfe482639\", \"price\": 1.877, \"side\": \"over\", \"line\": 249.5, \"projection\": 270, \"games_2026\": 5, \"reason\": \"Cousins' 253.8 pass yds/gm clears this line against BUF's 2nd-worst pass defense (295.8 ypg allowed, 31st) in the slate's highest total (53.5), and he carries both an Elite and a Standard Threat designation this week.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"BUF\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":31}]},\n    \"RB\": {\"player\": \"James Cook\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"7de7dbcbfe482639\", \"price\": 1.877, \"side\": \"over\", \"line\": 92.5, \"projection\": 115, \"games_2026\": 5, \"reason\": \"Cook's 106.4 rush yds/gm (3rd leaguewide) against LV's 29th-ranked run defense (116.0 ypg allowed to backs) is the clearest Elite-tier Threat on the slate.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"LV\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":29}]},\n    \"WR\": {\"player\": \"Tre Tucker\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7de7dbcbfe482639\", \"price\": 1.877, \"side\": \"over\", \"line\": 38.5, \"projection\": 52, \"games_2026\": 5, \"reason\": \"Tucker's 54.8 rec yds/gm clears this line comfortably against BUF's 4th-worst 187.4 ypg WR defense (29th), territory he's never actually faced all season (zero bottom-tier pass-D games on his own log).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"BUF\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":29}]},\n    \"TE\": {\"player\": \"Brock Bowers\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7de7dbcbfe482639\", \"price\": 1.877, \"side\": \"over\", \"line\": 79.5, \"projection\": 95, \"games_2026\": 3, \"reason\": \"Bowers' 104.0 rec yds/gm since returning healthy clears this line against BUF's 23rd-ranked TE defense (60.0 ypg allowed), the first real bottom-tier matchup of his season.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"BUF\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":23}]}\n  }\n}\n```\n\n```json\nFAVORITE_OU\n{\n  \"overs\": [\n    {\"player\": \"James Cook\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"7de7dbcbfe482639\", \"price\": 1.877, \"side\": \"over\", \"line\": 92.5, \"projection\": 115, \"games_2026\": 5, \"reason\": \"Cook's 106.4 rush yds/gm (3rd leaguewide) against LV's run defense allowing 116.0 ypg to backs (29th) is an Elite-tier Threat convergence and the strongest over on the board.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"LV\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":29}]},\n    {\"player\": \"Ashton Jeanty\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7de7dbcbfe482639\", \"price\": 1.877, \"side\": \"over\", \"line\": 25.5, \"projection\": 40, \"games_2026\": 5, \"reason\": \"Jeanty ranks 4th among backs in receiving yards (43.0/gm) and BUF allows a 3rd-worst 48.4 rec yds/gm to RBs (30th), an Elite-tier Quadruple Threat convergence.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"BUF\",\"pos\":\"RB\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":30}]},\n    {\"player\": \"Brock Bowers\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7de7dbcbfe482639\", \"price\": 1.877, \"side\": \"over\", \"line\": 79.5, \"projection\": 95, \"games_2026\": 3, \"reason\": \"Bowers is averaging 104.0 rec yds/gm since returning and BUF's TE defense (60.0 ypg allowed, 23rd) is the first real soft matchup of his season.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"BUF\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":23}]},\n    {\"player\": \"Kenneth Walker III\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"95ef63c604474262\", \"price\": 1.877, \"side\": \"over\", \"line\": 90.5, \"projection\": 118, \"games_2026\": 4, \"reason\": \"Walker's league-leading 134.2 rush yds/gm against LAC's 19th-ranked run defense (99.0 ypg allowed to backs) is a comfortable mid-tier matchup for his volume.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"LAC\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":19}]},\n    {\"player\": \"Tre Tucker\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7de7dbcbfe482639\", \"price\": 1.877, \"side\": \"over\", \"line\": 38.5, \"projection\": 52, \"games_2026\": 5, \"reason\": \"Tucker's 54.8 rec yds/gm clears this line against BUF's 4th-worst 187.4 ypg WR defense (29th), a matchup quality he's never actually faced this season.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"BUF\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":29}]}\n  ],\n  \"unders\": [\n    {\"player\": \"Jayden Daniels\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"f0019c9c135601e7\", \"price\": 1.877, \"side\": \"under\", \"line\": 205.5, \"projection\": 165, \"games_2026\": 3, \"reason\": \"Daniels' 153.0 pass yds/gm sits well under this line against SF's elite pass defense (210.8 ypg allowed, 8th), and SF's own structural edges point toward a clock-control game script.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"SF\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":8}]},\n    {\"player\": \"Xavier Worthy\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"95ef63c604474262\", \"price\": 1.877, \"side\": \"under\", \"line\": 48.5, \"projection\": 34, \"games_2026\": 4, \"reason\": \"Worthy's own 33.2 rec yds/gm sits well under this line even before factoring LAC's stingy 132.0 ypg WR defense (11th).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"LAC\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":11}]},\n    {\"player\": \"Mike Evans\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"f0019c9c135601e7\", \"price\": 1.877, \"side\": \"under\", \"line\": 72.5, \"projection\": 68, \"games_2026\": 5, \"reason\": \"Evans' season rate (65.2 rec yds/gm) sits below this line even against a generous-but-low-explosive WAS WR defense (164.2 ypg allowed, 22nd, 2nd-fewest yards per reception allowed).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"WAS\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":22}]},\n    {\"player\": \"DK Metcalf\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"f5ce239b2a4db49c\", \"price\": 1.877, \"side\": \"under\", \"line\": 50.5, \"projection\": 44, \"games_2026\": 5, \"reason\": \"Metcalf's season rate (45.0 rec yds/gm) already sits under this line, though TB's 14th-ranked WR defense (138.8 ypg allowed) isn't a true funnel either direction, so conviction here is limited.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"TB\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":14}]}\n  ]\n}\n```",
+  "prop_breakdown": {
+    "per_game": [
+      {
+        "away": "LAC",
+        "home": "KC",
+        "picks": [
+          {
+            "player": "Patrick Mahomes",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "95ef63c604474262",
+            "price": 1.877,
+            "side": "over",
+            "line": 226.5,
+            "projection": 242,
+            "games_2026": 4,
+            "reason": "Mahomes is averaging 259.2 pass yds/gm (9th) and this 41.5-total game sees him facing a LAC pass defense (205.0 ypg allowed, 6th) that's missing/limiting four secondary pieces this week.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "LAC",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "def",
+                "claimed_rank": 6
+              }
+            ],
+            "projection_edge": 15.5,
+            "evidence_mismatches": [
+              "REAL MISMATCH: LAC's real current QB def pass_yds rank is #3 or #8 \u2014 the report claimed #6."
+            ],
+            "grade": "W",
+            "actual": 272.0,
+            "actual_label": "272 pass yds"
+          },
+          {
+            "player": "Kenneth Walker III",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "95ef63c604474262",
+            "price": 1.877,
+            "side": "over",
+            "line": 90.5,
+            "projection": 118,
+            "games_2026": 4,
+            "reason": "Walker ranks 1st in the league at 134.2 rush yds/gm against a LAC run defense allowing 99.0 ypg to backs (19th, a mid-tier matchup he comfortably clears).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "LAC",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "def",
+                "claimed_rank": 19
+              }
+            ],
+            "projection_edge": 27.5,
+            "evidence_mismatches": [
+              "REAL MISMATCH: LAC's real current RB def rush_yds rank is #2 or #20 \u2014 the report claimed #19."
+            ],
+            "grade": "W",
+            "actual": 128.0,
+            "actual_label": "128 rush yds"
+          },
+          {
+            "player": "Xavier Worthy",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "95ef63c604474262",
+            "price": 1.877,
+            "side": "under",
+            "line": 48.5,
+            "projection": 34,
+            "games_2026": 4,
+            "reason": "Worthy's own 33.2 rec yds/gm (league rank 63rd) sits well under this line even before factoring LAC's stingy 132.0 ypg WR defense (11th).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "LAC",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 11
+              }
+            ],
+            "projection_edge": 14.5,
+            "evidence_mismatches": [
+              "REAL MISMATCH: LAC's real current WR def rec_yds rank is #1 or #12 \u2014 the report claimed #11."
+            ],
+            "grade": "L",
+            "actual": 73.0,
+            "actual_label": "73 rec yds"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "PIT",
+        "home": "TB",
+        "picks": [
+          {
+            "player": "Jaylen Warren",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "f5ce239b2a4db49c",
+            "price": 1.877,
+            "side": "over",
+            "line": 28.5,
+            "projection": 42,
+            "games_2026": 5,
+            "reason": "Warren's 46.0 rec yds/gm ranks 2nd among all backs and TB allows 35.6 rec yds/gm to RBs (21st), the exact mismatch the deterministic Threat Engine flagged this week.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "TB",
+                "pos": "RB",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 21
+              }
+            ],
+            "projection_edge": 13.5,
+            "evidence_mismatches": [
+              "REAL MISMATCH: TB's real current RB def rec_yds rank is #23 or #28 \u2014 the report claimed #21."
+            ],
+            "grade": "L",
+            "actual": 28.0,
+            "actual_label": "28 rec yds"
+          },
+          {
+            "player": "Bucky Irving",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "f5ce239b2a4db49c",
+            "price": 1.877,
+            "side": "over",
+            "line": 64.5,
+            "projection": 75,
+            "games_2026": 5,
+            "reason": "Irving's 81.2 rush yds/gm (8th among backs) clears this line comfortably against a PIT run defense that allows 90.8 ypg to backs (17th, no real funnel either way).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "PIT",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "def",
+                "claimed_rank": 17
+              }
+            ],
+            "projection_edge": 10.5,
+            "grade": "L",
+            "actual": 46.0,
+            "actual_label": "46 rush yds"
+          },
+          {
+            "player": "DK Metcalf",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "f5ce239b2a4db49c",
+            "price": 1.877,
+            "side": "under",
+            "line": 50.5,
+            "projection": 44,
+            "games_2026": 5,
+            "reason": "Metcalf's season rate (45.0 rec yds/gm) already sits under this line even though TB's WR defense (138.8 ypg allowed, 14th) isn't a clear funnel either direction, so confidence here is limited.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "TB",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 14
+              }
+            ],
+            "projection_edge": 6.5,
+            "evidence_mismatches": [
+              "REAL MISMATCH: TB's real current WR def rec_yds rank is #15 or #17 \u2014 the report claimed #14."
+            ],
+            "grade": "L",
+            "actual": 93.0,
+            "actual_label": "93 rec yds"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "BUF",
+        "home": "LV",
+        "picks": [
+          {
+            "player": "James Cook",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "7de7dbcbfe482639",
+            "price": 1.877,
+            "side": "over",
+            "line": 92.5,
+            "projection": 115,
+            "games_2026": 5,
+            "reason": "Cook's 106.4 rush yds/gm (3rd leaguewide) lines up against an LV run defense allowing 116.0 ypg to backs (29th), an Elite-tier Threat convergence.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "LV",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "def",
+                "claimed_rank": 29
+              }
+            ],
+            "projection_edge": 22.5,
+            "evidence_mismatches": [
+              "REAL MISMATCH: LV's real current RB def rush_yds rank is #14 or #30 \u2014 the report claimed #29."
+            ],
+            "grade": "W",
+            "actual": 95.0,
+            "actual_label": "95 rush yds"
+          },
+          {
+            "player": "Brock Bowers",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "7de7dbcbfe482639",
+            "price": 1.877,
+            "side": "over",
+            "line": 79.5,
+            "projection": 95,
+            "games_2026": 3,
+            "reason": "Bowers is averaging 104.0 rec yds/gm since returning and BUF's tight end defense allows 60.0 ypg (23rd), the first real bottom-tier matchup of his season.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "BUF",
+                "pos": "TE",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 23
+              }
+            ],
+            "projection_edge": 15.5,
+            "grade": "L",
+            "actual": 70.0,
+            "actual_label": "70 rec yds"
+          },
+          {
+            "player": "Ashton Jeanty",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "7de7dbcbfe482639",
+            "price": 1.877,
+            "side": "over",
+            "line": 25.5,
+            "projection": 40,
+            "games_2026": 5,
+            "reason": "Jeanty's 43.0 rec yds/gm ranks 4th among backs and BUF allows a 3rd-worst 48.4 rec yds/gm to RBs (30th), an Elite-tier Quadruple Threat convergence.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "BUF",
+                "pos": "RB",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 30
+              }
+            ],
+            "projection_edge": 14.5,
+            "grade": "W",
+            "actual": 36.0,
+            "actual_label": "36 rec yds"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "WAS",
+        "home": "SF",
+        "picks": [
+          {
+            "player": "George Kittle",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "f0019c9c135601e7",
+            "price": 1.877,
+            "side": "over",
+            "line": 63.5,
+            "projection": 72,
+            "games_2026": 5,
+            "reason": "Kittle ranks 8th in receiving yards and WAS allows 74.4 TE rec yds/gm (28th), a Standard-tier Threat convergence that lines up with his own bottom-tier-matchup average of 77.3.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "WAS",
+                "pos": "TE",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 28
+              }
+            ],
+            "projection_edge": 8.5,
+            "evidence_mismatches": [
+              "REAL MISMATCH: WAS's real current TE def rec_yds rank is #6 or #29 \u2014 the report claimed #28."
+            ],
+            "grade": "W",
+            "actual": 69.0,
+            "actual_label": "69 rec yds"
+          },
+          {
+            "player": "Mike Evans",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "f0019c9c135601e7",
+            "price": 1.877,
+            "side": "under",
+            "line": 72.5,
+            "projection": 68,
+            "games_2026": 5,
+            "reason": "Evans' season rate (65.2 rec yds/gm) sits below this line even against a generous-but-not-explosive WAS WR defense (164.2 ypg allowed, 22nd, 2nd-fewest yards per reception).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "WAS",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 22
+              }
+            ],
+            "projection_edge": 4.5,
+            "grade": "L",
+            "actual": 94.0,
+            "actual_label": "94 rec yds"
+          },
+          {
+            "player": "Jayden Daniels",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "f0019c9c135601e7",
+            "price": 1.877,
+            "side": "under",
+            "line": 205.5,
+            "projection": 165,
+            "games_2026": 3,
+            "reason": "Daniels' 153.0 pass yds/gm sits well under this line against SF's elite pass defense (210.8 ypg allowed, 8th), and this 51.5-total game is SF's to control on the ground and clock.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "SF",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "def",
+                "claimed_rank": 8
+              }
+            ],
+            "projection_edge": 40.5,
+            "evidence_mismatches": [
+              "REAL MISMATCH: SF's real current QB def pass_yds rank is #10 or #28 \u2014 the report claimed #8."
+            ],
+            "grade": "L",
+            "actual": 300.0,
+            "actual_label": "300 pass yds"
+          }
+        ],
+        "mismatch_count": 0
+      }
+    ],
+    "per_position": {
+      "QB": {
+        "player": "Kirk Cousins",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "7de7dbcbfe482639",
+        "price": 1.877,
+        "side": "over",
+        "line": 249.5,
+        "projection": 270,
+        "games_2026": 5,
+        "reason": "Cousins' 253.8 pass yds/gm clears this line against BUF's 2nd-worst pass defense (295.8 ypg allowed, 31st) in the slate's highest total (53.5), and he carries both an Elite and a Standard Threat designation this week.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "BUF",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "def",
+            "claimed_rank": 31
+          }
+        ],
+        "projection_edge": 20.5,
+        "grade": "W",
+        "actual": 313.0,
+        "actual_label": "313 pass yds"
+      },
+      "RB": {
+        "player": "James Cook",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "7de7dbcbfe482639",
+        "price": 1.877,
+        "side": "over",
+        "line": 92.5,
+        "projection": 115,
+        "games_2026": 5,
+        "reason": "Cook's 106.4 rush yds/gm (3rd leaguewide) against LV's 29th-ranked run defense (116.0 ypg allowed to backs) is the clearest Elite-tier Threat on the slate.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "LV",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "def",
+            "claimed_rank": 29
+          }
+        ],
+        "projection_edge": 22.5,
+        "evidence_mismatches": [
+          "REAL MISMATCH: LV's real current RB def rush_yds rank is #14 or #30 \u2014 the report claimed #29."
+        ],
+        "grade": "W",
+        "actual": 95.0,
+        "actual_label": "95 rush yds"
+      },
+      "WR": {
+        "player": "Tre Tucker",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "7de7dbcbfe482639",
+        "price": 1.877,
+        "side": "over",
+        "line": 38.5,
+        "projection": 52,
+        "games_2026": 5,
+        "reason": "Tucker's 54.8 rec yds/gm clears this line comfortably against BUF's 4th-worst 187.4 ypg WR defense (29th), territory he's never actually faced all season (zero bottom-tier pass-D games on his own log).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "BUF",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 29
+          }
+        ],
+        "projection_edge": 13.5,
+        "grade": "W",
+        "actual": 97.0,
+        "actual_label": "97 rec yds"
+      },
+      "TE": {
+        "player": "Brock Bowers",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "7de7dbcbfe482639",
+        "price": 1.877,
+        "side": "over",
+        "line": 79.5,
+        "projection": 95,
+        "games_2026": 3,
+        "reason": "Bowers' 104.0 rec yds/gm since returning healthy clears this line against BUF's 23rd-ranked TE defense (60.0 ypg allowed), the first real bottom-tier matchup of his season.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "BUF",
+            "pos": "TE",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 23
+          }
+        ],
+        "projection_edge": 15.5,
+        "grade": "L",
+        "actual": 70.0,
+        "actual_label": "70 rec yds"
+      }
+    }
+  },
+  "prop_breakdown_errors": [
+    "LAC@KC \u2014 Patrick Mahomes: REAL MISMATCH: LAC's real current QB def pass_yds rank is #3 or #8 \u2014 the report claimed #6.",
+    "LAC@KC \u2014 Kenneth Walker III: REAL MISMATCH: LAC's real current RB def rush_yds rank is #2 or #20 \u2014 the report claimed #19.",
+    "LAC@KC \u2014 Xavier Worthy: REAL MISMATCH: LAC's real current WR def rec_yds rank is #1 or #12 \u2014 the report claimed #11.",
+    "PIT@TB \u2014 Jaylen Warren: REAL MISMATCH: TB's real current RB def rec_yds rank is #23 or #28 \u2014 the report claimed #21.",
+    "PIT@TB \u2014 DK Metcalf: REAL MISMATCH: TB's real current WR def rec_yds rank is #15 or #17 \u2014 the report claimed #14.",
+    "BUF@LV \u2014 James Cook: REAL MISMATCH: LV's real current RB def rush_yds rank is #14 or #30 \u2014 the report claimed #29.",
+    "WAS@SF \u2014 George Kittle: REAL MISMATCH: WAS's real current TE def rec_yds rank is #6 or #29 \u2014 the report claimed #28.",
+    "WAS@SF \u2014 Jayden Daniels: REAL MISMATCH: SF's real current QB def pass_yds rank is #10 or #28 \u2014 the report claimed #8.",
+    "RB favorite (James Cook): REAL MISMATCH: LV's real current RB def rush_yds rank is #14 or #30 \u2014 the report claimed #29."
+  ],
+  "favorite_ou": {
+    "overs": [
+      {
+        "player": "James Cook",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "7de7dbcbfe482639",
+        "price": 1.877,
+        "side": "over",
+        "line": 92.5,
+        "projection": 115,
+        "games_2026": 5,
+        "reason": "Cook's 106.4 rush yds/gm (3rd leaguewide) against LV's run defense allowing 116.0 ypg to backs (29th) is an Elite-tier Threat convergence and the strongest over on the board.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "LV",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "def",
+            "claimed_rank": 29
+          }
+        ],
+        "projection_edge": 22.5,
+        "evidence_mismatches": [
+          "REAL MISMATCH: LV's real current RB def rush_yds rank is #14 or #30 \u2014 the report claimed #29."
+        ],
+        "grade": "W",
+        "actual": 95.0,
+        "actual_label": "95 rush yds"
+      },
+      {
+        "player": "Ashton Jeanty",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "7de7dbcbfe482639",
+        "price": 1.877,
+        "side": "over",
+        "line": 25.5,
+        "projection": 40,
+        "games_2026": 5,
+        "reason": "Jeanty ranks 4th among backs in receiving yards (43.0/gm) and BUF allows a 3rd-worst 48.4 rec yds/gm to RBs (30th), an Elite-tier Quadruple Threat convergence.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "BUF",
+            "pos": "RB",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 30
+          }
+        ],
+        "projection_edge": 14.5,
+        "grade": "W",
+        "actual": 36.0,
+        "actual_label": "36 rec yds"
+      },
+      {
+        "player": "Brock Bowers",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "7de7dbcbfe482639",
+        "price": 1.877,
+        "side": "over",
+        "line": 79.5,
+        "projection": 95,
+        "games_2026": 3,
+        "reason": "Bowers is averaging 104.0 rec yds/gm since returning and BUF's TE defense (60.0 ypg allowed, 23rd) is the first real soft matchup of his season.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "BUF",
+            "pos": "TE",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 23
+          }
+        ],
+        "projection_edge": 15.5,
+        "grade": "L",
+        "actual": 70.0,
+        "actual_label": "70 rec yds"
+      },
+      {
+        "player": "Kenneth Walker III",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "95ef63c604474262",
+        "price": 1.877,
+        "side": "over",
+        "line": 90.5,
+        "projection": 118,
+        "games_2026": 4,
+        "reason": "Walker's league-leading 134.2 rush yds/gm against LAC's 19th-ranked run defense (99.0 ypg allowed to backs) is a comfortable mid-tier matchup for his volume.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "LAC",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "def",
+            "claimed_rank": 19
+          }
+        ],
+        "projection_edge": 27.5,
+        "evidence_mismatches": [
+          "REAL MISMATCH: LAC's real current RB def rush_yds rank is #2 or #20 \u2014 the report claimed #19."
+        ],
+        "grade": "W",
+        "actual": 128.0,
+        "actual_label": "128 rush yds"
+      },
+      {
+        "player": "Tre Tucker",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "7de7dbcbfe482639",
+        "price": 1.877,
+        "side": "over",
+        "line": 38.5,
+        "projection": 52,
+        "games_2026": 5,
+        "reason": "Tucker's 54.8 rec yds/gm clears this line against BUF's 4th-worst 187.4 ypg WR defense (29th), a matchup quality he's never actually faced this season.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "BUF",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 29
+          }
+        ],
+        "projection_edge": 13.5,
+        "grade": "W",
+        "actual": 97.0,
+        "actual_label": "97 rec yds"
+      }
+    ],
+    "unders": [
+      {
+        "player": "Jayden Daniels",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "f0019c9c135601e7",
+        "price": 1.877,
+        "side": "under",
+        "line": 205.5,
+        "projection": 165,
+        "games_2026": 3,
+        "reason": "Daniels' 153.0 pass yds/gm sits well under this line against SF's elite pass defense (210.8 ypg allowed, 8th), and SF's own structural edges point toward a clock-control game script.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "SF",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "def",
+            "claimed_rank": 8
+          }
+        ],
+        "projection_edge": 40.5,
+        "evidence_mismatches": [
+          "REAL MISMATCH: SF's real current QB def pass_yds rank is #10 or #28 \u2014 the report claimed #8."
+        ],
+        "grade": "L",
+        "actual": 300.0,
+        "actual_label": "300 pass yds"
+      },
+      {
+        "player": "Xavier Worthy",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "95ef63c604474262",
+        "price": 1.877,
+        "side": "under",
+        "line": 48.5,
+        "projection": 34,
+        "games_2026": 4,
+        "reason": "Worthy's own 33.2 rec yds/gm sits well under this line even before factoring LAC's stingy 132.0 ypg WR defense (11th).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "LAC",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 11
+          }
+        ],
+        "projection_edge": 14.5,
+        "evidence_mismatches": [
+          "REAL MISMATCH: LAC's real current WR def rec_yds rank is #1 or #12 \u2014 the report claimed #11."
+        ],
+        "grade": "L",
+        "actual": 73.0,
+        "actual_label": "73 rec yds"
+      },
+      {
+        "player": "Mike Evans",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "f0019c9c135601e7",
+        "price": 1.877,
+        "side": "under",
+        "line": 72.5,
+        "projection": 68,
+        "games_2026": 5,
+        "reason": "Evans' season rate (65.2 rec yds/gm) sits below this line even against a generous-but-low-explosive WAS WR defense (164.2 ypg allowed, 22nd, 2nd-fewest yards per reception allowed).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "WAS",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 22
+          }
+        ],
+        "projection_edge": 4.5,
+        "grade": "L",
+        "actual": 94.0,
+        "actual_label": "94 rec yds"
+      },
+      {
+        "player": "DK Metcalf",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "f5ce239b2a4db49c",
+        "price": 1.877,
+        "side": "under",
+        "line": 50.5,
+        "projection": 44,
+        "games_2026": 5,
+        "reason": "Metcalf's season rate (45.0 rec yds/gm) already sits under this line, though TB's 14th-ranked WR defense (138.8 ypg allowed) isn't a true funnel either direction, so conviction here is limited.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "TB",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 14
+          }
+        ],
+        "projection_edge": 6.5,
+        "evidence_mismatches": [
+          "REAL MISMATCH: TB's real current WR def rec_yds rank is #15 or #17 \u2014 the report claimed #14."
+        ],
+        "grade": "L",
+        "actual": 93.0,
+        "actual_label": "93 rec yds"
+      }
+    ]
+  },
+  "favorite_ou_errors": [
+    "James Cook: REAL MISMATCH: LV's real current RB def rush_yds rank is #14 or #30 \u2014 the report claimed #29.",
+    "Kenneth Walker III: REAL MISMATCH: LAC's real current RB def rush_yds rank is #2 or #20 \u2014 the report claimed #19.",
+    "Jayden Daniels: REAL MISMATCH: SF's real current QB def pass_yds rank is #10 or #28 \u2014 the report claimed #8.",
+    "Xavier Worthy: REAL MISMATCH: LAC's real current WR def rec_yds rank is #1 or #12 \u2014 the report claimed #11.",
+    "DK Metcalf: REAL MISMATCH: TB's real current WR def rec_yds rank is #15 or #17 \u2014 the report claimed #14."
+  ],
+  "parlays": {},
+  "td_parlays": {},
+  "spread_parlays": {},
+  "ats_records": {
+    "BUF": {
+      "since": 2020,
+      "overall": {
+        "w": 57,
+        "l": 45,
+        "p": 3,
+        "pct": 55.9
+      },
+      "home": {
+        "w": 29,
+        "l": 23,
+        "p": 2,
+        "pct": 55.8
+      },
+      "away": {
+        "w": 28,
+        "l": 22,
+        "p": 1,
+        "pct": 56.0
+      }
+    },
+    "KC": {
+      "since": 2020,
+      "overall": {
+        "w": 44,
+        "l": 59,
+        "p": 2,
+        "pct": 42.7
+      },
+      "home": {
+        "w": 22,
+        "l": 30,
+        "p": 1,
+        "pct": 42.3
+      },
+      "away": {
+        "w": 22,
+        "l": 29,
+        "p": 1,
+        "pct": 43.1
+      }
+    },
+    "LAC": {
+      "since": 2020,
+      "overall": {
+        "w": 55,
+        "l": 48,
+        "p": 3,
+        "pct": 53.4
+      },
+      "home": {
+        "w": 26,
+        "l": 26,
+        "p": 2,
+        "pct": 50.0
+      },
+      "away": {
+        "w": 29,
+        "l": 22,
+        "p": 1,
+        "pct": 56.9
+      }
+    },
+    "LV": {
+      "since": 2020,
+      "overall": {
+        "w": 53,
+        "l": 51,
+        "p": 2,
+        "pct": 51.0
+      },
+      "home": {
+        "w": 29,
+        "l": 23,
+        "p": 1,
+        "pct": 55.8
+      },
+      "away": {
+        "w": 24,
+        "l": 28,
+        "p": 1,
+        "pct": 46.2
+      }
+    },
+    "PIT": {
+      "since": 2020,
+      "overall": {
+        "w": 61,
+        "l": 43,
+        "p": 2,
+        "pct": 58.7
+      },
+      "home": {
+        "w": 33,
+        "l": 20,
+        "p": 1,
+        "pct": 62.3
+      },
+      "away": {
+        "w": 28,
+        "l": 23,
+        "p": 1,
+        "pct": 54.9
+      }
+    },
+    "SF": {
+      "since": 2020,
+      "overall": {
+        "w": 56,
+        "l": 50,
+        "p": 0,
+        "pct": 52.8
+      },
+      "home": {
+        "w": 26,
+        "l": 27,
+        "p": 0,
+        "pct": 49.1
+      },
+      "away": {
+        "w": 30,
+        "l": 23,
+        "p": 0,
+        "pct": 56.6
+      }
+    },
+    "TB": {
+      "since": 2020,
+      "overall": {
+        "w": 49,
+        "l": 55,
+        "p": 2,
+        "pct": 47.1
+      },
+      "home": {
+        "w": 22,
+        "l": 29,
+        "p": 2,
+        "pct": 43.1
+      },
+      "away": {
+        "w": 27,
+        "l": 26,
+        "p": 0,
+        "pct": 50.9
+      }
+    },
+    "WAS": {
+      "since": 2020,
+      "overall": {
+        "w": 49,
+        "l": 54,
+        "p": 3,
+        "pct": 47.6
+      },
+      "home": {
+        "w": 24,
+        "l": 27,
+        "p": 2,
+        "pct": 47.1
+      },
+      "away": {
+        "w": 25,
+        "l": 27,
+        "p": 1,
+        "pct": 48.1
+      }
+    }
+  },
+  "graded_at": "2026-10-20T22:00:42.561598+00:00"
+}

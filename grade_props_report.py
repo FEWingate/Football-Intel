@@ -139,6 +139,30 @@ def load_player_stats(season, week):
     return out
 
 
+
+def _opp_game_final(pick, player_stats, scores):
+    """True when the pick's game is final AND real stats are loaded for it.
+    The game is identified by the opponent named in the pick's own
+    evidence_check (current_opponent). No opponent on file = unknown = False,
+    so the pick stays Pending rather than guessed."""
+    for ev in pick.get("evidence_check") or []:
+        if ev.get("type") == "current_opponent" and ev.get("team"):
+            opp = normalize_team_code(ev["team"])
+            if (scores.get(opp) or {}).get("final") and any(
+                    normalize_team_code(str(r.get("team"))) == opp for r in player_stats.values()):
+                return True
+    return False
+
+
+DNP_REASON = "Did not play: game is final, no stat line - bet voided (refund)"
+
+
+def _missing_row(pick, player_stats, scores):
+    """A player with no stat row: void (push) if his game is final, else pending."""
+    if _opp_game_final(pick, player_stats, scores):
+        return "P", DNP_REASON
+    return None, "game not final yet, or player not found in real weekly stats"
+
 # ── Per-pick grading ─────────────────────────────────────────────────────
 def grade_ou(real_value, line, side):
     if real_value is None or line is None:
@@ -178,7 +202,7 @@ def grade_pick(pick, player_stats, scores):
     if market_key == "player_anytime_td":
         row = player_stats.get(normalize_name(pick.get("player", "")))
         if row is None:
-            return None, "game not final yet, or player not found in real weekly stats"
+            return _missing_row(pick, player_stats, scores)
         td_count = float(row.get("rushing_tds", 0) or 0) + float(row.get("receiving_tds", 0) or 0)
         return grade_td(td_count)
 
@@ -200,7 +224,7 @@ def grade_pick(pick, player_stats, scores):
     row = player_stats.get(normalize_name(pick.get("player", "")))
     real_value = float(row.get(stat_col, 0) or 0) if row is not None else None
     if row is None:
-        return None, "game not final yet, or player not found in real weekly stats"
+        return _missing_row(pick, player_stats, scores)
     return grade_ou(real_value, line, pick.get("side", "over"))
 
 
@@ -254,8 +278,12 @@ def grade_pick_list(picks, player_stats, scores):
         entry = dict(p)
         entry["grade"] = grade
         if reason:
-            entry["ungraded_reason"] = reason
+            entry["void_reason" if grade == "P" else "ungraded_reason"] = reason
+            if grade == "P":
+                entry["void"] = True
         actual, label = actual_result(p, player_stats, scores)
+        if entry.get("void"):
+            label = "DNP"
         if label:
             entry["actual"], entry["actual_label"] = actual, label
         graded.append(entry)
@@ -340,8 +368,12 @@ def grade_report(report, player_stats, scores):
             entry = dict(pick)
             entry["grade"] = grade
             if reason:
-                entry["ungraded_reason"] = reason
+                entry["void_reason" if grade == "P" else "ungraded_reason"] = reason
+                if grade == "P":
+                    entry["void"] = True
             actual, label = actual_result(pick, player_stats, scores)
+            if entry.get("void"):
+                label = "DNP"
             if label:
                 entry["actual"], entry["actual_label"] = actual, label
             new_per_position[pos] = entry

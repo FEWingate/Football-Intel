@@ -107,6 +107,19 @@
 .boxtable td.num:first-child{text-align:right}
 .boxtable td.num:last-child{text-align:left}
 .boxtable .num.lead{color:var(--primary);font-weight:600}
+.pbox-col{min-width:0}
+.pbox-team{display:flex;align-items:center;gap:8px;font-weight:600;margin:2px 0 6px}
+.pbox-cat{margin:0 0 14px;overflow-x:auto;border:1px solid var(--border);border-radius:8px;background:var(--surface)}
+.pbox{width:100%;border-collapse:collapse;font-size:12px}
+.pbox th,.pbox td{padding:6px 8px;text-align:right;white-space:nowrap;font-family:var(--font-mono)}
+.pbox th{font-size:10px;letter-spacing:.06em;color:var(--text-mid);font-weight:500;border-bottom:1px solid var(--border)}
+.pbox th:first-child,.pbox td:first-child{text-align:left;font-family:inherit;position:sticky;left:0;background:var(--surface)}
+.pbox th.cat{color:var(--text);font-weight:700;font-size:11px}
+.pbox td{border-bottom:1px solid var(--border);color:var(--text-mid)}
+.pbox tr:last-child td{border-bottom:0}
+.pbox td:first-child{color:var(--text)}
+.pbox td .jn{color:var(--text-mid);font-size:10px;margin-left:4px}
+.pbox tr.tot td{font-weight:600;color:var(--text)}
 .leaders{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:6px}
 @media(max-width:600px){.leaders{grid-template-columns:1fr}}
 .lead-col{background:var(--surface);border:1px solid var(--border);
@@ -1085,11 +1098,61 @@ async function fetchEspnBoxScore(eventId){
       const code = espnCode((teamLeaders.team || {}).abbreviation);
       if (code) leadersByTeam[code] = teamLeaders.leaders || [];
     });
-    return { box: parsed, leadersByTeam }; // box keyed by real team code, e.g. { DEN: {...}, KC: {...} }
+    // Per-player box score (ESPN's boxscore.players): every player with a
+    // stat line, by category (passing, rushing, receiving, ...), per team.
+    const playersByTeam = {};
+    ((data.boxscore || {}).players || []).forEach(tp => {
+      const code = espnCode(((tp.team || {}).abbreviation));
+      if (!code) return;
+      playersByTeam[code] = (tp.statistics || []).map(c => ({
+        name: c.name,
+        labels: c.labels || [],
+        totals: c.totals || [],
+        rows: (c.athletes || []).map(a => ({
+          name: (a.athlete || {}).displayName || (a.athlete || {}).shortName || '',
+          jersey: (a.athlete || {}).jersey || '',
+          stats: a.stats || [],
+        })).filter(r => r.name),
+      })).filter(c => c.rows.length);
+    });
+    return { box: parsed, leadersByTeam, playersByTeam }; // box keyed by real team code, e.g. { DEN: {...}, KC: {...} }
   } catch (e) {
     console.warn('ESPN box score fetch failed:', e);
     return null;
   }
+}
+
+// Full per-player box score (ESPN's boxscore.players): all players with a
+// stat line in each category, away left / home right, like ESPN's own page.
+const PBOX_ORDER = [
+  ['passing', 'Passing'], ['rushing', 'Rushing'], ['receiving', 'Receiving'],
+  ['fumbles', 'Fumbles'], ['defensive', 'Defensive'], ['interceptions', 'Interceptions'],
+  ['kicking', 'Kicking'], ['punting', 'Punting'],
+  ['kickReturns', 'Kick returns'], ['puntReturns', 'Punt returns'],
+];
+function renderPlayerBox(g){
+  const by = g.espnPlayersByTeam || {};
+  if (!(by[g.away] || []).length && !(by[g.home] || []).length) return '';
+  const col = side => {
+    const code = g[side];
+    const cats = {};
+    (by[code] || []).forEach(c => { cats[c.name] = c; });
+    const tables = PBOX_ORDER.filter(([k]) => cats[k]).map(([k, title]) => {
+      const c = cats[k];
+      const head = `<tr><th class="cat">${esc(title)}</th>${c.labels.map(l => `<th>${esc(l)}</th>`).join('')}</tr>`;
+      const rows = c.rows.map(r => `<tr><td>${esc(r.name)}${r.jersey ? `<span class="jn">#${esc(r.jersey)}</span>` : ''}</td>` +
+        c.labels.map((_, i) => `<td>${esc(r.stats[i] ?? '')}</td>`).join('') + `</tr>`).join('');
+      const tot = (c.totals && c.totals.length && ['passing', 'rushing', 'receiving'].includes(k))
+        ? `<tr class="tot"><td>TEAM</td>${c.labels.map((_, i) => `<td>${esc(c.totals[i] ?? '')}</td>`).join('')}</tr>` : '';
+      return `<div class="pbox-cat"><table class="pbox"><thead>${head}</thead><tbody>${rows}${tot}</tbody></table></div>`;
+    }).join('');
+    return `<div class="pbox-col"><div class="pbox-team">${fiLogoHTML(code, 22)}<span>${esc(code)}</span></div>
+      ${tables || '<div class="na">No data</div>'}</div>`;
+  };
+  return `<div class="sect"><h3>${g.live ? 'Live player stats' : 'Player stats'}</h3><span class="rule"></span></div>
+    <div class="empty" style="padding:4px 0 8px;text-align:left;font-size:10px">
+      Real-time from ESPN, updated automatically — no rebuild needed, live or final.</div>
+    <div class="leaders">${col('away')}${col('home')}</div>`;
 }
 
 function renderGameModalBody(g, boxState){
@@ -1116,7 +1179,10 @@ function renderGameModalBody(g, boxState){
   // other team.
   const hasEspnLeaders = g.espnLeadersByTeam &&
     ((g.espnLeadersByTeam[g.away] || []).length || (g.espnLeadersByTeam[g.home] || []).length);
-  if (hasEspnLeaders) {
+  const playerBox = renderPlayerBox(g);
+  if (playerBox) {
+    h += playerBox;
+  } else if (hasEspnLeaders) {
     h += renderEspnLiveLeaders(g);
   }
 
@@ -1156,7 +1222,7 @@ function renderGameModalBody(g, boxState){
   // reasoning above hasEspnLeaders for why ESPN is now preferred
   // whenever it's actually there.
   const L = g.leaders || {};
-  if (!hasEspnLeaders && (L.away || L.home)){
+  if (!playerBox && !hasEspnLeaders && (L.away || L.home)){
     h += `<div class="sect"><h3>${g.leader_scope === 'game' ? 'Game leaders' : 'Season leaders'}</h3>
       <span class="rule"></span></div>
       <div class="leaders">${leaderBlock('away', g.away, L.away)}${leaderBlock('home', g.home, L.home)}</div>`;
@@ -1200,6 +1266,7 @@ async function openGame(gid, source){
     const result = await fetchEspnBoxScore(g.espnEventId);
     g.espnBox = result ? result.box : null;
     g.espnLeadersByTeam = result ? result.leadersByTeam : null;
+    g.espnPlayersByTeam = result ? result.playersByTeam : null;
     // Only re-render if this is still the open modal — guards against a
     // slow fetch resolving after the person already closed this game or
     // opened a different one.

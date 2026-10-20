@@ -112,3 +112,49 @@ class SuffixMergeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ComboPropsTests(unittest.TestCase):
+    def row(self, **kw):
+        base = {"bookmaker": "fanduel", "market_key": "player_rush_reception_yds", "canonical_event_id": "e1",
+                "player": "Christian McCaffrey", "line": 108.5, "over_price": 1.877, "under_price": 1.877,
+                "period": "FULL", "last_update": "2026-10-19T19:17:00Z"}
+        base.update(kw)
+        return base
+
+    def test_accepts_authentic_row_and_keeps_source_key(self):
+        from build_fanduel_props import shape_combo_rows
+        out = shape_combo_rows([self.row()], "2026-10-19T20:00:00+00:00")
+        line = out["e1"]["rushing_receiving_yards"]["Christian McCaffrey"]["line"]
+        self.assertEqual(line["point"], 108.5)
+        self.assertEqual(line["source_market_key"], "player_rush_reception_yds")
+        self.assertFalse(line["stale"])
+
+    def test_rejects_bad_rows(self):
+        from build_fanduel_props import shape_combo_rows
+        bad = [self.row(bookmaker="draftkings"), self.row(market_key="player_brock_purdy___alt_passing_yds"),
+               self.row(market_key="player_rush_yds"), self.row(period="1H"), self.row(line=None),
+               self.row(line="n/a"), self.row(over_price=None, under_price=None), self.row(canonical_event_id=None)]
+        self.assertEqual(shape_combo_rows(bad, "2026-10-19T20:00:00+00:00"), {})
+
+    def test_carry_forward_marks_stale_and_stops_at_kickoff_or_six_hours(self):
+        from build_fanduel_props import carry_combo_forward
+        old_line = {"point": 108.5, "over_price": 1.877, "under_price": 1.877,
+                    "fetched_at": "2026-10-19T19:00:00+00:00", "last_update": "x", "stale": False}
+        prev = {"games": [{"canonical_event_id": "e1", "combo_props": {"rushing_receiving_yards": {"A B": {"line": old_line, "alts": []}}}}]}
+        mk = lambda kick: [{"canonical_event_id": "e1", "commence_time": kick, "combo_props": {}}]
+        g = mk("2026-10-20T00:15:00+00:00")
+        cov = carry_combo_forward(g, prev, "2026-10-19T21:00:00+00:00")
+        self.assertTrue(g[0]["combo_props"]["rushing_receiving_yards"]["A B"]["line"]["stale"])
+        self.assertEqual(cov["rushing_receiving_yards"]["status"], "stale_last_known_good")
+        g = mk("2026-10-19T20:00:00+00:00")                      # already kicked off
+        carry_combo_forward(g, prev, "2026-10-19T21:00:00+00:00")
+        self.assertEqual(g[0]["combo_props"]["rushing_receiving_yards"], {})
+        g = mk("2026-10-20T10:00:00+00:00")                      # older than six hours
+        cov = carry_combo_forward(g, prev, "2026-10-20T02:00:00+00:00")
+        self.assertEqual(cov["rushing_receiving_yards"]["status"], "unavailable")
+
+    def test_passing_rushing_is_always_unavailable(self):
+        from build_fanduel_props import carry_combo_forward
+        cov = carry_combo_forward([], None, "2026-10-19T21:00:00+00:00")
+        self.assertEqual(cov["passing_rushing_yards"]["status"], "unavailable")
