@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-20T23:01:12Z",
+ "generated_at": "2026-10-21T00:31:38Z",
  "season": 2026,
  "week": 7,
  "method": {
@@ -493,6 +493,696 @@
    "alts_eval": []
   },
   {
+   "player": "Bo Nix",
+   "team": "DEN",
+   "opp": "ARI",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/zvo9xatffmqn9lnukpgk",
+   "game": {
+    "commence_time": "2026-10-25T20:05:00Z",
+    "team_spread": -4.5,
+    "total": 43.5,
+    "team_implied": 24.0
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 193.4,
+    "sd": 70.4,
+    "games_used": 23,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 178.6,
+      "opp_factor": 1.033,
+      "proj": 184.5,
+      "opp_allowed_pg": 245.1,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 11.1,
+      "opp_factor": 0.797,
+      "proj": 8.8,
+      "opp_allowed_pg": 10.4,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 247.3,
+      "rank": 23,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 174.8,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 1,
+       "avg": 288.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 255.2
+      },
+      "last5": {
+       "allowed_pg": 255.0,
+       "games": 5,
+       "rank": 24,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": 7.7
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 10.7,
+      "rank": 7,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 6.2,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 10.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 15.0
+      },
+      "last5": {
+       "allowed_pg": 7.0,
+       "games": 5,
+       "rank": 4,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": -3.7
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 258.0,
+     "rank": 19,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 181.0,
+     "player_games": 6,
+     "expected_vs_tiers": 298.0,
+     "min_tier_games": 1,
+     "prev_player_avg": 252.2,
+     "prev_player_games": 17,
+     "expected_vs_tiers_prev": 270.2,
+     "min_tier_games_prev": 2,
+     "last5": {
+      "allowed_pg": 262.0,
+      "rank": 20,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "vs_season": 4.0,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": {
+    "season_avg": 181.0,
+    "season_rank": 32,
+    "l5_avg": 190.6,
+    "l5_rank": 32,
+    "of": 33,
+    "games": 6
+   },
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "GB",
+     "a": 302.0,
+     "b": 10.0,
+     "total": 312.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "JAX",
+     "a": 352.0,
+     "b": 11.0,
+     "total": 363.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "KC",
+     "a": 182.0,
+     "b": 42.0,
+     "total": 224.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "LAC",
+     "a": 141.0,
+     "b": 49.0,
+     "total": 190.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "KC",
+     "a": 131.0,
+     "b": 2.0,
+     "total": 133.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "JAX",
+     "a": 288.0,
+     "b": 6.0,
+     "total": 294.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "LAR",
+     "a": 186.0,
+     "b": 7.0,
+     "total": 193.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "SF",
+     "a": 214.0,
+     "b": 10.0,
+     "total": 224.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "LAC",
+     "a": 123.0,
+     "b": 10.0,
+     "total": 133.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "SEA",
+     "a": 107.0,
+     "b": 2.0,
+     "total": 109.0
+    }
+   ]
+  },
+  {
+   "player": "Brock Purdy",
+   "team": "SF",
+   "opp": "ATL",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/xs2fyj1sqdgwvt9ihbri",
+   "game": {
+    "commence_time": "2026-10-25T17:00:00Z",
+    "team_spread": -3.5,
+    "total": 48.5,
+    "team_implied": 26.0
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 267.5,
+    "sd": 61.1,
+    "games_used": 15,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 239.4,
+      "opp_factor": 1.034,
+      "proj": 247.5,
+      "opp_allowed_pg": 245.3,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 23.3,
+      "opp_factor": 0.855,
+      "proj": 20.0,
+      "opp_allowed_pg": 12.4,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 268.7,
+      "rank": 29,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 243.3,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 280.5
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 1,
+       "avg": 264.0,
+       "prev": {
+        "games": 1,
+        "avg": 295.0
+       }
+      },
+      "vs_tier_prev": {
+       "games": 3,
+       "avg": 263.3
+      },
+      "last5": {
+       "allowed_pg": 278.2,
+       "games": 5,
+       "rank": 28,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": 9.5
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 4.5,
+      "rank": 1,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 26.0,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 32.0
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 0,
+       "avg": null,
+       "prev": {
+        "games": 4,
+        "avg": 6.0
+       }
+      },
+      "vs_tier_prev": {
+       "games": 4,
+       "avg": 6.0
+      },
+      "last5": {
+       "allowed_pg": 6.0,
+       "games": 5,
+       "rank": 2,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": 1.5
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 273.2,
+     "rank": 25,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": null,
+     "player_avg": 269.3,
+     "player_games": 6,
+     "expected_vs_tiers": 312.5,
+     "min_tier_games": 2,
+     "prev_player_avg": 257.1,
+     "prev_player_games": 9,
+     "expected_vs_tiers_prev": 269.3,
+     "min_tier_games_prev": 3,
+     "last5": {
+      "allowed_pg": 284.2,
+      "rank": 27,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "vs_season": 11.0,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": {
+    "season_avg": 269.3,
+    "season_rank": 13,
+    "l5_avg": 276.4,
+    "l5_rank": 11,
+    "of": 33,
+    "games": 6
+   },
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "TEN",
+     "a": 295.0,
+     "b": 44.0,
+     "total": 339.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "IND",
+     "a": 295.0,
+     "b": 11.0,
+     "total": 306.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "CHI",
+     "a": 303.0,
+     "b": 28.0,
+     "total": 331.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "SEA",
+     "a": 127.0,
+     "b": 21.0,
+     "total": 148.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "LAR",
+     "a": 205.0,
+     "b": 29.0,
+     "total": 234.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "MIA",
+     "a": 287.0,
+     "b": 30.0,
+     "total": 317.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "ARI",
+     "a": 297.0,
+     "b": 34.0,
+     "total": 331.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "DEN",
+     "a": 218.0,
+     "b": 29.0,
+     "total": 247.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "SEA",
+     "a": 189.0,
+     "b": 6.0,
+     "total": 195.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "WAS",
+     "a": 264.0,
+     "b": 28.0,
+     "total": 292.0
+    }
+   ]
+  },
+  {
+   "player": "Bryce Young",
+   "team": "CAR",
+   "opp": "TB",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/vcvhmxvxw2a3armle0af",
+   "game": {
+    "commence_time": "2026-10-25T17:00:00Z",
+    "team_spread": -3.5,
+    "total": 44.5,
+    "team_implied": 24.0
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 285.6,
+    "sd": 73.8,
+    "games_used": 21,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 268.4,
+      "opp_factor": 1.036,
+      "proj": 278.0,
+      "opp_allowed_pg": 246.2,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 8.3,
+      "opp_factor": 0.914,
+      "proj": 7.6,
+      "opp_allowed_pg": 14.5,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 237.7,
+      "rank": 19,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 309.8,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 2,
+       "avg": 326.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 7,
+       "avg": 188.4
+      },
+      "last5": {
+       "allowed_pg": 234.4,
+       "games": 5,
+       "rank": 14,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": -3.3
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 8.3,
+      "rank": 4,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 5.0,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 3,
+       "avg": 5.3
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 1,
+       "avg": 6.0,
+       "prev": {
+        "games": 2,
+        "avg": 8.5
+       }
+      },
+      "vs_tier_prev": {
+       "games": 4,
+       "avg": 12.2
+      },
+      "last5": {
+       "allowed_pg": 6.0,
+       "games": 5,
+       "rank": 3,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": -2.3
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 246.0,
+     "rank": 16,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 314.8,
+     "player_games": 5,
+     "expected_vs_tiers": 331.3,
+     "min_tier_games": 2,
+     "prev_player_avg": 201.7,
+     "prev_player_games": 16,
+     "expected_vs_tiers_prev": 200.6,
+     "min_tier_games_prev": 4,
+     "last5": {
+      "allowed_pg": 240.4,
+      "rank": 11,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "vs_season": -5.6,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": {
+    "season_avg": 314.8,
+    "season_rank": 1,
+    "l5_avg": 314.8,
+    "l5_rank": 2,
+    "of": 33,
+    "games": 5
+   },
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 13,
+     "opp": "LAR",
+     "a": 206.0,
+     "b": 23.0,
+     "total": 229.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "NO",
+     "a": 163.0,
+     "b": 49.0,
+     "total": 212.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "TB",
+     "a": 191.0,
+     "b": 20.0,
+     "total": 211.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "SEA",
+     "a": 54.0,
+     "b": 27.0,
+     "total": 81.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "TB",
+     "a": 266.0,
+     "b": -1.0,
+     "total": 265.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "CHI",
+     "a": 361.0,
+     "b": 10.0,
+     "total": 371.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "ATL",
+     "a": 287.0,
+     "b": 6.0,
+     "total": 293.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "CLE",
+     "a": 291.0,
+     "b": 0.0,
+     "total": 291.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "DET",
+     "a": 329.0,
+     "b": 3.0,
+     "total": 332.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "PHI",
+     "a": 281.0,
+     "b": 6.0,
+     "total": 287.0
+    }
+   ]
+  },
+  {
    "player": "Caleb Williams",
    "team": "CHI",
    "opp": "NE",
@@ -719,6 +1409,687 @@
      "a": 305.0,
      "b": 3.0,
      "total": 308.0
+    }
+   ]
+  },
+  {
+   "player": "Cam Ward",
+   "team": "TEN",
+   "opp": "CLE",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/l7iuimdeqgmmhdzdhl67",
+   "game": {
+    "commence_time": "2026-10-25T17:00:00Z",
+    "team_spread": 1.5,
+    "total": 37.5,
+    "team_implied": 18.0
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 170.6,
+    "sd": 51.3,
+    "games_used": 22,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 170.8,
+      "opp_factor": 0.951,
+      "proj": 162.4,
+      "opp_allowed_pg": 207.4,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 9.9,
+      "opp_factor": 0.828,
+      "proj": 8.2,
+      "opp_allowed_pg": 11.5,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 227.3,
+      "rank": 13,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 166.3,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 1,
+       "avg": 102.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 181.2
+      },
+      "last5": {
+       "allowed_pg": 223.8,
+       "games": 5,
+       "rank": 10,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": -3.5
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 10.7,
+      "rank": 8,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 11.0,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 1,
+       "avg": 2.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 6,
+       "avg": 4.0
+      },
+      "last5": {
+       "allowed_pg": 12.8,
+       "games": 5,
+       "rank": 12,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": 2.1
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 238.0,
+     "rank": 12,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 177.3,
+     "player_games": 6,
+     "expected_vs_tiers": 104.0,
+     "min_tier_games": 1,
+     "prev_player_avg": 204.1,
+     "prev_player_games": 16,
+     "expected_vs_tiers_prev": 185.2,
+     "min_tier_games_prev": 5,
+     "last5": {
+      "allowed_pg": 236.6,
+      "rank": 9,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "vs_season": -1.4,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": {
+    "season_avg": 177.3,
+    "season_rank": 33,
+    "l5_avg": 180.6,
+    "l5_rank": 33,
+    "of": 33,
+    "games": 6
+   },
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "CLE",
+     "a": 117.0,
+     "b": 4.0,
+     "total": 121.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "SF",
+     "a": 170.0,
+     "b": 2.0,
+     "total": 172.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "KC",
+     "a": 228.0,
+     "b": 9.0,
+     "total": 237.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "NO",
+     "a": 251.0,
+     "b": 10.0,
+     "total": 261.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "NYJ",
+     "a": 140.0,
+     "b": 21.0,
+     "total": 161.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "PHI",
+     "a": 183.0,
+     "b": 7.0,
+     "total": 190.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "NYG",
+     "a": 181.0,
+     "b": 2.0,
+     "total": 183.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "BAL",
+     "a": 222.0,
+     "b": 27.0,
+     "total": 249.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "HOU",
+     "a": 170.0,
+     "b": 2.0,
+     "total": 172.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "IND",
+     "a": 102.0,
+     "b": 7.0,
+     "total": 109.0
+    }
+   ]
+  },
+  {
+   "player": "C.J. Stroud",
+   "team": "HOU",
+   "opp": "NYG",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/tt4zrtxlhifaljhj0rn7",
+   "game": {
+    "commence_time": "2026-10-25T17:00:00Z",
+    "team_spread": -9.5,
+    "total": 43.5,
+    "team_implied": 26.5
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 274.8,
+    "sd": 67.4,
+    "games_used": 19,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 272.0,
+      "opp_factor": 0.965,
+      "proj": 262.5,
+      "opp_allowed_pg": 213.7,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 9.8,
+      "opp_factor": 1.252,
+      "proj": 12.3,
+      "opp_allowed_pg": 26.3,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 198.7,
+      "rank": 4,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 285.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 0,
+       "avg": null
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 0,
+       "avg": null,
+       "prev": {
+        "games": 1,
+        "avg": 244.0
+       }
+      },
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 223.5
+      },
+      "last5": {
+       "allowed_pg": 203.4,
+       "games": 5,
+       "rank": 5,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": 4.7
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 28.0,
+      "rank": 28,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 12.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 17.0
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 2,
+       "avg": 20.5,
+       "prev": {
+        "games": 0,
+        "avg": null
+       }
+      },
+      "vs_tier_prev": {
+       "games": 1,
+       "avg": 27.0
+      },
+      "last5": {
+       "allowed_pg": 30.8,
+       "games": 5,
+       "rank": 31,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": 2.8
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 226.7,
+     "rank": 5,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": "Top 5",
+     "player_avg": 298.3,
+     "player_games": 6,
+     "expected_vs_tiers": null,
+     "min_tier_games": 0,
+     "prev_player_avg": 232.1,
+     "prev_player_games": 14,
+     "expected_vs_tiers_prev": 250.5,
+     "min_tier_games_prev": 1,
+     "last5": {
+      "allowed_pg": 234.2,
+      "rank": 7,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "vs_season": 7.5,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": {
+    "season_avg": 298.3,
+    "season_rank": 4,
+    "l5_avg": 300.2,
+    "l5_rank": 5,
+    "of": 33,
+    "games": 6
+   },
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "ARI",
+     "a": 260.0,
+     "b": 10.0,
+     "total": 270.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "LV",
+     "a": 187.0,
+     "b": 0.0,
+     "total": 187.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "LAC",
+     "a": 244.0,
+     "b": 0.0,
+     "total": 244.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "IND",
+     "a": 169.0,
+     "b": 5.0,
+     "total": 174.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "BUF",
+     "a": 274.0,
+     "b": 15.0,
+     "total": 289.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "CIN",
+     "a": 353.0,
+     "b": 29.0,
+     "total": 382.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "IND",
+     "a": 167.0,
+     "b": 10.0,
+     "total": 177.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "DAL",
+     "a": 347.0,
+     "b": 12.0,
+     "total": 359.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "TEN",
+     "a": 261.0,
+     "b": 5.0,
+     "total": 266.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "JAX",
+     "a": 312.0,
+     "b": 5.0,
+     "total": 317.0
+    }
+   ]
+  },
+  {
+   "player": "Dak Prescott",
+   "team": "DAL",
+   "opp": "PHI",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yvscmqq1qki8zfsemmcd",
+   "game": {
+    "commence_time": "2026-10-27T00:15:00Z",
+    "team_spread": -4.5,
+    "total": 44.5,
+    "team_implied": 24.5
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 295.2,
+    "sd": 53.1,
+    "games_used": 22,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 284.6,
+      "opp_factor": 0.999,
+      "proj": 284.3,
+      "opp_allowed_pg": 229.2,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 10.5,
+      "opp_factor": 1.04,
+      "proj": 10.9,
+      "opp_allowed_pg": 18.8,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 253.8,
+      "rank": 25,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 273.2,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 307.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 3,
+       "avg": 273.7
+      },
+      "last5": {
+       "allowed_pg": 271.8,
+       "games": 5,
+       "rank": 27,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": 18.0
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 14.2,
+      "rank": 13,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 12.2,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 13.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 13.4
+      },
+      "last5": {
+       "allowed_pg": 10.8,
+       "games": 5,
+       "rank": 10,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": -3.4
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 268.0,
+     "rank": 22,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 285.3,
+     "player_games": 6,
+     "expected_vs_tiers": 320.0,
+     "min_tier_games": 2,
+     "prev_player_avg": 278.2,
+     "prev_player_games": 17,
+     "expected_vs_tiers_prev": 287.1,
+     "min_tier_games_prev": 3,
+     "last5": {
+      "allowed_pg": 282.6,
+      "rank": 26,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "vs_season": 14.6,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": {
+    "season_avg": 285.3,
+    "season_rank": 6,
+    "l5_avg": 304.6,
+    "l5_rank": 3,
+    "of": 33,
+    "games": 6
+   },
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "DET",
+     "a": 376.0,
+     "b": 14.0,
+     "total": 390.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "MIN",
+     "a": 294.0,
+     "b": 2.0,
+     "total": 296.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "LAC",
+     "a": 244.0,
+     "b": 14.0,
+     "total": 258.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "WAS",
+     "a": 307.0,
+     "b": 24.0,
+     "total": 331.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "NYG",
+     "a": 175.0,
+     "b": 14.0,
+     "total": 189.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "WAS",
+     "a": 279.0,
+     "b": 26.0,
+     "total": 305.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "BAL",
+     "a": 276.0,
+     "b": 19.0,
+     "total": 295.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "HOU",
+     "a": 335.0,
+     "b": 7.0,
+     "total": 342.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "TB",
+     "a": 316.0,
+     "b": 0.0,
+     "total": 316.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "GB",
+     "a": 258.0,
+     "b": 7.0,
+     "total": 265.0
     }
    ]
   },
@@ -966,6 +2337,419 @@
    "alts_eval": []
   },
   {
+   "player": "Daniel Jones",
+   "team": "IND",
+   "opp": "MIN",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/yslz8jcyiekbmm7iguxm",
+   "game": {
+    "commence_time": "2026-10-25T17:00:00Z",
+    "team_spread": 6.5,
+    "total": 41.5,
+    "team_implied": 17.5
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 219.0,
+    "sd": 57.2,
+    "games_used": 18,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 230.0,
+      "opp_factor": 0.904,
+      "proj": 207.9,
+      "opp_allowed_pg": 185.7,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 12.2,
+      "opp_factor": 0.918,
+      "proj": 11.2,
+      "opp_allowed_pg": 14.6,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 195.4,
+      "rank": 3,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 215.0,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 214.3
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 0,
+       "avg": null,
+       "prev": {
+        "games": 1,
+        "avg": 288.0
+       }
+      },
+      "vs_tier_prev": {
+       "games": 3,
+       "avg": 223.3
+      },
+      "last5": {
+       "allowed_pg": 195.4,
+       "games": 5,
+       "rank": 3,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": 0.0
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 13.6,
+      "rank": 12,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 9.2,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 4,
+       "avg": 12.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 6,
+       "avg": 9.5
+      },
+      "last5": {
+       "allowed_pg": 13.6,
+       "games": 5,
+       "rank": 15,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": 0.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 209.0,
+     "rank": 3,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": "Top 5",
+     "player_avg": 224.2,
+     "player_games": 6,
+     "expected_vs_tiers": 226.3,
+     "min_tier_games": 3,
+     "prev_player_avg": 266.8,
+     "prev_player_games": 12,
+     "expected_vs_tiers_prev": 232.8,
+     "min_tier_games_prev": 3,
+     "last5": {
+      "allowed_pg": 209.0,
+      "rank": 4,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "vs_season": 0.0,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": {
+    "season_avg": 224.2,
+    "season_rank": 26,
+    "l5_avg": 235.0,
+    "l5_rank": 21,
+    "of": 33,
+    "games": 6
+   },
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 9,
+     "opp": "PIT",
+     "a": 342.0,
+     "b": 4.0,
+     "total": 346.0
+    },
+    {
+     "season": 2025,
+     "week": 10,
+     "opp": "ATL",
+     "a": 255.0,
+     "b": 53.0,
+     "total": 308.0
+    },
+    {
+     "season": 2025,
+     "week": 12,
+     "opp": "KC",
+     "a": 181.0,
+     "b": 16.0,
+     "total": 197.0
+    },
+    {
+     "season": 2025,
+     "week": 13,
+     "opp": "HOU",
+     "a": 201.0,
+     "b": 1.0,
+     "total": 202.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "BAL",
+     "a": 166.0,
+     "b": 4.0,
+     "total": 170.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "KC",
+     "a": 210.0,
+     "b": 10.0,
+     "total": 220.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "HOU",
+     "a": 235.0,
+     "b": 5.0,
+     "total": 240.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "WAS",
+     "a": 143.0,
+     "b": 2.0,
+     "total": 145.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "PIT",
+     "a": 267.0,
+     "b": 4.0,
+     "total": 271.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "TEN",
+     "a": 269.0,
+     "b": 30.0,
+     "total": 299.0
+    }
+   ]
+  },
+  {
+   "player": "Deshaun Watson",
+   "team": "CLE",
+   "opp": "TEN",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/private/f_auto,q_auto/league/otfs2docj6eahaebo5xn",
+   "game": {
+    "commence_time": "2026-10-25T17:00:00Z",
+    "team_spread": -1.5,
+    "total": 37.5,
+    "team_implied": 19.5
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 227.4,
+    "sd": 50.4,
+    "games_used": 6,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 188.9,
+      "opp_factor": 1.026,
+      "proj": 193.8,
+      "opp_allowed_pg": 241.8,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 32.4,
+      "opp_factor": 1.036,
+      "proj": 33.6,
+      "opp_allowed_pg": 18.7,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 235.3,
+      "rank": 17,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 195.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 191.0
+      },
+      "fine": null,
+      "vs_tier_prev": null,
+      "last5": {
+       "allowed_pg": 239.4,
+       "games": 5,
+       "rank": 20,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": 4.1
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 18.0,
+      "rank": 19,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 32.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 4,
+       "avg": 32.2
+      },
+      "fine": null,
+      "vs_tier_prev": null,
+      "last5": {
+       "allowed_pg": 20.2,
+       "games": 5,
+       "rank": 23,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": 2.2
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 253.3,
+     "rank": 17,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 228.3,
+     "player_games": 6,
+     "expected_vs_tiers": 223.2,
+     "min_tier_games": 2,
+     "prev_player_avg": null,
+     "prev_player_games": 0,
+     "expected_vs_tiers_prev": null,
+     "min_tier_games_prev": 0,
+     "last5": {
+      "allowed_pg": 259.6,
+      "rank": 19,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "vs_season": 6.3,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": {
+    "season_avg": 228.3,
+    "season_rank": 24,
+    "l5_avg": 225.4,
+    "l5_rank": 25,
+    "of": 33,
+    "games": 6
+   },
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "JAX",
+     "a": 205.0,
+     "b": 38.0,
+     "total": 243.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "TB",
+     "a": 238.0,
+     "b": 22.0,
+     "total": 260.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "CAR",
+     "a": 144.0,
+     "b": 45.0,
+     "total": 189.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "PIT",
+     "a": 268.0,
+     "b": 22.0,
+     "total": 290.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "NYJ",
+     "a": 155.0,
+     "b": 40.0,
+     "total": 195.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "BAL",
+     "a": 164.0,
+     "b": 29.0,
+     "total": 193.0
+    }
+   ]
+  },
+  {
    "player": "Drake Maye",
    "team": "NE",
    "opp": "CHI",
@@ -1183,6 +2967,448 @@
      "a": 235.0,
      "b": 24.0,
      "total": 259.0
+    }
+   ]
+  },
+  {
+   "player": "Geno Smith",
+   "team": "NYJ",
+   "opp": "MIA",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/q8wfqvmy7cwxdi35dtby",
+   "game": {
+    "commence_time": "2026-10-25T17:00:00Z",
+    "team_spread": -4.5,
+    "total": 39.5,
+    "team_implied": 22.0
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 215.5,
+    "sd": 64.4,
+    "games_used": 21,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 211.4,
+      "opp_factor": 0.997,
+      "proj": 210.8,
+      "opp_allowed_pg": 228.5,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 4.9,
+      "opp_factor": 0.957,
+      "proj": 4.7,
+      "opp_allowed_pg": 16.0,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 226.0,
+      "rank": 12,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 222.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 4,
+       "avg": 192.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 167.2
+      },
+      "last5": {
+       "allowed_pg": 226.0,
+       "games": 5,
+       "rank": 12,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": 0.0
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 9.8,
+      "rank": 6,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 7.0,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 2.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 8.0
+      },
+      "last5": {
+       "allowed_pg": 9.8,
+       "games": 5,
+       "rank": 9,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": 0.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 235.8,
+     "rank": 9,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": null,
+     "player_avg": 229.7,
+     "player_games": 6,
+     "expected_vs_tiers": 194.0,
+     "min_tier_games": 3,
+     "prev_player_avg": 208.9,
+     "prev_player_games": 15,
+     "expected_vs_tiers_prev": 175.2,
+     "min_tier_games_prev": 2,
+     "last5": {
+      "allowed_pg": 235.8,
+      "rank": 8,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "vs_season": 0.0,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": {
+    "season_avg": 229.7,
+    "season_rank": 23,
+    "l5_avg": 231.2,
+    "l5_rank": 22,
+    "of": 33,
+    "games": 6
+   },
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 13,
+     "opp": "LAC",
+     "a": 165.0,
+     "b": -6.0,
+     "total": 159.0
+    },
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "DEN",
+     "a": 116.0,
+     "b": 4.0,
+     "total": 120.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "HOU",
+     "a": 201.0,
+     "b": 0.0,
+     "total": 201.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "NYG",
+     "a": 176.0,
+     "b": 1.0,
+     "total": 177.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "TEN",
+     "a": 215.0,
+     "b": 7.0,
+     "total": 222.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "GB",
+     "a": 247.0,
+     "b": 17.0,
+     "total": 264.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "DET",
+     "a": 321.0,
+     "b": 12.0,
+     "total": 333.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "CHI",
+     "a": 119.0,
+     "b": 0.0,
+     "total": 119.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "CLE",
+     "a": 182.0,
+     "b": 7.0,
+     "total": 189.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "NE",
+     "a": 252.0,
+     "b": -1.0,
+     "total": 251.0
+    }
+   ]
+  },
+  {
+   "player": "Jacoby Brissett",
+   "team": "ARI",
+   "opp": "DEN",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qjswiunczrn5xmdiqhlz",
+   "game": {
+    "commence_time": "2026-10-25T20:05:00Z",
+    "team_spread": 4.5,
+    "total": 43.5,
+    "team_implied": 19.5
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 239.9,
+    "sd": 65.3,
+    "games_used": 18,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 232.5,
+      "opp_factor": 0.981,
+      "proj": 228.1,
+      "opp_allowed_pg": 221.1,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 10.7,
+      "opp_factor": 1.105,
+      "proj": 11.8,
+      "opp_allowed_pg": 21.1,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 230.0,
+      "rank": 16,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 221.3,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 1,
+       "avg": 280.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 258.4
+      },
+      "last5": {
+       "allowed_pg": 239.2,
+       "games": 5,
+       "rank": 19,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": 9.2
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 24.0,
+      "rank": 27,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 10.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 13.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 4,
+       "avg": 7.8
+      },
+      "last5": {
+       "allowed_pg": 24.2,
+       "games": 5,
+       "rank": 27,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": 0.2
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 254.0,
+     "rank": 18,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 232.0,
+     "player_games": 6,
+     "expected_vs_tiers": 293.0,
+     "min_tier_games": 1,
+     "prev_player_avg": 294.3,
+     "prev_player_games": 12,
+     "expected_vs_tiers_prev": 266.2,
+     "min_tier_games_prev": 4,
+     "last5": {
+      "allowed_pg": 263.4,
+      "rank": 21,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "vs_season": 9.4,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": {
+    "season_avg": 232.0,
+    "season_rank": 22,
+    "l5_avg": 220.2,
+    "l5_rank": 26,
+    "of": 33,
+    "games": 6
+   },
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "HOU",
+     "a": 249.0,
+     "b": 6.0,
+     "total": 255.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "ATL",
+     "a": 203.0,
+     "b": 5.0,
+     "total": 208.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "CIN",
+     "a": 212.0,
+     "b": 0.0,
+     "total": 212.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "LAR",
+     "a": 243.0,
+     "b": 19.0,
+     "total": 262.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "LAC",
+     "a": 277.0,
+     "b": 14.0,
+     "total": 291.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "SEA",
+     "a": 95.0,
+     "b": 7.0,
+     "total": 102.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "SF",
+     "a": 280.0,
+     "b": 4.0,
+     "total": 284.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "NYG",
+     "a": 166.0,
+     "b": 18.0,
+     "total": 184.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "DET",
+     "a": 292.0,
+     "b": 19.0,
+     "total": 311.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "LAR",
+     "a": 218.0,
+     "b": 2.0,
+     "total": 220.0
     }
    ]
   },
@@ -1428,6 +3654,391 @@
    },
    "under_price_assumed": false,
    "alts_eval": []
+  },
+  {
+   "player": "Jalon Daniels",
+   "team": "TB",
+   "opp": "CAR",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/hwhfl6i5drktwjvslfpn",
+   "game": {
+    "commence_time": "2026-10-25T17:00:00Z",
+    "team_spread": 3.5,
+    "total": 44.5,
+    "team_implied": 20.5
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 208.3,
+    "sd": 44.2,
+    "games_used": 3,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 168.0,
+      "opp_factor": 0.99,
+      "proj": 166.3,
+      "opp_allowed_pg": 225.1,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 37.9,
+      "opp_factor": 1.106,
+      "proj": 41.9,
+      "opp_allowed_pg": 21.2,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 237.0,
+      "rank": 18,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 167.0,
+      "player_games": 3,
+      "vs_tier": {
+       "games": 1,
+       "avg": 189.0
+      },
+      "fine": null,
+      "vs_tier_prev": null,
+      "last5": {
+       "allowed_pg": 237.0,
+       "games": 5,
+       "rank": 15,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": 0.0
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 29.2,
+      "rank": 30,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 39.0,
+      "player_games": 3,
+      "vs_tier": {
+       "games": 1,
+       "avg": 23.0
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 1,
+       "avg": 23.0
+      },
+      "vs_tier_prev": null,
+      "last5": {
+       "allowed_pg": 29.2,
+       "games": 5,
+       "rank": 29,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": 0.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 266.2,
+     "rank": 21,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 206.0,
+     "player_games": 3,
+     "expected_vs_tiers": 212.0,
+     "min_tier_games": 1,
+     "prev_player_avg": null,
+     "prev_player_games": 0,
+     "expected_vs_tiers_prev": null,
+     "min_tier_games_prev": 0,
+     "last5": {
+      "allowed_pg": 266.2,
+      "rank": 22,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "vs_season": 0.0,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": {
+    "season_avg": 206.0,
+    "season_rank": 30,
+    "l5_avg": 206.0,
+    "l5_rank": 30,
+    "of": 33,
+    "games": 3
+   },
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "GB",
+     "a": 148.0,
+     "b": 55.0,
+     "total": 203.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "DAL",
+     "a": 189.0,
+     "b": 23.0,
+     "total": 212.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "PIT",
+     "a": 164.0,
+     "b": 39.0,
+     "total": 203.0
+    }
+   ]
+  },
+  {
+   "player": "Jared Goff",
+   "team": "DET",
+   "opp": "GB",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/kaicbot8qhzrvddilbtp",
+   "game": {
+    "commence_time": "2026-10-25T20:25:00Z",
+    "team_spread": -3.0,
+    "total": 52.5,
+    "team_implied": 27.8
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 288.9,
+    "sd": 67.1,
+    "games_used": 22,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 300.7,
+      "opp_factor": 0.953,
+      "proj": 286.6,
+      "opp_allowed_pg": 208.0,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 2.5,
+      "opp_factor": 0.96,
+      "proj": 2.4,
+      "opp_allowed_pg": 16.1,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 209.2,
+      "rank": 6,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 297.0,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 1,
+       "avg": 269.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 7,
+       "avg": 226.9
+      },
+      "last5": {
+       "allowed_pg": 220.8,
+       "games": 5,
+       "rank": 8,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": 11.6
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 17.7,
+      "rank": 18,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 3.2,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 2,
+       "avg": 6.5
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 3,
+       "avg": 3.7
+      },
+      "last5": {
+       "allowed_pg": 19.6,
+       "games": 5,
+       "rank": 22,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": 1.9
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 226.9,
+     "rank": 6,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": null,
+     "player_avg": 300.2,
+     "player_games": 5,
+     "expected_vs_tiers": 275.5,
+     "min_tier_games": 1,
+     "prev_player_avg": 271.1,
+     "prev_player_games": 17,
+     "expected_vs_tiers_prev": 230.6,
+     "min_tier_games_prev": 3,
+     "last5": {
+      "allowed_pg": 240.4,
+      "rank": 10,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "vs_season": 13.5,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": {
+    "season_avg": 300.2,
+    "season_rank": 3,
+    "l5_avg": 300.2,
+    "l5_rank": 4,
+    "of": 33,
+    "games": 5
+   },
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "DAL",
+     "a": 309.0,
+     "b": -2.0,
+     "total": 307.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "LAR",
+     "a": 338.0,
+     "b": 0.0,
+     "total": 338.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "PIT",
+     "a": 364.0,
+     "b": -1.0,
+     "total": 363.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "MIN",
+     "a": 197.0,
+     "b": 2.0,
+     "total": 199.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "CHI",
+     "a": 331.0,
+     "b": 0.0,
+     "total": 331.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "NO",
+     "a": 206.0,
+     "b": 2.0,
+     "total": 208.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "BUF",
+     "a": 327.0,
+     "b": 7.0,
+     "total": 334.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "NYJ",
+     "a": 269.0,
+     "b": 6.0,
+     "total": 275.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "CAR",
+     "a": 412.0,
+     "b": 0.0,
+     "total": 412.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "ARI",
+     "a": 271.0,
+     "b": 1.0,
+     "total": 272.0
+    }
+   ]
   },
   {
    "player": "Javonte Williams",
@@ -1925,6 +4536,450 @@
    "alts_eval": []
   },
   {
+   "player": "J.J. McCarthy",
+   "team": "NYG",
+   "opp": "HOU",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/eeecyzrxuih3pv2sywvx",
+   "game": {
+    "commence_time": "2026-10-25T17:00:00Z",
+    "team_spread": 9.5,
+    "total": 43.5,
+    "team_implied": 17.0
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 210.1,
+    "sd": 58.8,
+    "games_used": 10,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 192.7,
+      "opp_factor": 1.01,
+      "proj": 194.6,
+      "opp_allowed_pg": 234.3,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 17.4,
+      "opp_factor": 0.893,
+      "proj": 15.5,
+      "opp_allowed_pg": 13.7,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 264.5,
+      "rank": 27,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 243.0,
+      "player_games": 1,
+      "vs_tier": {
+       "games": 1,
+       "avg": 243.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 3,
+       "avg": 220.3
+      },
+      "last5": {
+       "allowed_pg": 250.6,
+       "games": 5,
+       "rank": 23,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": -13.9
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 7.8,
+      "rank": 3,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 26.0,
+      "player_games": 1,
+      "vs_tier": {
+       "games": 0,
+       "avg": null
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 0,
+       "avg": null,
+       "prev": {
+        "games": 0,
+        "avg": null
+       }
+      },
+      "vs_tier_prev": {
+       "games": 3,
+       "avg": 9.7
+      },
+      "last5": {
+       "allowed_pg": 4.8,
+       "games": 5,
+       "rank": 1,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": -3.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 272.3,
+     "rank": 24,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": null,
+     "player_avg": 269.0,
+     "player_games": 1,
+     "expected_vs_tiers": null,
+     "min_tier_games": 0,
+     "prev_player_avg": 181.3,
+     "prev_player_games": 10,
+     "expected_vs_tiers_prev": 230.0,
+     "min_tier_games_prev": 3,
+     "last5": {
+      "allowed_pg": 255.4,
+      "rank": 16,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "vs_season": -16.9,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": null,
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 1,
+     "opp": "CHI",
+     "a": 143.0,
+     "b": 25.0,
+     "total": 168.0
+    },
+    {
+     "season": 2025,
+     "week": 2,
+     "opp": "ATL",
+     "a": 158.0,
+     "b": 25.0,
+     "total": 183.0
+    },
+    {
+     "season": 2025,
+     "week": 9,
+     "opp": "DET",
+     "a": 143.0,
+     "b": 12.0,
+     "total": 155.0
+    },
+    {
+     "season": 2025,
+     "week": 10,
+     "opp": "BAL",
+     "a": 248.0,
+     "b": 48.0,
+     "total": 296.0
+    },
+    {
+     "season": 2025,
+     "week": 11,
+     "opp": "CHI",
+     "a": 150.0,
+     "b": 0.0,
+     "total": 150.0
+    },
+    {
+     "season": 2025,
+     "week": 12,
+     "opp": "GB",
+     "a": 87.0,
+     "b": 10.0,
+     "total": 97.0
+    },
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "WAS",
+     "a": 163.0,
+     "b": 19.0,
+     "total": 182.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "DAL",
+     "a": 250.0,
+     "b": 15.0,
+     "total": 265.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "GB",
+     "a": 182.0,
+     "b": 7.0,
+     "total": 189.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "NO",
+     "a": 243.0,
+     "b": 26.0,
+     "total": 269.0
+    }
+   ]
+  },
+  {
+   "player": "Joe Burrow",
+   "team": "CIN",
+   "opp": "BAL",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/gnnvcgui1cijybukk2w7",
+   "game": {
+    "commence_time": "2026-10-25T17:00:00Z",
+    "team_spread": 2.5,
+    "total": 50.5,
+    "team_implied": 24.0
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 286.6,
+    "sd": 82.3,
+    "games_used": 12,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 270.5,
+      "opp_factor": 1.027,
+      "proj": 277.8,
+      "opp_allowed_pg": 242.3,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 8.6,
+      "opp_factor": 1.022,
+      "proj": 8.8,
+      "opp_allowed_pg": 18.2,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 225.7,
+      "rank": 10,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 272.2,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 1,
+       "avg": 282.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 3,
+       "avg": 211.0
+      },
+      "last5": {
+       "allowed_pg": 237.6,
+       "games": 5,
+       "rank": 17,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": 11.9
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 18.3,
+      "rank": 20,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 9.6,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 2,
+       "avg": 9.5
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 3,
+       "avg": 4.3
+      },
+      "last5": {
+       "allowed_pg": 21.2,
+       "games": 5,
+       "rank": 24,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": 2.9
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 244.0,
+     "rank": 15,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 281.8,
+     "player_games": 5,
+     "expected_vs_tiers": 291.5,
+     "min_tier_games": 1,
+     "prev_player_avg": 231.2,
+     "prev_player_games": 8,
+     "expected_vs_tiers_prev": 215.3,
+     "min_tier_games_prev": 3,
+     "last5": {
+      "allowed_pg": 258.8,
+      "rank": 18,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "vs_season": 14.8,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": {
+    "season_avg": 281.8,
+    "season_rank": 8,
+    "l5_avg": 281.8,
+    "l5_rank": 8,
+    "of": 33,
+    "games": 5
+   },
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "BUF",
+     "a": 284.0,
+     "b": 0.0,
+     "total": 284.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "BAL",
+     "a": 225.0,
+     "b": 5.0,
+     "total": 230.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "MIA",
+     "a": 309.0,
+     "b": 6.0,
+     "total": 315.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "ARI",
+     "a": 305.0,
+     "b": 2.0,
+     "total": 307.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "CLE",
+     "a": 236.0,
+     "b": 17.0,
+     "total": 253.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "TB",
+     "a": 254.0,
+     "b": 20.0,
+     "total": 274.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "HOU",
+     "a": 207.0,
+     "b": -1.0,
+     "total": 206.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "PIT",
+     "a": 282.0,
+     "b": 13.0,
+     "total": 295.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "JAX",
+     "a": 428.0,
+     "b": 6.0,
+     "total": 434.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "MIA",
+     "a": 190.0,
+     "b": 10.0,
+     "total": 200.0
+    }
+   ]
+  },
+  {
    "player": "Jonathan Taylor",
    "team": "IND",
    "opp": "MIN",
@@ -2184,6 +5239,1559 @@
    },
    "under_price_assumed": false,
    "alts_eval": []
+  },
+  {
+   "player": "Jordan Love",
+   "team": "GB",
+   "opp": "DET",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/thz8stjkbjwddxqnozi5",
+   "game": {
+    "commence_time": "2026-10-25T20:25:00Z",
+    "team_spread": 3.0,
+    "total": 52.5,
+    "team_implied": 24.8
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 301.6,
+    "sd": 78.5,
+    "games_used": 20,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 270.1,
+      "opp_factor": 1.095,
+      "proj": 295.8,
+      "opp_allowed_pg": 273.6,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 5.7,
+      "opp_factor": 1.026,
+      "proj": 5.8,
+      "opp_allowed_pg": 18.4,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 320.0,
+      "rank": 32,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 280.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 1,
+       "avg": 312.0
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 1,
+       "avg": 312.0,
+       "prev": {
+        "games": 3,
+        "avg": 329.7
+       }
+      },
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 285.4
+      },
+      "last5": {
+       "allowed_pg": 320.0,
+       "games": 5,
+       "rank": 32,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": 0.0
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 22.2,
+      "rank": 25,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 1.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 1,
+       "avg": 12.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 6,
+       "avg": 13.5
+      },
+      "last5": {
+       "allowed_pg": 22.2,
+       "games": 5,
+       "rank": 25,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": 0.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 342.2,
+     "rank": 32,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": "Bottom 5",
+     "player_avg": 282.3,
+     "player_games": 6,
+     "expected_vs_tiers": 324.0,
+     "min_tier_games": 1,
+     "prev_player_avg": 238.7,
+     "prev_player_games": 15,
+     "expected_vs_tiers_prev": 298.9,
+     "min_tier_games_prev": 5,
+     "last5": {
+      "allowed_pg": 342.2,
+      "rank": 32,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "vs_season": 0.0,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": {
+    "season_avg": 282.3,
+    "season_rank": 7,
+    "l5_avg": 261.4,
+    "l5_rank": 15,
+    "of": 33,
+    "games": 6
+   },
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 12,
+     "opp": "MIN",
+     "a": 139.0,
+     "b": 15.0,
+     "total": 154.0
+    },
+    {
+     "season": 2025,
+     "week": 13,
+     "opp": "DET",
+     "a": 234.0,
+     "b": 4.0,
+     "total": 238.0
+    },
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "CHI",
+     "a": 234.0,
+     "b": -1.0,
+     "total": 233.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "DEN",
+     "a": 276.0,
+     "b": 29.0,
+     "total": 305.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "MIN",
+     "a": 387.0,
+     "b": 0.0,
+     "total": 387.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "NYJ",
+     "a": 145.0,
+     "b": 0.0,
+     "total": 145.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "ATL",
+     "a": 312.0,
+     "b": 0.0,
+     "total": 312.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "TB",
+     "a": 197.0,
+     "b": -8.0,
+     "total": 189.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "CHI",
+     "a": 367.0,
+     "b": 6.0,
+     "total": 373.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "DAL",
+     "a": 276.0,
+     "b": 12.0,
+     "total": 288.0
+    }
+   ]
+  },
+  {
+   "player": "Kirk Cousins",
+   "team": "LV",
+   "opp": "LAR",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/za7cynvpwlsro1tsaijk",
+   "game": {
+    "commence_time": "2026-10-25T20:25:00Z",
+    "team_spread": 4.5,
+    "total": 48.5,
+    "team_implied": 22.0
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 245.6,
+    "sd": 69.4,
+    "games_used": 14,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 260.7,
+      "opp_factor": 0.942,
+      "proj": 245.5,
+      "opp_allowed_pg": 203.4,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 0.0,
+      "opp_factor": 1.139,
+      "proj": 0.0,
+      "opp_allowed_pg": 22.3,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 173.8,
+      "rank": 2,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 263.7,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 309.0
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 0,
+       "avg": null,
+       "prev": {
+        "games": 2,
+        "avg": 189.5
+       }
+      },
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 189.5
+      },
+      "last5": {
+       "allowed_pg": 167.6,
+       "games": 5,
+       "rank": 2,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": -6.2
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 29.7,
+      "rank": 31,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": -0.3,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 1,
+       "avg": 3.0
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 0,
+       "avg": null,
+       "prev": {
+        "games": 0,
+        "avg": null
+       }
+      },
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 1.0
+      },
+      "last5": {
+       "allowed_pg": 29.8,
+       "games": 5,
+       "rank": 30,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": 0.1
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 203.5,
+     "rank": 2,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": "Top 5",
+     "player_avg": 263.3,
+     "player_games": 6,
+     "expected_vs_tiers": 312.0,
+     "min_tier_games": 1,
+     "prev_player_avg": 188.8,
+     "prev_player_games": 9,
+     "expected_vs_tiers_prev": 190.5,
+     "min_tier_games_prev": 2,
+     "last5": {
+      "allowed_pg": 197.4,
+      "rank": 2,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "vs_season": -6.1,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": {
+    "season_avg": 263.3,
+    "season_rank": 15,
+    "l5_avg": 285.2,
+    "l5_rank": 6,
+    "of": 33,
+    "games": 6
+   },
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "TB",
+     "a": 373.0,
+     "b": 0.0,
+     "total": 373.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "ARI",
+     "a": 197.0,
+     "b": -3.0,
+     "total": 194.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "LAR",
+     "a": 126.0,
+     "b": 1.0,
+     "total": 127.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "NO",
+     "a": 180.0,
+     "b": 0.0,
+     "total": 180.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "MIA",
+     "a": 160.0,
+     "b": -6.0,
+     "total": 154.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "LAC",
+     "a": 253.0,
+     "b": 1.0,
+     "total": 254.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "NO",
+     "a": 248.0,
+     "b": 3.0,
+     "total": 251.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "KC",
+     "a": 365.0,
+     "b": 0.0,
+     "total": 365.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "NE",
+     "a": 243.0,
+     "b": 0.0,
+     "total": 243.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "BUF",
+     "a": 313.0,
+     "b": 0.0,
+     "total": 313.0
+    }
+   ]
+  },
+  {
+   "player": "Kyler Murray",
+   "team": "MIN",
+   "opp": "IND",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/qzoa3bglbgxpxcvjqzo1",
+   "game": {
+    "commence_time": "2026-10-25T17:00:00Z",
+    "team_spread": -6.5,
+    "total": 41.5,
+    "team_implied": 24.0
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 251.3,
+    "sd": 49.4,
+    "games_used": 8,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 210.0,
+      "opp_factor": 1.047,
+      "proj": 219.9,
+      "opp_allowed_pg": 251.4,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 31.9,
+      "opp_factor": 0.983,
+      "proj": 31.4,
+      "opp_allowed_pg": 16.9,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 240.3,
+      "rank": 21,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 214.7,
+      "player_games": 3,
+      "vs_tier": {
+       "games": 2,
+       "avg": 207.5
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 210.0
+      },
+      "last5": {
+       "allowed_pg": 223.6,
+       "games": 5,
+       "rank": 9,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": -16.7
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 21.5,
+      "rank": 24,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 28.0,
+      "player_games": 3,
+      "vs_tier": {
+       "games": 1,
+       "avg": 51.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 0,
+       "avg": null
+      },
+      "last5": {
+       "allowed_pg": 17.8,
+       "games": 5,
+       "rank": 18,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": -3.7
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 261.8,
+     "rank": 20,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 242.7,
+     "player_games": 3,
+     "expected_vs_tiers": 258.5,
+     "min_tier_games": 1,
+     "prev_player_avg": 227.0,
+     "prev_player_games": 5,
+     "expected_vs_tiers_prev": null,
+     "min_tier_games_prev": 0,
+     "last5": {
+      "allowed_pg": 241.4,
+      "rank": 13,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "vs_season": -20.4,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": {
+    "season_avg": 242.7,
+    "season_rank": 20,
+    "l5_avg": 242.7,
+    "l5_rank": 19,
+    "of": 33,
+    "games": 3
+   },
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 1,
+     "opp": "NO",
+     "a": 163.0,
+     "b": 38.0,
+     "total": 201.0
+    },
+    {
+     "season": 2025,
+     "week": 2,
+     "opp": "CAR",
+     "a": 220.0,
+     "b": 32.0,
+     "total": 252.0
+    },
+    {
+     "season": 2025,
+     "week": 3,
+     "opp": "SF",
+     "a": 159.0,
+     "b": 37.0,
+     "total": 196.0
+    },
+    {
+     "season": 2025,
+     "week": 4,
+     "opp": "SEA",
+     "a": 200.0,
+     "b": 41.0,
+     "total": 241.0
+    },
+    {
+     "season": 2025,
+     "week": 5,
+     "opp": "TEN",
+     "a": 220.0,
+     "b": 25.0,
+     "total": 245.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "TB",
+     "a": 168.0,
+     "b": 17.0,
+     "total": 185.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "MIA",
+     "a": 247.0,
+     "b": 16.0,
+     "total": 263.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "NO",
+     "a": 229.0,
+     "b": 51.0,
+     "total": 280.0
+    }
+   ]
+  },
+  {
+   "player": "Malik Willis",
+   "team": "MIA",
+   "opp": "NYJ",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/earybrx24kkhnk4innsw",
+   "game": {
+    "commence_time": "2026-10-25T17:00:00Z",
+    "team_spread": 4.5,
+    "total": 39.5,
+    "team_implied": 17.5
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 205.1,
+    "sd": 67.1,
+    "games_used": 6,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 168.7,
+      "opp_factor": 0.964,
+      "proj": 162.6,
+      "opp_allowed_pg": 213.1,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 42.7,
+      "opp_factor": 0.995,
+      "proj": 42.5,
+      "opp_allowed_pg": 17.3,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 202.0,
+      "rank": 5,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 169.8,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 2,
+       "avg": 147.5
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 1,
+       "avg": 85.0,
+       "prev": {
+        "games": 0,
+        "avg": null
+       }
+      },
+      "vs_tier_prev": {
+       "games": 0,
+       "avg": null
+      },
+      "last5": {
+       "allowed_pg": 214.4,
+       "games": 5,
+       "rank": 7,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": 12.4
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 15.3,
+      "rank": 14,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 37.2,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 3,
+       "avg": 35.3
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 1,
+       "avg": 60.0
+      },
+      "last5": {
+       "allowed_pg": 14.2,
+       "games": 5,
+       "rank": 16,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": -1.1
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 217.3,
+     "rank": 4,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": "Top 5",
+     "player_avg": 207.0,
+     "player_games": 5,
+     "expected_vs_tiers": 182.8,
+     "min_tier_games": 2,
+     "prev_player_avg": 256.5,
+     "prev_player_games": 2,
+     "expected_vs_tiers_prev": null,
+     "min_tier_games_prev": 0,
+     "last5": {
+      "allowed_pg": 228.6,
+      "rank": 6,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "vs_season": 11.3,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": {
+    "season_avg": 207.0,
+    "season_rank": 29,
+    "l5_avg": 207.0,
+    "l5_rank": 29,
+    "of": 33,
+    "games": 5
+   },
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "BAL",
+     "a": 288.0,
+     "b": 60.0,
+     "total": 348.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "LV",
+     "a": 220.0,
+     "b": 39.0,
+     "total": 259.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "SF",
+     "a": 197.0,
+     "b": 6.0,
+     "total": 203.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "KC",
+     "a": 210.0,
+     "b": 56.0,
+     "total": 266.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "MIN",
+     "a": 85.0,
+     "b": 11.0,
+     "total": 96.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "CIN",
+     "a": 137.0,
+     "b": 74.0,
+     "total": 211.0
+    }
+   ]
+  },
+  {
+   "player": "Matthew Stafford",
+   "team": "LAR",
+   "opp": "LV",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/jwpkjfrkzufdyh8u1mg7",
+   "game": {
+    "commence_time": "2026-10-25T20:25:00Z",
+    "team_spread": -4.5,
+    "total": 48.5,
+    "team_implied": 26.5
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 306.1,
+    "sd": 82.5,
+    "games_used": 23,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 300.7,
+      "opp_factor": 1.009,
+      "proj": 303.4,
+      "opp_allowed_pg": 233.9,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 2.8,
+      "opp_factor": 0.97,
+      "proj": 2.8,
+      "opp_allowed_pg": 16.4,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 253.5,
+      "rank": 24,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 299.0,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 3,
+       "avg": 307.3
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 8,
+       "avg": 292.0
+      },
+      "last5": {
+       "allowed_pg": 260.2,
+       "games": 5,
+       "rank": 25,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": 6.7
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 17.2,
+      "rank": 17,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 3.5,
+      "player_games": 6,
+      "vs_tier": {
+       "games": 2,
+       "avg": 5.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 6,
+       "avg": -0.3
+      },
+      "last5": {
+       "allowed_pg": 12.8,
+       "games": 5,
+       "rank": 13,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": -4.4
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 270.7,
+     "rank": 23,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": null,
+     "player_avg": 302.5,
+     "player_games": 6,
+     "expected_vs_tiers": 312.3,
+     "min_tier_games": 2,
+     "prev_player_avg": 276.9,
+     "prev_player_games": 17,
+     "expected_vs_tiers_prev": 291.7,
+     "min_tier_games_prev": 6,
+     "last5": {
+      "allowed_pg": 273.0,
+      "rank": 23,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "vs_season": 2.3,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": {
+    "season_avg": 302.5,
+    "season_rank": 2,
+    "l5_avg": 332.2,
+    "l5_rank": 1,
+    "of": 33,
+    "games": 6
+   },
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "DET",
+     "a": 368.0,
+     "b": 2.0,
+     "total": 370.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "SEA",
+     "a": 457.0,
+     "b": 6.0,
+     "total": 463.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "ATL",
+     "a": 269.0,
+     "b": 0.0,
+     "total": 269.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "ARI",
+     "a": 259.0,
+     "b": 3.0,
+     "total": 262.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "SF",
+     "a": 155.0,
+     "b": -1.0,
+     "total": 154.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "NYG",
+     "a": 327.0,
+     "b": -1.0,
+     "total": 326.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "DEN",
+     "a": 390.0,
+     "b": 13.0,
+     "total": 403.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "PHI",
+     "a": 317.0,
+     "b": 10.0,
+     "total": 327.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "BUF",
+     "a": 383.0,
+     "b": 0.0,
+     "total": 383.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "ARI",
+     "a": 222.0,
+     "b": 0.0,
+     "total": 222.0
+    }
+   ]
+  },
+  {
+   "player": "Michael Penix Jr.",
+   "team": "ATL",
+   "opp": "SF",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/mip4kogkqxwkkya6mvmh",
+   "game": {
+    "commence_time": "2026-10-25T17:00:00Z",
+    "team_spread": 3.5,
+    "total": 48.5,
+    "team_implied": 22.5
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 229.9,
+    "sd": 42.3,
+    "games_used": 13,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 225.1,
+      "opp_factor": 1.008,
+      "proj": 226.9,
+      "opp_allowed_pg": 233.7,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 3.8,
+      "opp_factor": 0.791,
+      "proj": 3.0,
+      "opp_allowed_pg": 10.2,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 225.7,
+      "rank": 11,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 236.0,
+      "player_games": 4,
+      "vs_tier": {
+       "games": 1,
+       "avg": 225.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 173.5
+      },
+      "last5": {
+       "allowed_pg": 237.2,
+       "games": 5,
+       "rank": 16,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": 11.5
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 7.2,
+      "rank": 2,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 1.2,
+      "player_games": 4,
+      "vs_tier": {
+       "games": 1,
+       "avg": 1.0
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 0,
+       "avg": null,
+       "prev": {
+        "games": 4,
+        "avg": 5.8
+       }
+      },
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 4.4
+      },
+      "last5": {
+       "allowed_pg": 7.0,
+       "games": 5,
+       "rank": 5,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": -0.2
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 232.9,
+     "rank": 8,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": null,
+     "player_avg": 237.2,
+     "player_games": 4,
+     "expected_vs_tiers": 226.0,
+     "min_tier_games": 1,
+     "prev_player_avg": 228.0,
+     "prev_player_games": 9,
+     "expected_vs_tiers_prev": 177.9,
+     "min_tier_games_prev": 2,
+     "last5": {
+      "allowed_pg": 244.2,
+      "rank": 15,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "vs_season": 11.3,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": {
+    "season_avg": 237.2,
+    "season_rank": 21,
+    "l5_avg": 237.2,
+    "l5_rank": 20,
+    "of": 33,
+    "games": 4
+   },
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 4,
+     "opp": "WAS",
+     "a": 313.0,
+     "b": 2.0,
+     "total": 315.0
+    },
+    {
+     "season": 2025,
+     "week": 6,
+     "opp": "BUF",
+     "a": 250.0,
+     "b": 6.0,
+     "total": 256.0
+    },
+    {
+     "season": 2025,
+     "week": 7,
+     "opp": "SF",
+     "a": 241.0,
+     "b": 6.0,
+     "total": 247.0
+    },
+    {
+     "season": 2025,
+     "week": 9,
+     "opp": "NE",
+     "a": 221.0,
+     "b": 19.0,
+     "total": 240.0
+    },
+    {
+     "season": 2025,
+     "week": 10,
+     "opp": "IND",
+     "a": 177.0,
+     "b": -1.0,
+     "total": 176.0
+    },
+    {
+     "season": 2025,
+     "week": 11,
+     "opp": "CAR",
+     "a": 175.0,
+     "b": 9.0,
+     "total": 184.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "GB",
+     "a": 256.0,
+     "b": -2.0,
+     "total": 254.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "NO",
+     "a": 223.0,
+     "b": -2.0,
+     "total": 221.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "BAL",
+     "a": 240.0,
+     "b": 8.0,
+     "total": 248.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "CHI",
+     "a": 225.0,
+     "b": 1.0,
+     "total": 226.0
+    }
+   ]
+  },
+  {
+   "player": "Patrick Mahomes",
+   "team": "KC",
+   "opp": "SEA",
+   "home": false,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/wdckwtob1lybvkmxnf7p",
+   "game": {
+    "commence_time": "2026-10-26T00:20:00Z",
+    "team_spread": 2.5,
+    "total": 42.5,
+    "team_implied": 20.0
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 246.7,
+    "sd": 61.7,
+    "games_used": 19,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 255.7,
+      "opp_factor": 0.902,
+      "proj": 230.6,
+      "opp_allowed_pg": 184.9,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 15.8,
+      "opp_factor": 1.015,
+      "proj": 16.1,
+      "opp_allowed_pg": 18.0,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 156.8,
+      "rank": 1,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 261.8,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 1,
+       "avg": 272.0
+      },
+      "fine": {
+       "tier": "top5",
+       "label": "Top 5",
+       "games": 0,
+       "avg": null,
+       "prev": {
+        "games": 3,
+        "avg": 232.3
+       }
+      },
+      "vs_tier_prev": {
+       "games": 5,
+       "avg": 208.8
+      },
+      "last5": {
+       "allowed_pg": 152.6,
+       "games": 5,
+       "rank": 1,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": -4.2
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 18.8,
+      "rank": 22,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 11.4,
+      "player_games": 5,
+      "vs_tier": {
+       "games": 1,
+       "avg": 0.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 6,
+       "avg": 28.0
+      },
+      "last5": {
+       "allowed_pg": 13.2,
+       "games": 5,
+       "rank": 14,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": -5.6
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 175.6,
+     "rank": 1,
+     "tier": "top",
+     "tier_label": "Top 10",
+     "fine_label": "Top 5",
+     "player_avg": 273.2,
+     "player_games": 5,
+     "expected_vs_tiers": 272.0,
+     "min_tier_games": 1,
+     "prev_player_avg": 286.4,
+     "prev_player_games": 14,
+     "expected_vs_tiers_prev": 236.8,
+     "min_tier_games_prev": 5,
+     "last5": {
+      "allowed_pg": 165.8,
+      "rank": 1,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "vs_season": -9.8,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": {
+    "season_avg": 273.2,
+    "season_rank": 12,
+    "l5_avg": 273.2,
+    "l5_rank": 13,
+    "of": 33,
+    "games": 5
+   },
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 11,
+     "opp": "DEN",
+     "a": 276.0,
+     "b": 3.0,
+     "total": 279.0
+    },
+    {
+     "season": 2025,
+     "week": 12,
+     "opp": "IND",
+     "a": 352.0,
+     "b": 30.0,
+     "total": 382.0
+    },
+    {
+     "season": 2025,
+     "week": 13,
+     "opp": "DAL",
+     "a": 261.0,
+     "b": 30.0,
+     "total": 291.0
+    },
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "HOU",
+     "a": 160.0,
+     "b": 59.0,
+     "total": 219.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "LAC",
+     "a": 189.0,
+     "b": 15.0,
+     "total": 204.0
+    },
+    {
+     "season": 2026,
+     "week": 1,
+     "opp": "DEN",
+     "a": 184.0,
+     "b": 23.0,
+     "total": 207.0
+    },
+    {
+     "season": 2026,
+     "week": 2,
+     "opp": "IND",
+     "a": 382.0,
+     "b": 17.0,
+     "total": 399.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "MIA",
+     "a": 246.0,
+     "b": 1.0,
+     "total": 247.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "LV",
+     "a": 225.0,
+     "b": 0.0,
+     "total": 225.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "LAC",
+     "a": 272.0,
+     "b": 16.0,
+     "total": 288.0
+    }
+   ]
   },
   {
    "player": "Rhamondre Stevenson",
@@ -2681,6 +7289,386 @@
    "alts_eval": []
   },
   {
+   "player": "Sam Darnold",
+   "team": "SEA",
+   "opp": "KC",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fyay8vruj0cqmhopufzk",
+   "game": {
+    "commence_time": "2026-10-26T00:20:00Z",
+    "team_spread": -2.5,
+    "total": 42.5,
+    "team_implied": 22.5
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 239.4,
+    "sd": 70.2,
+    "games_used": 20,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 238.7,
+      "opp_factor": 0.965,
+      "proj": 230.4,
+      "opp_allowed_pg": 213.7,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 8.6,
+      "opp_factor": 1.046,
+      "proj": 9.0,
+      "opp_allowed_pg": 19.1,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 224.0,
+      "rank": 9,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "player_avg": 255.0,
+      "player_games": 4,
+      "vs_tier": {
+       "games": 1,
+       "avg": 168.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 3,
+       "avg": 186.3
+      },
+      "last5": {
+       "allowed_pg": 224.0,
+       "games": 5,
+       "rank": 11,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": 0.0
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 18.8,
+      "rank": 21,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 8.8,
+      "player_games": 4,
+      "vs_tier": {
+       "games": 0,
+       "avg": null
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 3,
+       "avg": 0.3
+      },
+      "last5": {
+       "allowed_pg": 18.8,
+       "games": 5,
+       "rank": 20,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": 0.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 242.8,
+     "rank": 14,
+     "tier": "mid",
+     "tier_label": "Mid 12",
+     "fine_label": null,
+     "player_avg": 263.8,
+     "player_games": 4,
+     "expected_vs_tiers": null,
+     "min_tier_games": 0,
+     "prev_player_avg": 243.7,
+     "prev_player_games": 17,
+     "expected_vs_tiers_prev": 186.6,
+     "min_tier_games_prev": 3,
+     "last5": {
+      "allowed_pg": 242.8,
+      "rank": 14,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "vs_season": 0.0,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": {
+    "season_avg": 263.8,
+    "season_rank": 14,
+    "l5_avg": 263.8,
+    "l5_rank": 14,
+    "of": 33,
+    "games": 4
+   },
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 13,
+     "opp": "MIN",
+     "a": 128.0,
+     "b": 0.0,
+     "total": 128.0
+    },
+    {
+     "season": 2025,
+     "week": 14,
+     "opp": "ATL",
+     "a": 249.0,
+     "b": 23.0,
+     "total": 272.0
+    },
+    {
+     "season": 2025,
+     "week": 15,
+     "opp": "IND",
+     "a": 271.0,
+     "b": 5.0,
+     "total": 276.0
+    },
+    {
+     "season": 2025,
+     "week": 16,
+     "opp": "LAR",
+     "a": 270.0,
+     "b": 7.0,
+     "total": 277.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "CAR",
+     "a": 147.0,
+     "b": 2.0,
+     "total": 149.0
+    },
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "SF",
+     "a": 198.0,
+     "b": 9.0,
+     "total": 207.0
+    },
+    {
+     "season": 2026,
+     "week": 3,
+     "opp": "WAS",
+     "a": 379.0,
+     "b": 5.0,
+     "total": 384.0
+    },
+    {
+     "season": 2026,
+     "week": 4,
+     "opp": "LAC",
+     "a": 168.0,
+     "b": 6.0,
+     "total": 174.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "SF",
+     "a": 195.0,
+     "b": 5.0,
+     "total": 200.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "DEN",
+     "a": 278.0,
+     "b": 19.0,
+     "total": 297.0
+    }
+   ]
+  },
+  {
+   "player": "Tanner McKee",
+   "team": "PHI",
+   "opp": "DAL",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/oveivzhzv13jrfvkp8zg",
+   "game": {
+    "commence_time": "2026-10-27T00:15:00Z",
+    "team_spread": 4.5,
+    "total": 44.5,
+    "team_implied": 20.0
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 239.4,
+    "sd": 55.4,
+    "games_used": 2,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 226.5,
+      "opp_factor": 1.049,
+      "proj": 237.6,
+      "opp_allowed_pg": 252.6,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 1.3,
+      "opp_factor": 1.367,
+      "proj": 1.8,
+      "opp_allowed_pg": 30.3,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 239.2,
+      "rank": 20,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 215.0,
+      "player_games": 1,
+      "vs_tier": {
+       "games": 1,
+       "avg": 215.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 0,
+       "avg": null
+      },
+      "last5": {
+       "allowed_pg": 241.0,
+       "games": 5,
+       "rank": 21,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": 1.8
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 37.2,
+      "rank": 32,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 0.0,
+      "player_games": 1,
+      "vs_tier": {
+       "games": 1,
+       "avg": 0.0
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 1,
+       "avg": 0.0,
+       "prev": {
+        "games": 0,
+        "avg": null
+       }
+      },
+      "vs_tier_prev": {
+       "games": 1,
+       "avg": 3.0
+      },
+      "last5": {
+       "allowed_pg": 33.8,
+       "games": 5,
+       "rank": 32,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": -3.4
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 276.4,
+     "rank": 28,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": "Bottom 5",
+     "player_avg": 215.0,
+     "player_games": 1,
+     "expected_vs_tiers": 215.0,
+     "min_tier_games": 1,
+     "prev_player_avg": 244.0,
+     "prev_player_games": 1,
+     "expected_vs_tiers_prev": null,
+     "min_tier_games_prev": 0,
+     "last5": {
+      "allowed_pg": 274.8,
+      "rank": 25,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "vs_season": -1.6,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": null,
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 18,
+     "opp": "WAS",
+     "a": 241.0,
+     "b": 3.0,
+     "total": 244.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "CAR",
+     "a": 215.0,
+     "b": 0.0,
+     "total": 215.0
+    }
+   ]
+  },
+  {
    "player": "TreVeyon Henderson",
    "team": "NE",
    "opp": "CHI",
@@ -2924,6 +7912,189 @@
    "alts_eval": []
   },
   {
+   "player": "Tyler Huntley",
+   "team": "BAL",
+   "opp": "CIN",
+   "home": true,
+   "pos": "QB",
+   "market": "pass_rush",
+   "market_label": "Passing + Rushing Yds",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/fxyjf9d5qkwqjdd8ypvv",
+   "game": {
+    "commence_time": "2026-10-25T17:00:00Z",
+    "team_spread": -2.5,
+    "total": 50.5,
+    "team_implied": 26.5
+   },
+   "feed_halves": {
+    "a": null,
+    "b": null
+   },
+   "implied_line": null,
+   "line": null,
+   "projection": {
+    "proj_total": 202.8,
+    "sd": 47.7,
+    "games_used": 5,
+    "components": [
+     {
+      "name": "Passing yds",
+      "weighted_avg": 154.2,
+      "opp_factor": 1.033,
+      "proj": 159.3,
+      "opp_allowed_pg": 245.0,
+      "league_pg": 229.8
+     },
+     {
+      "name": "Rushing yds",
+      "weighted_avg": 37.2,
+      "opp_factor": 1.169,
+      "proj": 43.5,
+      "opp_allowed_pg": 23.4,
+      "league_pg": 17.5
+     }
+    ]
+   },
+   "matchup": {
+    "through_week": 6,
+    "categories": [
+     {
+      "key": "a",
+      "name": "Passing",
+      "opp_label": "Passing yds allowed to QBs",
+      "allowed_pg": 245.0,
+      "rank": 22,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "player_avg": 183.0,
+      "player_games": 2,
+      "vs_tier": {
+       "games": 1,
+       "avg": 165.0
+      },
+      "fine": null,
+      "vs_tier_prev": {
+       "games": 2,
+       "avg": 127.0
+      },
+      "last5": {
+       "allowed_pg": 245.0,
+       "games": 5,
+       "rank": 22,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": 0.0
+      }
+     },
+     {
+      "key": "b",
+      "name": "Rushing",
+      "opp_label": "Rushing yds allowed to QBs",
+      "allowed_pg": 28.6,
+      "rank": 29,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "player_avg": 24.0,
+      "player_games": 2,
+      "vs_tier": {
+       "games": 0,
+       "avg": null
+      },
+      "fine": {
+       "tier": "bottom5",
+       "label": "Bottom 5",
+       "games": 0,
+       "avg": null,
+       "prev": {
+        "games": 1,
+        "avg": 53.0
+       }
+      },
+      "vs_tier_prev": {
+       "games": 1,
+       "avg": 53.0
+      },
+      "last5": {
+       "allowed_pg": 28.6,
+       "games": 5,
+       "rank": 28,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": 0.0
+      }
+     }
+    ],
+    "combined": {
+     "allowed_pg": 273.6,
+     "rank": 26,
+     "tier": "bot",
+     "tier_label": "Bottom 10",
+     "fine_label": null,
+     "player_avg": 207.0,
+     "player_games": 2,
+     "expected_vs_tiers": null,
+     "min_tier_games": 0,
+     "prev_player_avg": 145.0,
+     "prev_player_games": 4,
+     "expected_vs_tiers_prev": 180.0,
+     "min_tier_games_prev": 1,
+     "last5": {
+      "allowed_pg": 273.6,
+      "rank": 24,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "vs_season": 0.0,
+      "games": 5
+     }
+    },
+    "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
+   },
+   "player_rank": null,
+   "partial_games_dropped": 0,
+   "log": [
+    {
+     "season": 2025,
+     "week": 6,
+     "opp": "LAR",
+     "a": 68.0,
+     "b": 39.0,
+     "total": 107.0
+    },
+    {
+     "season": 2025,
+     "week": 8,
+     "opp": "CHI",
+     "a": 186.0,
+     "b": 53.0,
+     "total": 239.0
+    },
+    {
+     "season": 2025,
+     "week": 17,
+     "opp": "GB",
+     "a": 107.0,
+     "b": 60.0,
+     "total": 167.0
+    },
+    {
+     "season": 2026,
+     "week": 5,
+     "opp": "ATL",
+     "a": 201.0,
+     "b": 20.0,
+     "total": 221.0
+    },
+    {
+     "season": 2026,
+     "week": 6,
+     "opp": "CLE",
+     "a": 165.0,
+     "b": 28.0,
+     "total": 193.0
+    }
+   ]
+  },
+  {
    "player": "Tyler Shough",
    "team": "NO",
    "opp": "PIT",
@@ -3144,6 +8315,5 @@
     }
    ]
   }
- ],
- "coeus_raw": ""
+ ]
 }

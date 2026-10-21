@@ -572,6 +572,17 @@ def main():
                 c = add(name, mk, game)
                 c["feed_a"] = (A[name].get("line") or {}).get("point")
                 c["feed_b"] = (B[name].get("line") or {}).get("point")
+    # Every team's starting QB on this week's slate gets a card (projection only until a real line is typed in).
+    # "Starting" = the team's QB from his most recent game with 15+ attempts. Injuries/depth changes are not known here.
+    cur_df = frames["cur"]
+    if cur_df is not None:
+        qbx = cur_df[(cur_df["position"] == "QB") & (cur_df["attempts"].fillna(0) >= 15)].sort_values("week")
+        for (aw, hm) in ctx:
+            for team in (aw, hm):
+                t = qbx[qbx["team"] == team]
+                if t.empty:
+                    continue
+                add(t.iloc[-1]["player_display_name"], "pass_rush", (aw, hm))
     for ln in manual.get("lines", []):
         mk = ln.get("market")
         if mk not in MARKETS:
