@@ -173,13 +173,6 @@
       }
     },
     "wk06": {
-      "prop_breakdown": {
-        "w": 27,
-        "l": 21,
-        "p": 3,
-        "ungraded": 0,
-        "units": 2.76
-      },
       "best_10": {
         "w": 8,
         "l": 2,
@@ -187,7 +180,35 @@
         "ungraded": 0,
         "units": 5.04
       },
+      "prop_breakdown": {
+        "w": 27,
+        "l": 21,
+        "p": 3,
+        "ungraded": 0,
+        "units": 2.76
+      },
+      "favorite_ou": {
+        "w": 15,
+        "l": 14,
+        "p": 2,
+        "ungraded": 0,
+        "units": -0.8
+      },
       "td_parlays": {
+        "w": 0,
+        "l": 0,
+        "p": 0,
+        "ungraded": 0,
+        "units": 0.0
+      },
+      "overall": {
+        "w": 24,
+        "l": 20,
+        "p": 2,
+        "ungraded": 0,
+        "units": 1.12
+      },
+      "spread_parlays": {
         "w": 0,
         "l": 0,
         "p": 0,
@@ -200,27 +221,6 @@
         "p": 0,
         "ungraded": 0,
         "units": 7.13
-      },
-      "overall": {
-        "w": 24,
-        "l": 20,
-        "p": 2,
-        "ungraded": 0,
-        "units": 1.12
-      },
-      "favorite_ou": {
-        "w": 15,
-        "l": 14,
-        "p": 2,
-        "ungraded": 0,
-        "units": -0.8
-      },
-      "spread_parlays": {
-        "w": 0,
-        "l": 0,
-        "p": 0,
-        "ungraded": 0,
-        "units": 0.0
       },
       "unique": {
         "w": 24,
@@ -260,40 +260,19 @@
     }
   },
   "season_totals": {
-    "prop_breakdown": {
-      "w": 80,
-      "l": 83,
-      "p": 3,
-      "ungraded": 0,
-      "units": -12.86
-    },
-    "td_parlays": {
-      "w": 3,
-      "l": 17,
-      "p": 0,
-      "ungraded": 0,
-      "units": -9.2
-    },
-    "entries": {
-      "w": 296,
-      "l": 279,
-      "p": 6,
-      "ungraded": 0,
-      "units": 0.0
-    },
-    "parlays": {
-      "w": 7,
-      "l": 24,
-      "p": 0,
-      "ungraded": 0,
-      "units": 11.23
-    },
     "spread_parlays_legs": {
       "w": 10,
       "l": 9,
       "p": 1,
       "ungraded": 0,
       "units": 0.2
+    },
+    "prop_breakdown": {
+      "w": 80,
+      "l": 83,
+      "p": 3,
+      "ungraded": 0,
+      "units": -12.86
     },
     "overall": {
       "w": 70,
@@ -302,26 +281,19 @@
       "ungraded": 0,
       "units": -15.0
     },
-    "unique": {
-      "w": 70,
-      "l": 76,
-      "p": 2,
-      "ungraded": 0,
-      "units": -15.0
-    },
-    "td_parlays_legs": {
-      "w": 12,
+    "spread_parlays": {
+      "w": 0,
       "l": 14,
       "p": 0,
       "ungraded": 0,
-      "units": -2.57
+      "units": -14.0
     },
-    "parlays_legs": {
-      "w": 22,
-      "l": 25,
+    "parlays": {
+      "w": 7,
+      "l": 24,
       "p": 0,
       "ungraded": 0,
-      "units": -5.75
+      "units": 11.23
     },
     "best_10": {
       "w": 11,
@@ -337,13 +309,41 @@
       "ungraded": 0,
       "units": -5.63
     },
-    "spread_parlays": {
-      "w": 0,
+    "unique": {
+      "w": 70,
+      "l": 76,
+      "p": 2,
+      "ungraded": 0,
+      "units": -15.0
+    },
+    "td_parlays": {
+      "w": 3,
+      "l": 17,
+      "p": 0,
+      "ungraded": 0,
+      "units": -9.2
+    },
+    "parlays_legs": {
+      "w": 22,
+      "l": 25,
+      "p": 0,
+      "ungraded": 0,
+      "units": -5.75
+    },
+    "td_parlays_legs": {
+      "w": 12,
       "l": 14,
       "p": 0,
       "ungraded": 0,
-      "units": -14.0
+      "units": -2.57
+    },
+    "entries": {
+      "w": 296,
+      "l": 279,
+      "p": 6,
+      "ungraded": 0,
+      "units": 0.0
     }
   },
-  "generated_at": "2026-10-20T22:00:42.568186+00:00"
+  "generated_at": "2026-10-21T00:21:35.435187+00:00"
 }

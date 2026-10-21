@@ -38,6 +38,8 @@
 .fav-badge.yes{color:var(--accent-green);background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3)}
 .fav-badge.no{color:var(--accent-red);background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.3)}
 .fav-badge.mid{color:var(--text-mid);background:var(--surface2);border:1px solid var(--border)}
+.fav-badge.neu{color:var(--accent-blue);background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.35)}
+.fav-badge.check{border-style:dashed}
 .ic-section-label{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.15em;text-transform:uppercase;
   color:var(--text-dim);margin:12px 0 6px}
 .ic-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;font-size:12px}
@@ -453,8 +455,8 @@ function comboEffLine(r){
 }
 function comboChip(ev){
   if(!ev) return `<span class="fav-badge mid">NEEDS LINE</span>`;
-  if(ev.lean === 'NEUTRAL') return `<span class="fav-badge mid">NEUTRAL</span>`;
-  if(ev.lean === 'CHECK') return `<span class="fav-badge" style="color:var(--accent-gold);background:rgba(250,204,21,.1);border:1px solid rgba(250,204,21,.35)" title="The projection is far from the line, so read the note before trusting this">${ev.side}</span>`;
+  if(ev.lean === 'NEUTRAL') return `<span class="fav-badge neu">NEUTRAL</span>`;
+  if(ev.lean === 'CHECK') return `<span class="fav-badge check ${ev.side === 'OVER' ? 'yes' : 'no'}" title="The projection is far from the line, so read the note before trusting this">⚠ ${ev.side}</span>`;
   const cls = ev.side === 'OVER' ? 'yes' : 'no';
   return `<span class="fav-badge ${cls}">${ev.lean} ${ev.side}</span>`;
 }
@@ -466,7 +468,7 @@ function comboResultHTML(r){
   if(ev){
     h += `<div class="ic-row"><span class="ic-row-label">Model vs line</span><span class="cell-val">${ev.diff >= 0 ? '+' : ''}${ev.diff.toFixed(1)} yds (${(100 * ev.gap).toFixed(0)}%)</span></div>
           <div class="ic-row"><span class="ic-row-label">Best side</span><span>${comboChip(ev)} <span class="rank-chip">${(100 * ev.p).toFixed(0)}% · edge ${ev.edge >= 0 ? '+' : ''}${(100 * ev.edge).toFixed(1)} pts</span></span></div>`;
-    if(ev.lean === 'CHECK') h += `<div class="empty" style="padding:4px 0 0;text-align:left;font-size:10px">Caution: the projection is more than 12% away from the line (amber label). That usually means the model is missing something (game script, role change), not that the book is wrong by that much. Read the card before trusting it.</div>`;
+    if(ev.lean === 'CHECK') h += `<div class="empty" style="padding:4px 0 0;text-align:left;font-size:10px">Caution: the projection is more than 12% away from the line (⚠ dashed label). That usually means the model is missing something (game script, role change), not that the book is wrong by that much. Read the card before trusting it.</div>`;
     if(L.edited) h += `<div class="empty" style="padding:4px 0 0;text-align:left;font-size:10px">Using the line you typed. Coeus's note below was written for the saved line.</div>`;
   } else {
     h += `<div class="ic-row"><span class="ic-row-label">Best side</span><span>${comboChip(null)}</span></div>`;
@@ -484,6 +486,19 @@ function comboAvgText(x){
 function comboPair(cur, prev){
   return `<span class="rank-chip">2026</span> ${comboAvgText(cur)} &nbsp;·&nbsp; <span class="rank-chip">2025</span> ${comboAvgText(prev)}`;
 }
+function comboL5Row(row, l){
+  if(!l) return '';
+  const d = l.vs_season, dTxt = d == null ? '' : ` <span class="rank-chip" title="Last-5 average minus season average">${d > 0 ? '+' : ''}${d} vs season</span>`;
+  return row('Last 5 games', `<b>${l.allowed_pg}</b>/gm ${l.tier ? comboTierChip(l.tier, l.tier_label, l.rank) : ''}${dTxt} <span class="rank-chip">${comboNText(l.games ?? 0)}</span>`);
+}
+function comboPlayerRankHTML(r){
+  const p = r.player_rank; if(!p) return '';
+  const pos = r.pos || '';
+  const tag = (rank, of) => `<span class="rank-chip" title="Rank ${rank} of ${of} ${esc2(pos)}s (1 = most yards per game)">#${rank} of ${of}</span>`;
+  return `<div class="ic-section-label">${esc2(r.player)} among ${esc2(pos)}s</div>
+    <div class="ic-row"><span class="ic-row-label">Season</span><span><b>${p.season_avg}</b>/gm ${tag(p.season_rank, p.of)} <span class="rank-chip">${p.games}g</span></span></div>
+    <div class="ic-row"><span class="ic-row-label">Last 5 games</span><span><b>${p.l5_avg}</b>/gm ${tag(p.l5_rank, p.of)}</span></div>`;
+}
 function comboMatchupHTML(r){
   const m = r.matchup; if(!m) return '';
   const row = (label, html) => `<div class="ic-row" style="align-items:flex-start"><span class="ic-row-label">${label}</span><span style="text-align:right">${html}</span></div>`;
@@ -491,6 +506,7 @@ function comboMatchupHTML(r){
     let h = `<div style="padding:8px 0;border-top:1px solid var(--hairline)">
       <div class="ic-row" style="padding:0 0 4px"><b>${esc2(c.name)}</b>
         <span>${esc2(r.opp)} allows <b>${c.allowed_pg}</b>/gm ${comboTierChip(c.tier, c.tier_label, c.rank)}${c.fine ? ' <span class="rank-chip">' + esc2(c.fine.label) + '</span>' : ''}</span></div>`;
+    h += comboL5Row(row, c.last5);
     h += row('Player avg / gm', `<b>${c.player_avg ?? '—'}</b> <span class="rank-chip">${c.player_games}g</span>`);
     h += row(`Avg vs ${esc2(c.tier_label)} defenses`, comboPair(c.vs_tier, c.vs_tier_prev));
     if(c.fine) h += row(`Avg vs ${esc2(c.fine.label)} defenses`, comboPair(c.fine, c.fine.prev));
@@ -500,6 +516,7 @@ function comboMatchupHTML(r){
   const comb = `<div style="padding:8px 0;border-top:1px solid var(--border2, var(--border))">
       <div class="ic-row" style="padding:0 0 4px"><b>Combined</b>
         <span>${esc2(r.opp)} allows <b>${c.allowed_pg}</b>/gm ${comboTierChip(c.tier, c.tier_label, c.rank)}${c.fine_label ? ' <span class="rank-chip">' + esc2(c.fine_label) + '</span>' : ''}</span></div>
+      ${comboL5Row(row, c.last5)}
       ${row('Player avg / gm', `<b>${c.player_avg ?? '—'}</b> <span class="rank-chip">${c.player_games}g</span> &nbsp;·&nbsp; <span class="rank-chip">2025</span> <b>${c.prev_player_avg ?? '—'}</b> <span class="rank-chip">${c.prev_player_games}g</span>`)}
       ${row('Expected vs these tiers', comboPair(
         c.expected_vs_tiers != null ? {avg: c.expected_vs_tiers, games: c.min_tier_games} : null,
@@ -507,12 +524,12 @@ function comboMatchupHTML(r){
     </div>`;
   return `<div class="ic-section-label">This player vs ${esc2(r.opp)}'s defense (season to date through week ${m.through_week ?? '—'})</div>
     ${blocks}${comb}
-    <div class="empty" style="padding:4px 0 0;text-align:left;font-size:10px">Rank 1 = toughest defense. Tiers use the site's cutoffs: Top 10, Mid 12, Bottom 10, with Top 5 / Bottom 5 as finer slices. "Avg vs" is the player's average against opponents in the same tier; 2025 games are placed in tiers by last season's final defensive rankings. "Expected" adds the two halves' tier averages. A game count under 3 is a thin sample.</div>`;
+    <div class="empty" style="padding:4px 0 0;text-align:left;font-size:10px">Rank 1 = toughest defense. Tiers use the site's cutoffs: Top 10, Mid 12, Bottom 10, with Top 5 / Bottom 5 as finer slices. "Avg vs" is the player's average against opponents in the same tier; 2025 games are placed in tiers by last season's final defensive rankings. "Last 5 games" is how the defense has played over its most recent five games (rank among all 32 defenses over that same window), shown next to its season rank; five games against different opponents is a trend hint, not a verdict. "Expected" adds the two halves' tier averages. A game count under 3 is a thin sample.</div>`;
 }
 function comboCoeusHTML(r){
   const c = r.coeus; if(!c) return '';
   const pk = c.pick === 'PASS' ? 'NEUTRAL' : c.pick;
-  const col = pk === 'OVER' ? 'var(--accent-green)' : (pk === 'UNDER' ? 'var(--accent-red)' : 'var(--text-mid)');
+  const col = pk === 'OVER' ? 'var(--accent-green)' : (pk === 'UNDER' ? 'var(--accent-red)' : 'var(--accent-blue)');
   return `<div class="ic-section-label">Coeus pick</div>
     <div class="ic-row"><span style="color:${col};font-weight:700">${esc2(pk || '—')}</span><span class="rank-chip">confidence ${esc2(c.confidence ?? '—')}/5</span></div>
     <div class="empty" style="padding:2px 0 0;text-align:left;font-size:11px;line-height:1.5;color:var(--text-mid)">${esc2(c.reasoning || '')}</div>`;
@@ -556,7 +573,7 @@ function comboCardHTML(r, i){
     </div>
     ${(r.line && r.line.stale && !(L && L.edited)) ? `<div class="empty" style="padding:2px 4px 8px;text-align:left;font-size:10px;color:var(--amber,#d9a441)">Stale feed line: the provider's FanDuel feed has not refreshed it since ${esc2(r.line.last_update ? new Date(r.line.last_update).toLocaleString() : 'an earlier run')}. Confirm the number in the FanDuel app and retype it above if it moved.</div>` : ''}
     <div id="cres_${i}">${comboResultHTML(r)}</div>
-    ${comboMatchupHTML(r)}
+    ${comboPlayerRankHTML(r)}${comboMatchupHTML(r)}
     <div class="ic-section-label">The two halves (FanDuel's separate lines)</div>
     <div class="ic-row"><span class="ic-row-label">${esc2(names[0])} + ${esc2(names[1])}</span><span class="cell-val">${halves}</span></div>
     ${comboCoeusHTML(r)}
@@ -593,7 +610,7 @@ function renderComboReport(){
       are shown for reference only: on 10/19 FanDuel's real combo lines ran 7.5 to 11.5 yards above that sum.
       Each card also shows the opponent's rank and tier against each half (the site's Top 10 / Mid 12 / Bottom 10, with Top 5 / Bottom 5)
       and how this player has averaged against defenses in that same tier.
-      The projection does not model game script or injuries, so a gap of more than 12% from the line gets an amber label and a caution note.
+      The projection does not model game script or injuries, so a gap of more than 12% from the line gets a dashed ⚠ label and a caution note.
       Coeus makes the final call and every pick is saved and graded afterward.
     </div>
     <div class="report-controls">

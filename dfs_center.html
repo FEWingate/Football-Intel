@@ -105,6 +105,8 @@
 .play-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px}
 .play-card .pc-top{display:flex;justify-content:space-between;align-items:start;margin-bottom:2px}
 .play-card .pc-name{font-family:var(--font-display);font-weight:700;font-size:15px}
+.play-card .pc-avgs{display:inline-flex;flex-wrap:wrap;gap:2px 8px;margin-left:8px;vertical-align:baseline}
+.play-card .pc-avg{font-family:var(--font-mono);font-weight:500;font-size:11px;color:var(--text-mid);white-space:nowrap}
 .play-card .pc-team{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-dim);font-family:var(--font-mono);margin-bottom:10px}
 .play-card .pc-opp{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-mid);margin-bottom:12px;
   font-family:var(--font-mono)}
@@ -1383,11 +1385,22 @@ function statusPill(status){
   return `<span class="status-pill ${cls}">${esc(status)}</span>`;
 }
 
+// Position stat shown beside the name: QB passing, RB rushing, WR/TE receiving yards per game
+// (this season, from the site's player data). Nothing is shown when the player isn't matched.
+function posYardsChip(p){
+  const m = p.siteData && p.siteData.season && p.siteData.season.m;
+  if(!m) return '';
+  const spec = { QB: ['pass_ypg', 'pass yds/gm'], RB: ['rush_ypg', 'rush yds/gm'],
+                 WR: ['rec_ypg', 'rec yds/gm'], TE: ['rec_ypg', 'rec yds/gm'] }[p.pos];
+  if(!spec || m[spec[0]] == null) return '';
+  return `<span class="pc-avg" title="This season's average per game">${Number(m[spec[0]]).toFixed(1)} ${spec[1]}</span>`;
+}
+
 function playCardHTML(p, tag){
   return `
     <div class="play-card">
       <div class="pc-top">
-        <span class="pc-name">${esc(p.name)}</span>
+        <span class="pc-name">${esc(p.name)}<span class="pc-avgs"><span class="pc-avg" title="DraftKings season average fantasy points per game">${p.avgPts.toFixed(1)} FP avg</span>${posYardsChip(p)}</span></span>
         ${statusPill(p.status)}
       </div>
       <div class="pc-team">${fiLogoHTML(p.team || '', 16)}${esc(p.team)}${tag ? ` <span class="pc-tag">${esc(tag)}</span>` : ''}</div>

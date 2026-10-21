@@ -176,8 +176,29 @@ def player_log(frames, pid, mk):
                     continue
             a, b = float(r.get(cfg["a"], 0) or 0), float(r.get(cfg["b"], 0) or 0)
             rows.append({"season": int(r["season"]), "week": int(r["week"]), "opp": r["opponent_team"],
-                         "a": a, "b": b, "total": a + b})
-    return rows
+                         "a": a, "b": b, "total": a + b, "usage": float(usage)})
+    return drop_partial_games(rows)
+
+
+# OFF (0). Backtested 2023-2025: dropping games where the player barely played made the projection WORSE
+# (QB average miss 59.5 -> 61.1 yds at 0.75; RB 28.9 -> 31.0), because partial games also happen in future games.
+# Set to e.g. 0.75 to turn it back on.
+PARTIAL_FRAC = 0
+
+
+def drop_partial_games(rows):
+    """Remove games where the player barely played (left hurt, benched in a blowout) so they do not drag
+    the average down. Needs at least 4 games to judge; never leaves fewer than 3."""
+    if PARTIAL_FRAC <= 0 or len(rows) < 4:
+        return rows
+    us = sorted(x["usage"] for x in rows)
+    med = us[len(us) // 2] if len(us) % 2 else (us[len(us) // 2 - 1] + us[len(us) // 2]) / 2
+    kept = [x for x in rows if x["usage"] >= PARTIAL_FRAC * med]
+    if len(kept) < 3:
+        return rows
+    for x in kept:
+        x["partial_dropped"] = len(rows) - len(kept)
+    return kept
 
 
 def weighted(values):
@@ -271,6 +292,60 @@ def qb_rush_allowed(df, through):
     return {t: round(float(qb.get(t, 0.0)) / int(games[t]), 1) for t in games.index if int(games[t]) > 0}
 
 
+L5_GAMES = 5
+L5_MIN = 3
+
+
+def last5_allowed(df, pos, stats):
+    """Per defense: yards per game allowed to this position group over its most recent 5 games this season,
+    and the league rank of that (1 = fewest yards = toughest). Needs at least 3 games."""
+    if df is None:
+        return {}
+    weeks_by_team = df.groupby("opponent_team")["week"].apply(lambda w: sorted(set(int(v) for v in w)))
+    x = df[df["position"] == pos]
+    out = {}
+    for st in stats:
+        g = x.groupby(["opponent_team", "week"])[st].sum()
+        per = {}
+        for t, wks in weeks_by_team.items():
+            last = wks[-L5_GAMES:]
+            if len(last) < L5_MIN:
+                continue
+            per[t] = {"pg": sum(float(g.get((t, w), 0.0)) for w in last) / len(last), "games": len(last)}
+        out[st] = per
+    comb = {t: out[stats[0]][t]["pg"] + out[stats[1]][t]["pg"] for t in out[stats[0]] if t in out[stats[1]]}
+    return {"stats": out, "combined": comb, "combined_rank": rank_asc(comb),
+            "ranks": [rank_asc({t: v["pg"] for t, v in out[st].items()}) for st in stats]}
+
+
+def player_ranks(df, pos, mk):
+    """How this player ranks among all players at his position in the prop's own stat (the two halves added
+    together), per game this season and over his last 5 games. Rank 1 = most yards. Needs 3+ games."""
+    if df is None:
+        return {}
+    cfg = MARKETS[mk]
+    x = df[df["position"] == pos].copy()
+    if pos == "QB":
+        x = x[x["attempts"].fillna(0) >= 15]
+    else:
+        x = x[(x["carries"].fillna(0) + x["targets"].fillna(0)) >= 6]
+    x["_t"] = x[cfg["a"]].fillna(0) + x[cfg["b"]].fillna(0)
+    x = x.sort_values("week")
+    per = {}
+    for pid, g in x.groupby("player_id"):
+        v = list(g["_t"])
+        if len(v) < 3:
+            continue
+        per[pid] = {"season_avg": sum(v) / len(v), "l5_avg": sum(v[-5:]) / len(v[-5:]), "games": len(v)}
+    def rk(key):
+        order = sorted(per, key=lambda k: -per[k][key])
+        return {k: i + 1 for i, k in enumerate(order)}
+    rs, rl = rk("season_avg"), rk("l5_avg")
+    n = len(per)
+    return {k: {"season_avg": round(v["season_avg"], 1), "season_rank": rs[k], "l5_avg": round(v["l5_avg"], 1),
+                "l5_rank": rl[k], "of": n, "games": v["games"]} for k, v in per.items()}
+
+
 def season_ranks(df, pos):
     """Final-season ranks (1 = fewest yards allowed per game to this position group) for the two stats the
     combo props use. Used to place LAST season's opponents into tiers the same way the site places this season's."""
@@ -286,7 +361,7 @@ def season_ranks(df, pos):
     return out
 
 
-def matchup_block(row_pos, mk, opp, log26, mu, qb_rush_pg, prev_log=None, prev_ranks=None):
+def matchup_block(row_pos, mk, opp, log26, mu, qb_rush_pg, prev_log=None, prev_ranks=None, l5=None):
     """Per-half and combined: what the player averages, what the opponent allows (with rank and tier), and
     what the player has averaged against defenses in that same tier this season."""
     if not mu or not opp or opp not in mu.get("teams", {}):
@@ -341,6 +416,13 @@ def matchup_block(row_pos, mk, opp, log26, mu, qb_rush_pg, prev_log=None, prev_r
                            **avg_for(lambda r, tf=tf: tier_fine(r) == tf)}
             if pr_map and prev_log:
                 cat["fine"]["prev"] = avg_for(lambda r, tf=tf: tier_fine(r) == tf, prev_log, pr_map)
+        if l5 and opp in l5["stats"][stat_keys[i]]:
+            e = l5["stats"][stat_keys[i]][opp]
+            lr = l5["ranks"][i].get(opp)
+            lt = tier_broad(lr) if lr else None
+            cat["last5"] = {"allowed_pg": round(e["pg"], 1), "games": e["games"], "rank": lr,
+                            "tier": lt, "tier_label": TIER_LABEL[lt] if lt else None,
+                            "vs_season": round(e["pg"] - vals[i][opp], 1)}
         cats.append(cat)
     c_rank = comb_rank.get(opp)
     both = cats[0]["vs_tier"]["avg"] is not None and cats[1]["vs_tier"]["avg"] is not None
@@ -357,6 +439,13 @@ def matchup_block(row_pos, mk, opp, log26, mu, qb_rush_pg, prev_log=None, prev_r
                                        and cats[0]["vs_tier_prev"]["avg"] is not None and cats[1]["vs_tier_prev"]["avg"] is not None else None),
             "min_tier_games_prev": (min(cats[0]["vs_tier_prev"]["games"], cats[1]["vs_tier_prev"]["games"])
                                     if cats[0].get("vs_tier_prev") and cats[1].get("vs_tier_prev") else 0)}
+    if l5 and opp in l5["combined"]:
+        lr = l5["combined_rank"].get(opp)
+        lt = tier_broad(lr) if lr else None
+        comb["last5"] = {"allowed_pg": round(l5["combined"][opp], 1), "rank": lr, "tier": lt,
+                         "tier_label": TIER_LABEL[lt] if lt else None,
+                         "vs_season": round(l5["combined"][opp] - comb_vals[opp], 1),
+                         "games": min(cats[0].get("last5", {}).get("games", 0), cats[1].get("last5", {}).get("games", 0))}
     return {"through_week": horizon_week(mu), "categories": cats, "combined": comb,
             "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."}
 
@@ -443,6 +532,9 @@ def main():
     mu = load_matchup(week)
     qb_rush_pg = qb_rush_allowed(frames["cur"], horizon_week(mu))
     prev_rank_cache = {pos: season_ranks(frames["prev"], pos) for pos in ("QB", "RB")}
+    pr_cache = {(pos, mk): player_ranks(frames["cur"], pos, mk) for pos, mk in (("QB", "pass_rush"), ("RB", "rush_rec"))}
+    l5_cache = {"QB": last5_allowed(frames["cur"], "QB", ["passing_yards", "rushing_yards"]),
+                "RB": last5_allowed(frames["cur"], "RB", ["rushing_yards", "receiving_yards"])}
 
     # --- candidate list: every manual line + every feed player with both halves posted
     cands = {}
@@ -525,7 +617,10 @@ def main():
                "implied_line": (round(c["feed_a"] + c["feed_b"], 1) if c["feed_a"] is not None and c["feed_b"] is not None else None),
                "line": c["line"], "projection": proj,
                "matchup": matchup_block(info["pos"], mk, opp, season_log(frames["cur"], info["id"], mk), mu, qb_rush_pg,
-                                        season_log(frames["prev"], info["id"], mk), prev_rank_cache.get(info["pos"])),
+                                        season_log(frames["prev"], info["id"], mk), prev_rank_cache.get(info["pos"]),
+                                        l5_cache.get(info["pos"])),
+               "player_rank": (pr_cache.get((info["pos"], mk)) or {}).get(info["id"]),
+               "partial_games_dropped": (log[0].get("partial_dropped", 0) if log else 0),
                "log": [{"season": x["season"], "week": x["week"], "opp": x["opp"], "a": x["a"], "b": x["b"], "total": x["total"]}
                        for x in log[-10:]]}
         if proj and c["line"] and c["line"].get("point") is not None:
@@ -616,6 +711,17 @@ For every row return a pick: OVER, UNDER or NEUTRAL (NEUTRAL = no meaningful edg
 - Use only the numbers provided. Never invent injuries, news or stats. Do not mention data that is absent.
 - A model flag of CHECK means the projection is more than 12% away from FanDuel's line; treat that as a warning
   that the model may be missing something (role change, game script) and only side with the model if the data shown supports it.
+- "this_player_rank_among_same_position" ranks the player himself among all QBs (or RBs) in this prop's own stat
+  (the two halves added together), per game this season and over his last 5 (rank 1 = most yards; "of" = how many
+  players are ranked). Weigh it together with the defense's tier: a top-ranked offensive player facing a weak defense
+  is a different spot than a low-ranked one facing a strong defense, and a gap between his season and last-5 rank
+  shows whether his role or form is changing. It describes who he is; it does not replace the projection.
+- Each defense's tier is given two ways: season to date, and over its last 5 games ("last5": yards allowed per game,
+  its rank among all 32 defenses over that window, and the difference from its season number). A defense whose last-5
+  tier differs from its season tier is changing (injuries, scheme, schedule). Use it as trend context and say which
+  you are leaning on, but it is only 5 games against different opponents, so do not let it outweigh a long-run number
+  unless the gap is large and the player's own tier splits agree.
+- Rows flagged CHECK are forced to NEUTRAL by the system after you answer; still give your honest read in the reasoning.
 - If edge is under about 3 percentage points or the sample is thin, prefer NEUTRAL unless a clear football reason
   supports a side.
 - confidence is an integer 1-5 (5 = strongest).
@@ -640,6 +746,7 @@ def coeus_picks(out, model):
                       "fanduel_line": r["line"]["point"], "over_price": r["line"].get("over_price"),
                       "under_price": r["line"].get("under_price"), "game": r["game"],
                       "projection": r["projection"], "model": r["eval"], "opponent_tiers_and_player_splits": r.get("matchup"),
+                      "this_player_rank_among_same_position": r.get("player_rank"),
                       "recent_games_oldest_to_newest": r["log"]})
     if not items:
         print("Coeus: no rows with a real FanDuel line yet - nothing to pick.")
@@ -662,6 +769,14 @@ def coeus_picks(out, model):
         if p:
             r["coeus"] = {"pick": ("NEUTRAL" if str(p.get("pick")).upper() == "PASS" else p.get("pick")), "confidence": p.get("confidence"), "reasoning": p.get("reasoning"),
                           "model": model}
+            # Hard rule: a CHECK row (projection >12% from the FanDuel line) is more likely a model miss than a real edge.
+            if (r.get("eval") or {}).get("lean") == "CHECK" and str(r["coeus"]["pick"]).upper() in ("OVER", "UNDER"):
+                r["coeus"]["original_pick"] = r["coeus"]["pick"]
+                r["coeus"]["pick"] = "NEUTRAL"
+                r["coeus"]["confidence"] = min(int(r["coeus"].get("confidence") or 2), 2)
+                r["coeus"]["reasoning"] = ("Forced to NEUTRAL: the model projection is more than 12% from FanDuel's line, "
+                                           "which usually means the model is missing something. Coeus's original read was "
+                                           + str(r["coeus"]["original_pick"]) + ": " + str(p.get("reasoning") or ""))
     u = getattr(resp, "usage", None)
     if u:
         print("Coeus tokens: %s in / %s out" % (u.input_tokens, u.output_tokens))

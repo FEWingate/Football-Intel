@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-20T22:33:36Z",
+ "generated_at": "2026-10-20T23:01:12Z",
  "season": 2026,
  "week": 7,
  "method": {
@@ -93,6 +93,14 @@
       "vs_tier_prev": {
        "games": 5,
        "avg": 229.2
+      },
+      "last5": {
+       "allowed_pg": 266.0,
+       "games": 5,
+       "rank": 26,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": 10.0
       }
      },
      {
@@ -113,6 +121,14 @@
       "vs_tier_prev": {
        "games": 2,
        "avg": 0.0
+      },
+      "last5": {
+       "allowed_pg": 23.2,
+       "games": 5,
+       "rank": 26,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": 3.5
       }
      }
     ],
@@ -129,10 +145,27 @@
      "prev_player_avg": 211.4,
      "prev_player_games": 16,
      "expected_vs_tiers_prev": 229.2,
-     "min_tier_games_prev": 2
+     "min_tier_games_prev": 2,
+     "last5": {
+      "allowed_pg": 289.2,
+      "rank": 28,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "vs_season": 13.5,
+      "games": 5
+     }
     },
     "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
+   "player_rank": {
+    "season_avg": 250.7,
+    "season_rank": 18,
+    "l5_avg": 257.2,
+    "l5_rank": 17,
+    "of": 33,
+    "games": 6
+   },
+   "partial_games_dropped": 0,
    "log": [
     {
      "season": 2025,
@@ -291,6 +324,14 @@
       "vs_tier_prev": {
        "games": 3,
        "avg": 41.3
+      },
+      "last5": {
+       "allowed_pg": 80.6,
+       "games": 5,
+       "rank": 13,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": -5.6
       }
      },
      {
@@ -311,6 +352,14 @@
       "vs_tier_prev": {
        "games": 6,
        "avg": 20.3
+      },
+      "last5": {
+       "allowed_pg": 24.0,
+       "games": 5,
+       "rank": 8,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": -11.0
       }
      }
     ],
@@ -327,10 +376,27 @@
      "prev_player_avg": 59.7,
      "prev_player_games": 11,
      "expected_vs_tiers_prev": 61.6,
-     "min_tier_games_prev": 3
+     "min_tier_games_prev": 3,
+     "last5": {
+      "allowed_pg": 104.6,
+      "rank": 9,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "vs_season": -16.6,
+      "games": 5
+     }
     },
     "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
+   "player_rank": {
+    "season_avg": 47.5,
+    "season_rank": 36,
+    "l5_avg": 47.5,
+    "l5_rank": 37,
+    "of": 59,
+    "games": 4
+   },
+   "partial_games_dropped": 0,
    "log": [
     {
      "season": 2025,
@@ -491,6 +557,14 @@
       "vs_tier_prev": {
        "games": 4,
        "avg": 212.8
+      },
+      "last5": {
+       "allowed_pg": 233.0,
+       "games": 5,
+       "rank": 13,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": 5.5
       }
      },
      {
@@ -520,6 +594,14 @@
       "vs_tier_prev": {
        "games": 9,
        "avg": 23.2
+      },
+      "last5": {
+       "allowed_pg": 7.8,
+       "games": 5,
+       "rank": 8,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": -0.9
       }
      }
     ],
@@ -536,10 +618,27 @@
      "prev_player_avg": 254.7,
      "prev_player_games": 17,
      "expected_vs_tiers_prev": 236.0,
-     "min_tier_games_prev": 4
+     "min_tier_games_prev": 4,
+     "last5": {
+      "allowed_pg": 240.8,
+      "rank": 12,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "vs_season": 4.6,
+      "games": 5
+     }
     },
     "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
+   "player_rank": {
+    "season_avg": 274.0,
+    "season_rank": 11,
+    "l5_avg": 274.0,
+    "l5_rank": 12,
+    "of": 33,
+    "games": 3
+   },
+   "partial_games_dropped": 0,
    "log": [
     {
      "season": 2025,
@@ -698,6 +797,14 @@
       "vs_tier_prev": {
        "games": 11,
        "avg": 64.6
+      },
+      "last5": {
+       "allowed_pg": 81.8,
+       "games": 5,
+       "rank": 14,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": -0.4
       }
      },
      {
@@ -718,6 +825,14 @@
       "vs_tier_prev": {
        "games": 4,
        "avg": 27.2
+      },
+      "last5": {
+       "allowed_pg": 42.0,
+       "games": 5,
+       "rank": 28,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": 2.7
       }
      }
     ],
@@ -734,10 +849,27 @@
      "prev_player_avg": 86.6,
      "prev_player_games": 16,
      "expected_vs_tiers_prev": 91.8,
-     "min_tier_games_prev": 4
+     "min_tier_games_prev": 4,
+     "last5": {
+      "allowed_pg": 123.8,
+      "rank": 17,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "vs_season": 2.3,
+      "games": 5
+     }
     },
     "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
+   "player_rank": {
+    "season_avg": 89.7,
+    "season_rank": 14,
+    "l5_avg": 80.8,
+    "l5_rank": 18,
+    "of": 59,
+    "games": 6
+   },
+   "partial_games_dropped": 0,
    "log": [
     {
      "season": 2025,
@@ -898,6 +1030,14 @@
       "vs_tier_prev": {
        "games": 8,
        "avg": 248.6
+      },
+      "last5": {
+       "allowed_pg": 201.4,
+       "games": 5,
+       "rank": 4,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": -26.6
       }
      },
      {
@@ -918,6 +1058,14 @@
       "vs_tier_prev": {
        "games": 3,
        "avg": 35.3
+      },
+      "last5": {
+       "allowed_pg": 7.2,
+       "games": 5,
+       "rank": 6,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": -4.5
       }
      }
     ],
@@ -934,10 +1082,27 @@
      "prev_player_avg": 284.9,
      "prev_player_games": 17,
      "expected_vs_tiers_prev": 283.9,
-     "min_tier_games_prev": 3
+     "min_tier_games_prev": 3,
+     "last5": {
+      "allowed_pg": 208.6,
+      "rank": 3,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "vs_season": -31.1,
+      "games": 5
+     }
     },
     "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
+   "player_rank": {
+    "season_avg": 274.7,
+    "season_rank": 10,
+    "l5_avg": 284.6,
+    "l5_rank": 7,
+    "of": 33,
+    "games": 6
+   },
+   "partial_games_dropped": 0,
    "log": [
     {
      "season": 2025,
@@ -1096,6 +1261,14 @@
       "vs_tier_prev": {
        "games": 7,
        "avg": 42.9
+      },
+      "last5": {
+       "allowed_pg": 89.2,
+       "games": 5,
+       "rank": 19,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": -1.6
       }
      },
      {
@@ -1116,6 +1289,14 @@
       "vs_tier_prev": {
        "games": 8,
        "avg": 29.1
+      },
+      "last5": {
+       "allowed_pg": 40.6,
+       "games": 5,
+       "rank": 27,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": 6.6
       }
      }
     ],
@@ -1132,10 +1313,27 @@
      "prev_player_avg": 108.2,
      "prev_player_games": 17,
      "expected_vs_tiers_prev": 72.0,
-     "min_tier_games_prev": 7
+     "min_tier_games_prev": 7,
+     "last5": {
+      "allowed_pg": 129.8,
+      "rank": 22,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "vs_season": 5.0,
+      "games": 5
+     }
     },
     "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
+   "player_rank": {
+    "season_avg": 149.4,
+    "season_rank": 2,
+    "l5_avg": 149.4,
+    "l5_rank": 2,
+    "of": 59,
+    "games": 5
+   },
+   "partial_games_dropped": 0,
    "log": [
     {
      "season": 2025,
@@ -1306,6 +1504,14 @@
       "vs_tier_prev": {
        "games": 8,
        "avg": 85.1
+      },
+      "last5": {
+       "allowed_pg": 104.0,
+       "games": 5,
+       "rank": 26,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": 0.5
       }
      },
      {
@@ -1326,6 +1532,14 @@
       "vs_tier_prev": {
        "games": 5,
        "avg": 3.4
+      },
+      "last5": {
+       "allowed_pg": 27.8,
+       "games": 5,
+       "rank": 13,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": 5.0
       }
      }
     ],
@@ -1342,10 +1556,27 @@
      "prev_player_avg": 83.6,
      "prev_player_games": 16,
      "expected_vs_tiers_prev": 88.5,
-     "min_tier_games_prev": 5
+     "min_tier_games_prev": 5,
+     "last5": {
+      "allowed_pg": 131.8,
+      "rank": 25,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "vs_season": 5.5,
+      "games": 5
+     }
     },
     "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
+   "player_rank": {
+    "season_avg": 70.0,
+    "season_rank": 21,
+    "l5_avg": 69.6,
+    "l5_rank": 22,
+    "of": 59,
+    "games": 6
+   },
+   "partial_games_dropped": 0,
    "log": [
     {
      "season": 2025,
@@ -1525,6 +1756,14 @@
       "vs_tier_prev": {
        "games": 6,
        "avg": 60.3
+      },
+      "last5": {
+       "allowed_pg": 107.6,
+       "games": 5,
+       "rank": 28,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": -9.2
       }
      },
      {
@@ -1545,6 +1784,14 @@
       "vs_tier_prev": {
        "games": 3,
        "avg": 15.0
+      },
+      "last5": {
+       "allowed_pg": 28.4,
+       "games": 5,
+       "rank": 15,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": -2.1
       }
      }
     ],
@@ -1561,10 +1808,27 @@
      "prev_player_avg": 80.7,
      "prev_player_games": 16,
      "expected_vs_tiers_prev": 75.3,
-     "min_tier_games_prev": 3
+     "min_tier_games_prev": 3,
+     "last5": {
+      "allowed_pg": 136.0,
+      "rank": 27,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "vs_season": -11.3,
+      "games": 5
+     }
     },
     "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
+   "player_rank": {
+    "season_avg": 119.7,
+    "season_rank": 4,
+    "l5_avg": 129.0,
+    "l5_rank": 4,
+    "of": 59,
+    "games": 6
+   },
+   "partial_games_dropped": 0,
    "log": [
     {
      "season": 2025,
@@ -1744,6 +2008,14 @@
       "vs_tier_prev": {
        "games": 8,
        "avg": 82.4
+      },
+      "last5": {
+       "allowed_pg": 72.4,
+       "games": 5,
+       "rank": 4,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": 0.0
       }
      },
      {
@@ -1773,6 +2045,14 @@
       "vs_tier_prev": {
        "games": 5,
        "avg": 29.0
+      },
+      "last5": {
+       "allowed_pg": 18.4,
+       "games": 5,
+       "rank": 5,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": 0.0
       }
      }
     ],
@@ -1789,10 +2069,27 @@
      "prev_player_avg": 115.5,
      "prev_player_games": 17,
      "expected_vs_tiers_prev": 111.4,
-     "min_tier_games_prev": 5
+     "min_tier_games_prev": 5,
+     "last5": {
+      "allowed_pg": 90.8,
+      "rank": 3,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "vs_season": 0.0,
+      "games": 5
+     }
     },
     "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
+   "player_rank": {
+    "season_avg": 109.2,
+    "season_rank": 6,
+    "l5_avg": 106.8,
+    "l5_rank": 7,
+    "of": 59,
+    "games": 6
+   },
+   "partial_games_dropped": 0,
    "log": [
     {
      "season": 2025,
@@ -1963,6 +2260,14 @@
       "vs_tier_prev": {
        "games": 1,
        "avg": 51.0
+      },
+      "last5": {
+       "allowed_pg": 76.0,
+       "games": 5,
+       "rank": 7,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": -2.5
       }
      },
      {
@@ -1983,6 +2288,14 @@
       "vs_tier_prev": {
        "games": 6,
        "avg": 11.2
+      },
+      "last5": {
+       "allowed_pg": 10.8,
+       "games": 5,
+       "rank": 1,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": -12.5
       }
      }
     ],
@@ -1999,10 +2312,27 @@
      "prev_player_avg": 67.7,
      "prev_player_games": 14,
      "expected_vs_tiers_prev": 62.2,
-     "min_tier_games_prev": 1
+     "min_tier_games_prev": 1,
+     "last5": {
+      "allowed_pg": 86.8,
+      "rank": 1,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "vs_season": -15.0,
+      "games": 5
+     }
     },
     "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
+   "player_rank": {
+    "season_avg": 62.3,
+    "season_rank": 24,
+    "l5_avg": 55.8,
+    "l5_rank": 31,
+    "of": 59,
+    "games": 6
+   },
+   "partial_games_dropped": 0,
    "log": [
     {
      "season": 2025,
@@ -2182,6 +2512,14 @@
       "vs_tier_prev": {
        "games": 4,
        "avg": 87.0
+      },
+      "last5": {
+       "allowed_pg": 107.6,
+       "games": 5,
+       "rank": 28,
+       "tier": "bot",
+       "tier_label": "Bottom 10",
+       "vs_season": -9.2
       }
      },
      {
@@ -2202,6 +2540,14 @@
       "vs_tier_prev": {
        "games": 6,
        "avg": 14.3
+      },
+      "last5": {
+       "allowed_pg": 28.4,
+       "games": 5,
+       "rank": 15,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": -2.1
       }
      }
     ],
@@ -2218,10 +2564,27 @@
      "prev_player_avg": 80.8,
      "prev_player_games": 17,
      "expected_vs_tiers_prev": 101.3,
-     "min_tier_games_prev": 4
+     "min_tier_games_prev": 4,
+     "last5": {
+      "allowed_pg": 136.0,
+      "rank": 27,
+      "tier": "bot",
+      "tier_label": "Bottom 10",
+      "vs_season": -11.3,
+      "games": 5
+     }
     },
     "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
+   "player_rank": {
+    "season_avg": 38.0,
+    "season_rank": 48,
+    "l5_avg": 38.0,
+    "l5_rank": 48,
+    "of": 59,
+    "games": 3
+   },
+   "partial_games_dropped": 0,
    "log": [
     {
      "season": 2025,
@@ -2392,6 +2755,14 @@
       "vs_tier_prev": {
        "games": 2,
        "avg": 75.0
+      },
+      "last5": {
+       "allowed_pg": 76.0,
+       "games": 5,
+       "rank": 7,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": -2.5
       }
      },
      {
@@ -2412,6 +2783,14 @@
       "vs_tier_prev": {
        "games": 5,
        "avg": 9.8
+      },
+      "last5": {
+       "allowed_pg": 10.8,
+       "games": 5,
+       "rank": 1,
+       "tier": "top",
+       "tier_label": "Top 10",
+       "vs_season": -12.5
       }
      }
     ],
@@ -2428,10 +2807,27 @@
      "prev_player_avg": 70.4,
      "prev_player_games": 16,
      "expected_vs_tiers_prev": 84.8,
-     "min_tier_games_prev": 2
+     "min_tier_games_prev": 2,
+     "last5": {
+      "allowed_pg": 86.8,
+      "rank": 1,
+      "tier": "top",
+      "tier_label": "Top 10",
+      "vs_season": -15.0,
+      "games": 5
+     }
     },
     "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
+   "player_rank": {
+    "season_avg": 46.8,
+    "season_rank": 39,
+    "l5_avg": 46.8,
+    "l5_rank": 39,
+    "of": 59,
+    "games": 4
+   },
+   "partial_games_dropped": 0,
    "log": [
     {
      "season": 2025,
@@ -2592,6 +2988,14 @@
       "vs_tier_prev": {
        "games": 0,
        "avg": null
+      },
+      "last5": {
+       "allowed_pg": 237.8,
+       "games": 5,
+       "rank": 18,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": 15.8
       }
      },
      {
@@ -2612,6 +3016,14 @@
       "vs_tier_prev": {
        "games": 2,
        "avg": 7.0
+      },
+      "last5": {
+       "allowed_pg": 19.0,
+       "games": 5,
+       "rank": 21,
+       "tier": "mid",
+       "tier_label": "Mid 12",
+       "vs_season": 3.2
       }
      }
     ],
@@ -2628,10 +3040,27 @@
      "prev_player_avg": 257.0,
      "prev_player_games": 10,
      "expected_vs_tiers_prev": null,
-     "min_tier_games_prev": 0
+     "min_tier_games_prev": 0,
+     "last5": {
+      "allowed_pg": 256.8,
+      "rank": 17,
+      "tier": "mid",
+      "tier_label": "Mid 12",
+      "vs_season": 19.0,
+      "games": 5
+     }
     },
     "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."
    },
+   "player_rank": {
+    "season_avg": 257.8,
+    "season_rank": 17,
+    "l5_avg": 225.8,
+    "l5_rank": 24,
+    "of": 33,
+    "games": 6
+   },
+   "partial_games_dropped": 0,
    "log": [
     {
      "season": 2025,
@@ -2715,5 +3144,6 @@
     }
    ]
   }
- ]
+ ],
+ "coeus_raw": ""
 }
