@@ -10,15 +10,6 @@
    "week": 6
   },
   {
-   "player": "Brock Purdy",
-   "market": "pass_rush",
-   "line": 272.5,
-   "over_price": -113.0,
-   "under_price": -113.0,
-   "source": "manual (typed from FanDuel)",
-   "week": 6
-  },
-  {
    "player": "Christian McCaffrey",
    "market": "rush_rec",
    "line": 106.5,
@@ -26,6 +17,213 @@
    "under_price": null,
    "source": "manual (typed from FanDuel)",
    "week": 6
+  },
+  {
+   "player": "Drake Maye",
+   "market": "pass_rush",
+   "line": 278.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "Caleb Williams",
+   "market": "pass_rush",
+   "line": 264.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "Jordan Love",
+   "market": "pass_rush",
+   "line": 292.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "Jared Goff",
+   "market": "pass_rush",
+   "line": 283.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "Dak Prescott",
+   "market": "pass_rush",
+   "line": 281.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "C.J. Stroud",
+   "market": "pass_rush",
+   "line": 267.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "J.J. McCarthy",
+   "market": "pass_rush",
+   "line": 228.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "Cam Ward",
+   "market": "pass_rush",
+   "line": 196.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "Deshaun Watson",
+   "market": "pass_rush",
+   "line": 244.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "Daniel Jones",
+   "market": "pass_rush",
+   "line": 202.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "Michael Penix Jr.",
+   "market": "pass_rush",
+   "line": 232.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "Brock Purdy",
+   "market": "pass_rush",
+   "line": 263.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "Bryce Young",
+   "market": "pass_rush",
+   "line": 267.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "Joe Burrow",
+   "market": "pass_rush",
+   "line": 270.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "Tyler Shough",
+   "market": "pass_rush",
+   "line": 244.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "Aaron Rodgers",
+   "market": "pass_rush",
+   "line": 234.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "Patrick Mahomes",
+   "market": "pass_rush",
+   "line": 236.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "Sam Darnold",
+   "market": "pass_rush",
+   "line": 233.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "Tanner McKee",
+   "market": "pass_rush",
+   "line": 221.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "Geno Smith",
+   "market": "pass_rush",
+   "line": 232.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "Malik Willis",
+   "market": "pass_rush",
+   "line": 219.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "Bo Nix",
+   "market": "pass_rush",
+   "line": 234.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
+  },
+  {
+   "player": "Jacoby Brissett",
+   "market": "pass_rush",
+   "line": 235.5,
+   "over_price": null,
+   "under_price": null,
+   "source": "manual (typed from FanDuel)",
+   "week": 7
   }
  ]
 }
