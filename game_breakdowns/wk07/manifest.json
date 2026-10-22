@@ -34,6 +34,20 @@
       "season": 2026,
       "week": 7,
       "generated_at": "2026-10-22T21:05:16.962004+00:00"
+    },
+    "NYG_HOU": {
+      "away": "NYG",
+      "home": "HOU",
+      "season": 2026,
+      "week": 7,
+      "generated_at": "2026-10-22T21:25:02.334769+00:00"
+    },
+    "IND_MIN": {
+      "away": "IND",
+      "home": "MIN",
+      "season": 2026,
+      "week": 7,
+      "generated_at": "2026-10-22T21:35:42.219826+00:00"
     }
   }
 }
