@@ -278,17 +278,24 @@ def live_current_opponent_ranks(live, team, pos, stat, role, opponent=None):
         return None
 
     if matchup:
+        # A season-total stat ("pass_yds") and its per-game twin ("pass_ypg") are ranked separately and differ
+        # when teams have played different numbers of games (bye weeks). A report citing yards per game and its
+        # per-game rank is correct, so both spellings are accepted.
+        stat_keys = [stat] + ([stat[:-4] + "_ypg"] if stat.endswith("_yds") else []) \
+                           + ([stat[:-4] + "_yds"] if stat.endswith("_ypg") else [])
         team_data = (matchup.get("teams") or {}).get(team) or {}
         group = (team_data.get(role) or {}).get(pos)
-        cell = (group or {}).get(stat) if isinstance(group, dict) else None
-        if isinstance(cell, dict) and cell.get("r") is not None:
-            found.add(cell["r"])
+        for sk in stat_keys:
+            cell = (group or {}).get(sk) if isinstance(group, dict) else None
+            if isinstance(cell, dict) and cell.get("r") is not None:
+                found.add(cell["r"])
         if role == "def" and opponent:
             opp_data = (matchup.get("teams") or {}).get(opponent) or {}
             opp_group = (opp_data.get("def") or {}).get(pos)
-            opp_cell = (opp_group or {}).get(stat) if isinstance(opp_group, dict) else None
-            if isinstance(opp_cell, dict) and opp_cell.get("r") is not None:
-                found.add(opp_cell["r"])
+            for sk in stat_keys:
+                opp_cell = (opp_group or {}).get(sk) if isinstance(opp_group, dict) else None
+                if isinstance(opp_cell, dict) and opp_cell.get("r") is not None:
+                    found.add(opp_cell["r"])
 
     if threats and role == "off":
         # threats.json only models each team's OWN starters' OFFENSIVE
