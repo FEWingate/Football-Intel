@@ -62,6 +62,41 @@
       "season": 2026,
       "week": 7,
       "generated_at": "2026-10-22T22:03:02.787770+00:00"
+    },
+    "DEN_ARI": {
+      "away": "DEN",
+      "home": "ARI",
+      "season": 2026,
+      "week": 7,
+      "generated_at": "2026-10-22T22:13:57.334143+00:00"
+    },
+    "GB_DET": {
+      "away": "GB",
+      "home": "DET",
+      "season": 2026,
+      "week": 7,
+      "generated_at": "2026-10-22T22:23:35.711964+00:00"
+    },
+    "LAR_LV": {
+      "away": "LAR",
+      "home": "LV",
+      "season": 2026,
+      "week": 7,
+      "generated_at": "2026-10-22T22:36:18.235386+00:00"
+    },
+    "KC_SEA": {
+      "away": "KC",
+      "home": "SEA",
+      "season": 2026,
+      "week": 7,
+      "generated_at": "2026-10-22T22:48:28.017373+00:00"
+    },
+    "DAL_PHI": {
+      "away": "DAL",
+      "home": "PHI",
+      "season": 2026,
+      "week": 7,
+      "generated_at": "2026-10-22T22:58:59.080867+00:00"
     }
   }
 }
