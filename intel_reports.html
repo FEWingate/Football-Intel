@@ -498,6 +498,7 @@ function comboNameKey(n){
 // whether each game is not started / in progress / final. If ESPN can't be reached, fall back to the kickoff clock:
 // kickoff passed = started, and about 3.5 hours later = final.
 let ESPN_STATE = {};
+let ESPN_EVENT = {};
 let ESPN_OK = false;
 let espnComboTimer = null;
 const ESPN_FIX = {WSH: 'WAS'};
@@ -509,16 +510,17 @@ async function comboPollEspn(){
       {cache: 'no-store', signal: ctl.signal});
     if(!r.ok) return false;
     const d = await r.json();
-    const next = {};
+    const next = {}, ids = {};
     (d.events || []).forEach(ev => {
       const c = (ev.competitions || [])[0]; if(!c || !c.competitors) return;
       const a = c.competitors.find(x => x.homeAway === 'away'), h = c.competitors.find(x => x.homeAway === 'home');
       if(!a || !h) return;
       const code = x => ESPN_FIX[x.team.abbreviation] || x.team.abbreviation;
       next[code(a) + '@' + code(h)] = c.status && c.status.type ? c.status.type.state : null;   // 'pre' | 'in' | 'post'
+      ids[code(a) + '@' + code(h)] = ev.id || null;
     });
     const changed = JSON.stringify(next) !== JSON.stringify(ESPN_STATE);
-    ESPN_STATE = next; ESPN_OK = Object.keys(next).length > 0;
+    ESPN_STATE = next; ESPN_EVENT = ids; ESPN_OK = Object.keys(next).length > 0;
     return changed;
   }catch(e){ return false; }
   finally{ clearTimeout(to); }
@@ -531,6 +533,15 @@ function comboStartEspnWatch(){
     if(changed && !typing && $("comboGrid") && !$("modal").classList.contains("open")) renderComboGrid();
     if(ESPN_OK && Object.values(ESPN_STATE).every(x => x === 'post')){ clearInterval(espnComboTimer); espnComboTimer = null; }
   }, 90000);
+}
+function comboEspnId(r){ return r.opp ? ESPN_EVENT[(r.home ? r.opp + '@' + r.team : r.team + '@' + r.opp)] || null : null; }
+function comboFootHTML(r, gs){
+  if(gs === 'final'){
+    const id = comboEspnId(r);
+    return id ? `<a href="https://www.espn.com/nfl/boxscore/_/gameId/${encodeURIComponent(id)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:inherit;text-decoration:none">Final · View Box Score ›</a>`
+              : 'Final · View Breakdown ›';
+  }
+  return gs ? 'In progress · View Breakdown ›' : 'Click for Full Breakdown ›';
 }
 function comboGameState(r){
   if(ESPN_OK && r.opp){
@@ -735,7 +746,7 @@ function comboCardHTML(r, i){
     </div>
     ${(r.line && r.line.stale && !(L && L.edited)) ? `<div class="empty" style="padding:6px 4px 0;text-align:left;font-size:10px;color:var(--amber,#d9a441)">Stale feed line: not refreshed since ${esc2(r.line.last_update ? new Date(r.line.last_update).toLocaleString() : 'an earlier run')}. Confirm it in the FanDuel app and retype it above if it moved.</div>` : ''}
     ${comboMiniPick(r)}
-    <div class="combo-foot">${gs ? 'Game ' + (gs === 'final' ? 'played' : 'in progress') + ' · view breakdown ›' : 'Click for Full Breakdown ›'}</div>
+    <div class="combo-foot">${comboFootHTML(r, gs)}</div>
   </div>`;
 }
 function comboRecordHTML(){
