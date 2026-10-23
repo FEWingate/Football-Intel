@@ -104,6 +104,12 @@
 .bd-threat{margin-top:14px;padding:10px 14px;border:1px solid var(--border2,var(--border));border-radius:10px;background:rgba(127,127,127,.05)}
 .bd-threat .bt-row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px}
 .bd-threat .bt-row:last-child{border-bottom:0}
+.combo-card.played{opacity:.5;filter:grayscale(1)}
+.combo-card.played:hover{opacity:.8}
+.combo-card.played .prop-input{cursor:not-allowed}
+.played-tag{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:4px;border:1px solid var(--border2,var(--border));
+  font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.14em;color:var(--text-mid);background:var(--surface2);vertical-align:middle}
+.slot-head.played{opacity:.55}
 .combo-note{margin-top:8px;padding:8px 10px;border-radius:8px;background:rgba(217,164,65,.10);border-left:3px solid rgba(217,164,65,.7);font-size:11px;line-height:1.55;color:var(--text-mid)}
 .hit-badge{
   font-family:var(--font-mono);font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;
@@ -356,6 +362,7 @@ async function load(){
     const resCb = await fetch(`intel/combo_props.json`, {cache:'no-store'});
     if(resCb.ok) COMBO = await resCb.json();
   }catch(e){}
+  try{ await comboPollEspn(); comboStartEspnWatch(); }catch(e){}
   try{
     if(COMBO && COMBO.week){
       const rt = await fetch(`threats/wk${String(COMBO.week).padStart(2, '0')}.json`, {cache:'no-store'});
@@ -486,6 +493,54 @@ let COMBO_HIST = null;
 let COMBO_THREATS = {labels: {}, map: {}};
 function comboNameKey(n){
   return String(n || '').toLowerCase().replace(/[.'\u2019]/g, '').replace(/\b(jr|sr|ii|iii|iv|v)\b/g, '').replace(/[^a-z]/g, '');
+}
+// Game status. ESPN's public scoreboard (the same one the Games page uses; no scores are read or shown here) says
+// whether each game is not started / in progress / final. If ESPN can't be reached, fall back to the kickoff clock:
+// kickoff passed = started, and about 3.5 hours later = final.
+let ESPN_STATE = {};
+let ESPN_OK = false;
+let espnComboTimer = null;
+const ESPN_FIX = {WSH: 'WAS'};
+async function comboPollEspn(){
+  if(!COMBO || !COMBO.season || !COMBO.week) return false;
+  const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 4000);
+  try{
+    const r = await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?seasontype=2&dates=${COMBO.season}&week=${COMBO.week}`,
+      {cache: 'no-store', signal: ctl.signal});
+    if(!r.ok) return false;
+    const d = await r.json();
+    const next = {};
+    (d.events || []).forEach(ev => {
+      const c = (ev.competitions || [])[0]; if(!c || !c.competitors) return;
+      const a = c.competitors.find(x => x.homeAway === 'away'), h = c.competitors.find(x => x.homeAway === 'home');
+      if(!a || !h) return;
+      const code = x => ESPN_FIX[x.team.abbreviation] || x.team.abbreviation;
+      next[code(a) + '@' + code(h)] = c.status && c.status.type ? c.status.type.state : null;   // 'pre' | 'in' | 'post'
+    });
+    const changed = JSON.stringify(next) !== JSON.stringify(ESPN_STATE);
+    ESPN_STATE = next; ESPN_OK = Object.keys(next).length > 0;
+    return changed;
+  }catch(e){ return false; }
+  finally{ clearTimeout(to); }
+}
+function comboStartEspnWatch(){
+  if(espnComboTimer) return;
+  espnComboTimer = setInterval(async () => {
+    const changed = await comboPollEspn();
+    const typing = document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('prop-input');
+    if(changed && !typing && $("comboGrid") && !$("modal").classList.contains("open")) renderComboGrid();
+    if(ESPN_OK && Object.values(ESPN_STATE).every(x => x === 'post')){ clearInterval(espnComboTimer); espnComboTimer = null; }
+  }, 90000);
+}
+function comboGameState(r){
+  if(ESPN_OK && r.opp){
+    const st = ESPN_STATE[(r.home ? r.opp + '@' + r.team : r.team + '@' + r.opp)];
+    if(st) return st === 'post' ? 'final' : (st === 'in' ? 'live' : null);
+  }
+  const iso = r.game && r.game.commence_time; if(!iso) return null;
+  const t = new Date(iso).getTime(); if(isNaN(t)) return null;
+  const d = Date.now() - t;
+  return d < 0 ? null : (d < 3.5 * 3600 * 1000 ? 'live' : 'final');
 }
 function comboThreat(r){ return COMBO_THREATS.map[comboNameKey(r.player) + '|' + r.team] || null; }
 function comboThreatBadges(r){
@@ -662,11 +717,12 @@ function comboMiniPick(r){
 function comboCardHTML(r, i){
   const L = comboEffLine(r), g = r.game;
   const sp = g && g.team_spread != null ? (g.team_spread > 0 ? '+' : '') + g.team_spread : '—';
-  return `<div class="intel-card combo-card" data-i="${i}">
+  const gs = comboGameState(r);
+  return `<div class="intel-card combo-card${gs ? ' played' : ''}" data-i="${i}">
     <div class="ic-head">
       <img class="ic-headshot" src="${esc2(r.headshot || '')}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
       <div>
-        <div class="ic-name">${esc2(r.player)}</div>
+        <div class="ic-name">${esc2(r.player)}${gs ? `<span class="played-tag">${gs === 'final' ? 'FINAL' : 'STARTED'}</span>` : ''}</div>
         <div class="ic-team">${fiLogoHTML(r.team, 14)}${esc2(r.team)} ${r.home ? 'vs' : '@'} ${r.opp ? fiLogoHTML(r.opp, 14) + esc2(r.opp) : '—'} · ${esc2(r.market_label)}</div>
         <div class="ic-team" style="color:var(--text-mid)">${(() => { const e = comboET(g && g.commence_time); return e ? `<b style="color:var(--text)">${esc2(e.label)}</b> · ` : ''; })()}spread ${sp} · total ${g && g.total != null ? g.total : '—'} · team implied ${g && g.team_implied != null ? g.team_implied : '—'}</div>
         ${comboThreatBadges(r)}
@@ -674,12 +730,12 @@ function comboCardHTML(r, i){
     </div>
     <div class="prop-input-row" style="margin-bottom:0" onclick="event.stopPropagation()">
       <label for="cl_${i}">FANDUEL LINE</label>
-      <input class="prop-input" id="cl_${i}" type="number" step="0.5" inputmode="decimal" value="${L ? L.point : ''}" placeholder="enter line" data-i="${i}">
+      <input class="prop-input" id="cl_${i}" type="number" step="0.5" inputmode="decimal" value="${L ? L.point : ''}" placeholder="enter line" data-i="${i}"${gs ? ' disabled title="This game has already started, so the line is locked"' : ''}>
       ${L && L.edited ? `<button class="prop-clear" data-clear="${i}" onclick="event.stopPropagation()" title="Back to the saved line">reset</button>` : ''}
     </div>
     ${(r.line && r.line.stale && !(L && L.edited)) ? `<div class="empty" style="padding:6px 4px 0;text-align:left;font-size:10px;color:var(--amber,#d9a441)">Stale feed line: not refreshed since ${esc2(r.line.last_update ? new Date(r.line.last_update).toLocaleString() : 'an earlier run')}. Confirm it in the FanDuel app and retype it above if it moved.</div>` : ''}
     ${comboMiniPick(r)}
-    <div class="combo-foot">Click for Full Breakdown ›</div>
+    <div class="combo-foot">${gs ? 'Game ' + (gs === 'final' ? 'played' : 'in progress') + ' · view breakdown ›' : 'Click for Full Breakdown ›'}</div>
   </div>`;
 }
 function comboRecordHTML(){
@@ -776,7 +832,8 @@ function renderComboGrid(){
     if(key !== last){
       const mine = COMBO_VIEW.filter((_, j) => slots[j].rank + '|' + slots[j].title === key);
       const games = [...new Set(mine.map(x => x.opp ? (x.home ? `${x.opp} @ ${x.team}` : `${x.team} @ ${x.opp}`) : null).filter(Boolean))];
-      html += `<div class="slot-head"><span class="sh-t">${esc2(sl.title)}</span><span class="sh-m">${esc2(sl.sub)} · ${mine.length} player${mine.length === 1 ? '' : 's'}</span>
+      const sts = mine.map(comboGameState), allPlayed = sts.every(x => x), allFinal = sts.every(x => x === 'final');
+      html += `<div class="slot-head${allPlayed ? ' played' : ''}"><span class="sh-t">${esc2(sl.title)}</span><span class="sh-m">${allPlayed ? (allFinal ? 'FINAL' : 'STARTED') + ' · ' : ''}${esc2(sl.sub)} · ${mine.length} player${mine.length === 1 ? '' : 's'}</span>
         <span class="sh-m">${games.map(esc2).join(' · ')}</span></div>`;
       last = key;
     }
