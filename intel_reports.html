@@ -44,6 +44,18 @@
   color:var(--text-dim);margin:12px 0 6px}
 .ic-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;font-size:12px}
 .ic-row-label{color:var(--text-mid);flex:1;min-width:0}
+/* Combo Props card separation */
+.combo-card .ic-section-label{margin:22px 0 8px;padding-top:14px;border-top:1px solid var(--border2,var(--border));font-size:9.5px;color:var(--text-mid)}
+.combo-card .ic-row{padding:8px 0;border-bottom:1px solid var(--border)}
+.combo-card .ic-row:last-child{border-bottom:0}
+.combo-card .ic-head{padding-bottom:12px}
+.combo-box{margin:14px 0 0;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:rgba(127,127,127,.06)}
+.combo-box .ic-row:last-of-type{border-bottom:0}
+.combo-coeus{margin:14px 0 0;padding:12px 14px;border-radius:10px;border:1px solid var(--border);border-left-width:5px;border-left-style:solid}
+.combo-coeus .cc-title{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--text-mid);margin-bottom:6px}
+.combo-coeus .cc-top{display:flex;justify-content:space-between;align-items:center;font-size:16px;margin-bottom:8px}
+.combo-coeus .cc-why{font-family:var(--font-sans,inherit);font-size:12.5px;line-height:1.65;color:var(--text);margin:0}
+.combo-note{margin-top:8px;padding:8px 10px;border-radius:8px;background:rgba(217,164,65,.10);border-left:3px solid rgba(217,164,65,.7);font-size:11px;line-height:1.55;color:var(--text-mid)}
 .hit-badge{
   font-family:var(--font-mono);font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;
   white-space:nowrap;flex:none;
@@ -468,8 +480,8 @@ function comboResultHTML(r){
   if(ev){
     h += `<div class="ic-row"><span class="ic-row-label">Model vs line</span><span class="cell-val">${ev.diff >= 0 ? '+' : ''}${ev.diff.toFixed(1)} yds (${(100 * ev.gap).toFixed(0)}%)</span></div>
           <div class="ic-row"><span class="ic-row-label">Best side</span><span>${comboChip(ev)} <span class="rank-chip">${(100 * ev.p).toFixed(0)}% · edge ${ev.edge >= 0 ? '+' : ''}${(100 * ev.edge).toFixed(1)} pts</span></span></div>`;
-    if(ev.lean === 'CHECK') h += `<div class="empty" style="padding:4px 0 0;text-align:left;font-size:10px">Caution: the projection is more than 12% away from the line (⚠ dashed label). That usually means the model is missing something (game script, role change), not that the book is wrong by that much. Read the card before trusting it.</div>`;
-    if(L.edited) h += `<div class="empty" style="padding:4px 0 0;text-align:left;font-size:10px">Using the line you typed. Coeus's note below was written for the saved line.</div>`;
+    if(ev.lean === 'CHECK') h += `<div class="combo-note">Caution: the projection is more than 12% away from the line (⚠ dashed label). That usually means the model is missing something (game script, role change), not that the book is wrong by that much. Read the card before trusting it.</div>`;
+    if(L.edited) h += `<div class="combo-note" style="background:rgba(127,127,127,.08);border-left-color:var(--border2,var(--border))">Using the line you typed. Coeus's note below was written for the saved line.</div>`;
   } else {
     h += `<div class="ic-row"><span class="ic-row-label">Best side</span><span>${comboChip(null)}</span></div>`;
   }
@@ -530,9 +542,11 @@ function comboCoeusHTML(r){
   const c = r.coeus; if(!c) return '';
   const pk = c.pick === 'PASS' ? 'NEUTRAL' : c.pick;
   const col = pk === 'OVER' ? 'var(--accent-green)' : (pk === 'UNDER' ? 'var(--accent-red)' : 'var(--accent-blue)');
-  return `<div class="ic-section-label">Coeus pick</div>
-    <div class="ic-row"><span style="color:${col};font-weight:700">${esc2(pk || '—')}</span><span class="rank-chip">confidence ${esc2(c.confidence ?? '—')}/5</span></div>
-    <div class="empty" style="padding:2px 0 0;text-align:left;font-size:11px;line-height:1.5;color:var(--text-mid)">${esc2(c.reasoning || '')}</div>`;
+  return `<div class="combo-coeus" style="border-left-color:${col};background:color-mix(in srgb, ${col} 9%, transparent)">
+    <div class="cc-title">Coeus pick</div>
+    <div class="cc-top"><span style="color:${col};font-weight:800;letter-spacing:.04em">${esc2(pk || '—')}${c.review ? ' <span class="fav-badge check" style="margin-left:6px;font-size:9px" title="The model projection is more than 12% from the line, so treat this pick with caution">⚠ REVIEW</span>' : ''}</span><span class="rank-chip">confidence ${esc2(c.confidence ?? '—')}/5</span></div>
+    <p class="cc-why">${esc2(c.reasoning || '')}</p>
+  </div>`;
 }
 function comboRows(){
   if(!COMBO) return [];
@@ -557,7 +571,7 @@ function comboCardHTML(r, i){
   const halves = r.feed_halves && r.feed_halves.a != null && r.feed_halves.b != null
     ? `${r.feed_halves.a} + ${r.feed_halves.b} = ${(r.feed_halves.a + r.feed_halves.b).toFixed(1)}` : '—';
   const names = r.projection ? r.projection.components.map(c => c.name) : ['', ''];
-  return `<div class="intel-card" data-i="${i}">
+  return `<div class="intel-card combo-card" data-i="${i}">
     <div class="ic-head">
       <img class="ic-headshot" src="${esc2(r.headshot || '')}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
       <div>
@@ -572,11 +586,11 @@ function comboCardHTML(r, i){
       ${L && L.edited ? `<button class="prop-clear" data-clear="${i}" onclick="event.stopPropagation()" title="Back to the saved line">reset</button>` : ''}
     </div>
     ${(r.line && r.line.stale && !(L && L.edited)) ? `<div class="empty" style="padding:2px 4px 8px;text-align:left;font-size:10px;color:var(--amber,#d9a441)">Stale feed line: the provider's FanDuel feed has not refreshed it since ${esc2(r.line.last_update ? new Date(r.line.last_update).toLocaleString() : 'an earlier run')}. Confirm the number in the FanDuel app and retype it above if it moved.</div>` : ''}
-    <div id="cres_${i}">${comboResultHTML(r)}</div>
+    ${comboCoeusHTML(r)}
+    <div id="cres_${i}" class="combo-box">${comboResultHTML(r)}</div>
     ${comboPlayerRankHTML(r)}${comboMatchupHTML(r)}
     <div class="ic-section-label">The two halves (FanDuel's separate lines)</div>
     <div class="ic-row"><span class="ic-row-label">${esc2(names[0])} + ${esc2(names[1])}</span><span class="cell-val">${halves}</span></div>
-    ${comboCoeusHTML(r)}
   </div>`;
 }
 function comboRecordHTML(){

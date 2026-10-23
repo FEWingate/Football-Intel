@@ -661,12 +661,44 @@ def main():
 
     if a.coeus:
         coeus_picks(out, a.model)
+    else:
+        k = carry_forward_coeus(out)
+        if k:
+            print("Kept %d saved Coeus picks (same week and line)." % k)
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     with open(OUT, "w") as f:
         json.dump(out, f, indent=1)
     print("\nWrote %s - %d rows (%d with a real line)" % (OUT, len(rows), sum(1 for r in rows if r.get("eval"))))
     save_picks(out)
+
+
+def unforce_coeus(c):
+    """Undo the old forced-NEUTRAL rule on a saved Coeus pick: restore the original side, keep it flagged for review."""
+    c = dict(c)
+    if c.get("original_pick"):
+        c["pick"] = c.pop("original_pick")
+        c["review"] = True
+        c["confidence"] = min(int(c.get("confidence") or 2), 2)
+        t = c.get("reasoning") or ""
+        m = re.search(r"original read was (?:OVER|UNDER): ", t)
+        if m:
+            c["reasoning"] = t[m.end():]
+    return c
+
+
+def carry_forward_coeus(out):
+    """Without --coeus, keep the Coeus picks already saved for the same week and line instead of dropping them."""
+    prev = load_json(OUT, {}) or {}
+    if prev.get("season") != out.get("season") or prev.get("week") != out.get("week"):
+        return 0
+    old = {(norm(r.get("player")), r.get("market")): r for r in prev.get("rows", []) if r.get("coeus")}
+    n = 0
+    for r in out["rows"]:
+        o = old.get((norm(r["player"]), r["market"]))
+        if o and r.get("eval") and (o.get("line") or {}).get("point") == r["line"]["point"]:
+            r["coeus"] = unforce_coeus(o["coeus"]); n += 1
+    return n
 
 
 def add_manual_line(args):
@@ -732,11 +764,11 @@ For every row return a pick: OVER, UNDER or NEUTRAL (NEUTRAL = no meaningful edg
   tier differs from its season tier is changing (injuries, scheme, schedule). Use it as trend context and say which
   you are leaning on, but it is only 5 games against different opponents, so do not let it outweigh a long-run number
   unless the gap is large and the player's own tier splits agree.
-- Rows flagged CHECK are forced to NEUTRAL by the system after you answer; still give your honest read in the reasoning.
+- Rows flagged CHECK keep your pick but are shown to the person with a REVIEW warning and confidence capped at 2; still give your honest read and say what the model may be missing.
 - If edge is under about 3 percentage points or the sample is thin, prefer NEUTRAL unless a clear football reason
   supports a side.
 - confidence is an integer 1-5 (5 = strongest).
-- reasoning: 2-4 plain sentences naming the specific numbers that drive the pick (projection vs line, recent
+- reasoning: 2-3 plain sentences, under 70 words, naming the specific numbers that drive the pick (projection vs line, recent
   totals, opponent allowance, script).
 Return ONLY JSON: {"picks": [{"player": "...", "market": "pass_rush|rush_rec", "pick": "OVER|UNDER|NEUTRAL",
 "confidence": 1-5, "reasoning": "..."}]}"""
@@ -763,16 +795,40 @@ def coeus_picks(out, model):
         print("Coeus: no rows with a real FanDuel line yet - nothing to pick.")
         return
     client = anthropic.Anthropic()
-    print("Asking Coeus about %d rows..." % len(items))
-    resp = client.messages.create(model=model, max_tokens=4000, system=COEUS_SYSTEM,
-                                  messages=[{"role": "user", "content": json.dumps({"rows": items})}])
-    txt = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
-    m = re.search(r"\{.*\}", txt, re.S)
-    try:
-        picks = json.loads(m.group(0))["picks"]
-    except Exception:
-        print("WARNING: could not parse Coeus's reply; saving raw text.")
-        out["coeus_raw"] = txt
+    print("Asking Coeus about %d rows (in batches of 5)..." % len(items))
+    picks, raws, tin, tout = [], [], 0, 0
+    resp = None
+    for i in range(0, len(items), 5):
+        chunk = items[i:i + 5]
+        resp = client.messages.create(model=model, max_tokens=8000, system=COEUS_SYSTEM,
+                                      messages=[{"role": "user", "content": json.dumps({"rows": chunk})}])
+        txt = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
+        u = getattr(resp, "usage", None)
+        if u:
+            tin += u.input_tokens; tout += u.output_tokens
+        got = []
+        try:
+            got = json.loads(re.search(r"\{.*\}", txt, re.S).group(0))["picks"]
+        except Exception:
+            # salvage every complete pick object even if the reply was cut off or has stray text
+            dec = json.JSONDecoder()
+            pos = txt.find("{", txt.find('"picks"') if '"picks"' in txt else 0)
+            while pos != -1 and pos < len(txt):
+                try:
+                    obj, end = dec.raw_decode(txt, pos)
+                    if isinstance(obj, dict) and obj.get("player"):
+                        got.append(obj)
+                    pos = txt.find("{", end)
+                except Exception:
+                    pos = txt.find("{", pos + 1)
+        picks.extend(got)
+        print("  batch %d: %d of %d picks%s" % (i // 5 + 1, len(got), len(chunk), "" if len(got) == len(chunk) else "  <-- incomplete"))
+        if len(got) < len(chunk):
+            raws.append(txt)
+    if raws:
+        out["coeus_raw"] = "\n\n".join(raws)
+    if not picks:
+        print("WARNING: no Coeus picks parsed.")
         return
     by = {(norm(p.get("player")), p.get("market")): p for p in picks}
     for r in out["rows"]:
@@ -780,17 +836,11 @@ def coeus_picks(out, model):
         if p:
             r["coeus"] = {"pick": ("NEUTRAL" if str(p.get("pick")).upper() == "PASS" else p.get("pick")), "confidence": p.get("confidence"), "reasoning": p.get("reasoning"),
                           "model": model}
-            # Hard rule: a CHECK row (projection >12% from the FanDuel line) is more likely a model miss than a real edge.
+            # A CHECK row (projection >12% from the line) keeps Coeus's side but is flagged for review with confidence capped at 2.
             if (r.get("eval") or {}).get("lean") == "CHECK" and str(r["coeus"]["pick"]).upper() in ("OVER", "UNDER"):
-                r["coeus"]["original_pick"] = r["coeus"]["pick"]
-                r["coeus"]["pick"] = "NEUTRAL"
+                r["coeus"]["review"] = True
                 r["coeus"]["confidence"] = min(int(r["coeus"].get("confidence") or 2), 2)
-                r["coeus"]["reasoning"] = ("Forced to NEUTRAL: the model projection is more than 12% from FanDuel's line, "
-                                           "which usually means the model is missing something. Coeus's original read was "
-                                           + str(r["coeus"]["original_pick"]) + ": " + str(p.get("reasoning") or ""))
-    u = getattr(resp, "usage", None)
-    if u:
-        print("Coeus tokens: %s in / %s out" % (u.input_tokens, u.output_tokens))
+    print("Coeus tokens: %s in / %s out" % (tin, tout))
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-22T23:31:11Z",
+ "generated_at": "2026-10-23T00:26:25Z",
  "season": 2026,
  "week": 7,
  "method": {
@@ -278,7 +278,14 @@
     "lean": "CHECK"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "OVER",
+    "confidence": 2,
+    "reasoning": "Projection (93.3) is way above the 58.5 line, and recent totals (105,92,128,117,40) back a much higher baseline; IND ranks bottom-5 combined vs RBs both season and last5. Model flagged CHECK for the huge gap, but the data (season rank 10/59, strong recent run) supports leaning OVER.",
+    "model": "claude-sonnet-5",
+    "review": true
+   }
   },
   {
    "player": "Aaron Rodgers",
@@ -517,7 +524,13 @@
     "lean": "LEAN"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "OVER",
+    "confidence": 3,
+    "reasoning": "Projection 247.2 vs 234.5 line is a modest lean, and NO allows bottom-10 passing yards with last5 trending worse (289.2 pg, rank28 vs 275.7 season). Rodgers' own last5 average (257.2) also sits above the line, supporting the small OVER edge.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Alvin Kamara",
@@ -760,7 +773,14 @@
     "lean": "CHECK"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "OVER",
+    "confidence": 2,
+    "reasoning": "Line of 32.5 is well under both his season (39.2) and recent totals (58,69 in last two games), and projection of 56.6 reflects that gap even though it triggers CHECK. PIT's last5 receiving tier has tightened to Top 10, but rushing stays mid, so some OVER cushion remains from volume.",
+    "model": "claude-sonnet-5",
+    "review": true
+   }
   },
   {
    "player": "Ashton Jeanty",
@@ -1012,7 +1032,13 @@
     "lean": "LEAN"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "NEUTRAL",
+    "confidence": 2,
+    "reasoning": "Projection (91.1) barely clears the 83.5 line (9% gap, edge only 5.4%), and his last5 average of 83.4 sits right on the number. LAR's combined defense has eased from bottom-10 season mark to mid-tier over its last5, offsetting the raw receiving-yardage weakness.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Baker Mayfield",
@@ -1494,7 +1520,13 @@
     "lean": "NEUTRAL"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "NEUTRAL",
+    "confidence": 1,
+    "reasoning": "Projection (123.6) is almost identical to the 119.5 line (3.4% gap) and model edge is essentially flat (-0.004). SF's rushing defense is Top-10 tough even over last5, balancing out their very weak receiving-yardage allowance, so neither side has a clear edge.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Blake Corum",
@@ -1746,7 +1778,13 @@
     "lean": "LEAN"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "OVER",
+    "confidence": 3,
+    "reasoning": "Projection 57.1 tops the 51.5 line and LV ranks bottom-5 combined (152.4 ypg allowed) with last-5 splits even worse (169.8, +17.4 trend). Corum's season/last-5 averages (~52) already sit near the line against tougher slates, so the league's worst run/pass-catch defense to RBs tips this over.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Bo Nix",
@@ -1985,7 +2023,14 @@
     "lean": "CHECK"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "UNDER",
+    "confidence": 2,
+    "reasoning": "CHECK flag (17.5% gap) noted, but Nix's last five games (294,193,224,133,109) trend well below the 234.5 line and he's dead-last among QBs in this stat both season and L5. ARI's pass defense is only mid-bottom tier, not enough to offset his declining volume, so I lean under despite the warning.",
+    "model": "claude-sonnet-5",
+    "review": true
+   }
   },
   {
    "player": "Brock Purdy",
@@ -2242,7 +2287,13 @@
     "lean": "NEUTRAL"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "NEUTRAL",
+    "confidence": 1,
+    "reasoning": "Projection (267.5) and line (263.5) are essentially even, with model edge near zero. ATL's bottom-10 pass defense is offset by its elite rush-D (rank 1) capping Purdy's scramble yards, leaving no clear side.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Bryce Young",
@@ -2490,7 +2541,13 @@
     "lean": "LEAN"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "OVER",
+    "confidence": 4,
+    "reasoning": "Projection 285.6 clears the 267.5 line by a solid margin, and Young is the No.1 ranked QB in this combined stat with a scorching last-5 stretch (371,293,291,332,287). TB's pass defense is only mid-tier and trending slightly tougher, but not enough to offset his current form.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Bucky Irving",
@@ -2733,7 +2790,13 @@
     "lean": "NEUTRAL"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "NEUTRAL",
+    "confidence": 2,
+    "reasoning": "Projection 91.3 is close to the 86.5 line with only a 1.4% model edge. His last-5 average (~86.6) matches the number almost exactly, and CAR's defense, while bottom-10 vs rush, is mid-tier vs receiving, balancing out the matchup.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Caleb Williams",
@@ -2981,7 +3044,13 @@
     "lean": "NEUTRAL"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "NEUTRAL",
+    "confidence": 2,
+    "reasoning": "Projection 254.3 vs line 264.5 is only a 3.9% gap and model edge (3.4pp) is thin. His last-5 combined average (274) actually sits above the line, and last5 defense tier (mid, 240.8) is tougher than season (top, 236.2), offsetting each other \u2014 no clear side.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Cam Ward",
@@ -3220,7 +3289,14 @@
     "lean": "CHECK"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "UNDER",
+    "confidence": 2,
+    "reasoning": "Model gap is 13.2% (CHECK) but the numbers support it: Ward is dead-last among QBs in this stat (rank 33 of 33, season and L5), and CLE's last5 pass defense (223.8, top-10) backs a low total; his last two games (172, 109) trend well under 196.5.",
+    "model": "claude-sonnet-5",
+    "review": true
+   }
   },
   {
    "player": "Chase Brown",
@@ -3472,7 +3548,13 @@
     "lean": "LEAN"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "OVER",
+    "confidence": 2,
+    "reasoning": "Projection 76.6 edges the 71.5 line and model gives a 5.2pp OVER lean, but BAL's combined defense ranks 3rd (Top 5 fine tier) and tightened further last5 (88.2), so this is a close call leaning only slightly with recent receiving usage (24.8 avg) supporting volume.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Christian McCaffrey",
@@ -3715,7 +3797,14 @@
     "lean": "CHECK"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "UNDER",
+    "confidence": 2,
+    "reasoning": "Flagged CHECK (12.3% gap) but data backs it: projection 97.8 vs line 111.5, and his last5 average (90.4) is well under the line; ATL's last5 defense (112.6, mid-tier) isn't tough enough to explain the gap, so the line looks inflated versus his actual recent production.",
+    "model": "claude-sonnet-5",
+    "review": true
+   }
   },
   {
    "player": "Chuba Hubbard",
@@ -3967,7 +4056,13 @@
     "lean": "LEAN"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "UNDER",
+    "confidence": 3,
+    "reasoning": "Projection 81.2 vs 89.5 line with a 5.1pp model edge toward UNDER; TB's rushing defense ranks top-5 both season (3rd) and last5 (2nd, 62.8 allowed), a tough spot even though Hubbard's own last5 average (102.2) has been strong \u2014 the matchup data supports fading some of that volume.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "C.J. Stroud",
@@ -4224,7 +4319,13 @@
     "lean": "NEUTRAL"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "NEUTRAL",
+    "confidence": 2,
+    "reasoning": "Projection (274.8) sits just 2.7% above the 267.5 line and the model's own edge is tiny (0.013). Stroud's season/last5 averages (298/300) are strong, but a -10.5 spread raises blowout/garbage-time risk that could cap passing volume, offsetting the favorable matchup.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Dak Prescott",
@@ -4463,7 +4564,13 @@
     "lean": "LEAN"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "OVER",
+    "confidence": 3,
+    "reasoning": "Proj 295.2 vs 281.5 line (4.9% gap) is backed by a bottom-10 Eagles pass defense that's gotten worse last5 (271.8 pg, rank 27) and Dak's own last5 rank (3rd) trending up. A 44.5 total and only -4.5 spread supports a competitive, pass-heavy script.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "D'Andre Swift",
@@ -4706,7 +4813,13 @@
     "lean": "STRONG"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "UNDER",
+    "confidence": 4,
+    "reasoning": "Proj 78.6 is well under the 86.5 line (9.1% gap) and Swift has gone under in 5 of his last 6 games (99,88,74,73,70), with his season/last5 rank among RBs slipping (14th to 18th). Opponent splits are only mid-tier, not enough to offset his declining role.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Daniel Jones",
@@ -4954,7 +5067,13 @@
     "lean": "STRONG"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "OVER",
+    "confidence": 3,
+    "reasoning": "Proj 219.0 vs 202.5 line (8.1% gap) despite facing a top-5 pass defense; Jones's last two games (271, 299) and last5 average (235) run well above the line, and being a 6.5-point road underdog in a low-total game often means more dropbacks.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Deshaun Watson",
@@ -5155,7 +5274,13 @@
     "lean": "STRONG"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "UNDER",
+    "confidence": 4,
+    "reasoning": "Proj 227.4 is 7% below the 244.5 line, matching Watson's season/last5 combined averages (228/225) which sit well under the number; 4 of his 6 games this year have landed below 244.5, and a 37.5 total with a near-even spread points to a lower-volume script.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Drake Maye",
@@ -5394,7 +5519,13 @@
     "lean": "NEUTRAL"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "NEUTRAL",
+    "confidence": 2,
+    "reasoning": "Projection 288.9 is only 3.7% above the 278.5 line and model edge is a thin 3pp. CHI's combined defense has tightened sharply last five games (208.6 allowed, top-3), offsetting Maye's strong 284.6 L5 average, so the matchup cancels the raw projection edge.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Geno Smith",
@@ -5633,7 +5764,13 @@
     "lean": "LEAN"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "UNDER",
+    "confidence": 3,
+    "reasoning": "Model projects 215.5 vs a 232.5 line (7.3% gap, 7.4pp edge) and Smith's own L5 average of 231.2 ranks him 22nd of 33 QBs. MIA is a top-10 combined defense (235.8 allowed) that has stayed consistent (no last5 drift), and his expected-vs-tier number of 194 reinforces the lean.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Jacoby Brissett",
@@ -5872,7 +6009,13 @@
     "lean": "NEUTRAL"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "NEUTRAL",
+    "confidence": 1,
+    "reasoning": "Projection (239.9) is basically in line with the 235.5 number (1.9% gap, near-zero edge). DEN's defense is mid-tier and trending slightly worse (263.4 last5 vs 254.0 season), but Brissett's own L5 rank (26th of 33) keeps this a coin flip with no clear side.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Jahmyr Gibbs",
@@ -6115,7 +6258,13 @@
     "lean": "NEUTRAL"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "OVER",
+    "confidence": 3,
+    "reasoning": "Model edge is small (-2.1pp) but Gibbs is the No.2 RB in this stat (149.4 L5 avg, well above the 138.5 line) and GB's defense has leaked more over its last five games (129.8 allowed, worse in receiving specifically at bottom-10). His elite role and the defense's downward trend tip this toward OVER despite the modest model signal.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Jalon Daniels",
@@ -6518,7 +6667,13 @@
     "lean": "NEUTRAL"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "NEUTRAL",
+    "confidence": 2,
+    "reasoning": "Projection (288.9) sits just 1.9% over the 283.5 line with near-zero model edge. Goff's 300.2 season/L5 average is strong, but GB remains a top-10 combined pass defense (226.9 allowed, still top-10 even after a slight last5 uptick), balancing out his individual form.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Javonte Williams",
@@ -6761,7 +6916,14 @@
     "lean": "CHECK"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "UNDER",
+    "confidence": 2,
+    "reasoning": "Projection (70.6) sits far below the 84.5 line and matches his last-5 average (~69.6); he's a bottom-third back (rank 21/22 of 59) and PHI's tougher receiving tier (top-10) caps his ceiling even with a soft run tier.",
+    "model": "claude-sonnet-5",
+    "review": true
+   }
   },
   {
    "player": "Jaylen Warren",
@@ -7013,7 +7175,14 @@
     "lean": "CHECK"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "OVER",
+    "confidence": 2,
+    "reasoning": "Warren is a top-4 back this season (119.7 avg, rank 4) and trending up (129 last5), while NO ranks dead last (147.3 allowed, bottom-5) and stays weak in the last five games (136.0). Projection of 118 well clears the 94.5 line with clear role and matchup support.",
+    "model": "claude-sonnet-5",
+    "review": true
+   }
   },
   {
    "player": "J.J. McCarthy",
@@ -7254,7 +7423,13 @@
     "lean": "STRONG"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "UNDER",
+    "confidence": 3,
+    "reasoning": "Projection (210.1) trails the 228.5 line and his rushing cushion shrinks against a top-3, last5 top-1 run defense; sample is thin (only one game with NYG) and a 10.5-point deficit could add garbage-time volume, so I lean under but with less conviction.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "J.K. Dobbins",
@@ -7506,7 +7681,13 @@
     "lean": "NEUTRAL"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "NEUTRAL",
+    "confidence": 2,
+    "reasoning": "Projection (64.0) is close to the 60.5 line and edge is small; his last-5 average (52.2) and low usage rank (33/59) offset ARI's bottom-tier run defense, so no clear side.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Joe Burrow",
@@ -7745,7 +7926,13 @@
     "lean": "LEAN"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "OVER",
+    "confidence": 3,
+    "reasoning": "Projection (286.6) tops the 270.5 line and matches his rank-8 season average (281.8) and recent form (281.8 last5); BAL's pass defense has softened to mid-tier last five games (237.6) in a near pick'em, high-total game that supports volume.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Jonathan Taylor",
@@ -8006,7 +8193,13 @@
     "lean": "NEUTRAL"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "NEUTRAL",
+    "confidence": 2,
+    "reasoning": "Projection (99.5) is only modestly above the 92.5 line, and MIN is a top-5 combined defense in both halves with last5 unchanged, while IND's low 17.5 implied total and 6.5 point deficit cap volume. Edge too thin to pick a side.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Jordan Love",
@@ -8254,7 +8447,13 @@
     "lean": "NEUTRAL"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "OVER",
+    "confidence": 3,
+    "reasoning": "DET's pass defense is dead last (320.0 ypg allowed, rank 32, unchanged last5) versus a 229.8 league average, and Love's projection (301.6) clears the 292.5 line. His l5 rank has slipped to 15, tempering confidence, but the matchup strength and total of 52.5 support the over.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Josh Jacobs",
@@ -8499,7 +8698,13 @@
     "lean": "CHECK"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "NEUTRAL",
+    "confidence": 2,
+    "reasoning": "Model flags CHECK with a 17% gap, and the data actually argues the other way: GB's opponent DET ranks top-5 combined (rank 5, last5 rank 6) against RBs, a tough spot that doesn't support the model's big OVER lean on 63.5.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Kenneth Walker III",
@@ -8742,7 +8947,13 @@
     "lean": "LEAN"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "OVER",
+    "confidence": 4,
+    "reasoning": "Walker is the #1 ranked RB in this stat both season and last5 (152.0 avg) and is blowing past tough run defenses already, while SEA's last5 rushing tier has softened from top-10 to mid-tier (+3.0 ypg). Projection (119.5) clears the 107.5 line with a real gap.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Kirk Cousins",
@@ -9438,7 +9649,13 @@
     "lean": "LEAN"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "OVER",
+    "confidence": 4,
+    "reasoning": "LV is the league's worst combined run-D (152.4 allowed, rank 32) and trending even worse last5 (169.8, +17.4 vs season), while Williams is up to 109.0 ypg over his last 5 (rank 6). Favorable script (-3.5, 26.0 implied) backs the 102.4 projection over the 94.5 line.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Malik Willis",
@@ -9654,7 +9871,13 @@
     "lean": "LEAN"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "UNDER",
+    "confidence": 3,
+    "reasoning": "Projection 205.1 sits below the 219.5 line, and NYJ ranks 4th combined (217.3 allowed) with last5 trend even tougher (228.6, 6th). Willis' own combined average (207.0) ranks 29th of 33 QBs, supporting the fade.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Matthew Stafford",
@@ -10123,7 +10346,13 @@
     "lean": "NEUTRAL"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "NEUTRAL",
+    "confidence": 2,
+    "reasoning": "Projection 229.9 is almost dead on the 232.5 line (1.1% gap, model edge near zero). SF is mid-tier combined (rank 8) with last5 trending slightly softer, not enough signal either way.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Ollie Gordon II",
@@ -10358,7 +10587,13 @@
     "lean": "NEUTRAL"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "OVER",
+    "confidence": 3,
+    "reasoning": "Projection 65.4 tops the 60.5 line versus a bottom-10 run defense (105.8 allowed, rank 27) that's trending worse last5 (117.6, rank 29, combined rank 30). Gordon's workload is rising with 100 and 88 total yards his last two games.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Patrick Mahomes",
@@ -10606,7 +10841,13 @@
     "lean": "NEUTRAL"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "NEUTRAL",
+    "confidence": 2,
+    "reasoning": "Projection 246.7 beats the 236.5 line but Seattle is the league's #1 pass defense both season (156.8) and last5 (152.6), a strong counterweight even though Mahomes has thrived vs top tiers before on a small 1-game sample. Edge (3.5%) is too thin to pick a side confidently.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Pierre Strong",
@@ -10777,7 +11018,14 @@
     "lean": "CHECK"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "OVER",
+    "confidence": 2,
+    "reasoning": "CHECK flag: projection 40.5 is far above the 17.5 line off just 2 games, so this is forced neutral by the system. My honest read leans OVER given rising receiving usage (26.6 weighted avg) despite Detroit ranking top-2 vs RB receiving, but the 2-game sample is too thin to trust fully.",
+    "model": "claude-sonnet-5",
+    "review": true
+   }
   },
   {
    "player": "Rhamondre Stevenson",
@@ -11020,7 +11268,13 @@
     "lean": "NEUTRAL"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "UNDER",
+    "confidence": 3,
+    "reasoning": "Projection (64.7) sits right on the 64.5 line, but his last-5 average (55.8) and season rank (24\u219231 last5) show a fading role, while CHI's last-5 combined allowance (86.8, rank 1) is tougher than its season number. Trend context on both sides points below the number.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Rico Dowdle",
@@ -11272,7 +11526,14 @@
     "lean": "CHECK"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "OVER",
+    "confidence": 2,
+    "reasoning": "Model projects 54.3 vs a 41.5 line (CHECK, 30.8% gap) because NO ranks 31st combined and bottom-5 vs the run even over its last 5 (136 ypg, rank 27). Sample is thin (3 games as a Steeler) so treat with caution, but the matchup strongly favors volume over this number.",
+    "model": "claude-sonnet-5",
+    "review": true
+   }
   },
   {
    "player": "RJ Harvey",
@@ -11524,7 +11785,14 @@
     "lean": "CHECK"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "OVER",
+    "confidence": 2,
+    "reasoning": "Projection (64.8) is well above the 45.5 line (CHECK, 42% gap); ARI's last5 combined allowance (148.2, rank 31) and top-10 receiving yards allowed fit Harvey's pass-catching role (32.6 ypg average). Only 4-5 games of data so confidence is moderate, but matchup signal is one-sided.",
+    "model": "claude-sonnet-5",
+    "review": true
+   }
   },
   {
    "player": "Roschon Johnson",
@@ -11690,7 +11958,14 @@
     "lean": "CHECK"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "OVER",
+    "confidence": 2,
+    "reasoning": "Projection (65.1) far exceeds the 37.5 line (CHECK, 73.6% gap) with NE allowing bottom-10 receiving yards to RBs, matching his receiving usage (34 ypg avg). Sample is only 2 games as lead back, so this is a speculative lean rather than a strong claim.",
+    "model": "claude-sonnet-5",
+    "review": true
+   }
   },
   {
    "player": "Sam Darnold",
@@ -11929,7 +12204,13 @@
     "lean": "NEUTRAL"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "NEUTRAL",
+    "confidence": 2,
+    "reasoning": "Projection (239.4) is basically in line with the 233.5 number (2.5% gap), and KC grades mid-tier both season-long (rank 14) and last5 (unchanged). Darnold's game log is volatile (128 to 379 yards), offering no clear lean either way.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Samaje Perine",
@@ -12181,7 +12462,14 @@
     "lean": "CHECK"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "OVER",
+    "confidence": 2,
+    "reasoning": "Projection (46) sits well above the 31.5 line, and in his last two actual meetings with BAL he posted 54 and 43 total yards, clearing this number both times. BAL's season-long run+catch numbers look tough (rank 3), but the direct matchup history argues the model's big gap isn't pure noise.",
+    "model": "claude-sonnet-5",
+    "review": true
+   }
   },
   {
    "player": "Tanner McKee",
@@ -12358,7 +12646,13 @@
     "lean": "STRONG"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "OVER",
+    "confidence": 3,
+    "reasoning": "Projection 239 vs line 221.5 is a modest, non-CHECK gap with a 9.6pp model edge. Dallas is a mid-tier pass defense (allowed_pg 239-241 both season and last5) and lets QBs run freely (rank 32), giving McKee a path to clear this with his rushing floor plus average passing volume.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "TreVeyon Henderson",
@@ -12601,7 +12895,14 @@
     "lean": "CHECK"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "UNDER",
+    "confidence": 2,
+    "reasoning": "CHI's last-5 defense is the stingiest in the league against this combined stat (86.8 allowed, rank 1), down sharply from its season mark, and Henderson ranks just 39th of 59 backs in this market all season. The 76.8% projection-to-line gap looks driven by a stale usage spike rather than matching this elite recent run defense.",
+    "model": "claude-sonnet-5",
+    "review": true
+   }
   },
   {
    "player": "Tyler Huntley",
@@ -13023,7 +13324,13 @@
     "lean": "NEUTRAL"
    },
    "under_price_assumed": true,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "UNDER",
+    "confidence": 2,
+    "reasoning": "Projection (244) is essentially on the number (244.5) with a negligible model edge, but his last-5 rank has slipped to 24th from a 17th season rank, and his two most recent games (96, 176) are well under this line. PIT's defense is only mid-tier, not a strong driver either way, so the recent slump tips this slightly toward the under.",
+    "model": "claude-sonnet-5"
+   }
   },
   {
    "player": "Tyrone Tracy Jr.",
@@ -13268,7 +13575,14 @@
     "lean": "CHECK"
    },
    "under_price_assumed": false,
-   "alts_eval": []
+   "alts_eval": [],
+   "coeus": {
+    "pick": "UNDER",
+    "confidence": 2,
+    "reasoning": "HOU ranks top-5 in the league against this combined stat both this season (98.0 allowed) and over the last five games (102.6), and NYG's implied total of just 16.5 as a 10.5-point underdog points to a limited offensive script. His two most recent actual games (31, 45) sit right around the 38.5 line rather than supporting the model's large projected jump.",
+    "model": "claude-sonnet-5",
+    "review": true
+   }
   }
  ]
 }
