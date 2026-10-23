@@ -136,6 +136,8 @@ POS_METRICS = {
         "attempts":   ("Attempts", 0, True, "Volume"),
         "att_pg":     ("Attempts / game", 1, True, "Volume"),
         "pass_td":    ("Passing TDs", 0, True, "Volume"),
+        "rush_yds":   ("Rushing yards", 0, True, "Volume"),
+        "rush_ypg":   ("Rushing yards / game", 1, True, "Volume"),
         "comp_pct":   ("Completion %", 1, True, "Efficiency"),
         "ypc":        ("Yards / completion", 1, True, "Efficiency"),
         "fd_pg":      ("Passing first downs / game", 1, True, "Efficiency"),
@@ -703,6 +705,8 @@ def pos_metrics_from_sums(pos, s, gp):
             "attempts":    g("attempts"),
             "att_pg":      safe_div(g("attempts"), gp),
             "pass_td":     g("passing_tds"),
+            "rush_yds":    g("rushing_yards"),
+            "rush_ypg":    safe_div(g("rushing_yards"), gp),
             "comp_pct":    safe_div(g("completions"), g("attempts")) * 100,
             "ypc":         safe_div(g("passing_yards"), g("completions")),
             "fd_pg":       safe_div(g("passing_first_downs"), gp),
@@ -2365,6 +2369,10 @@ def build_player_log(player_df, pos, latest_matchup, team_week_totals=None,
     # per game anywhere in this pipeline, not just filtered out here.
     split_groups = {"Volume", "Efficiency", "Explosive", "Red Zone"}
     split_keys = [k for k, (_l, _d, _hb, grp) in POS_METRICS[pos].items() if grp in split_groups]
+    # A QB's rushing yards would otherwise be tiered by the PASS defense rank (the QB's only matchup
+    # category), which would be misleading, so QB rushing stays out of the tier-split panels.
+    if pos == "QB":
+        split_keys = [k for k in split_keys if k not in ("rush_yds", "rush_ypg")]
     # Rate-like stats (per-game averages, season percentages, share-of-
     # team splits) get averaged across a tier's games; real counting
     # stats get summed — a count across 8 games isn't the same number as

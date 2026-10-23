@@ -55,6 +55,55 @@
 .combo-coeus .cc-title{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--text-mid);margin-bottom:6px}
 .combo-coeus .cc-top{display:flex;justify-content:space-between;align-items:center;font-size:16px;margin-bottom:8px}
 .combo-coeus .cc-why{font-family:var(--font-sans,inherit);font-size:12.5px;line-height:1.65;color:var(--text);margin:0}
+.combo-mini{margin:12px 0 0;padding:9px 12px;border-radius:10px;border:1px solid var(--border);border-left-width:5px;border-left-style:solid;
+  display:flex;align-items:center;justify-content:space-between;gap:10px}
+.combo-mini .cm-pick{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;letter-spacing:.04em}
+.combo-mini .cm-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:.15em;color:var(--text-mid);font-weight:400;text-transform:uppercase}
+.combo-foot{margin-top:14px;padding-top:11px;border-top:1px solid var(--border);text-align:center;font-family:var(--font-mono);
+  font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-blue)}
+.intel-card.combo-card:hover .combo-foot{color:var(--text)}
+.modal.combo-wide{width:min(1320px,96vw)}
+.bd-top{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+.bd-top .combo-coeus,.bd-top .combo-box{margin:0}
+.bd-grid{display:grid;grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr);margin-top:18px}
+.bd-mid{position:relative;display:flex;align-items:center;justify-content:center}
+.bd-mid:before{content:"";position:absolute;top:0;bottom:0;left:50%;border-left:2px solid var(--border2,var(--border))}
+.bd-mid span{position:relative;background:var(--bg);padding:12px 6px;font-family:var(--font-display);font-weight:800;font-size:18px;letter-spacing:.12em;color:var(--text-mid)}
+.bd-col{min-width:0}
+.bd-head{display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:6px}
+.bd-head .bd-h1{font-family:var(--font-display);font-weight:800;font-size:18px}
+.bd-head .bd-h2{font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-top:2px}
+.bd-block{margin:14px 0 0;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:rgba(127,127,127,.05)}
+.bd-block-t{display:flex;justify-content:space-between;align-items:center;gap:8px;font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--text-mid);padding-bottom:6px;border-bottom:1px solid var(--border2,var(--border))}
+.bd-block .ic-row{padding:7px 0;border-bottom:1px solid var(--border)}
+.bd-block .ic-row:last-child{border-bottom:0}
+.bd-block.bd-comb{background:rgba(56,189,248,.06);border-color:rgba(56,189,248,.3)}
+.bd-note{margin-top:8px;font-size:10px;line-height:1.55;color:var(--text-dim)}
+@media(max-width:900px){
+  .bd-top{grid-template-columns:1fr}
+  .bd-grid{grid-template-columns:1fr}
+  .bd-mid{height:44px}
+  .bd-mid:before{top:50%;bottom:auto;left:0;right:0;border-left:0;border-top:2px solid var(--border2,var(--border))}
+}
+.slot-head{grid-column:1/-1;display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 14px;margin:18px 0 2px;padding:10px 14px;
+  border:1px solid var(--border2,var(--border));border-left:4px solid var(--accent-blue);border-radius:10px;background:rgba(56,189,248,.06)}
+.slot-head:first-child{margin-top:0}
+.slot-head .sh-t{font-family:var(--font-display);font-weight:800;font-size:16px}
+.slot-head .sh-m{font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--text-mid)}
+.tier-nuclear{--tc:var(--accent-red)}
+.tier-elite{--tc:var(--accent-gold)}
+.tier-standard{--tc:var(--accent-blue)}
+.tbadge{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);
+  font-size:9px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;
+  padding:3px 8px;border-radius:var(--radius-sm);color:var(--tc);
+  border:1px solid color-mix(in srgb, var(--tc) 45%, transparent);
+  background:color-mix(in srgb, var(--tc) 9%, transparent)}
+.tbadge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--tc)}
+.ic-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.bd-threat{margin-top:14px;padding:10px 14px;border:1px solid var(--border2,var(--border));border-radius:10px;background:rgba(127,127,127,.05)}
+.bd-threat .bt-row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px}
+.bd-threat .bt-row:last-child{border-bottom:0}
 .combo-note{margin-top:8px;padding:8px 10px;border-radius:8px;background:rgba(217,164,65,.10);border-left:3px solid rgba(217,164,65,.7);font-size:11px;line-height:1.55;color:var(--text-mid)}
 .hit-badge{
   font-family:var(--font-mono);font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;
@@ -308,6 +357,21 @@ async function load(){
     if(resCb.ok) COMBO = await resCb.json();
   }catch(e){}
   try{
+    if(COMBO && COMBO.week){
+      const rt = await fetch(`threats/wk${String(COMBO.week).padStart(2, '0')}.json`, {cache:'no-store'});
+      if(rt.ok){
+        const td = await rt.json();
+        COMBO_THREATS = {labels: td.labels || {}, map: {}};
+        for(const [team, t] of Object.entries(td.teams || {})){
+          for(const st of (t.starters || [])){
+            const res = fiClassify(st.cats || {});
+            if(res.length) COMBO_THREATS.map[comboNameKey(st.name) + '|' + team] = {s: st, res, team, opp: t.opp};
+          }
+        }
+      }
+    }
+  }catch(e){}
+  try{
     const resCh = await fetch(`results/combo_picks.json`, {cache:'no-store'});
     if(resCh.ok) COMBO_HIST = await resCh.json();
   }catch(e){}
@@ -419,6 +483,28 @@ function render(){
 /* ── COMBO PROPS (RB rushing + receiving, QB passing + rushing) ──────── */
 let COMBO = null;
 let COMBO_HIST = null;
+let COMBO_THREATS = {labels: {}, map: {}};
+function comboNameKey(n){
+  return String(n || '').toLowerCase().replace(/[.'\u2019]/g, '').replace(/\b(jr|sr|ii|iii|iv|v)\b/g, '').replace(/[^a-z]/g, '');
+}
+function comboThreat(r){ return COMBO_THREATS.map[comboNameKey(r.player) + '|' + r.team] || null; }
+function comboThreatBadges(r){
+  const t = comboThreat(r); if(!t) return '';
+  return `<div class="ic-badges" title="Threat System: this player's strength meets a defensive weakness">${t.res.map(x =>
+    `<span class="tier-${x.tier}"><span class="tbadge">${esc2(x.tierLabel)} ${esc2(x.type)}</span></span>`).join('')}</div>`;
+}
+function comboThreatDetail(r){
+  const t = comboThreat(r); if(!t) return '';
+  const lbl = c => (COMBO_THREATS.labels[t.s.pos] || {})[c] || c;
+  const conv = new Set(t.res.flatMap(x => x.conv));
+  const rows = Object.keys(t.s.cats).filter(c => conv.has(c) || t.s.cats[c].r <= 10).map(c => {
+    const x = t.s.cats[c];
+    return `<div class="bt-row"><span>${conv.has(c) ? '● ' : ''}${esc2(lbl(c))}</span>
+      <span><b>${x.v}</b> <span class="rank-chip">#${x.r}</span> &nbsp;vs&nbsp; <b>${x.dv}</b> allowed <span class="rank-chip">#${x.dr}</span></span></div>`;
+  }).join('');
+  return `<div class="bd-threat"><div class="bd-block-t"><span>Threat</span><span>${comboThreatBadges(r).replace('class="ic-badges"', 'class="ic-badges" style="margin:0"')}</span></div>${rows}
+    <div class="bd-note">● marks the stats that make this a threat: the player ranks high at a stat while ${esc2(r.opp || 'the opponent')}'s defense ranks poorly against it. Same system as the Threats page.</div></div>`;
+}
 let comboPos = 'QB';
 let comboOnlyLine = null;   // null = decide from data on first render
 let comboSearch = '';
@@ -565,32 +651,35 @@ function comboRows(){
   rows.sort((a, b) => (score(b) - score(a)) || ((b.projection ? b.projection.proj_total : 0) - (a.projection ? a.projection.proj_total : 0)));
   return rows;
 }
+function comboMiniPick(r){
+  const c = r.coeus; if(!c) return '';
+  const pk = c.pick === 'PASS' ? 'NEUTRAL' : c.pick;
+  const col = pk === 'OVER' ? 'var(--accent-green)' : (pk === 'UNDER' ? 'var(--accent-red)' : 'var(--accent-blue)');
+  return `<div class="combo-mini" style="border-left-color:${col};background:color-mix(in srgb, ${col} 9%, transparent)">
+    <div class="cm-pick"><span class="cm-lbl">Coeus pick</span><span style="color:${col}">${esc2(pk || '—')}</span>${c.review ? '<span class="fav-badge check" style="font-size:9px" title="The model projection is more than 12% from the line, so treat this pick with caution">⚠ REVIEW</span>' : ''}</div>
+    <span class="rank-chip">confidence ${esc2(c.confidence ?? '—')}/5</span></div>`;
+}
 function comboCardHTML(r, i){
   const L = comboEffLine(r), g = r.game;
   const sp = g && g.team_spread != null ? (g.team_spread > 0 ? '+' : '') + g.team_spread : '—';
-  const halves = r.feed_halves && r.feed_halves.a != null && r.feed_halves.b != null
-    ? `${r.feed_halves.a} + ${r.feed_halves.b} = ${(r.feed_halves.a + r.feed_halves.b).toFixed(1)}` : '—';
-  const names = r.projection ? r.projection.components.map(c => c.name) : ['', ''];
   return `<div class="intel-card combo-card" data-i="${i}">
     <div class="ic-head">
       <img class="ic-headshot" src="${esc2(r.headshot || '')}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
       <div>
         <div class="ic-name">${esc2(r.player)}</div>
         <div class="ic-team">${fiLogoHTML(r.team, 14)}${esc2(r.team)} ${r.home ? 'vs' : '@'} ${r.opp ? fiLogoHTML(r.opp, 14) + esc2(r.opp) : '—'} · ${esc2(r.market_label)}</div>
-        <div class="ic-team" style="color:var(--text-mid)">spread ${sp} · total ${g && g.total != null ? g.total : '—'} · team implied ${g && g.team_implied != null ? g.team_implied : '—'}</div>
+        <div class="ic-team" style="color:var(--text-mid)">${(() => { const e = comboET(g && g.commence_time); return e ? `<b style="color:var(--text)">${esc2(e.label)}</b> · ` : ''; })()}spread ${sp} · total ${g && g.total != null ? g.total : '—'} · team implied ${g && g.team_implied != null ? g.team_implied : '—'}</div>
+        ${comboThreatBadges(r)}
       </div>
     </div>
-    <div class="prop-input-row" style="margin-bottom:8px" onclick="event.stopPropagation()">
+    <div class="prop-input-row" style="margin-bottom:0" onclick="event.stopPropagation()">
       <label for="cl_${i}">FANDUEL LINE</label>
       <input class="prop-input" id="cl_${i}" type="number" step="0.5" inputmode="decimal" value="${L ? L.point : ''}" placeholder="enter line" data-i="${i}">
       ${L && L.edited ? `<button class="prop-clear" data-clear="${i}" onclick="event.stopPropagation()" title="Back to the saved line">reset</button>` : ''}
     </div>
-    ${(r.line && r.line.stale && !(L && L.edited)) ? `<div class="empty" style="padding:2px 4px 8px;text-align:left;font-size:10px;color:var(--amber,#d9a441)">Stale feed line: the provider's FanDuel feed has not refreshed it since ${esc2(r.line.last_update ? new Date(r.line.last_update).toLocaleString() : 'an earlier run')}. Confirm the number in the FanDuel app and retype it above if it moved.</div>` : ''}
-    ${comboCoeusHTML(r)}
-    <div id="cres_${i}" class="combo-box">${comboResultHTML(r)}</div>
-    ${comboPlayerRankHTML(r)}${comboMatchupHTML(r)}
-    <div class="ic-section-label">The two halves (FanDuel's separate lines)</div>
-    <div class="ic-row"><span class="ic-row-label">${esc2(names[0])} + ${esc2(names[1])}</span><span class="cell-val">${halves}</span></div>
+    ${(r.line && r.line.stale && !(L && L.edited)) ? `<div class="empty" style="padding:6px 4px 0;text-align:left;font-size:10px;color:var(--amber,#d9a441)">Stale feed line: not refreshed since ${esc2(r.line.last_update ? new Date(r.line.last_update).toLocaleString() : 'an earlier run')}. Confirm it in the FanDuel app and retype it above if it moved.</div>` : ''}
+    ${comboMiniPick(r)}
+    <div class="combo-foot">Click for Full Breakdown ›</div>
   </div>`;
 }
 function comboRecordHTML(){
@@ -649,28 +738,129 @@ function renderComboReport(){
   $("comboSearch").oninput = e => { comboSearch = e.target.value.toLowerCase(); renderComboGrid(); };
   renderComboGrid();
 }
+
+const COMBO_TZ = 'America/New_York';
+function comboET(iso){
+  if(!iso) return null;
+  const d = new Date(iso); if(isNaN(d)) return null;
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', {timeZone: COMBO_TZ, weekday: 'short', hour: 'numeric', minute: '2-digit', hour12: false})
+    .formatToParts(d).map(p => [p.type, p.value]));
+  const h = Number(parts.hour) % 24;
+  const t12 = new Intl.DateTimeFormat('en-US', {timeZone: COMBO_TZ, hour: 'numeric', minute: '2-digit', hour12: true}).format(d);
+  return {dow: parts.weekday, h, label: `${parts.weekday} ${t12} ET`, t12: t12 + ' ET'};
+}
+function comboSlot(iso){
+  const e = comboET(iso);
+  if(!e) return {rank: 99, title: 'Time not posted yet', sub: ''};
+  if(e.dow === 'Thu') return {rank: 1, title: 'Thursday Night', sub: e.t12};
+  if(e.dow === 'Fri' || e.dow === 'Sat') return {rank: 2, title: e.dow === 'Fri' ? 'Friday' : 'Saturday', sub: e.t12};
+  if(e.dow === 'Sun'){
+    if(e.h < 12) return {rank: 3, title: 'Sunday Morning (international game)', sub: e.t12};
+    if(e.h < 16) return {rank: 4, title: 'Sunday Early Games', sub: '1:00 PM ET'};
+    if(e.h < 19) return {rank: 5, title: 'Sunday Late Games', sub: '4:00 PM ET window'};
+    return {rank: 6, title: 'Sunday Night Football', sub: e.t12};
+  }
+  if(e.dow === 'Mon') return {rank: 7, title: 'Monday Night Football', sub: e.t12};
+  return {rank: 8, title: e.dow, sub: e.t12};
+}
 let COMBO_VIEW = [];
 function renderComboGrid(){
-  COMBO_VIEW = comboRows();
-  $("comboGrid").innerHTML = COMBO_VIEW.map((r, i) => comboCardHTML(r, i)).join('') ||
+  // Group by kickoff slot (Thursday, Sunday early, Sunday late, SNF, MNF); order inside a slot stays best-edge first.
+  const tagged = comboRows().map((r, k) => ({r, k, s: comboSlot(r.game && r.game.commence_time)}))
+    .sort((a, b) => (a.s.rank - b.s.rank) || (a.k - b.k));
+  const slots = tagged.map(x => x.s);
+  COMBO_VIEW = tagged.map(x => x.r);
+  let html = '', last = null;
+  COMBO_VIEW.forEach((r, i) => {
+    const sl = slots[i], key = sl.rank + '|' + sl.title;
+    if(key !== last){
+      const mine = COMBO_VIEW.filter((_, j) => slots[j].rank + '|' + slots[j].title === key);
+      const games = [...new Set(mine.map(x => x.opp ? (x.home ? `${x.opp} @ ${x.team}` : `${x.team} @ ${x.opp}`) : null).filter(Boolean))];
+      html += `<div class="slot-head"><span class="sh-t">${esc2(sl.title)}</span><span class="sh-m">${esc2(sl.sub)} · ${mine.length} player${mine.length === 1 ? '' : 's'}</span>
+        <span class="sh-m">${games.map(esc2).join(' · ')}</span></div>`;
+      last = key;
+    }
+    html += comboCardHTML(r, i);
+  });
+  $("comboGrid").innerHTML = html ||
     `<div class="empty">${comboOnlyLine ? 'No players with a FanDuel line yet. Add one with <b>--add</b> or untick the box to see every player with both halves posted.' : 'No players match.'}</div>`;
   $("comboGrid").querySelectorAll('.intel-card').forEach(el => { el.onclick = () => openComboModal(Number(el.dataset.i)); });
   $("comboGrid").querySelectorAll('input.prop-input').forEach(inp => {
     inp.oninput = () => {
       const i = Number(inp.dataset.i), r = COMBO_VIEW[i], v = inp.value === '' ? null : Number(inp.value);
       comboSetOverride(comboKey(r), v == null || isNaN(v) ? null : { line: v });
-      $("cres_" + i).innerHTML = comboResultHTML(r);
+      const cr = $("cres_" + i); if(cr) cr.innerHTML = comboResultHTML(r);
     };
   });
   $("comboGrid").querySelectorAll('[data-clear]').forEach(b => b.onclick = () => {
     comboSetOverride(comboKey(COMBO_VIEW[Number(b.dataset.clear)]), null); renderComboGrid();
   });
 }
+
+function bdVal(x, unit){
+  if(!x || x.avg == null) return `<span class="rank-chip">no games</span>`;
+  return `<b>${x.avg}</b>${unit || ''} <span class="rank-chip">${comboNText(x.games)}</span>`;
+}
+function bdRankChip(rank){
+  if(!rank) return '';
+  const t = rank <= 10 ? 'top' : (rank <= 22 ? 'mid' : 'bot');
+  return comboTierChip(t, TIER_NAME[t], rank);
+}
+const TIER_NAME = {top: 'Top 10', mid: 'Mid 12', bot: 'Bottom 10'};
+function bdPlayerSide(r, bd){
+  const pk = r.player_rank, pos = bd.pos;
+  const rankLine = pk ? `Season #${pk.season_rank} of ${pk.of} ${pos}s · last 5 #${pk.l5_rank}` : `not ranked yet (needs 3 games)`;
+  const blocks = bd.player.map(row => {
+    const opp = row.opp_rank ? `${esc2(r.opp)} is ${bdRankChip(row.opp_rank)}` : '';
+    return `<div class="bd-block ${row.key === 't' ? 'bd-comb' : ''}">
+      <div class="bd-block-t"><span>${esc2(row.name)}</span><span>${opp}</span></div>
+      <div class="ic-row"><span class="ic-row-label">Season avg</span><span>${bdVal(row.season, '/gm')}</span></div>
+      <div class="ic-row"><span class="ic-row-label">Last 3 avg</span><span>${bdVal(row.last3, '/gm')}</span></div>
+      <div class="ic-row"><span class="ic-row-label">Last 5 avg</span><span>${bdVal(row.last5, '/gm')}</span></div>
+      <div class="ic-row"><span class="ic-row-label">Avg vs ${esc2(row.opp_tier_label || '—')} defenses</span><span>${bdVal(row.vs_tier, '/gm')}</span></div>
+      ${row.vs_fine ? `<div class="ic-row"><span class="ic-row-label">Avg vs ${esc2(row.vs_fine.label)} defenses</span><span>${bdVal(row.vs_fine, '/gm')}</span></div>` : ''}
+    </div>`;
+  }).join('');
+  return `<div class="bd-col">
+    <div class="bd-head"><img class="ic-headshot" src="${esc2(r.headshot || '')}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+      <div><div class="bd-h1">${esc2(r.player)}</div><div class="bd-h2">${fiLogoHTML(r.team, 14)}${esc2(r.team)} ${esc2(pos)} · ${esc2(rankLine)}</div></div></div>
+    ${blocks}
+    <div class="bd-note">2026 games only (QB 10+ attempts, RB 3+ touches). "Avg vs Bottom 10 defenses" is how this player has done against defenses in the same tier as ${esc2(r.opp)} for that stat.</div>
+  </div>`;
+}
+function bdDefSide(r, bd){
+  const pt = bd.player_tier;
+  const ptLabel = pt && pt.label ? pt.label : null;
+  const blocks = bd.defense.map(d => {
+    const rec = (x) => x ? `<b>${x.pg}</b>/gm ${bdRankChip(x.rank)} <span class="rank-chip">${comboNText(x.games)}</span>` : `<span class="rank-chip">no games</span>`;
+    const tier = (x) => x && x.avg != null ? bdVal(x, '/gm') : `<span class="rank-chip">no games</span>`;
+    return `<div class="bd-block ${d.key === 't' ? 'bd-comb' : ''}">
+      <div class="bd-block-t"><span>${esc2(d.name)} allowed</span><span>${bdRankChip(d.rank)}</span></div>
+      <div class="ic-row"><span class="ic-row-label">Season avg allowed</span><span>${d.season_pg != null ? `<b>${d.season_pg}</b>/gm` : '—'}</span></div>
+      <div class="ic-row"><span class="ic-row-label">Last 3 allowed</span><span>${rec(d.last3)}</span></div>
+      <div class="ic-row"><span class="ic-row-label">Last 5 allowed</span><span>${rec(d.last5)}</span></div>
+      <div class="ic-row"><span class="ic-row-label">${ptLabel ? 'Allowed to ' + esc2(ptLabel) : 'Allowed to this player\'s tier'}</span><span>${ptLabel ? tier(d.vs_tier) : '<span class="rank-chip">player not ranked yet</span>'}</span></div>
+      ${pt && pt.fine_label ? `<div class="ic-row"><span class="ic-row-label">Allowed to ${esc2(pt.fine_label)}</span><span>${tier(d.vs_fine)}</span></div>` : ''}
+    </div>`;
+  }).join('');
+  return `<div class="bd-col">
+    <div class="bd-head">${r.opp ? fiLogoHTML(r.opp, 34) : ''}
+      <div><div class="bd-h1">${esc2(r.opp || '—')} defense</div><div class="bd-h2">vs ${esc2(bd.pos)}s · faces ${esc2(r.player)}${ptLabel ? ' · ' + esc2(ptLabel) : ''}</div></div></div>
+    ${blocks}
+    <div class="bd-note">Yards per game allowed by the whole defense to ${esc2(bd.pos)}s. "Allowed to ${esc2(ptLabel || 'this tier')}" is the defense's average per player-game against ${esc2(bd.pos)}s ranked in the same tier as ${esc2(r.player)} (season rank by combined yards per game); small samples are marked thin.</div>
+  </div>`;
+}
+function bdSectionHTML(r){
+  const bd = r.breakdown;
+  if(!bd) return `<div class="empty" style="padding:16px 0;text-align:left">No breakdown available for this player yet (no opponent this week, or no ${esc2(r.pos || '')} matchup data).</div>`;
+  return `<div class="bd-grid">${bdPlayerSide(r, bd)}<div class="bd-mid"><span>VS.</span></div>${bdDefSide(r, bd)}</div>`;
+}
 function openComboModal(i){
   const r = COMBO_VIEW[i]; if(!r) return;
   const L = comboEffLine(r), pr = r.projection;
   $("mTitle").textContent = `${r.player} — ${r.team} ${r.home ? 'vs' : '@'} ${r.opp || '—'}`;
-  $("mSub").textContent = `${r.market_label} · projection ${pr ? pr.proj_total : '—'} ± ${pr ? pr.sd : '—'} · ${pr ? pr.games_used : 0} games used`;
+  const _et = comboET(r.game && r.game.commence_time);
+  $("mSub").textContent = `${_et ? _et.label + ' · ' : ''}${r.market_label} · projection ${pr ? pr.proj_total : '—'} ± ${pr ? pr.sd : '—'} · ${pr ? pr.games_used : 0} games used`;
   const comp = pr ? `<div class="lead-wrap" style="max-height:none"><table class="lead-table"><thead><tr>
       <th class="name-col">Half</th><th>Recent avg</th><th>Opp allows / gm</th><th>League / gm</th><th>Opp factor</th><th>Projection</th><th>FanDuel half line</th>
     </tr></thead><tbody>${pr.components.map((c, k) => `<tr>
@@ -686,7 +876,13 @@ function openComboModal(i){
       <td><span class="cell-val ${cls}">${g.total}</span></td></tr>`;
   }).join('');
   const names = pr ? pr.components.map(c => c.name) : ['A', 'B'];
+  $("modal").classList.add("combo-wide");
   $("mBody").innerHTML = `
+    <div class="bd-top">${comboCoeusHTML(r) || '<div class="combo-box"><div class="empty" style="padding:6px 0;text-align:left">No Coeus pick for this player yet.</div></div>'}
+      <div class="combo-box">${comboResultHTML(r)}</div></div>
+    ${comboThreatDetail(r)}
+    ${bdSectionHTML(r)}
+    <div class="ic-section-label" style="margin-top:26px">Model details</div>
     <div class="ic-section-label">How the projection is built</div>${comp}
     <div class="ic-section-label">Recent games (green = over the line${L ? ' ' + L.point : ''}, red = under)</div>
     <div class="lead-wrap" style="max-height:none"><table class="lead-table"><thead><tr>
@@ -698,8 +894,7 @@ function openComboModal(i){
       <label>OVER PRICE</label><input class="prop-input" id="altPrice" type="number" step="1" value="-113">
     </div>
     <div id="altOut" style="margin-top:8px"></div>
-    ${r.under_price_assumed ? `<div class="empty" style="padding:6px 0;text-align:left;font-size:10px">The under price wasn't saved for this line, so −113 is assumed for it.</div>` : ''}
-    ${comboCoeusHTML(r)}`;
+    ${r.under_price_assumed ? `<div class="empty" style="padding:6px 0;text-align:left;font-size:10px">The under price wasn't saved for this line, so −113 is assumed for it.</div>` : ''}`;
   const upd = () => {
     const ln = Number($("altLine").value), pr0 = Number($("altPrice").value);
     const ev = comboEval(r, ln, pr0, null);
@@ -1762,7 +1957,7 @@ function openGameLog(team, kind){
 }
 
 function closeModal(){
-  $("scrim").classList.remove("open"); $("modal").classList.remove("open");
+  $("scrim").classList.remove("open"); $("modal").classList.remove("open"); $("modal").classList.remove("combo-wide");
 }
 $("mClose").addEventListener("click", closeModal);
 $("scrim").addEventListener("click", closeModal);

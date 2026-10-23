@@ -446,8 +446,140 @@ def matchup_block(row_pos, mk, opp, log26, mu, qb_rush_pg, prev_log=None, prev_r
                          "tier_label": TIER_LABEL[lt] if lt else None,
                          "vs_season": round(l5["combined"][opp] - comb_vals[opp], 1),
                          "games": min(cats[0].get("last5", {}).get("games", 0), cats[1].get("last5", {}).get("games", 0))}
-    return {"through_week": horizon_week(mu), "categories": cats, "combined": comb,
+    return {"_internal": {"vals": vals, "ranks": ranks, "comb_vals": comb_vals, "comb_rank": comb_rank},
+            "through_week": horizon_week(mu), "categories": cats, "combined": comb,
             "note": "Ranks and tiers use the site's cutoffs: rank 1 = toughest defense; Top 10 = 1-10, Mid 12 = 11-22, Bottom 10 = 23-32 (Top 5 / Bottom 5 are finer slices). Last season's games are placed in tiers by last season's final defensive rankings."}
+
+
+# ---------------------------------------------------------------- full breakdown (player on the left, defense on the right)
+def recent_allowed(df, pos, stats, n, min_games=2):
+    """Per defense: yards per game allowed to this position group over its last n games this season, per stat,
+    plus the combined total and each one's league rank (1 = fewest yards = toughest)."""
+    if df is None:
+        return {}
+    weeks_by_team = df.groupby("opponent_team")["week"].apply(lambda w: sorted(set(int(v) for v in w)))
+    x = df[df["position"] == pos]
+    out = {}
+    for st in stats:
+        g = x.groupby(["opponent_team", "week"])[st].sum()
+        per = {}
+        for t, wks in weeks_by_team.items():
+            last = wks[-n:]
+            if len(last) < min_games:
+                continue
+            per[t] = {"pg": sum(float(g.get((t, w), 0.0)) for w in last) / len(last), "games": len(last)}
+        out[st] = per
+    comb = {t: out[stats[0]][t]["pg"] + out[stats[1]][t]["pg"] for t in out[stats[0]] if t in out[stats[1]]}
+    return {"stats": out, "combined": comb, "combined_rank": rank_asc(comb),
+            "ranks": [rank_asc({t: v["pg"] for t, v in out[st].items()}) for st in stats]}
+
+
+def tier_rel(rank, n):
+    """Tier of an offensive PLAYER among the ranked players at his position (rank 1 = most yards per game)."""
+    if rank is None or not n or n < 23:
+        return None
+    return "top" if rank <= 10 else ("bot" if rank > n - 10 else "mid")
+
+
+def tier_rel_fine(rank, n):
+    if rank is None or not n or n < 23:
+        return None
+    return "top5" if rank <= 5 else ("bottom5" if rank > n - 5 else None)
+
+
+def player_tier_label(t, n, pos):
+    pl = pos + "s"
+    return {"top": "Top 10 %s (#1-10)" % pl, "mid": "Mid %s (#11-%d)" % (pl, n - 10),
+            "bot": "Bottom 10 %s (#%d-%d)" % (pl, n - 9, n),
+            "top5": "Top 5 %s (#1-5)" % pl, "bottom5": "Bottom 5 %s (#%d-%d)" % (pl, n - 4, n)}[t]
+
+
+def def_vs_tiers(df, pos, mk, prk):
+    """Per defense: what it allowed per player-game to offensive players in each tier of their own position rank
+    (this season). The rank is the player's season rank in the prop's combined stat."""
+    if df is None or not prk:
+        return {}
+    cfg = MARKETS[mk]
+    x = df[df["position"] == pos]
+    if pos == "QB":
+        x = x[x["attempts"].fillna(0) >= 10]
+    else:
+        x = x[(x["carries"].fillna(0) + x["targets"].fillna(0)) >= 3]
+    out = {}
+    for _, r in x.iterrows():
+        pk = prk.get(r["player_id"])
+        if not pk:
+            continue
+        a, b = float(r.get(cfg["a"], 0) or 0), float(r.get(cfg["b"], 0) or 0)
+        for t in (tier_rel(pk["season_rank"], pk["of"]), tier_rel_fine(pk["season_rank"], pk["of"])):
+            if t:
+                out.setdefault(r["opponent_team"], {}).setdefault(t, []).append((a, b))
+    return out
+
+
+def _avg(vals):
+    return {"avg": round(sum(vals) / len(vals), 1), "games": len(vals)} if vals else {"avg": None, "games": 0}
+
+
+def breakdown_block(pos, mk, opp, games, pk, internal, rec3, rec5, dvt):
+    """Everything the 'Click for Full Breakdown' window shows, for the combined prop and each half."""
+    if not internal or not opp:
+        return None
+    cfg = MARKETS[mk]
+    vals, ranks = internal["vals"], internal["ranks"]
+    keys = [("a", cfg["a_name"], 0), ("b", cfg["b_name"], 1), ("t", "Combined", None)]
+    games = sorted(games, key=lambda g: g["week"])
+    ptier = tier_rel(pk["season_rank"], pk["of"]) if pk else None
+    pfine = tier_rel_fine(pk["season_rank"], pk["of"]) if pk else None
+    out = {"names": {k: n for k, n, _ in keys}, "pos": pos, "season_games": len(games),
+           "player_tier": ({"tier": ptier, "label": player_tier_label(ptier, pk["of"], pos) if ptier else None,
+                            "fine": pfine, "fine_label": player_tier_label(pfine, pk["of"], pos) if pfine else None,
+                            "rank": pk["season_rank"], "of": pk["of"]} if pk else None),
+           "player": [], "defense": []}
+    for k, name, i in keys:
+        series = [g["a"] if k == "a" else (g["b"] if k == "b" else g["a"] + g["b"]) for g in games]
+        rmap = ranks[i] if i is not None else internal["comb_rank"]
+        r_opp = rmap.get(opp)
+        row = {"key": k, "name": name, "season": _avg(series), "last3": _avg(series[-3:]), "last5": _avg(series[-5:]),
+               "opp_rank": r_opp, "opp_tier": tier_broad(r_opp) if r_opp else None,
+               "opp_tier_label": TIER_LABEL[tier_broad(r_opp)] if r_opp else None, "vs_tier": None, "vs_fine": None}
+        if r_opp:
+            tb, tf = tier_broad(r_opp), tier_fine(r_opp)
+            row["vs_tier"] = _avg([v for g, v in zip(games, series) if rmap.get(g["opp"]) and tier_broad(rmap[g["opp"]]) == tb])
+            if tf:
+                row["vs_fine"] = {"label": TIER_LABEL[tf], **_avg([v for g, v in zip(games, series)
+                                                               if rmap.get(g["opp"]) and tier_fine(rmap[g["opp"]]) == tf])}
+        out["player"].append(row)
+        # defense side
+        d = {"key": k, "name": name, "rank": r_opp,
+             "season_pg": (round(vals[i][opp], 1) if i is not None and vals[i].get(opp) is not None
+                           else (round(internal["comb_vals"][opp], 1) if i is None and opp in internal["comb_vals"] else None))}
+        st = cfg["a"] if k == "a" else (cfg["b"] if k == "b" else None)
+        for tag, rec in (("last3", rec3), ("last5", rec5)):
+            if not rec:
+                d[tag] = None
+                continue
+            if st:
+                e = rec["stats"][st].get(opp)
+                rr = rec["ranks"][0 if k == "a" else 1].get(opp)
+                d[tag] = {"pg": round(e["pg"], 1), "games": e["games"], "rank": rr} if e else None
+            else:
+                if opp in rec["combined"]:
+                    g_ = min(rec["stats"][cfg["a"]][opp]["games"], rec["stats"][cfg["b"]][opp]["games"])
+                    d[tag] = {"pg": round(rec["combined"][opp], 1), "games": g_, "rank": rec["combined_rank"].get(opp)}
+                else:
+                    d[tag] = None
+        t_ = (dvt or {}).get(opp, {})
+        def tier_avg(tt):
+            lst = t_.get(tt) or []
+            if not lst:
+                return {"avg": None, "games": 0}
+            vs = [(x[0] if k == "a" else (x[1] if k == "b" else x[0] + x[1])) for x in lst]
+            return _avg(vs)
+        d["vs_tier"] = tier_avg(ptier) if ptier else None
+        d["vs_fine"] = tier_avg(pfine) if pfine else None
+        out["defense"].append(d)
+    return out
 
 
 def season_log(df, pid, mk):
@@ -535,6 +667,10 @@ def main():
     pr_cache = {(pos, mk): player_ranks(frames["cur"], pos, mk) for pos, mk in (("QB", "pass_rush"), ("RB", "rush_rec"))}
     l5_cache = {"QB": last5_allowed(frames["cur"], "QB", ["passing_yards", "rushing_yards"]),
                 "RB": last5_allowed(frames["cur"], "RB", ["rushing_yards", "receiving_yards"])}
+    stats_by_pos = {"QB": ["passing_yards", "rushing_yards"], "RB": ["rushing_yards", "receiving_yards"]}
+    rec3_cache = {pos: recent_allowed(frames["cur"], pos, stats_by_pos[pos], 3) for pos in ("QB", "RB")}
+    rec5_cache = {pos: recent_allowed(frames["cur"], pos, stats_by_pos[pos], 5) for pos in ("QB", "RB")}
+    dvt_cache = {(pos, mk): def_vs_tiers(frames["cur"], pos, mk, pr_cache.get((pos, mk))) for pos, mk in (("QB", "pass_rush"), ("RB", "rush_rec"))}
 
     # --- candidate list: every manual line + every feed player with both halves posted
     cands = {}
@@ -618,6 +754,12 @@ def main():
             home = (team == game[1])
         log = player_log(frames, info["id"], mk)
         proj = project(log, mk, opp, allowed[MARKETS[mk]["pos"]]) if opp else None
+        sl = season_log(frames["cur"], info["id"], mk)
+        mb = matchup_block(info["pos"], mk, opp, sl, mu, qb_rush_pg,
+                           season_log(frames["prev"], info["id"], mk), prev_rank_cache.get(info["pos"]),
+                           l5_cache.get(info["pos"]))
+        internal = mb.pop("_internal", None) if mb else None
+        pk_self = (pr_cache.get((info["pos"], mk)) or {}).get(info["id"])
         row = {"player": info["name"], "team": team, "opp": opp, "home": home, "pos": info["pos"], "market": mk,
                "market_label": MARKETS[mk]["label"], "headshot": heads.get(norm(info["name"]), ""),
                "game": ({"commence_time": g["commence_time"],
@@ -627,10 +769,11 @@ def main():
                "feed_halves": {"a": c["feed_a"], "b": c["feed_b"]},
                "implied_line": (round(c["feed_a"] + c["feed_b"], 1) if c["feed_a"] is not None and c["feed_b"] is not None else None),
                "line": c["line"], "projection": proj,
-               "matchup": matchup_block(info["pos"], mk, opp, season_log(frames["cur"], info["id"], mk), mu, qb_rush_pg,
-                                        season_log(frames["prev"], info["id"], mk), prev_rank_cache.get(info["pos"]),
-                                        l5_cache.get(info["pos"])),
-               "player_rank": (pr_cache.get((info["pos"], mk)) or {}).get(info["id"]),
+               "matchup": mb,
+               "breakdown": breakdown_block(info["pos"], mk, opp, sl, pk_self, internal,
+                                            rec3_cache.get(info["pos"]), rec5_cache.get(info["pos"]),
+                                            dvt_cache.get((info["pos"], mk))),
+               "player_rank": pk_self,
                "partial_games_dropped": (log[0].get("partial_dropped", 0) if log else 0),
                "log": [{"season": x["season"], "week": x["week"], "opp": x["opp"], "a": x["a"], "b": x["b"], "total": x["total"]}
                        for x in log[-10:]]}
