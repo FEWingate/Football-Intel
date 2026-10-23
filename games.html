@@ -1511,9 +1511,19 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && $('modal').classList.contains('open')) closeModal();
 });
 
-determineDefaultWeek().then(week => {
+// Deep link from the Combo Props cards: games.html?week=7&game=2026_07_NE_CHI opens that week and that game's box score.
+const DEEP = new URLSearchParams(location.search);
+async function openDeepLinkedGame(gid){
+  if (!GAMES) return;
+  await pollEspnScoreboard();   // fills in the ESPN event id the box score needs
+  if (GAMES.games.find(x => x.game_id === gid)) openGame(gid, null);
+}
+determineDefaultWeek().then(async week => {
+  const qw = Number(DEEP.get('week'));
+  if (qw >= 1 && qw <= 18) week = qw;
   wkSel.value = week;
-  load(week);
+  await load(week);
+  if (DEEP.get('game')) openDeepLinkedGame(DEEP.get('game'));
 });
 </script>
 </body>
