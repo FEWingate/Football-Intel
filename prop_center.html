@@ -1919,6 +1919,7 @@ function comboNameKey(n){
 // whether each game is not started / in progress / final. If ESPN can't be reached, fall back to the kickoff clock:
 // kickoff passed = started, and about 3.5 hours later = final.
 let ESPN_STATE = {};
+let ESPN_TIME = {};   // 'AWAY@HOME' -> kickoff ISO from ESPN, for rows whose game left the FanDuel board
 let ESPN_OK = false;
 let espnComboTimer = null;
 const ESPN_FIX = {WSH: 'WAS'};
@@ -1937,6 +1938,7 @@ async function comboPollEspn(){
       if(!a || !h) return;
       const code = x => ESPN_FIX[x.team.abbreviation] || x.team.abbreviation;
       next[code(a) + '@' + code(h)] = c.status && c.status.type ? c.status.type.state : null;   // 'pre' | 'in' | 'post'
+      ESPN_TIME[code(a) + '@' + code(h)] = c.date || ev.date || null;
     });
     const changed = JSON.stringify(next) !== JSON.stringify(ESPN_STATE);
     ESPN_STATE = next; ESPN_OK = Object.keys(next).length > 0;
@@ -1953,9 +1955,27 @@ function comboStartEspnWatch(){
     if(ESPN_OK && Object.values(ESPN_STATE).every(x => x === 'post')){ clearInterval(espnComboTimer); espnComboTimer = null; }
   }, 90000);
 }
+// A played game drops off the FanDuel board, so its rows can lose their opponent and kickoff time.
+// ESPN's scoreboard (already polled) still lists every game of the week, so use it to fill the gap.
+function comboMatch(r){
+  if(r.opp) return {opp: r.opp, home: r.home, key: r.home ? r.opp + '@' + r.team : r.team + '@' + r.opp};
+  for(const k of Object.keys(ESPN_STATE)){
+    const [a, h] = k.split('@');
+    if(a === r.team) return {opp: h, home: false, key: k};
+    if(h === r.team) return {opp: a, home: true, key: k};
+  }
+  return null;
+}
+function comboKick(r){
+  const iso = r.game && r.game.commence_time;
+  if(iso) return iso;
+  const m = comboMatch(r);
+  return m ? (ESPN_TIME[m.key] || null) : null;
+}
 function comboGameId(r){
-  if(!r.opp || !COMBO) return null;
-  const away = r.home ? r.opp : r.team, home = r.home ? r.team : r.opp;
+  const mm = comboMatch(r);
+  if(!mm || !COMBO) return null;
+  const away = mm.home ? mm.opp : r.team, home = mm.home ? r.team : mm.opp;
   return `${COMBO.season}_${String(COMBO.week).padStart(2, '0')}_${away}_${home}`;
 }
 function comboFootHTML(r, gs){
@@ -1967,11 +1987,12 @@ function comboFootHTML(r, gs){
   return gs ? 'In progress · View Breakdown ›' : 'Click for Full Breakdown ›';
 }
 function comboGameState(r){
-  if(ESPN_OK && r.opp){
-    const st = ESPN_STATE[(r.home ? r.opp + '@' + r.team : r.team + '@' + r.opp)];
+  const mm = comboMatch(r);
+  if(ESPN_OK && mm){
+    const st = ESPN_STATE[mm.key];
     if(st) return st === 'post' ? 'final' : (st === 'in' ? 'live' : null);
   }
-  const iso = r.game && r.game.commence_time; if(!iso) return null;
+  const iso = comboKick(r); if(!iso) return null;
   const t = new Date(iso).getTime(); if(isNaN(t)) return null;
   const d = Date.now() - t;
   return d < 0 ? null : (d < 3.5 * 3600 * 1000 ? 'live' : 'final');
@@ -1998,7 +2019,8 @@ function comboLegId(l){ return [l.canonical_event_id, l.market_key, l.player, l.
 function comboLeg(r, side){
   const L = comboEffLine(r); if(!L || L.point == null) return null;
   const price = comboToDecimal(side === 'over' ? L.over_price : L.under_price);
-  const eid = r.opp ? (COMBO_EVENTS[(r.home ? r.opp + '@' + r.team : r.team + '@' + r.opp)] || null) : null;
+  const mm = comboMatch(r);
+  const eid = mm ? (COMBO_EVENTS[mm.key] || null) : null;
   return {canonical_event_id: eid, market_key: COMBO_MKEY[r.market], player: r.player, price, side, line: L.point};
 }
 function comboInSlip(leg){ const id = comboLegId(leg); return comboSlipRead().legs.some(l => comboLegId(l) === id); }
@@ -2232,8 +2254,8 @@ function comboCardHTML(r, i){
       <img class="ic-headshot" src="${esc2(r.headshot || '')}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
       <div>
         <div class="ic-name">${esc2(r.player)}${gs ? `<span class="played-tag">${gs === 'final' ? 'FINAL' : 'STARTED'}</span>` : ''}</div>
-        <div class="ic-team">${fiLogoHTML(r.team, 14)}${esc2(r.team)} ${r.home ? 'vs' : '@'} ${r.opp ? fiLogoHTML(r.opp, 14) + esc2(r.opp) : '—'} · ${esc2(r.market_label)}</div>
-        <div class="ic-team" style="color:var(--text-mid)">${(() => { const e = comboET(g && g.commence_time); return e ? `<b style="color:var(--text)">${esc2(e.label)}</b> · ` : ''; })()}spread ${sp} · total ${g && g.total != null ? g.total : '—'} · team implied ${g && g.team_implied != null ? g.team_implied : '—'}</div>
+        <div class="ic-team">${fiLogoHTML(r.team, 14)}${esc2(r.team)} ${(comboMatch(r) || r).home ? 'vs' : '@'} ${(comboMatch(r) || {}).opp ? fiLogoHTML(comboMatch(r).opp, 14) + esc2(comboMatch(r).opp) : '—'} · ${esc2(r.market_label)}</div>
+        <div class="ic-team" style="color:var(--text-mid)">${(() => { const e = comboET(comboKick(r)); return e ? `<b style="color:var(--text)">${esc2(e.label)}</b> · ` : ''; })()}spread ${sp} · total ${g && g.total != null ? g.total : '—'} · team implied ${g && g.team_implied != null ? g.team_implied : '—'}</div>
         ${comboThreatBadges(r)}
       </div>
     </div>
@@ -2332,7 +2354,7 @@ function comboSlot(iso){
 let COMBO_VIEW = [];
 function renderComboGrid(){
   // Group by kickoff slot (Thursday, Sunday early, Sunday late, SNF, MNF); order inside a slot stays best-edge first.
-  const tagged = comboRows().map((r, k) => ({r, k, s: comboSlot(r.game && r.game.commence_time)}))
+  const tagged = comboRows().map((r, k) => ({r, k, s: comboSlot(comboKick(r))}))
     .sort((a, b) => (a.s.rank - b.s.rank) || (a.k - b.k));
   const slots = tagged.map(x => x.s);
   COMBO_VIEW = tagged.map(x => x.r);
@@ -2341,7 +2363,7 @@ function renderComboGrid(){
     const sl = slots[i], key = sl.rank + '|' + sl.title;
     if(key !== last){
       const mine = COMBO_VIEW.filter((_, j) => slots[j].rank + '|' + slots[j].title === key);
-      const games = [...new Set(mine.map(x => x.opp ? (x.home ? `${x.opp} @ ${x.team}` : `${x.team} @ ${x.opp}`) : null).filter(Boolean))];
+      const games = [...new Set(mine.map(x => { const m = comboMatch(x); return m ? (m.home ? `${m.opp} @ ${x.team}` : `${x.team} @ ${m.opp}`) : null; }).filter(Boolean))];
       const sts = mine.map(comboGameState), allPlayed = sts.every(x => x), allFinal = sts.every(x => x === 'final');
       html += `<div class="slot-head${allPlayed ? ' played' : ''}"><span class="sh-t">${esc2(sl.title)}</span><span class="sh-m">${allPlayed ? (allFinal ? 'FINAL' : 'STARTED') + ' · ' : ''}${esc2(sl.sub)} · ${mine.length} player${mine.length === 1 ? '' : 's'}</span>
         <span class="sh-m">${games.map(esc2).join(' · ')}</span></div>`;
@@ -2426,8 +2448,8 @@ function bdSectionHTML(r){
 function openComboModal(i){
   const r = COMBO_VIEW[i]; if(!r) return;
   const L = comboEffLine(r), pr = r.projection;
-  $("mTitle").textContent = `${r.player} — ${r.team} ${r.home ? 'vs' : '@'} ${r.opp || '—'}`;
-  const _et = comboET(r.game && r.game.commence_time);
+  $("mTitle").textContent = `${r.player} — ${r.team} ${(comboMatch(r) || r).home ? 'vs' : '@'} ${(comboMatch(r) || {}).opp || '—'}`;
+  const _et = comboET(comboKick(r));
   $("mSub").textContent = `${_et ? _et.label + ' · ' : ''}${r.market_label} · projection ${pr ? pr.proj_total : '—'} ± ${pr ? pr.sd : '—'} · ${pr ? pr.games_used : 0} games used`;
   const comp = pr ? `<div class="lead-wrap" style="max-height:none"><table class="lead-table"><thead><tr>
       <th class="name-col">Half</th><th>Recent avg</th><th>Opp allows / gm</th><th>League / gm</th><th>Opp factor</th><th>Projection</th><th>FanDuel half line</th>
