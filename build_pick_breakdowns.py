@@ -154,11 +154,13 @@ def build():
         key = (pos, stat)
         if key in cache_pr:
             return cache_pr[key]
+        # Same usage floor as the player's own game log (QB 10+ attempts, others 3+ carries + targets), so anyone
+        # whose log shows 3+ games is also ranked.
         x = df[df["position"] == pos].copy()
         if pos == "QB":
-            x = x[x["attempts"].fillna(0) >= 15]
+            x = x[x["attempts"].fillna(0) >= 10]
         else:
-            x = x[(x["carries"].fillna(0) + x["targets"].fillna(0)) >= 6]
+            x = x[(x["carries"].fillna(0) + x["targets"].fillna(0)) >= 3]
         x = x.sort_values("week")
         per = {}
         for pid, g in x.groupby("player_id"):
