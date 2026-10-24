@@ -101,6 +101,16 @@ def build():
         ident[B.norm(r["player_display_name"])] = {"id": r["player_id"], "pos": r["position"], "team": r["team"],
                                                   "name": r["player_display_name"]}
 
+    # team totals per game, so each player's share of his team's carries / targets can be shown next to the log
+    team_tot = df.groupby(["team", "week"])[["carries", "targets"]].sum()
+
+    def share(team, wk, col, val):
+        try:
+            tot = float(team_tot.loc[(team, wk), col])
+        except KeyError:
+            return None
+        return round(100.0 * float(val) / tot, 1) if tot > 0 else None
+
     through = B.horizon_week(mu) or (week - 1)
     qb_rush = B.qb_rush_allowed(df, through)
 
@@ -231,8 +241,15 @@ def build():
         tb = defense_tables(pos, stat)
         # the player's games (this season, before this week)
         rows = df[(df["player_id"] == pid)].sort_values("week")
-        games = [{"week": int(r["week"]), "opp": r["opponent_team"], "v": float(r.get(stat, 0) or 0)}
-                 for _, r in rows.iterrows() if floor_ok(r, pos)]
+        games = []
+        for _, r in rows.iterrows():
+            if not floor_ok(r, pos):
+                continue
+            wk_, tm_ = int(r["week"]), r["team"]
+            car, tgt = float(r.get("carries", 0) or 0), float(r.get("targets", 0) or 0)
+            games.append({"week": wk_, "opp": r["opponent_team"], "v": float(r.get(stat, 0) or 0),
+                          "car": int(car), "tgt": int(tgt), "rec": int(r.get("receptions", 0) or 0),
+                          "cs": share(tm_, wk_, "carries", car), "ts": share(tm_, wk_, "targets", tgt)})
         series = [g["v"] for g in games]
         prk = player_ranks(pos, stat).get(pid)
         ptier = B.tier_rel(prk["season_rank"], prk["of"]) if prk else None
@@ -266,7 +283,7 @@ def build():
         result[key] = {"player": info["name"], "team": team, "opp": opp, "home": home, "pos": pos, "market_key": mk,
                        "label": label, "headshot": heads.get(B.norm(p["player"]), ""),
                        "player_rank": prk, "breakdown": bd,
-                       "log": [{"week": g["week"], "opp": g["opp"], "v": g["v"]} for g in games]}
+                       "log": [{k: g[k] for k in ("week", "opp", "v", "car", "tgt", "rec", "cs", "ts")} for g in games]}
 
     out = {"generated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
            "season": season, "week": week, "through_week": through, "picks": result}

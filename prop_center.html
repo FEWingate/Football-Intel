@@ -2611,16 +2611,28 @@ function openPickModal(key, source){
       <div class="cc-top"><span style="color:${col};font-weight:800;letter-spacing:.04em">${side}${line !== null ? ' ' + line : ''}</span>
         ${typeof pick.projection === 'number' ? `<span class="rank-chip">projects ${pick.projection}${diff !== null ? ` (${diff > 0 ? '+' : ''}${Math.round(diff * 10) / 10} vs line)` : ''}</span>` : ''}</div>
       ${pick.reason ? `<p class="cc-why">${esc(pick.reason)}</p>` : ''}</div>` : '';
-  const logRows = (e.log || []).slice().reverse().map(x => {
+  // Usage context beside each game: WR/TE show targets + target share, RBs add carries + rush share.
+  const isRB = e.pos === 'RB', isRec = e.pos === 'WR' || e.pos === 'TE', hasUse = (isRB || isRec) && (e.log || []).some(x => x.ts != null || x.cs != null);
+  const pct = v => v == null ? '—' : v.toFixed(1) + '%';
+  const avgOf = (arr, k) => { const v = arr.map(x => x[k]).filter(x => x != null); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+  const lg = e.log || [];
+  const usageCols = hasUse ? (isRB ? [['car', 'Carries'], ['cs', 'Rush share'], ['tgt', 'Targets'], ['ts', 'Target share']] : [['tgt', 'Targets'], ['ts', 'Target share']]) : [];
+  const logRows = lg.slice().reverse().map(x => {
     const cls = line !== null ? (x.v > line ? 'log-hit' : (x.v < line ? 'log-miss' : '')) : '';
-    return `<tr><td class="name-col">2026 wk ${x.week}</td><td>${esc(x.opp || '—')}</td><td><span class="cell-val ${cls}">${x.v}</span></td></tr>`;
+    return `<tr><td class="name-col">2026 wk ${x.week}</td><td>${esc(x.opp || '—')}</td><td><span class="cell-val ${cls}">${x.v}</span></td>
+      ${usageCols.map(([k]) => `<td><span class="cell-val">${k === 'cs' || k === 'ts' ? pct(x[k]) : (x[k] ?? '—')}</span></td>`).join('')}</tr>`;
   }).join('');
+  const shareSummary = hasUse ? `<div class="bd-note" style="margin:0 0 8px">${usageCols.filter(([k]) => k === 'cs' || k === 'ts').map(([k, lab]) => {
+      const s_ = avgOf(lg, k), l3 = avgOf(lg.slice(-3), k);
+      return `<b>${lab}</b>: season ${pct(s_)} · last 3 ${pct(l3)}`;
+    }).join(' &nbsp;|&nbsp; ')} <span class="rank-chip">share of his team's ${isRB ? 'carries / targets' : 'targets'} in games he played</span></div>` : '';
   $('modal').classList.add('combo-wide');
   $('mBody').innerHTML = `${lineBar}${coeus ? `<div class="bd-top" style="grid-template-columns:1fr">${coeus}</div>` : ''}
     ${bdSectionHTML({player: e.player, team: e.team, opp: e.opp, pos: e.pos, headshot: e.headshot, player_rank: e.player_rank, breakdown: e.breakdown})}
     <div class="ic-section-label" style="margin-top:26px">Recent games${line !== null ? ` (green = over the line ${line}, red = under)` : ''}</div>
+    ${shareSummary}
     <div class="lead-wrap" style="max-height:none"><table class="lead-table"><thead><tr>
-      <th class="name-col">Game</th><th>Opp</th><th>${esc(e.label)}</th></tr></thead>
+      <th class="name-col">Game</th><th>Opp</th><th>${esc(e.label)}</th>${usageCols.map(([, lab]) => `<th>${lab}</th>`).join('')}</tr></thead>
       <tbody>${logRows || '<tr><td class="name-col">No games</td><td></td><td></td></tr>'}</tbody></table></div>`;
   wireSlipButtons($('mBody'), () => { openPickModal(key, source); render(); });
   $('scrim').classList.add('open'); $('modal').classList.add('open'); $('mClose').focus();
