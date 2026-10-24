@@ -181,6 +181,14 @@
 .pc-pick-top .pc-pick-badge{margin:0}
 .pc-pick-kick{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.06em;color:var(--text-mid);
   border:1px solid var(--border);border-radius:5px;padding:1px 6px;white-space:nowrap}
+.pc-pick-card.has-bd,.parlay-leg.has-bd{cursor:pointer}
+.pc-pick-card.has-bd:hover{border-color:var(--border2,var(--primary))}
+.parlay-leg.has-bd:hover{background:rgba(127,127,127,.07)}
+.pc-pick-foot{margin-top:10px;padding-top:8px;border-top:1px solid var(--border);text-align:center;font-family:var(--font-mono);
+  font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-blue)}
+.pc-pick-card.has-bd:hover .pc-pick-foot{color:var(--text)}
+.pc-addall{margin-left:auto;padding:5px 11px;font-size:11px}
+.parlay-head .pc-addall+.parlay-badge,.parlay-head .parlay-badge+.pc-addall{margin-left:10px}
 .pf-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;margin:6px 0 14px}
 .pf-chips{display:flex;flex-wrap:wrap;gap:6px}
 .pf-chip{font-family:var(--font-mono);font-size:11px;padding:6px 12px;border-radius:var(--radius-sm);
@@ -400,6 +408,8 @@ let WHOLE_WEEK_REPORT = null;
 // so a game's modal can show Coeus's picks for that game no matter which
 // batch they were generated in.
 let ALL_BATCH_REPORTS = [];
+let PICKBD = null;          // intel/pick_breakdowns.json (VS breakdown per player-stat pick), current week only
+const PICK_REG = {};        // key -> the pick object last drawn, so the modal can show its line/side/price
 
 // REAL ADDITION (2026-10-02), per Frank's direct request: a Prop Builder
 // slip — real, user-picked legs from Game Lines/Totals/ML and Player
@@ -506,6 +516,7 @@ async function load(){
   loadSlip(propsWeekFilter);
   await loadManifestForWeek(propsWeekFilter);
   await applyGameLinesWeekFilter(propsWeekFilter);
+  await loadPickBreakdowns();
 
   const optionWeeks = Array.from(new Set([...PROPS_WEEKS, currentWk]));
   const rank = wk => wk === 'mixed' ? 1e6 : Number(wk.slice(2));
@@ -1225,8 +1236,24 @@ function kickBadge(game){
   const d = new Date(game.commence_time); if(isNaN(d)) return '';
   return d.toLocaleString('en-US', {timeZone:'America/New_York', weekday:'short', hour:'numeric', minute:'2-digit'}) + ' ET';
 }
+function pickNorm(n){
+  return String(n || '').toLowerCase().replace(/[.'\u2019]/g, '').replace(/ jr/g, '').replace(/ sr/g, '').replace(/ iii/g, '').replace(/ ii/g, '')
+    .replace(/[^a-z ]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+function pickBdKey(p){
+  if(!PICKBD || !p || !p.player || !p.market_key) return null;
+  if(!propsWeekFilter || propsWeekFilter !== 'wk' + String(PICKBD.week).padStart(2, '0')) return null;
+  const k = pickNorm(p.player) + '|' + p.market_key;
+  return PICKBD.picks && PICKBD.picks[k] ? k : null;
+}
+async function loadPickBreakdowns(){
+  PICKBD = null;
+  try{ const r = await fetch('intel/pick_breakdowns.json', {cache: 'no-store'}); if(r.ok) PICKBD = await r.json(); }catch(e){}
+}
 function pickCardHTML(pick, badge, opts){
   opts = opts || {};
+  const bdKey = pickBdKey(pick);
+  if(bdKey) PICK_REG[bdKey] = pick;
   const game = gameForEventId(pick.canonical_event_id);
   const gameLabel = gameLabelWithTime(game);
   const sideLabel = sideLineLabel(pick);
@@ -1235,7 +1262,7 @@ function pickCardHTML(pick, badge, opts){
   const topRow = kick
     ? `<div class="pc-pick-top">${badge ? `<span class="pc-pick-badge">${esc(badge)}</span>` : '<span></span>'}<span class="pc-pick-kick">${esc(kick)}</span></div>`
     : (badge ? `<span class="pc-pick-badge">${esc(badge)}</span>` : '');
-  return `<div class="pc-pick-card">
+  return `<div class="pc-pick-card${bdKey ? ' has-bd' : ''}"${bdKey ? ` data-bd="${esc(bdKey)}"` : ''}>
     ${topRow}
     ${gradeBadgeHTML(pick.grade, pick.actual_label)}
     <div class="pc-pick-player">${esc(pick.player)}</div>
@@ -1245,6 +1272,7 @@ function pickCardHTML(pick, badge, opts){
     ${pick.reason ? `<div class="pc-pick-reason${opts.clamp && longReason ? ' clamp' : ''}">${esc(pick.reason)}</div>` : ''}
     ${opts.clamp && longReason ? '<span class="pc-readmore" data-more="1">Read more ▾</span>' : ''}
     <div class="pc-pick-add">${slipToggleBtn(pick)}</div>
+    ${bdKey ? '<div class="pc-pick-foot">Click for Full Breakdown ›</div>' : ''}
   </div>`;
 }
 
@@ -1452,8 +1480,10 @@ function parlayCard(size, p){
       const game = gameForEventId(leg.canonical_event_id);
       return gameLabelWithTime(game);
     })();
+    const legBd = pickBdKey(leg);
+    if(legBd) PICK_REG[legBd] = leg;
     return `
-    <div class="parlay-leg">
+    <div class="parlay-leg${legBd ? ' has-bd' : ''}"${legBd ? ` data-bd="${esc(legBd)}"` : ''}>
       <div><div class="who">${esc(leg.player || leg.side || '—')} ${gradeBadgeHTML(leg.grade, leg.actual_label)}</div>
         <div class="mkt">${esc(marketKeyLabel(leg.market_key || ''))}${gameLabel ? ' · ' + esc(gameLabel) : ''}</div>
         ${legSideLabel}
@@ -1663,12 +1693,15 @@ function renderScrambler(){
   let resultHTML = '';
   if(SCRAMBLE_RESULT && SCRAMBLE_RESULT.length){
     const rows = SCRAMBLE_RESULT.map(leg => scrambleLegRowHTML(leg)).join('');
+    const addable = SCRAMBLE_RESULT.filter(l => l.price !== null && l.price !== undefined);
+    const allIn = addable.length > 0 && addable.every(l => isLegInSlip(l));
     const combined = combinedDecimalOdds(SCRAMBLE_RESULT);
     const stake = 10;
     resultHTML = `<div class="parlay-card" style="max-width:520px">
       <div class="parlay-head">
         <span class="parlay-size">${SCRAMBLE_RESULT.length}-Pick Scramble</span>
         <span class="parlay-badge pass">RANDOM DRAW</span>
+        ${addable.length ? `<button class="pc-slip-btn pc-addall${allIn ? ' added' : ''}" id="pcScrambleAddAll" title="${allIn ? 'Remove these picks from your Prop Builder' : 'Add every pick in this scramble to your Prop Builder'}">${allIn ? '✓ All Added' : '+ Add All'}</button>` : ''}
       </div>
       <div class="parlay-legs">${rows}</div>
       <div class="parlay-foot">
@@ -1704,6 +1737,22 @@ function renderScrambler(){
   if(canGenerate){
     $('pcScrambleGo').addEventListener('click', () => {
       SCRAMBLE_RESULT = shuffledSample(scramblerPool(), SCRAMBLE_SIZE);
+      renderScrambler();
+    });
+  }
+  const addAll = $('pcScrambleAddAll');
+  if(addAll){
+    addAll.addEventListener('click', () => {
+      const legs = (SCRAMBLE_RESULT || []).filter(l => l.price !== null && l.price !== undefined);
+      const allIn = legs.length > 0 && legs.every(l => isLegInSlip(l));
+      if(allIn){
+        const ids = new Set(legs.map(legId));
+        SLIP = SLIP.filter(l => !ids.has(legId(l)));
+      } else {
+        legs.forEach(l => { if(!isLegInSlip(l)) SLIP.push(l); });
+      }
+      saveSlip(propsWeekFilter);
+      updateSlipNavBadge();
       renderScrambler();
     });
   }
@@ -2415,7 +2464,7 @@ function bdPlayerSide(r, bd){
     <div class="bd-head"><img class="ic-headshot" src="${esc2(r.headshot || '')}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
       <div><div class="bd-h1">${esc2(r.player)}</div><div class="bd-h2">${fiLogoHTML(r.team, 14)}${esc2(r.team)} ${esc2(pos)} · ${esc2(rankLine)}</div></div></div>
     ${blocks}
-    <div class="bd-note">2026 games only (QB 10+ attempts, RB 3+ touches). "Avg vs Bottom 10 defenses" is how this player has done against defenses in the same tier as ${esc2(r.opp)} for that stat.</div>
+    <div class="bd-note">2026 games only (QBs with 10+ attempts; other positions 3+ carries + targets). "Avg vs Bottom 10 defenses" is how this player has done against defenses in the same tier as ${esc2(r.opp)} for that stat.</div>
   </div>`;
 }
 function bdDefSide(r, bd){
@@ -2540,6 +2589,48 @@ async function renderComboReport(){
   renderComboReportInner();
 }
 function esc2(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+
+/* ── Full Breakdown window for report picks (same VS layout as Combo Props) ── */
+function openPickModal(key, source){
+  const e = PICKBD && PICKBD.picks && PICKBD.picks[key]; if(!e) return;
+  const pick = PICK_REG[key] || {};
+  lastFocus = source || null;
+  const side = pick.side === 'over' ? 'OVER' : (pick.side === 'under' ? 'UNDER' : null);
+  const line = typeof pick.line === 'number' ? pick.line : null;
+  const g = gameForEventId(pick.canonical_event_id);
+  const kick = kickBadge(g);
+  $('mTitle').textContent = `${e.player} — ${e.team} ${e.home === false ? '@' : (e.home === true ? 'vs' : '·')} ${e.opp}`;
+  $('mSub').textContent = `${kick ? kick + ' · ' : ''}${marketKeyLabel(pick.market_key || e.market_key)}${typeof pick.projection === 'number' ? ' · Coeus projects ' + pick.projection : ''}`;
+  const col = side === 'OVER' ? 'var(--accent-green)' : (side === 'UNDER' ? 'var(--accent-red)' : 'var(--accent-blue)');
+  const diff = (typeof pick.projection === 'number' && line !== null) ? pick.projection - line : null;
+  const lineBar = line !== null ? `<div class="bd-line"><span class="rank-chip">FANDUEL LINE</span><span class="bl-pt">${line}</span>
+      <span class="bl-side">${side === 'UNDER' ? 'Under' : 'Over'} <b>${priceLine(pick.price)}</b> ${slipToggleBtn(pick)}</span></div>` : '';
+  const coeus = side ? `<div class="combo-coeus" style="border-left-color:${col};background:color-mix(in srgb, ${col} 9%, transparent)">
+      <div class="cc-title">Coeus pick</div>
+      <div class="cc-top"><span style="color:${col};font-weight:800;letter-spacing:.04em">${side}${line !== null ? ' ' + line : ''}</span>
+        ${typeof pick.projection === 'number' ? `<span class="rank-chip">projects ${pick.projection}${diff !== null ? ` (${diff > 0 ? '+' : ''}${Math.round(diff * 10) / 10} vs line)` : ''}</span>` : ''}</div>
+      ${pick.reason ? `<p class="cc-why">${esc(pick.reason)}</p>` : ''}</div>` : '';
+  const logRows = (e.log || []).slice().reverse().map(x => {
+    const cls = line !== null ? (x.v > line ? 'log-hit' : (x.v < line ? 'log-miss' : '')) : '';
+    return `<tr><td class="name-col">2026 wk ${x.week}</td><td>${esc(x.opp || '—')}</td><td><span class="cell-val ${cls}">${x.v}</span></td></tr>`;
+  }).join('');
+  $('modal').classList.add('combo-wide');
+  $('mBody').innerHTML = `${lineBar}${coeus ? `<div class="bd-top" style="grid-template-columns:1fr">${coeus}</div>` : ''}
+    ${bdSectionHTML({player: e.player, team: e.team, opp: e.opp, pos: e.pos, headshot: e.headshot, player_rank: e.player_rank, breakdown: e.breakdown})}
+    <div class="ic-section-label" style="margin-top:26px">Recent games${line !== null ? ` (green = over the line ${line}, red = under)` : ''}</div>
+    <div class="lead-wrap" style="max-height:none"><table class="lead-table"><thead><tr>
+      <th class="name-col">Game</th><th>Opp</th><th>${esc(e.label)}</th></tr></thead>
+      <tbody>${logRows || '<tr><td class="name-col">No games</td><td></td><td></td></tr>'}</tbody></table></div>`;
+  wireSlipButtons($('mBody'), () => { openPickModal(key, source); render(); });
+  $('scrim').classList.add('open'); $('modal').classList.add('open'); $('mClose').focus();
+}
+document.addEventListener('click', ev => {
+  if(ev.target.closest && ev.target.closest('button, a, input, select, .pc-readmore')) return;
+  const el = ev.target.closest && ev.target.closest('[data-bd]');
+  if(!el || !el.dataset.bd) return;
+  openPickModal(el.dataset.bd, el);
+});
 
 // Sections whose pick cards / parlay legs carry a "+ Add" button. Wired once
 // here after the section draws (sections that wire their own buttons are
