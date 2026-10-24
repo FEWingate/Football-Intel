@@ -621,6 +621,7 @@ async function loadManifestForWeek(wk){
     const rep = graded || await fetchJson(fn);
     if(rep) ALL_BATCH_REPORTS.push(rep);
   }));
+  ALL_BATCH_REPORTS.sort((a, b) => new Date(a.generated_at) - new Date(b.generated_at));
   if(!filenames.length){
     propsBatchFilter = null;
     REPORT = null;
@@ -630,14 +631,17 @@ async function loadManifestForWeek(wk){
 
   propsBatchFilter = filenames.slice()
     .sort((a, b) => new Date(PROPS_BATCHES[b].generated_at) - new Date(PROPS_BATCHES[a].generated_at))[0];
+  // With 2+ batches, open on "All Picks" (every batch combined) — the single batches stay selectable below it.
+  if(filenames.length > 1) propsBatchFilter = ALL_PICKS;
 
   if(filenames.length > 1){
+    const totalGames = fns => fns.reduce((n, fn) => n + ((PROPS_BATCHES[fn].games || []).length), 0);
     const batchLabel = fn => {
       const b = PROPS_BATCHES[fn];
       const games = (b.games || []).map(g => g.replace('_', '@'));
       return games.length ? `${games.length} games: ${games.join(', ')}` : fn;
     };
-    $('pcBatch').innerHTML = filenames
+    $('pcBatch').innerHTML = `<option value="${ALL_PICKS}"${propsBatchFilter===ALL_PICKS?' selected':''}>All Picks · ${filenames.length} batches, ${totalGames(filenames)} games</option>` + filenames
       .map(fn => `<option value="${esc(fn)}"${fn===propsBatchFilter?' selected':''}>${esc(batchLabel(fn))}</option>`).join('');
     $('pcBatchBar').style.display = '';
     $('pcBatch').onchange = async (e) => {
@@ -654,9 +658,49 @@ async function loadManifestForWeek(wk){
   await loadReportForBatch(wk, propsBatchFilter);
 }
 
+const ALL_PICKS = '__ALL__';
+// "All Picks": every batch's picks combined into one report-shaped object, so Prop Breakdown,
+// Favorite O/U and Results show the whole week's slate at once. Parlays / Best 10 still come from
+// the whole-week file (they're built from the full slate already).
+function mergeAllBatches(){
+  const reps = ALL_BATCH_REPORTS.filter(Boolean);
+  if(!reps.length) return null;
+  const seen = new Set(), games = [], perGame = [], posAll = [];
+  reps.forEach(r => {
+    (r.games_included || []).forEach(g => { if(!games.includes(g)) games.push(g); });
+    const pb = r.prop_breakdown || {};
+    (pb.per_game || []).forEach(gm => { const k = gm.away + '@' + gm.home; if(!seen.has(k)){ seen.add(k); perGame.push(gm); } });
+    Object.entries(pb.per_position || {}).forEach(([pos, p]) => { if(p) posAll.push({pos, pick: p}); });
+  });
+  const order = {QB:0, RB:1, WR:2, TE:3};
+  posAll.sort((a, b) => (order[a.pos] ?? 9) - (order[b.pos] ?? 9));
+  // Each batch ranks its own O/U picks by conviction; scores aren't comparable across batches,
+  // so interleave them (every batch's #1, then every #2, ...), dropping duplicates.
+  const interleave = side => {
+    const lists = reps.map(r => ((r.favorite_ou || {})[side] || []).slice());
+    const out = [], ids = new Set();
+    for(let i = 0; lists.some(l => i < l.length); i++){
+      lists.forEach(l => { const p = l[i]; if(!p) return; const id = legId(p); if(!ids.has(id)){ ids.add(id); out.push(p); } });
+    }
+    return out;
+  };
+  const latest = reps.map(r => r.generated_at).sort().slice(-1)[0];
+  return {
+    __all: true, generated_at: latest, games_included: games, markdown: '', coverage: {},
+    stake_used_for_payout_examples: (reps[0] || {}).stake_used_for_payout_examples || 10,
+    prop_breakdown: {per_game: perGame, per_position: {}, per_position_all: posAll},
+    favorite_ou: {overs: interleave('overs'), unders: interleave('unders')},
+    graded_at: reps.some(r => r.graded_at) ? latest : undefined,
+  };
+}
 async function loadReportForBatch(wk, filename){
   REPORT = null;
   REPORT_GRADED = null;
+  if(filename === ALL_PICKS){
+    REPORT = mergeAllBatches();
+    if(REPORT && REPORT.graded_at) REPORT_GRADED = REPORT;
+    return;
+  }
   try{
     const res = await fetch(`props_reports/${wk}/${filename}`, { cache: 'no-store' });
     if(res.ok) REPORT = await res.json();
@@ -1200,6 +1244,10 @@ function wireReportToggle(){
   });
 }
 
+function positionPicksHTML(pb){
+  if(pb.per_position_all) return pb.per_position_all.map(x => pickCardHTML(x.pick, x.pos)).join('');
+  return ['QB', 'RB', 'WR', 'TE'].map(pos => (pb.per_position || {})[pos] ? pickCardHTML(pb.per_position[pos], pos) : '').join('');
+}
 function renderPropBreakdown(){
   if(!REPORT || !REPORT.prop_breakdown){
     $('body').innerHTML = `<div class="empty">No Coeus Prop Breakdown has been generated yet.<br>
@@ -1219,9 +1267,7 @@ function renderPropBreakdown(){
     </div>`;
   }
 
-  const posPicks = ['QB', 'RB', 'WR', 'TE']
-    .map(pos => (pb.per_position || {})[pos] ? pickCardHTML(pb.per_position[pos], pos) : '')
-    .join('');
+  const posPicks = positionPicksHTML(pb);
   if(posPicks){
     h += `<div class="subsect" style="margin-top:8px">League-Wide Position Favorites</div>
       <div class="pc-pick-grid">${posPicks}</div>`;
@@ -1665,9 +1711,7 @@ function renderResults(){
         <div class="pc-pick-grid">${(game.picks || []).map(p => pickCardHTML(p)).join('')}</div>
       </div>`;
     }
-    const posPicks = ['QB', 'RB', 'WR', 'TE']
-      .map(pos => (pb.per_position || {})[pos] ? pickCardHTML(pb.per_position[pos], pos) : '')
-      .join('');
+    const posPicks = positionPicksHTML(pb);
     if(posPicks){
       h += `<div class="subsect" style="margin-top:8px">League-Wide Position Favorites</div>
         <div class="pc-pick-grid">${posPicks}</div>`;
