@@ -5,6 +5,53 @@
         "NE_CHI"
       ],
       "generated_at": "2026-10-22T20:07:56.290627+00:00"
+    },
+    "props_parlay_report_batch5_PIT.json": {
+      "games": [
+        "PIT_NO",
+        "SF_ATL",
+        "CIN_BAL",
+        "TB_CAR",
+        "NYG_HOU"
+      ],
+      "generated_at": "2026-10-24T01:55:30.211476+00:00"
+    },
+    "props_parlay_report_batch4_IND.json": {
+      "games": [
+        "IND_MIN",
+        "MIA_NYJ",
+        "CLE_TEN",
+        "DEN_ARI"
+      ],
+      "generated_at": "2026-10-24T02:03:35.006191+00:00"
+    },
+    "props_parlay_report_batch4_GB.json": {
+      "games": [
+        "GB_DET",
+        "LAR_LV",
+        "KC_SEA",
+        "DAL_PHI"
+      ],
+      "generated_at": "2026-10-24T02:08:25.934829+00:00"
+    },
+    "props_parlay_report_WHOLEWEEK.json": {
+      "games": [
+        "PIT_NO",
+        "SF_ATL",
+        "CIN_BAL",
+        "TB_CAR",
+        "NYG_HOU",
+        "IND_MIN",
+        "MIA_NYJ",
+        "CLE_TEN",
+        "DEN_ARI",
+        "GB_DET",
+        "LAR_LV",
+        "KC_SEA",
+        "DAL_PHI"
+      ],
+      "generated_at": "2026-10-24T02:20:01.707986+00:00",
+      "whole_week_parlays_only": true
     }
   }
 }

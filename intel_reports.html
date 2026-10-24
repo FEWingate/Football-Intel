@@ -110,6 +110,17 @@
 .played-tag{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:4px;border:1px solid var(--border2,var(--border));
   font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.14em;color:var(--text-mid);background:var(--surface2);vertical-align:middle}
 .slot-head.played{opacity:.55}
+.combo-slip-btn{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:7px 12px;border-radius:8px;border:1px solid var(--border2,var(--border));background:var(--surface2);color:var(--text-mid);cursor:pointer}
+.combo-slip-btn:hover{border-color:var(--accent-blue);color:var(--accent-blue)}
+.combo-slip-btn.added{border-color:var(--accent-green);color:var(--accent-green);background:rgba(74,222,128,.08)}
+.combo-slip-btn:disabled{opacity:.5;cursor:not-allowed}
+.combo-slip-row{margin-top:10px;display:flex;justify-content:flex-end}
+.bd-line{margin-top:12px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding:12px 16px;border:1px solid var(--border2,var(--border));
+  border-radius:10px;background:rgba(56,189,248,.06)}
+.bd-line .bl-pt{font-family:var(--font-display);font-weight:800;font-size:24px}
+.bd-line .bl-side{display:flex;align-items:center;gap:8px;font-size:13px}
+.bd-line .bl-side b{font-family:var(--font-mono)}
 .combo-note{margin-top:8px;padding:8px 10px;border-radius:8px;background:rgba(217,164,65,.10);border-left:3px solid rgba(217,164,65,.7);font-size:11px;line-height:1.55;color:var(--text-mid)}
 .hit-badge{
   font-family:var(--font-mono);font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;
@@ -362,6 +373,10 @@ async function load(){
     const resCb = await fetch(`intel/combo_props.json`, {cache:'no-store'});
     if(resCb.ok) COMBO = await resCb.json();
   }catch(e){}
+  try{
+    const rf = await fetch(`fanduel_props/latest.json`, {cache:'no-store'});
+    if(rf.ok){ const fd = await rf.json(); (fd.games || []).forEach(g => { if(g.canonical_event_id) COMBO_EVENTS[g.away_code + '@' + g.home_code] = g.canonical_event_id; }); }
+  }catch(e){}
   try{ await comboPollEspn(); comboStartEspnWatch(); }catch(e){}
   try{
     if(COMBO && COMBO.week){
@@ -554,6 +569,87 @@ function comboGameState(r){
   const t = new Date(iso).getTime(); if(isNaN(t)) return null;
   const d = Date.now() - t;
   return d < 0 ? null : (d < 3.5 * 3600 * 1000 ? 'live' : 'final');
+}
+
+// ---- Prop Builder hand-off: writes into the same per-week slip the Prop Center reads (localStorage, same site).
+let COMBO_EVENTS = {};
+const SLIP_PREFIX = 'footballIntel.propBuilder.';
+const COMBO_MKEY = {pass_rush: 'player_combo_passing_rushing_yards', rush_rec: 'player_combo_rushing_receiving_yards'};
+function comboToDecimal(p){
+  if(p == null || isNaN(Number(p))) return 1.885;           // -113 assumed when no price was saved
+  p = Number(p);
+  if(Math.abs(p) >= 100) return p < 0 ? 1 + 100 / (-p) : 1 + p / 100;
+  return p;
+}
+function comboAm(dec){
+  if(dec == null) return '—';
+  return dec >= 2 ? `+${Math.round((dec - 1) * 100)}` : `${Math.round(-100 / (dec - 1))}`;
+}
+function comboSlipKey(){ return SLIP_PREFIX + 'wk' + String((COMBO && COMBO.week) || 0).padStart(2, '0'); }
+function comboSlipRead(){
+  try{
+    const raw = localStorage.getItem(comboSlipKey());
+    const p = raw ? JSON.parse(raw) : {};
+    return {legs: Array.isArray(p.legs) ? p.legs : [], stake: (typeof p.stake === 'number' && p.stake > 0) ? p.stake : 10};
+  }catch(e){ return {legs: [], stake: 10}; }
+}
+function comboSlipWrite(o){ try{ localStorage.setItem(comboSlipKey(), JSON.stringify(o)); return true; }catch(e){ return false; } }
+function comboLegId(l){ return [l.canonical_event_id, l.market_key, l.player, l.side || '', l.point ?? l.line ?? ''].join('|'); }
+function comboLeg(r, side){
+  const L = comboEffLine(r); if(!L || L.point == null) return null;
+  const price = comboToDecimal(side === 'over' ? L.over_price : L.under_price);
+  const eid = r.opp ? (COMBO_EVENTS[(r.home ? r.opp + '@' + r.team : r.team + '@' + r.opp)] || null) : null;
+  return {canonical_event_id: eid, market_key: COMBO_MKEY[r.market], player: r.player, price, side, line: L.point};
+}
+function comboInSlip(leg){ const id = comboLegId(leg); return comboSlipRead().legs.some(l => comboLegId(l) === id); }
+function comboSlipBtnHTML(r, i, side, label){
+  const leg = comboLeg(r, side); if(!leg) return '';
+  const added = comboInSlip(leg), gs = comboGameState(r);
+  return `<button class="combo-slip-btn${added ? ' added' : ''}" data-slip="${i}|${side}" data-lbl="${esc2(label)}"${gs ? ' disabled title="This game has already started"' : ''}
+    onclick="event.stopPropagation()">${added ? '✓ In Prop Builder' : label}</button>`;
+}
+function comboToggleSlip(i, side){
+  const r = COMBO_VIEW[i]; if(!r) return;
+  const leg = comboLeg(r, side); if(!leg) return;
+  const slip = comboSlipRead(), id = comboLegId(leg);
+  const idx = slip.legs.findIndex(l => comboLegId(l) === id);
+  if(idx >= 0) slip.legs.splice(idx, 1);
+  else{
+    // one side per player and market: adding Over replaces an Under on the same prop
+    slip.legs = slip.legs.filter(l => !(l.canonical_event_id === leg.canonical_event_id && l.market_key === leg.market_key && l.player === leg.player));
+    slip.legs.push(leg);
+  }
+  if(!comboSlipWrite(slip)) alert('Your browser blocked saving the Prop Builder slip (private window or blocked storage).');
+  document.querySelectorAll('.combo-slip-btn').forEach(b => {
+    const [bi, bs] = b.dataset.slip.split('|'); const rr = COMBO_VIEW[Number(bi)]; if(!rr) return;
+    const lg = comboLeg(rr, bs); if(!lg) return;
+    const on = comboInSlip(lg);
+    b.classList.toggle('added', on);
+    b.textContent = on ? '✓ In Prop Builder' : (b.dataset.lbl || b.textContent);
+  });
+}
+function comboWireSlip(root){
+  root.querySelectorAll('.combo-slip-btn').forEach(b => {
+    b.dataset.lbl = b.dataset.lbl || b.textContent;
+    b.onclick = e => { e.stopPropagation(); const [i, side] = b.dataset.slip.split('|'); comboToggleSlip(Number(i), side); };
+  });
+}
+function comboCardSlipRow(r, i){
+  const c = r.coeus, pk = c && (c.pick === 'PASS' ? 'NEUTRAL' : c.pick);
+  if(pk !== 'OVER' && pk !== 'UNDER') return '';
+  const side = pk === 'OVER' ? 'over' : 'under';
+  const b = comboSlipBtnHTML(r, i, side, `+ Add ${pk} to Prop Builder`);
+  return b ? `<div class="combo-slip-row">${b}</div>` : '';
+}
+function comboLineBar(r, i){
+  const L = comboEffLine(r);
+  if(!L || L.point == null) return `<div class="bd-line"><span class="rank-chip">FANDUEL LINE</span><span class="empty" style="padding:0">No FanDuel line yet. Type one on the card.</span></div>`;
+  const o = comboToDecimal(L.over_price), u = comboToDecimal(L.under_price);
+  const assumed = (L.over_price == null || L.under_price == null) ? ' <span class="rank-chip" title="No price was saved for this line, so -113 is assumed">−113 assumed</span>' : '';
+  const note = L.edited ? ' <span class="rank-chip">line you typed</span>' : (r.line && r.line.stale ? ' <span class="rank-chip" style="color:var(--amber,#d9a441)">stale feed line</span>' : '');
+  return `<div class="bd-line"><span class="rank-chip">FANDUEL LINE</span><span class="bl-pt">${L.point}</span>${note}
+    <span class="bl-side">Over <b>${comboAm(o)}</b> ${comboSlipBtnHTML(r, i, 'over', '+ Over')}</span>
+    <span class="bl-side">Under <b>${comboAm(u)}</b> ${comboSlipBtnHTML(r, i, 'under', '+ Under')}</span>${assumed}</div>`;
 }
 function comboThreat(r){ return COMBO_THREATS.map[comboNameKey(r.player) + '|' + r.team] || null; }
 function comboThreatBadges(r){
@@ -748,6 +844,7 @@ function comboCardHTML(r, i){
     </div>
     ${(r.line && r.line.stale && !(L && L.edited)) ? `<div class="empty" style="padding:6px 4px 0;text-align:left;font-size:10px;color:var(--amber,#d9a441)">Stale feed line: not refreshed since ${esc2(r.line.last_update ? new Date(r.line.last_update).toLocaleString() : 'an earlier run')}. Confirm it in the FanDuel app and retype it above if it moved.</div>` : ''}
     ${comboMiniPick(r)}
+    ${gs ? '' : comboCardSlipRow(r, i)}
     <div class="combo-foot">${comboFootHTML(r, gs)}</div>
   </div>`;
 }
@@ -855,6 +952,7 @@ function renderComboGrid(){
   $("comboGrid").innerHTML = html ||
     `<div class="empty">${comboOnlyLine ? 'No players with a FanDuel line yet. Add one with <b>--add</b> or untick the box to see every player with both halves posted.' : 'No players match.'}</div>`;
   $("comboGrid").querySelectorAll('.intel-card').forEach(el => { el.onclick = () => openComboModal(Number(el.dataset.i)); });
+  comboWireSlip($("comboGrid"));
   $("comboGrid").querySelectorAll('input.prop-input').forEach(inp => {
     inp.oninput = () => {
       const i = Number(inp.dataset.i), r = COMBO_VIEW[i], v = inp.value === '' ? null : Number(inp.value);
@@ -948,6 +1046,7 @@ function openComboModal(i){
   const names = pr ? pr.components.map(c => c.name) : ['A', 'B'];
   $("modal").classList.add("combo-wide");
   $("mBody").innerHTML = `
+    ${comboLineBar(r, i)}
     <div class="bd-top">${comboCoeusHTML(r) || '<div class="combo-box"><div class="empty" style="padding:6px 0;text-align:left">No Coeus pick for this player yet.</div></div>'}
       <div class="combo-box">${comboResultHTML(r)}</div></div>
     ${comboThreatDetail(r)}
@@ -965,6 +1064,7 @@ function openComboModal(i){
     </div>
     <div id="altOut" style="margin-top:8px"></div>
     ${r.under_price_assumed ? `<div class="empty" style="padding:6px 0;text-align:left;font-size:10px">The under price wasn't saved for this line, so −113 is assumed for it.</div>` : ''}`;
+  comboWireSlip($("mBody"));
   const upd = () => {
     const ln = Number($("altLine").value), pr0 = Number($("altPrice").value);
     const ev = comboEval(r, ln, pr0, null);

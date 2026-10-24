@@ -82,6 +82,7 @@
   color:var(--text-dim);cursor:pointer;margin-left:6px;white-space:nowrap}
 .pc-slip-btn:hover{border-color:var(--primary);color:var(--primary)}
 .pc-slip-btn.added{border-color:var(--accent-green);color:var(--accent-green);background:rgba(74,222,128,.08)}
+.pc-pick-add{margin-top:8px}
 .pc-slip-remove{font-family:var(--font-mono);font-size:11px;background:none;border:1px solid var(--border);
   border-radius:4px;color:var(--text-dim);cursor:pointer;padding:2px 7px;margin-left:8px}
 .pc-slip-remove:hover{border-color:var(--accent-red);color:var(--accent-red)}
@@ -817,6 +818,8 @@ function closeModal(){
 const STAT_LABELS = {
   passing_yards: 'Passing Yards', rushing_yards: 'Rushing Yards',
   receiving_yards: 'Receiving Yards', receptions: 'Receptions', anytime_td: 'Anytime TD',
+  // Combo Props legs added from Intel Reports (QB passing + rushing, RB rushing + receiving)
+  combo_passing_rushing_yards: 'Passing + Rushing Yards', combo_rushing_receiving_yards: 'Rushing + Receiving Yards',
 };
 
 function renderPlayerProps(){
@@ -1029,6 +1032,7 @@ function pickCardHTML(pick, badge){
     <div class="pc-pick-price-row">${sideLabel}<span class="pc-pick-price">${priceLine(pick.price)}</span></div>
     ${projectionLineHTML(pick)}
     ${pick.reason ? `<div class="pc-pick-reason">${esc(pick.reason)}</div>` : ''}
+    <div class="pc-pick-add">${slipToggleBtn(pick)}</div>
   </div>`;
 }
 
@@ -1204,7 +1208,7 @@ function parlayCard(size, p){
         <div class="mkt">${esc(marketKeyLabel(leg.market_key || ''))}${gameLabel ? ' · ' + esc(gameLabel) : ''}</div>
         ${legSideLabel}
         ${leg.reason ? `<div class="pc-pick-reason">${esc(leg.reason)}</div>` : ''}</div>
-      <div class="px">${legSideLabel}${leg.price != null ? priceLine(leg.price) : '—'}</div>
+      <div class="px">${legSideLabel}${leg.price != null ? priceLine(leg.price) : '—'} ${slipToggleBtn(leg)}</div>
     </div>`;
   }).join('');
 
@@ -1593,7 +1597,7 @@ function renderPropBuilder(){
   if(!SLIP.length){
     $('body').innerHTML = `<div class="empty">Your slip is empty.<br>
       Click <b>+ Add</b> next to any real line in <b>Game Lines / Totals / ML</b> or
-      <b>Player Props</b> to build your own parlay here.</div>`;
+      <b>Player Props</b>, or <b>+ Add to Prop Builder</b> on a Combo Props card in Intel Reports, to build your own parlay here.</div>`;
     return;
   }
   const rows = SLIP.map(leg => slipLegRowHTML(leg)).join('');
@@ -1660,7 +1664,15 @@ function syncLegacyTabs(){
   }
 }
 
+// Sections whose pick cards / parlay legs carry a "+ Add" button. Wired once
+// here after the section draws (sections that wire their own buttons are
+// excluded so a click never toggles twice).
+const PICK_ADD_SECTIONS = ['breakdown','overunder','anytimetd','spreads','parlays'];
 function render(){
+  renderSection();
+  if(PICK_ADD_SECTIONS.includes(activeSection)) wireSlipButtons($('body'), render);
+}
+function renderSection(){
   syncLegacyTabs();
   if(activeSection === 'lines') return renderGameLines();
   if(activeSection === 'props') return renderPlayerProps();
