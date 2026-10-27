@@ -5,8 +5,8 @@ name: Update Football Intel data
 # team stats and records, players, injuries, rosters, matchup, context,
 # threats, ...) and commits it straight to main so the site updates with no
 # manual step.
-#   Tuesday 17:00 UTC   = 1pm ET  - after Monday Night Football is processed
-#   Wednesday 09:00 UTC = 5am ET  - catch-up in case nflverse published late
+#   Tuesday morning through mid-afternoon (4 runs) - after Monday Night Football is processed
+#   Wednesday 5am ET - catch-up in case nflverse published late
 #
 # History: this used to commit only matchup/ context/ threats/, so game
 # scores (games/), team records and stats (teamstats/) and the rest stayed
@@ -19,8 +19,17 @@ name: Update Football Intel data
 # compete.
 on:
   schedule:
-    - cron: '0 17 * * 2'
-    - cron: '0 9 * * 3'
+    # GitHub starts scheduled jobs late, and worst on the top of the hour. This workflow's real
+    # Tuesday runs have been starting 3-5 hours after their cron time (e.g. a 17:00 UTC cron ran
+    # at 21:03 UTC), so the site stayed a week behind until late afternoon. Scheduling off the
+    # hour, earlier, and several times gets the data up much sooner. Extra runs are harmless:
+    # if nothing changed they commit nothing, and if nflverse hasn't published a game yet the
+    # sanity check stops the run without committing, so a later run tries again.
+    - cron: '17 11 * * 2'   # Tue ~7:17am EDT
+    - cron: '47 13 * * 2'   # Tue ~9:47am EDT
+    - cron: '17 16 * * 2'   # Tue ~12:17pm EDT
+    - cron: '47 19 * * 2'   # Tue ~3:47pm EDT
+    - cron: '17 9 * * 3'    # Wed ~5:17am EDT, catch-up
   workflow_dispatch:
     inputs:
       weeks:
