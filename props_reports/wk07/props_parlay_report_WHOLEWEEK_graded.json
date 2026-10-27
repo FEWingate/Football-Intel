@@ -1,0 +1,1177 @@
+{
+  "generated_at": "2026-10-24T02:20:01.707986+00:00",
+  "whole_week_parlays_only": true,
+  "games_included": [
+    "PIT_NO",
+    "SF_ATL",
+    "CIN_BAL",
+    "TB_CAR",
+    "NYG_HOU",
+    "IND_MIN",
+    "MIA_NYJ",
+    "CLE_TEN",
+    "DEN_ARI",
+    "GB_DET",
+    "LAR_LV",
+    "KC_SEA",
+    "DAL_PHI"
+  ],
+  "batches_used": [
+    "props_parlay_report.json",
+    "props_parlay_report_batch4_GB.json",
+    "props_parlay_report_batch4_IND.json",
+    "props_parlay_report_batch5_PIT.json"
+  ],
+  "coverage": {
+    "passing_yards": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-24T01:48:00.924564+00:00",
+      "source_age_seconds": 0
+    },
+    "rushing_yards": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-24T01:48:00.924564+00:00",
+      "source_age_seconds": 0
+    },
+    "receiving_yards": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-24T01:48:00.924564+00:00",
+      "source_age_seconds": 0
+    },
+    "receptions": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-24T01:48:00.924564+00:00",
+      "source_age_seconds": 0
+    },
+    "anytime_td": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-24T01:48:00.924564+00:00",
+      "source_age_seconds": 0
+    }
+  },
+  "stake_used_for_payout_examples": 10,
+  "markdown": "# THE BEST 10 \u2014 Week Slate\n\n**Evidence note:** all rank claims below are pulled verbatim from the REAL TEAM OFFENSE/DEFENSE RANKINGS table (2026 data only). Prices converted to American odds for display; JSON blocks retain the real decimal prices for validator math.\n\n---\n\n**1. Tyler Shough \u2014 UNDER 227.5 passing yards (PIT @ NO)** \u2014 price -114\nShough's own bucket against top-tier pass defenses is just 120.0 pass yds/gm (n=2, thin but the only real evidence for this caliber matchup), and he now draws Pittsburgh's defense, which ranks top 10 (8th, 222.0 pass yds/gm allowed). Game total sits at a moderate 44.5 with Pittsburgh favored by 3 \u2014 not an explosive passing environment for the rookie starter. 6 games played in 2026.\n\n**2. Bryce Young \u2014 OVER 253.5 passing yards (TB @ CAR)** \u2014 price -114\nYoung leads the entire league at 309.8 pass yds/gm this season (1st) and is averaging 345.0 ypg across his 2 home games, against a Tampa Bay pass defense that sits in the middle of the pack (19th, 237.7 yds/gm allowed). Total is 44.5 with Carolina favored by 2.5 \u2014 an environment that supports volume from the NFL's most productive passing offense. 5 games played in 2026.\n\n**3. Tetairoa McMillan \u2014 OVER 69.5 receiving yards (TB @ CAR)** \u2014 price -114\nMcMillan ranks top 5 among WRs at 94.2 rec yds/gm and has gone for 133.5 ypg across his 2 home games, against a Tampa Bay WR defense that ranks 15th (145.7 rec yds/gm allowed) \u2014 no tier superlative applies, just a clean size mismatch. 5 games played in 2026.\n\n**4. Joe Burrow \u2014 UNDER 260.5 passing yards (CIN @ BAL)** \u2014 price -114\nBurrow's road average this season is just 226.3 pass yds/gm across 3 games, against a Baltimore pass defense that ranks top 10 (10th, 225.7 yds/gm allowed). Total is a healthy 48.5 with Baltimore only -1.5 favorites \u2014 a competitive script, but Burrow's actual road output hasn't approached this number. 5 games played in 2026.\n\n**5. Bucky Irving \u2014 OVER 66.5 rushing yards (TB @ CAR)** \u2014 price -114\nIrving's road average this season is 105.0 rush yds/gm across 2 games, against a Carolina run defense that sits in the bottom 10 (23rd, 103.0 rush yds/gm allowed to RBs). 6 games played in 2026.\n\n**6. Jahmyr Gibbs \u2014 UNDER 93.5 rushing yards (GB @ DET)** \u2014 price -114\nGibbs has rushed for just 49.0 yds/gm across his two 2026 games against mid-tier run defenses, and Green Bay's run defense sits at that same caliber \u2014 17th against RBs (90.8 rush yds/gm allowed), well off Gibbs' season-long average. 5 games played in 2026.\n\n**7. Nico Collins \u2014 UNDER 68.5 receiving yards (NYG @ HOU)** \u2014 price -114\nCollins' 80.75 rec yds/gm season rate was built almost entirely against bottom-tier WR defenses, and he now faces a Giants unit ranked top 10 (6th, 132.3 rec yds/gm allowed) \u2014 the toughest matchup of his season. 4 games played in 2026.\n\n**8. Tucker Kraft \u2014 OVER 49.5 receiving yards (GB @ DET)** \u2014 price -114\nKraft's own 41.5 rec yds/gm (14th among TEs) runs into a Detroit defense that is dead last in the league against tight ends (32nd, 109.0 rec yds/gm allowed) \u2014 league-worst, and the single biggest position mismatch on the board. 6 games played in 2026.\n\n**9. Jaylen Warren \u2014 Anytime TD (PIT @ NO)** \u2014 price -120\nWarren leads Pittsburgh's backfield at 76.7 rush yds/gm (10th among RBs), and New Orleans has allowed 11 rushing touchdowns to running backs this season \u2014 league-worst (32nd), the softest goal-line matchup on the slate. 6 games played in 2026.\n\n**10. Detroit Lions \u2014 Spread -3.0 (GB @ DET)** \u2014 price -122\nDetroit's offense ranks top 3 (2nd, 32.8 ppg) against a Green Bay pass defense that ranks top 10 (6th, 209.2 pass yds/gm allowed) but still has to defend Detroit's whole attack, while Detroit's own defense is league-worst against the pass (32nd, 321.4 pass yds/gm allowed) in a game that projects as a track meet. Detroit has covered 59.2% of its games at home since 2020 vs. Green Bay's 44.2% on the road. 5 games played in 2026.\n\n```json\nBEST_10\n{\n  \"picks\": [\n    {\"rank\": 1, \"player\": \"Tyler Shough\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"518de03174b4f73a\", \"price\": 1.877, \"side\": \"under\", \"line\": 227.5, \"reason\": \"Shough's top-tier-pass-defense bucket shows just 120.0 pass yds/gm (n=2), and he now draws Pittsburgh's 8th-ranked pass defense (222.0 yds/gm allowed). Total is 44.5 with PIT favored by 3 \\u2014 not an explosive passing environment.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"PIT\", \"pos\": \"QB\", \"stat\": \"pass_ypg\", \"role\": \"def\", \"claimed_rank\": 8}], \"projection\": 180, \"games_2026\": 6},\n    {\"rank\": 2, \"player\": \"Bryce Young\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"e361231df87eecb1\", \"price\": 1.877, \"side\": \"over\", \"line\": 253.5, \"reason\": \"Young leads the NFL at 309.8 pass yds/gm (1st) and averages 345.0 ypg at home (2 games) against a Tampa Bay pass defense ranked 19th (237.7 yds/gm allowed). Total is 44.5 with CAR favored by 2.5.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"TB\", \"pos\": \"QB\", \"stat\": \"pass_ypg\", \"role\": \"def\", \"claimed_rank\": 19}], \"projection\": 300, \"games_2026\": 5},\n    {\"rank\": 3, \"player\": \"Tetairoa McMillan\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"e361231df87eecb1\", \"price\": 1.877, \"side\": \"over\", \"line\": 69.5, \"reason\": \"McMillan ranks 5th among WRs at 94.2 rec yds/gm and has gone for 133.5 ypg at home (2 games) against a Tampa Bay WR defense ranked 15th (145.7 rec yds/gm allowed).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"TB\", \"pos\": \"WR\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 15}], \"projection\": 110, \"games_2026\": 5},\n    {\"rank\": 4, \"player\": \"Joe Burrow\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"f686a2afcc5ad5c8\", \"price\": 1.877, \"side\": \"under\", \"line\": 260.5, \"reason\": \"Burrow's road average is just 226.3 pass yds/gm (3 games) against a Baltimore pass defense ranked 10th (225.7 yds/gm allowed). Total is 48.5 with BAL only -1.5 favorites.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"BAL\", \"pos\": \"QB\", \"stat\": \"pass_ypg\", \"role\": \"def\", \"claimed_rank\": 10}], \"projection\": 230, \"games_2026\": 5},\n    {\"rank\": 5, \"player\": \"Bucky Irving\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"e361231df87eecb1\", \"price\": 1.877, \"side\": \"over\", \"line\": 66.5, \"reason\": \"Irving's road average is 105.0 rush yds/gm (2 games) against a Carolina run defense ranked 23rd, bottom 10 (103.0 rush yds/gm allowed to RBs).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"CAR\", \"pos\": \"RB\", \"stat\": \"rush_ypg\", \"role\": \"def\", \"claimed_rank\": 23}], \"projection\": 95, \"games_2026\": 6},\n    {\"rank\": 6, \"player\": \"Jahmyr Gibbs\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"315d06f1d48550c9\", \"price\": 1.877, \"side\": \"under\", \"line\": 93.5, \"reason\": \"Gibbs has rushed for just 49.0 yds/gm across his two 2026 games against mid-tier run defenses; GB's run defense sits at that same caliber, ranked 17th against RBs (90.8 rush yds/gm allowed).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"GB\", \"pos\": \"RB\", \"stat\": \"rush_ypg\", \"role\": \"def\", \"claimed_rank\": 17}], \"projection\": 70, \"games_2026\": 5},\n    {\"rank\": 7, \"player\": \"Nico Collins\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"84ea8ce9bbab584b\", \"price\": 1.877, \"side\": \"under\", \"line\": 68.5, \"reason\": \"Collins' 80.75 rec yds/gm season rate was built against bottom-tier WR defenses; he now faces a Giants unit ranked 6th, top 10 (132.3 rec yds/gm allowed), his toughest test of the season.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"NYG\", \"pos\": \"WR\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 6}], \"projection\": 55, \"games_2026\": 4},\n    {\"rank\": 8, \"player\": \"Tucker Kraft\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"315d06f1d48550c9\", \"price\": 1.877, \"side\": \"over\", \"line\": 49.5, \"reason\": \"Kraft's 41.5 rec yds/gm (14th among TEs) runs into a Detroit defense that is league-worst against tight ends (32nd, 109.0 rec yds/gm allowed), the largest position mismatch on the board.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"DET\", \"pos\": \"TE\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 32}], \"projection\": 58, \"games_2026\": 6},\n    {\"rank\": 9, \"player\": \"Jaylen Warren\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"518de03174b4f73a\", \"price\": 1.833, \"side\": \"over\", \"line\": null, \"reason\": \"Warren leads Pittsburgh's backfield at 76.7 rush yds/gm (10th among RBs), and New Orleans has allowed a league-worst 11 rushing TDs to RBs this season (32nd), the softest goal-line matchup on the slate.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"NO\", \"pos\": \"RB\", \"stat\": \"rush_td\", \"role\": \"def\", \"claimed_rank\": 32}], \"projection\": 0.58, \"games_2026\": 6},\n    {\"rank\": 10, \"player\": \"Detroit Lions\", \"market_key\": \"spreads\", \"canonical_event_id\": \"315d06f1d48550c9\", \"price\": 1.82, \"side\": null, \"line\": -3.0, \"point\": -3.0, \"reason\": \"Detroit's offense ranks 2nd, top 3 (32.8 ppg) against a GB pass defense ranked 6th, top 10 (209.2 yds/gm allowed), while Detroit's own defense is league-worst against the pass (32nd, 321.4 yds/gm allowed) in a projected track meet. DET is 29-20 (59.2%) ATS at home since 2020 vs. GB's 23-29 (44.2%) on the road.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"DET\", \"pos\": \"TEAM\", \"stat\": \"ppg\", \"role\": \"off\", \"claimed_rank\": 2}, {\"type\": \"current_opponent\", \"team\": \"DET\", \"pos\": \"TEAM\", \"stat\": \"pass_ypg\", \"role\": \"def\", \"claimed_rank\": 32}, {\"type\": \"current_opponent\", \"team\": \"GB\", \"pos\": \"TEAM\", \"stat\": \"pass_ypg\", \"role\": \"def\", \"claimed_rank\": 6}], \"projection\": 7, \"games_2026\": 5}\n  ]\n}\n```\n\n---\n\n# THREE PARLAYS (built only from the 10 above; every leg from a different game)\n\n**2-Team Parlay** \u2014 Tyler Shough Under 227.5 (PIT@NO) + Bryce Young Over 253.5 (TB@CAR). Two defense-driven environment reads on opposite sides of the Over/Under ledger \u2014 combined price **+252**.\n\n**3-Team Parlay** \u2014 Tyler Shough Under 227.5 (PIT@NO) + Bryce Young Over 253.5 (TB@CAR) + Joe Burrow Under 260.5 (CIN@BAL). Three independent QB-yardage reads across three different games, each backed by a real opponent-rank mismatch \u2014 combined price **+561**.\n\n**4-Team Parlay** \u2014 Tyler Shough Under 227.5 (PIT@NO) + Bryce Young Over 253.5 (TB@CAR) + Joe Burrow Under 260.5 (CIN@BAL) + Jahmyr Gibbs Under 93.5 (GB@DET). Adds a run-game Under to the three passing plays, all four from separate games with no shared correlation \u2014 combined price **+1141**.\n\n```json\nPARLAY_2_TEAM\n[\n  {\"player\": \"Tyler Shough\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"518de03174b4f73a\", \"price\": 1.877, \"side\": \"under\", \"line\": 227.5, \"reason\": \"Shough's top-tier-pass-defense bucket shows just 120.0 pass yds/gm (n=2), and he now draws Pittsburgh's 8th-ranked pass defense (222.0 yds/gm allowed). Total is 44.5 with PIT favored by 3 \\u2014 not an explosive passing environment.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"PIT\", \"pos\": \"QB\", \"stat\": \"pass_ypg\", \"role\": \"def\", \"claimed_rank\": 8}], \"projection\": 180, \"games_2026\": 6},\n  {\"player\": \"Bryce Young\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"e361231df87eecb1\", \"price\": 1.877, \"side\": \"over\", \"line\": 253.5, \"reason\": \"Young leads the NFL at 309.8 pass yds/gm (1st) and averages 345.0 ypg at home (2 games) against a Tampa Bay pass defense ranked 19th (237.7 yds/gm allowed). Total is 44.5 with CAR favored by 2.5.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"TB\", \"pos\": \"QB\", \"stat\": \"pass_ypg\", \"role\": \"def\", \"claimed_rank\": 19}], \"projection\": 300, \"games_2026\": 5}\n]\n```\n\n```json\nPARLAY_3_TEAM\n[\n  {\"player\": \"Tyler Shough\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"518de03174b4f73a\", \"price\": 1.877, \"side\": \"under\", \"line\": 227.5, \"reason\": \"Shough's top-tier-pass-defense bucket shows just 120.0 pass yds/gm (n=2), and he now draws Pittsburgh's 8th-ranked pass defense (222.0 yds/gm allowed). Total is 44.5 with PIT favored by 3 \\u2014 not an explosive passing environment.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"PIT\", \"pos\": \"QB\", \"stat\": \"pass_ypg\", \"role\": \"def\", \"claimed_rank\": 8}], \"projection\": 180, \"games_2026\": 6},\n  {\"player\": \"Bryce Young\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"e361231df87eecb1\", \"price\": 1.877, \"side\": \"over\", \"line\": 253.5, \"reason\": \"Young leads the NFL at 309.8 pass yds/gm (1st) and averages 345.0 ypg at home (2 games) against a Tampa Bay pass defense ranked 19th (237.7 yds/gm allowed). Total is 44.5 with CAR favored by 2.5.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"TB\", \"pos\": \"QB\", \"stat\": \"pass_ypg\", \"role\": \"def\", \"claimed_rank\": 19}], \"projection\": 300, \"games_2026\": 5},\n  {\"player\": \"Joe Burrow\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"f686a2afcc5ad5c8\", \"price\": 1.877, \"side\": \"under\", \"line\": 260.5, \"reason\": \"Burrow's road average is just 226.3 pass yds/gm (3 games) against a Baltimore pass defense ranked 10th (225.7 yds/gm allowed). Total is 48.5 with BAL only -1.5 favorites.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"BAL\", \"pos\": \"QB\", \"stat\": \"pass_ypg\", \"role\": \"def\", \"claimed_rank\": 10}], \"projection\": 230, \"games_2026\": 5}\n]\n```\n\n```json\nPARLAY_4_TEAM\n[\n  {\"player\": \"Tyler Shough\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"518de03174b4f73a\", \"price\": 1.877, \"side\": \"under\", \"line\": 227.5, \"reason\": \"Shough's top-tier-pass-defense bucket shows just 120.0 pass yds/gm (n=2), and he now draws Pittsburgh's 8th-ranked pass defense (222.0 yds/gm allowed). Total is 44.5 with PIT favored by 3 \\u2014 not an explosive passing environment.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"PIT\", \"pos\": \"QB\", \"stat\": \"pass_ypg\", \"role\": \"def\", \"claimed_rank\": 8}], \"projection\": 180, \"games_2026\": 6},\n  {\"player\": \"Bryce Young\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"e361231df87eecb1\", \"price\": 1.877, \"side\": \"over\", \"line\": 253.5, \"reason\": \"Young leads the NFL at 309.8 pass yds/gm (1st) and averages 345.0 ypg at home (2 games) against a Tampa Bay pass defense ranked 19th (237.7 yds/gm allowed). Total is 44.5 with CAR favored by 2.5.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"TB\", \"pos\": \"QB\", \"stat\": \"pass_ypg\", \"role\": \"def\", \"claimed_rank\": 19}], \"projection\": 300, \"games_2026\": 5},\n  {\"player\": \"Joe Burrow\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"f686a2afcc5ad5c8\", \"price\": 1.877, \"side\": \"under\", \"line\": 260.5, \"reason\": \"Burrow's road average is just 226.3 pass yds/gm (3 games) against a Baltimore pass defense ranked 10th (225.7 yds/gm allowed). Total is 48.5 with BAL only -1.5 favorites.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"BAL\", \"pos\": \"QB\", \"stat\": \"pass_ypg\", \"role\": \"def\", \"claimed_rank\": 10}], \"projection\": 230, \"games_2026\": 5},\n  {\"player\": \"Jahmyr Gibbs\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"315d06f1d48550c9\", \"price\": 1.877, \"side\": \"under\", \"line\": 93.5, \"reason\": \"Gibbs has rushed for just 49.0 yds/gm across his two 2026 games against mid-tier run defenses; GB's run defense sits at that same caliber, ranked 17th against RBs (90.8 rush yds/gm allowed).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"GB\", \"pos\": \"RB\", \"stat\": \"rush_ypg\", \"role\": \"def\", \"claimed_rank\": 17}], \"projection\": 70, \"games_2026\": 5}\n]\n```",
+  "best_10": {
+    "picks": [
+      {
+        "rank": 1,
+        "player": "Tyler Shough",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "518de03174b4f73a",
+        "price": 1.877,
+        "side": "under",
+        "line": 227.5,
+        "reason": "Shough's top-tier-pass-defense bucket shows just 120.0 pass yds/gm (n=2), and he now draws Pittsburgh's 8th-ranked pass defense (222.0 yds/gm allowed). Total is 44.5 with PIT favored by 3 \u2014 not an explosive passing environment.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "PIT",
+            "pos": "QB",
+            "stat": "pass_ypg",
+            "role": "def",
+            "claimed_rank": 8
+          }
+        ],
+        "projection": 180,
+        "games_2026": 6,
+        "projection_edge": 47.5,
+        "grade": "L",
+        "actual": 278.0,
+        "actual_label": "278 pass yds"
+      },
+      {
+        "rank": 2,
+        "player": "Bryce Young",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "e361231df87eecb1",
+        "price": 1.877,
+        "side": "over",
+        "line": 253.5,
+        "reason": "Young leads the NFL at 309.8 pass yds/gm (1st) and averages 345.0 ypg at home (2 games) against a Tampa Bay pass defense ranked 19th (237.7 yds/gm allowed). Total is 44.5 with CAR favored by 2.5.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "TB",
+            "pos": "QB",
+            "stat": "pass_ypg",
+            "role": "def",
+            "claimed_rank": 19
+          }
+        ],
+        "projection": 300,
+        "games_2026": 5,
+        "projection_edge": 46.5,
+        "grade": "L",
+        "actual": 163.0,
+        "actual_label": "163 pass yds"
+      },
+      {
+        "rank": 3,
+        "player": "Tetairoa McMillan",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "e361231df87eecb1",
+        "price": 1.877,
+        "side": "over",
+        "line": 69.5,
+        "reason": "McMillan ranks 5th among WRs at 94.2 rec yds/gm and has gone for 133.5 ypg at home (2 games) against a Tampa Bay WR defense ranked 15th (145.7 rec yds/gm allowed).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "TB",
+            "pos": "WR",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 15
+          }
+        ],
+        "projection": 110,
+        "games_2026": 5,
+        "projection_edge": 40.5,
+        "grade": "L",
+        "actual": 40.0,
+        "actual_label": "40 rec yds"
+      },
+      {
+        "rank": 4,
+        "player": "Joe Burrow",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "f686a2afcc5ad5c8",
+        "price": 1.877,
+        "side": "under",
+        "line": 260.5,
+        "reason": "Burrow's road average is just 226.3 pass yds/gm (3 games) against a Baltimore pass defense ranked 10th (225.7 yds/gm allowed). Total is 48.5 with BAL only -1.5 favorites.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "BAL",
+            "pos": "QB",
+            "stat": "pass_ypg",
+            "role": "def",
+            "claimed_rank": 10
+          }
+        ],
+        "projection": 230,
+        "games_2026": 5,
+        "projection_edge": 30.5,
+        "grade": "L",
+        "actual": 292.0,
+        "actual_label": "292 pass yds"
+      },
+      {
+        "rank": 5,
+        "player": "Bucky Irving",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "e361231df87eecb1",
+        "price": 1.877,
+        "side": "over",
+        "line": 66.5,
+        "reason": "Irving's road average is 105.0 rush yds/gm (2 games) against a Carolina run defense ranked 23rd, bottom 10 (103.0 rush yds/gm allowed to RBs).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "CAR",
+            "pos": "RB",
+            "stat": "rush_ypg",
+            "role": "def",
+            "claimed_rank": 23
+          }
+        ],
+        "projection": 95,
+        "games_2026": 6,
+        "projection_edge": 28.5,
+        "grade": "W",
+        "actual": 106.0,
+        "actual_label": "106 rush yds"
+      },
+      {
+        "rank": 6,
+        "player": "Jahmyr Gibbs",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "315d06f1d48550c9",
+        "price": 1.877,
+        "side": "under",
+        "line": 93.5,
+        "reason": "Gibbs has rushed for just 49.0 yds/gm across his two 2026 games against mid-tier run defenses; GB's run defense sits at that same caliber, ranked 17th against RBs (90.8 rush yds/gm allowed).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "GB",
+            "pos": "RB",
+            "stat": "rush_ypg",
+            "role": "def",
+            "claimed_rank": 17
+          }
+        ],
+        "projection": 70,
+        "games_2026": 5,
+        "projection_edge": 23.5,
+        "grade": "L",
+        "actual": 116.0,
+        "actual_label": "116 rush yds"
+      },
+      {
+        "rank": 7,
+        "player": "Nico Collins",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "84ea8ce9bbab584b",
+        "price": 1.877,
+        "side": "under",
+        "line": 68.5,
+        "reason": "Collins' 80.75 rec yds/gm season rate was built against bottom-tier WR defenses; he now faces a Giants unit ranked 6th, top 10 (132.3 rec yds/gm allowed), his toughest test of the season.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NYG",
+            "pos": "WR",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 6
+          }
+        ],
+        "projection": 55,
+        "games_2026": 4,
+        "projection_edge": 13.5,
+        "grade": "W",
+        "actual": 6.0,
+        "actual_label": "6 rec yds"
+      },
+      {
+        "rank": 8,
+        "player": "Tucker Kraft",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "315d06f1d48550c9",
+        "price": 1.877,
+        "side": "over",
+        "line": 49.5,
+        "reason": "Kraft's 41.5 rec yds/gm (14th among TEs) runs into a Detroit defense that is league-worst against tight ends (32nd, 109.0 rec yds/gm allowed), the largest position mismatch on the board.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "DET",
+            "pos": "TE",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 32
+          }
+        ],
+        "projection": 58,
+        "games_2026": 6,
+        "projection_edge": 8.5,
+        "grade": "L",
+        "actual": 48.0,
+        "actual_label": "48 rec yds"
+      },
+      {
+        "rank": 9,
+        "player": "Jaylen Warren",
+        "market_key": "player_anytime_td",
+        "canonical_event_id": "518de03174b4f73a",
+        "price": 1.833,
+        "side": "over",
+        "line": null,
+        "reason": "Warren leads Pittsburgh's backfield at 76.7 rush yds/gm (10th among RBs), and New Orleans has allowed a league-worst 11 rushing TDs to RBs this season (32nd), the softest goal-line matchup on the slate.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NO",
+            "pos": "RB",
+            "stat": "rush_td",
+            "role": "def",
+            "claimed_rank": 32
+          }
+        ],
+        "projection": 0.58,
+        "games_2026": 6,
+        "grade": "L",
+        "actual": 0.0,
+        "actual_label": "0 TD"
+      },
+      {
+        "rank": 10,
+        "player": "Detroit Lions",
+        "market_key": "spreads",
+        "canonical_event_id": "315d06f1d48550c9",
+        "price": 1.82,
+        "side": null,
+        "line": -3.0,
+        "point": -3.0,
+        "reason": "Detroit's offense ranks 2nd, top 3 (32.8 ppg) against a GB pass defense ranked 6th, top 10 (209.2 yds/gm allowed), while Detroit's own defense is league-worst against the pass (32nd, 321.4 yds/gm allowed) in a projected track meet. DET is 29-20 (59.2%) ATS at home since 2020 vs. GB's 23-29 (44.2%) on the road.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "DET",
+            "pos": "TEAM",
+            "stat": "ppg",
+            "role": "off",
+            "claimed_rank": 2
+          },
+          {
+            "type": "current_opponent",
+            "team": "DET",
+            "pos": "TEAM",
+            "stat": "pass_ypg",
+            "role": "def",
+            "claimed_rank": 32
+          },
+          {
+            "type": "current_opponent",
+            "team": "GB",
+            "pos": "TEAM",
+            "stat": "pass_ypg",
+            "role": "def",
+            "claimed_rank": 6
+          }
+        ],
+        "projection": 7,
+        "games_2026": 5,
+        "grade": "P",
+        "actual": 3.0,
+        "actual_label": "won by 3"
+      }
+    ],
+    "errors": []
+  },
+  "parlays": {
+    "2": {
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "result": {
+        "legs": 2,
+        "combined_decimal": 3.5231,
+        "combined_american": 252,
+        "stake": 10,
+        "payout": 35.23,
+        "profit": 25.23,
+        "same_game_legs": false
+      },
+      "legs": [
+        {
+          "player": "Tyler Shough",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "518de03174b4f73a",
+          "price": 1.877,
+          "side": "under",
+          "line": 227.5,
+          "reason": "Shough's top-tier-pass-defense bucket shows just 120.0 pass yds/gm (n=2), and he now draws Pittsburgh's 8th-ranked pass defense (222.0 yds/gm allowed). Total is 44.5 with PIT favored by 3 \u2014 not an explosive passing environment.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "PIT",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 8
+            }
+          ],
+          "projection": 180,
+          "games_2026": 6,
+          "grade": "L",
+          "actual": 278.0,
+          "actual_label": "278 pass yds"
+        },
+        {
+          "player": "Bryce Young",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "e361231df87eecb1",
+          "price": 1.877,
+          "side": "over",
+          "line": 253.5,
+          "reason": "Young leads the NFL at 309.8 pass yds/gm (1st) and averages 345.0 ypg at home (2 games) against a Tampa Bay pass defense ranked 19th (237.7 yds/gm allowed). Total is 44.5 with CAR favored by 2.5.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "TB",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 19
+            }
+          ],
+          "projection": 300,
+          "games_2026": 5,
+          "grade": "L",
+          "actual": 163.0,
+          "actual_label": "163 pass yds"
+        }
+      ],
+      "mismatches": [],
+      "overall_grade": "L"
+    },
+    "3": {
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "result": {
+        "legs": 3,
+        "combined_decimal": 6.6129,
+        "combined_american": 561,
+        "stake": 10,
+        "payout": 66.13,
+        "profit": 56.13,
+        "same_game_legs": false
+      },
+      "legs": [
+        {
+          "player": "Tyler Shough",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "518de03174b4f73a",
+          "price": 1.877,
+          "side": "under",
+          "line": 227.5,
+          "reason": "Shough's top-tier-pass-defense bucket shows just 120.0 pass yds/gm (n=2), and he now draws Pittsburgh's 8th-ranked pass defense (222.0 yds/gm allowed). Total is 44.5 with PIT favored by 3 \u2014 not an explosive passing environment.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "PIT",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 8
+            }
+          ],
+          "projection": 180,
+          "games_2026": 6,
+          "grade": "L",
+          "actual": 278.0,
+          "actual_label": "278 pass yds"
+        },
+        {
+          "player": "Bryce Young",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "e361231df87eecb1",
+          "price": 1.877,
+          "side": "over",
+          "line": 253.5,
+          "reason": "Young leads the NFL at 309.8 pass yds/gm (1st) and averages 345.0 ypg at home (2 games) against a Tampa Bay pass defense ranked 19th (237.7 yds/gm allowed). Total is 44.5 with CAR favored by 2.5.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "TB",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 19
+            }
+          ],
+          "projection": 300,
+          "games_2026": 5,
+          "grade": "L",
+          "actual": 163.0,
+          "actual_label": "163 pass yds"
+        },
+        {
+          "player": "Joe Burrow",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "f686a2afcc5ad5c8",
+          "price": 1.877,
+          "side": "under",
+          "line": 260.5,
+          "reason": "Burrow's road average is just 226.3 pass yds/gm (3 games) against a Baltimore pass defense ranked 10th (225.7 yds/gm allowed). Total is 48.5 with BAL only -1.5 favorites.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "BAL",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 10
+            }
+          ],
+          "projection": 230,
+          "games_2026": 5,
+          "grade": "L",
+          "actual": 292.0,
+          "actual_label": "292 pass yds"
+        }
+      ],
+      "mismatches": [],
+      "overall_grade": "L"
+    },
+    "4": {
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "result": {
+        "legs": 4,
+        "combined_decimal": 12.4124,
+        "combined_american": 1141,
+        "stake": 10,
+        "payout": 124.12,
+        "profit": 114.12,
+        "same_game_legs": false
+      },
+      "legs": [
+        {
+          "player": "Tyler Shough",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "518de03174b4f73a",
+          "price": 1.877,
+          "side": "under",
+          "line": 227.5,
+          "reason": "Shough's top-tier-pass-defense bucket shows just 120.0 pass yds/gm (n=2), and he now draws Pittsburgh's 8th-ranked pass defense (222.0 yds/gm allowed). Total is 44.5 with PIT favored by 3 \u2014 not an explosive passing environment.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "PIT",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 8
+            }
+          ],
+          "projection": 180,
+          "games_2026": 6,
+          "grade": "L",
+          "actual": 278.0,
+          "actual_label": "278 pass yds"
+        },
+        {
+          "player": "Bryce Young",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "e361231df87eecb1",
+          "price": 1.877,
+          "side": "over",
+          "line": 253.5,
+          "reason": "Young leads the NFL at 309.8 pass yds/gm (1st) and averages 345.0 ypg at home (2 games) against a Tampa Bay pass defense ranked 19th (237.7 yds/gm allowed). Total is 44.5 with CAR favored by 2.5.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "TB",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 19
+            }
+          ],
+          "projection": 300,
+          "games_2026": 5,
+          "grade": "L",
+          "actual": 163.0,
+          "actual_label": "163 pass yds"
+        },
+        {
+          "player": "Joe Burrow",
+          "market_key": "player_passing_yards",
+          "canonical_event_id": "f686a2afcc5ad5c8",
+          "price": 1.877,
+          "side": "under",
+          "line": 260.5,
+          "reason": "Burrow's road average is just 226.3 pass yds/gm (3 games) against a Baltimore pass defense ranked 10th (225.7 yds/gm allowed). Total is 48.5 with BAL only -1.5 favorites.",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "BAL",
+              "pos": "QB",
+              "stat": "pass_ypg",
+              "role": "def",
+              "claimed_rank": 10
+            }
+          ],
+          "projection": 230,
+          "games_2026": 5,
+          "grade": "L",
+          "actual": 292.0,
+          "actual_label": "292 pass yds"
+        },
+        {
+          "player": "Jahmyr Gibbs",
+          "market_key": "player_rushing_yards",
+          "canonical_event_id": "315d06f1d48550c9",
+          "price": 1.877,
+          "side": "under",
+          "line": 93.5,
+          "reason": "Gibbs has rushed for just 49.0 yds/gm across his two 2026 games against mid-tier run defenses; GB's run defense sits at that same caliber, ranked 17th against RBs (90.8 rush yds/gm allowed).",
+          "evidence_check": [
+            {
+              "type": "current_opponent",
+              "team": "GB",
+              "pos": "RB",
+              "stat": "rush_ypg",
+              "role": "def",
+              "claimed_rank": 17
+            }
+          ],
+          "projection": 70,
+          "games_2026": 5,
+          "grade": "L",
+          "actual": 116.0,
+          "actual_label": "116 rush yds"
+        }
+      ],
+      "mismatches": [],
+      "overall_grade": "L"
+    }
+  },
+  "td_parlays": {},
+  "spread_parlays": {},
+  "ats_records": {
+    "ARI": {
+      "since": 2020,
+      "overall": {
+        "w": 54,
+        "l": 53,
+        "p": 0,
+        "pct": 50.5
+      },
+      "home": {
+        "w": 21,
+        "l": 31,
+        "p": 0,
+        "pct": 40.4
+      },
+      "away": {
+        "w": 33,
+        "l": 22,
+        "p": 0,
+        "pct": 60.0
+      }
+    },
+    "ATL": {
+      "since": 2020,
+      "overall": {
+        "w": 43,
+        "l": 62,
+        "p": 2,
+        "pct": 41.0
+      },
+      "home": {
+        "w": 17,
+        "l": 35,
+        "p": 1,
+        "pct": 32.7
+      },
+      "away": {
+        "w": 26,
+        "l": 27,
+        "p": 1,
+        "pct": 49.1
+      }
+    },
+    "BAL": {
+      "since": 2020,
+      "overall": {
+        "w": 53,
+        "l": 51,
+        "p": 3,
+        "pct": 51.0
+      },
+      "home": {
+        "w": 23,
+        "l": 29,
+        "p": 1,
+        "pct": 44.2
+      },
+      "away": {
+        "w": 30,
+        "l": 22,
+        "p": 2,
+        "pct": 57.7
+      }
+    },
+    "CAR": {
+      "since": 2020,
+      "overall": {
+        "w": 48,
+        "l": 56,
+        "p": 2,
+        "pct": 46.2
+      },
+      "home": {
+        "w": 23,
+        "l": 28,
+        "p": 1,
+        "pct": 45.1
+      },
+      "away": {
+        "w": 25,
+        "l": 28,
+        "p": 1,
+        "pct": 47.2
+      }
+    },
+    "CIN": {
+      "since": 2020,
+      "overall": {
+        "w": 58,
+        "l": 43,
+        "p": 4,
+        "pct": 57.4
+      },
+      "home": {
+        "w": 26,
+        "l": 23,
+        "p": 3,
+        "pct": 53.1
+      },
+      "away": {
+        "w": 32,
+        "l": 20,
+        "p": 1,
+        "pct": 61.5
+      }
+    },
+    "CLE": {
+      "since": 2020,
+      "overall": {
+        "w": 46,
+        "l": 59,
+        "p": 2,
+        "pct": 43.8
+      },
+      "home": {
+        "w": 28,
+        "l": 25,
+        "p": 1,
+        "pct": 52.8
+      },
+      "away": {
+        "w": 18,
+        "l": 34,
+        "p": 1,
+        "pct": 34.6
+      }
+    },
+    "DAL": {
+      "since": 2020,
+      "overall": {
+        "w": 53,
+        "l": 52,
+        "p": 2,
+        "pct": 50.5
+      },
+      "home": {
+        "w": 28,
+        "l": 24,
+        "p": 1,
+        "pct": 53.8
+      },
+      "away": {
+        "w": 25,
+        "l": 28,
+        "p": 1,
+        "pct": 47.2
+      }
+    },
+    "DEN": {
+      "since": 2020,
+      "overall": {
+        "w": 53,
+        "l": 53,
+        "p": 1,
+        "pct": 50.0
+      },
+      "home": {
+        "w": 30,
+        "l": 24,
+        "p": 0,
+        "pct": 55.6
+      },
+      "away": {
+        "w": 23,
+        "l": 29,
+        "p": 1,
+        "pct": 44.2
+      }
+    },
+    "DET": {
+      "since": 2020,
+      "overall": {
+        "w": 62,
+        "l": 41,
+        "p": 3,
+        "pct": 60.2
+      },
+      "home": {
+        "w": 29,
+        "l": 20,
+        "p": 3,
+        "pct": 59.2
+      },
+      "away": {
+        "w": 33,
+        "l": 21,
+        "p": 0,
+        "pct": 61.1
+      }
+    },
+    "GB": {
+      "since": 2020,
+      "overall": {
+        "w": 55,
+        "l": 50,
+        "p": 2,
+        "pct": 52.4
+      },
+      "home": {
+        "w": 32,
+        "l": 21,
+        "p": 0,
+        "pct": 60.4
+      },
+      "away": {
+        "w": 23,
+        "l": 29,
+        "p": 2,
+        "pct": 44.2
+      }
+    },
+    "HOU": {
+      "since": 2020,
+      "overall": {
+        "w": 49,
+        "l": 56,
+        "p": 2,
+        "pct": 46.7
+      },
+      "home": {
+        "w": 23,
+        "l": 30,
+        "p": 1,
+        "pct": 43.4
+      },
+      "away": {
+        "w": 26,
+        "l": 26,
+        "p": 1,
+        "pct": 50.0
+      }
+    },
+    "IND": {
+      "since": 2020,
+      "overall": {
+        "w": 54,
+        "l": 53,
+        "p": 0,
+        "pct": 50.5
+      },
+      "home": {
+        "w": 24,
+        "l": 30,
+        "p": 0,
+        "pct": 44.4
+      },
+      "away": {
+        "w": 30,
+        "l": 23,
+        "p": 0,
+        "pct": 56.6
+      }
+    },
+    "KC": {
+      "since": 2020,
+      "overall": {
+        "w": 45,
+        "l": 59,
+        "p": 2,
+        "pct": 43.3
+      },
+      "home": {
+        "w": 23,
+        "l": 30,
+        "p": 1,
+        "pct": 43.4
+      },
+      "away": {
+        "w": 22,
+        "l": 29,
+        "p": 1,
+        "pct": 43.1
+      }
+    },
+    "LAR": {
+      "since": 2020,
+      "overall": {
+        "w": 57,
+        "l": 48,
+        "p": 2,
+        "pct": 54.3
+      },
+      "home": {
+        "w": 29,
+        "l": 25,
+        "p": 0,
+        "pct": 53.7
+      },
+      "away": {
+        "w": 28,
+        "l": 23,
+        "p": 2,
+        "pct": 54.9
+      }
+    },
+    "LV": {
+      "since": 2020,
+      "overall": {
+        "w": 54,
+        "l": 51,
+        "p": 2,
+        "pct": 51.4
+      },
+      "home": {
+        "w": 30,
+        "l": 23,
+        "p": 1,
+        "pct": 56.6
+      },
+      "away": {
+        "w": 24,
+        "l": 28,
+        "p": 1,
+        "pct": 46.2
+      }
+    },
+    "MIA": {
+      "since": 2020,
+      "overall": {
+        "w": 55,
+        "l": 49,
+        "p": 2,
+        "pct": 52.9
+      },
+      "home": {
+        "w": 31,
+        "l": 21,
+        "p": 1,
+        "pct": 59.6
+      },
+      "away": {
+        "w": 24,
+        "l": 28,
+        "p": 1,
+        "pct": 46.2
+      }
+    },
+    "MIN": {
+      "since": 2020,
+      "overall": {
+        "w": 53,
+        "l": 48,
+        "p": 5,
+        "pct": 52.5
+      },
+      "home": {
+        "w": 24,
+        "l": 28,
+        "p": 0,
+        "pct": 46.2
+      },
+      "away": {
+        "w": 29,
+        "l": 20,
+        "p": 5,
+        "pct": 59.2
+      }
+    },
+    "NO": {
+      "since": 2020,
+      "overall": {
+        "w": 50,
+        "l": 56,
+        "p": 1,
+        "pct": 47.2
+      },
+      "home": {
+        "w": 21,
+        "l": 32,
+        "p": 0,
+        "pct": 39.6
+      },
+      "away": {
+        "w": 29,
+        "l": 24,
+        "p": 1,
+        "pct": 54.7
+      }
+    },
+    "NYG": {
+      "since": 2020,
+      "overall": {
+        "w": 54,
+        "l": 52,
+        "p": 1,
+        "pct": 50.9
+      },
+      "home": {
+        "w": 27,
+        "l": 26,
+        "p": 1,
+        "pct": 50.9
+      },
+      "away": {
+        "w": 27,
+        "l": 26,
+        "p": 0,
+        "pct": 50.9
+      }
+    },
+    "NYJ": {
+      "since": 2020,
+      "overall": {
+        "w": 43,
+        "l": 62,
+        "p": 2,
+        "pct": 41.0
+      },
+      "home": {
+        "w": 24,
+        "l": 29,
+        "p": 0,
+        "pct": 45.3
+      },
+      "away": {
+        "w": 19,
+        "l": 33,
+        "p": 2,
+        "pct": 36.5
+      }
+    },
+    "PHI": {
+      "since": 2020,
+      "overall": {
+        "w": 51,
+        "l": 53,
+        "p": 3,
+        "pct": 49.0
+      },
+      "home": {
+        "w": 26,
+        "l": 25,
+        "p": 2,
+        "pct": 51.0
+      },
+      "away": {
+        "w": 25,
+        "l": 28,
+        "p": 1,
+        "pct": 47.2
+      }
+    },
+    "PIT": {
+      "since": 2020,
+      "overall": {
+        "w": 62,
+        "l": 43,
+        "p": 2,
+        "pct": 59.0
+      },
+      "home": {
+        "w": 33,
+        "l": 20,
+        "p": 1,
+        "pct": 62.3
+      },
+      "away": {
+        "w": 29,
+        "l": 23,
+        "p": 1,
+        "pct": 55.8
+      }
+    },
+    "SEA": {
+      "since": 2020,
+      "overall": {
+        "w": 51,
+        "l": 52,
+        "p": 4,
+        "pct": 49.5
+      },
+      "home": {
+        "w": 23,
+        "l": 27,
+        "p": 3,
+        "pct": 46.0
+      },
+      "away": {
+        "w": 28,
+        "l": 25,
+        "p": 1,
+        "pct": 52.8
+      }
+    },
+    "SF": {
+      "since": 2020,
+      "overall": {
+        "w": 56,
+        "l": 51,
+        "p": 0,
+        "pct": 52.3
+      },
+      "home": {
+        "w": 26,
+        "l": 28,
+        "p": 0,
+        "pct": 48.1
+      },
+      "away": {
+        "w": 30,
+        "l": 23,
+        "p": 0,
+        "pct": 56.6
+      }
+    },
+    "TB": {
+      "since": 2020,
+      "overall": {
+        "w": 49,
+        "l": 56,
+        "p": 2,
+        "pct": 46.7
+      },
+      "home": {
+        "w": 22,
+        "l": 30,
+        "p": 2,
+        "pct": 42.3
+      },
+      "away": {
+        "w": 27,
+        "l": 26,
+        "p": 0,
+        "pct": 50.9
+      }
+    },
+    "TEN": {
+      "since": 2020,
+      "overall": {
+        "w": 45,
+        "l": 58,
+        "p": 4,
+        "pct": 43.7
+      },
+      "home": {
+        "w": 23,
+        "l": 28,
+        "p": 3,
+        "pct": 45.1
+      },
+      "away": {
+        "w": 22,
+        "l": 30,
+        "p": 1,
+        "pct": 42.3
+      }
+    }
+  },
+  "graded_at": "2026-10-27T20:35:36.881254+00:00"
+}

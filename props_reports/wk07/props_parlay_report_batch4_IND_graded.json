@@ -1,0 +1,1123 @@
+{
+  "generated_at": "2026-10-24T02:03:35.006191+00:00",
+  "games_included": [
+    "IND_MIN",
+    "MIA_NYJ",
+    "CLE_TEN",
+    "DEN_ARI"
+  ],
+  "coverage": {
+    "passing_yards": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-24T01:48:00.924564+00:00",
+      "source_age_seconds": 0
+    },
+    "rushing_yards": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-24T01:48:00.924564+00:00",
+      "source_age_seconds": 0
+    },
+    "receiving_yards": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-24T01:48:00.924564+00:00",
+      "source_age_seconds": 0
+    },
+    "receptions": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-24T01:48:00.924564+00:00",
+      "source_age_seconds": 0
+    },
+    "anytime_td": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-24T01:48:00.924564+00:00",
+      "source_age_seconds": 0
+    }
+  },
+  "stake_used_for_payout_examples": 10,
+  "markdown": "REAL DATA COVERAGE CHECK: All five markets (passing yards, rushing yards, receiving yards, receptions, anytime TD) are LIVE across all 13 real games this week \u2014 no stale or unavailable families, no picks withheld for data-coverage reasons.\n\n```json\nPROP_BREAKDOWN\n{\n  \"per_game\": [\n    {\"away\": \"IND\", \"home\": \"MIN\", \"picks\": [\n      {\"player\": \"Jonathan Taylor\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"38da8312e6bbea7b\", \"price\": 1.833, \"side\": \"over\", \"line\": null, \"reason\": \"Taylor has turned a 73.5% share of IND's red-zone carries into 7 rushing TDs through 6 games, a role Minnesota's run defense (4th, 72.4 rush yds/gm allowed to backs) doesn't change.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"MIN\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"def\",\"claimed_rank\":4}], \"projection\": 0.60, \"games_2026\": 6},\n      {\"player\": \"Kyler Murray\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"38da8312e6bbea7b\", \"price\": 1.877, \"side\": \"under\", \"line\": 205.5, \"reason\": \"Murray's 165.5 pass yds/gm ranks 32nd (worst) through 4 starts, and even IND's mid-tier pass D (21st, 240.3 ypg allowed) hasn't pushed him past 247 yards all season.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"MIN\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"off\",\"claimed_rank\":32},{\"type\":\"current_opponent\",\"team\":\"IND\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":21}], \"projection\": 182, \"games_2026\": 4},\n      {\"player\": \"Daniel Jones\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"38da8312e6bbea7b\", \"price\": 1.877, \"side\": \"under\", \"line\": 189.5, \"reason\": \"Jones averages 215.0 pass yds/gm (21st) but now draws MIN's elite pass defense, 3rd-ranked at 195.4 ypg allowed and 1st in completion percentage allowed.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"IND\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"off\",\"claimed_rank\":21},{\"type\":\"current_opponent\",\"team\":\"MIN\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":3}], \"projection\": 183, \"games_2026\": 6}\n    ]},\n    {\"away\": \"MIA\", \"home\": \"NYJ\", \"picks\": [\n      {\"player\": \"Ollie Gordon II\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"b08745f52553e400\", \"price\": 1.877, \"side\": \"over\", \"line\": 52.5, \"reason\": \"Miami's RB corps ranks 24th at 78.2 rush yds/gm as a group, and Gordon has topped this line in two straight weeks against a Jets run D that's bottom-10 (27th, 105.8 rush yds/gm allowed to backs).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"MIA\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"off\",\"claimed_rank\":24},{\"type\":\"current_opponent\",\"team\":\"NYJ\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"def\",\"claimed_rank\":27}], \"projection\": 61, \"games_2026\": 4},\n      {\"player\": \"Garrett Wilson\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"b08745f52553e400\", \"price\": 1.877, \"side\": \"over\", \"line\": 62.5, \"reason\": \"Wilson's 69.7 rec yds/gm (19th) faces a Miami defense that's elite overall (3rd, 110.4 ypg allowed to WRs) but 31st in yards/target vs man, exactly the coverage PFF shows Wilson dominating.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NYJ\",\"pos\":\"WR\",\"stat\":\"rec_ypg\",\"role\":\"off\",\"claimed_rank\":19},{\"type\":\"current_opponent\",\"team\":\"MIA\",\"pos\":\"WR\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":3}], \"projection\": 71, \"games_2026\": 6},\n      {\"player\": \"Malik Willis\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"b08745f52553e400\", \"price\": 1.877, \"side\": \"under\", \"line\": 183.5, \"reason\": \"Willis's 169.8 pass yds/gm ranks 30th leaguewide, and he now faces a Jets secondary that's 5th in the NFL in pass yards allowed (202.0 ypg).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"MIA\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"off\",\"claimed_rank\":30},{\"type\":\"current_opponent\",\"team\":\"NYJ\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":5}], \"projection\": 168, \"games_2026\": 5}\n    ]},\n    {\"away\": \"CLE\", \"home\": \"TEN\", \"picks\": [\n      {\"player\": \"Harold Fannin Jr.\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7810cb2f664241fe\", \"price\": 1.877, \"side\": \"under\", \"line\": 28.5, \"reason\": \"Cleveland's TE corps ranks just 27th in rec yds/gm as a group, and Fannin's own production has cratered to 11.3 ypg across three games against the exact caliber of elite TE defense Tennessee brings (2nd, 29.2 ypg allowed).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"TE\",\"stat\":\"rec_ypg\",\"role\":\"off\",\"claimed_rank\":27},{\"type\":\"current_opponent\",\"team\":\"TEN\",\"pos\":\"TE\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":2}], \"projection\": 19, \"games_2026\": 6},\n      {\"player\": \"Denzel Boston\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7810cb2f664241fe\", \"price\": 1.877, \"side\": \"over\", \"line\": 51.5, \"reason\": \"Boston's 57.5 rec yds/gm (26th) lines up against a Titans WR defense that's bottom-10 (26th, 175.3 ypg allowed) and plays 78% zone, exactly the shell PFF shows him averaging 23.3 yards per catch in.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"WR\",\"stat\":\"rec_ypg\",\"role\":\"off\",\"claimed_rank\":26},{\"type\":\"current_opponent\",\"team\":\"TEN\",\"pos\":\"WR\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":26}], \"projection\": 60, \"games_2026\": 6},\n      {\"player\": \"Quinshon Judkins\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"7810cb2f664241fe\", \"price\": 1.877, \"side\": \"under\", \"line\": 46.5, \"reason\": \"Judkins' 44.2 rush yds/gm ranks 30th leaguewide, and his own road average (32.7 ypg) sits well below this line even against a merely mid-tier Titans run D (21st, 98.8 ypg allowed).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"off\",\"claimed_rank\":30},{\"type\":\"current_opponent\",\"team\":\"TEN\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"def\",\"claimed_rank\":21}], \"projection\": 37, \"games_2026\": 5}\n    ]},\n    {\"away\": \"DEN\", \"home\": \"ARI\", \"picks\": [\n      {\"player\": \"Evan Engram\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"aba9729876f720f6\", \"price\": 1.877, \"side\": \"over\", \"line\": 22.5, \"reason\": \"Engram's season average (22.3 ypg, 37th) undersells his road form (34.7 ypg across 3 games), and Arizona's TE defense ranks a generous 25th (69.3 ypg allowed).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DEN\",\"pos\":\"TE\",\"stat\":\"rec_ypg\",\"role\":\"off\",\"claimed_rank\":37},{\"type\":\"current_opponent\",\"team\":\"ARI\",\"pos\":\"TE\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":25}], \"projection\": 30, \"games_2026\": 6},\n      {\"player\": \"Courtland Sutton\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"aba9729876f720f6\", \"price\": 1.877, \"side\": \"under\", \"line\": 33.5, \"reason\": \"Sutton's 20.5 rec yds/gm ranks 95th among all qualified receivers, and even Arizona's merely mid-tier secondary (19th, 152.8 ypg allowed to WRs) hasn't pushed him past 46 yards since Week 3.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DEN\",\"pos\":\"WR\",\"stat\":\"rec_ypg\",\"role\":\"off\",\"claimed_rank\":95},{\"type\":\"current_opponent\",\"team\":\"ARI\",\"pos\":\"WR\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":19}], \"projection\": 21, \"games_2026\": 6},\n      {\"player\": \"J.K. Dobbins\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"aba9729876f720f6\", \"price\": 1.877, \"side\": \"over\", \"line\": 47.5, \"reason\": \"Dobbins' 45.0 rush yds/gm ranks 29th, but his one game against a bottom-tier run D produced 68 yards, and Arizona's run D (28th, 107.0 rush yds/gm allowed to backs) is exactly that caliber.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DEN\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"off\",\"claimed_rank\":29},{\"type\":\"current_opponent\",\"team\":\"ARI\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"def\",\"claimed_rank\":28}], \"projection\": 53, \"games_2026\": 6}\n    ]}\n  ],\n  \"per_position\": {\n    \"QB\": {\"player\": \"Kyler Murray\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"38da8312e6bbea7b\", \"price\": 1.877, \"side\": \"under\", \"line\": 205.5, \"reason\": \"Murray's 165.5 pass yds/gm ranks 32nd (worst) through 4 starts, and even IND's mid-tier pass D (21st, 240.3 ypg allowed) hasn't pushed him past 247 yards all season.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"MIN\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"off\",\"claimed_rank\":32},{\"type\":\"current_opponent\",\"team\":\"IND\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":21}], \"projection\": 182, \"games_2026\": 4},\n    \"RB\": {\"player\": \"Ollie Gordon II\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"b08745f52553e400\", \"price\": 1.877, \"side\": \"over\", \"line\": 52.5, \"reason\": \"Miami's RB corps ranks 24th at 78.2 rush yds/gm as a group, and Gordon has topped this line in two straight weeks against a Jets run D that's bottom-10 (27th, 105.8 rush yds/gm allowed to backs).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"MIA\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"off\",\"claimed_rank\":24},{\"type\":\"current_opponent\",\"team\":\"NYJ\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"def\",\"claimed_rank\":27}], \"projection\": 61, \"games_2026\": 4},\n    \"WR\": {\"player\": \"Courtland Sutton\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"aba9729876f720f6\", \"price\": 1.877, \"side\": \"under\", \"line\": 33.5, \"reason\": \"Sutton's 20.5 rec yds/gm ranks 95th among all qualified receivers, and even Arizona's merely mid-tier secondary (19th, 152.8 ypg allowed to WRs) hasn't pushed him past 46 yards since Week 3.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DEN\",\"pos\":\"WR\",\"stat\":\"rec_ypg\",\"role\":\"off\",\"claimed_rank\":95},{\"type\":\"current_opponent\",\"team\":\"ARI\",\"pos\":\"WR\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":19}], \"projection\": 21, \"games_2026\": 6},\n    \"TE\": {\"player\": \"Harold Fannin Jr.\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7810cb2f664241fe\", \"price\": 1.877, \"side\": \"under\", \"line\": 28.5, \"reason\": \"Cleveland's TE corps ranks just 27th in rec yds/gm as a group, and Fannin's own production has cratered to 11.3 ypg across three games against the exact caliber of elite TE defense Tennessee brings (2nd, 29.2 ypg allowed).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"TE\",\"stat\":\"rec_ypg\",\"role\":\"off\",\"claimed_rank\":27},{\"type\":\"current_opponent\",\"team\":\"TEN\",\"pos\":\"TE\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":2}], \"projection\": 19, \"games_2026\": 6}\n  }\n}\n```\n\n```json\nFAVORITE_OU\n{\n  \"overs\": [\n    {\"player\": \"Ollie Gordon II\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"b08745f52553e400\", \"price\": 1.877, \"side\": \"over\", \"line\": 52.5, \"reason\": \"Miami's RB corps ranks 24th at 78.2 rush yds/gm as a group, and Gordon has topped this line in two straight weeks against a Jets run D that's bottom-10 (27th, 105.8 rush yds/gm allowed to backs).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"MIA\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"off\",\"claimed_rank\":24},{\"type\":\"current_opponent\",\"team\":\"NYJ\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"def\",\"claimed_rank\":27}], \"projection\": 61, \"games_2026\": 4},\n    {\"player\": \"Denzel Boston\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7810cb2f664241fe\", \"price\": 1.877, \"side\": \"over\", \"line\": 51.5, \"reason\": \"Boston's 57.5 rec yds/gm (26th) lines up against a Titans WR defense that's bottom-10 (26th, 175.3 ypg allowed) and plays 78% zone, exactly the shell PFF shows him averaging 23.3 yards per catch in.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"WR\",\"stat\":\"rec_ypg\",\"role\":\"off\",\"claimed_rank\":26},{\"type\":\"current_opponent\",\"team\":\"TEN\",\"pos\":\"WR\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":26}], \"projection\": 60, \"games_2026\": 6},\n    {\"player\": \"Garrett Wilson\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"b08745f52553e400\", \"price\": 1.877, \"side\": \"over\", \"line\": 62.5, \"reason\": \"Wilson's 69.7 rec yds/gm (19th) faces a Miami defense that's elite overall (3rd, 110.4 ypg allowed to WRs) but 31st in yards/target vs man, exactly the coverage PFF shows Wilson dominating.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"NYJ\",\"pos\":\"WR\",\"stat\":\"rec_ypg\",\"role\":\"off\",\"claimed_rank\":19},{\"type\":\"current_opponent\",\"team\":\"MIA\",\"pos\":\"WR\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":3}], \"projection\": 71, \"games_2026\": 6},\n    {\"player\": \"Evan Engram\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"aba9729876f720f6\", \"price\": 1.877, \"side\": \"over\", \"line\": 22.5, \"reason\": \"Engram's season average (22.3 ypg, 37th) undersells his road form (34.7 ypg across 3 games), and Arizona's TE defense ranks a generous 25th (69.3 ypg allowed).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DEN\",\"pos\":\"TE\",\"stat\":\"rec_ypg\",\"role\":\"off\",\"claimed_rank\":37},{\"type\":\"current_opponent\",\"team\":\"ARI\",\"pos\":\"TE\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":25}], \"projection\": 30, \"games_2026\": 6},\n    {\"player\": \"Jonathan Taylor\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"38da8312e6bbea7b\", \"price\": 1.877, \"side\": \"over\", \"line\": 70.5, \"reason\": \"Taylor's 82.0 rush yds/gm (7th) has produced 85.0 ypg across his three games against top-tier run defenses this season, a tier Minnesota's stingy unit (4th, 72.4 rush yds/gm allowed to backs) fits.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"IND\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"off\",\"claimed_rank\":7},{\"type\":\"current_opponent\",\"team\":\"MIN\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"def\",\"claimed_rank\":4}], \"projection\": 78, \"games_2026\": 6}\n  ],\n  \"unders\": [\n    {\"player\": \"Kyler Murray\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"38da8312e6bbea7b\", \"price\": 1.877, \"side\": \"under\", \"line\": 205.5, \"reason\": \"Murray's 165.5 pass yds/gm ranks 32nd (worst) through 4 starts, and even IND's mid-tier pass D (21st, 240.3 ypg allowed) hasn't pushed him past 247 yards all season.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"MIN\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"off\",\"claimed_rank\":32},{\"type\":\"current_opponent\",\"team\":\"IND\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":21}], \"projection\": 182, \"games_2026\": 4},\n    {\"player\": \"Courtland Sutton\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"aba9729876f720f6\", \"price\": 1.877, \"side\": \"under\", \"line\": 33.5, \"reason\": \"Sutton's 20.5 rec yds/gm ranks 95th among all qualified receivers, and even Arizona's merely mid-tier secondary (19th, 152.8 ypg allowed to WRs) hasn't pushed him past 46 yards since Week 3.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"DEN\",\"pos\":\"WR\",\"stat\":\"rec_ypg\",\"role\":\"off\",\"claimed_rank\":95},{\"type\":\"current_opponent\",\"team\":\"ARI\",\"pos\":\"WR\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":19}], \"projection\": 21, \"games_2026\": 6},\n    {\"player\": \"Harold Fannin Jr.\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7810cb2f664241fe\", \"price\": 1.877, \"side\": \"under\", \"line\": 28.5, \"reason\": \"Cleveland's TE corps ranks just 27th in rec yds/gm as a group, and Fannin's own production has cratered to 11.3 ypg across three games against the exact caliber of elite TE defense Tennessee brings (2nd, 29.2 ypg allowed).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"TE\",\"stat\":\"rec_ypg\",\"role\":\"off\",\"claimed_rank\":27},{\"type\":\"current_opponent\",\"team\":\"TEN\",\"pos\":\"TE\",\"stat\":\"rec_ypg\",\"role\":\"def\",\"claimed_rank\":2}], \"projection\": 19, \"games_2026\": 6},\n    {\"player\": \"Malik Willis\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"b08745f52553e400\", \"price\": 1.877, \"side\": \"under\", \"line\": 183.5, \"reason\": \"Willis's 169.8 pass yds/gm ranks 30th leaguewide, and he now faces a Jets secondary that's 5th in the NFL in pass yards allowed (202.0 ypg).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"MIA\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"off\",\"claimed_rank\":30},{\"type\":\"current_opponent\",\"team\":\"NYJ\",\"pos\":\"QB\",\"stat\":\"pass_ypg\",\"role\":\"def\",\"claimed_rank\":5}], \"projection\": 168, \"games_2026\": 5},\n    {\"player\": \"Quinshon Judkins\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"7810cb2f664241fe\", \"price\": 1.877, \"side\": \"under\", \"line\": 46.5, \"reason\": \"Judkins' 44.2 rush yds/gm ranks 30th leaguewide, and his own road average (32.7 ypg) sits well below this line even against a merely mid-tier Titans run D (21st, 98.8 ypg allowed).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CLE\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"off\",\"claimed_rank\":30},{\"type\":\"current_opponent\",\"team\":\"TEN\",\"pos\":\"RB\",\"stat\":\"rush_ypg\",\"role\":\"def\",\"claimed_rank\":21}], \"projection\": 37, \"games_2026\": 5}\n  ]\n}\n```",
+  "prop_breakdown": {
+    "per_game": [
+      {
+        "away": "IND",
+        "home": "MIN",
+        "picks": [
+          {
+            "player": "Jonathan Taylor",
+            "market_key": "player_anytime_td",
+            "canonical_event_id": "38da8312e6bbea7b",
+            "price": 1.833,
+            "side": "over",
+            "line": null,
+            "reason": "Taylor has turned a 73.5% share of IND's red-zone carries into 7 rushing TDs through 6 games, a role Minnesota's run defense (4th, 72.4 rush yds/gm allowed to backs) doesn't change.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "MIN",
+                "pos": "RB",
+                "stat": "rush_ypg",
+                "role": "def",
+                "claimed_rank": 4
+              }
+            ],
+            "projection": 0.6,
+            "games_2026": 6,
+            "grade": "W",
+            "actual": 1.0,
+            "actual_label": "1 TD"
+          },
+          {
+            "player": "Kyler Murray",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "38da8312e6bbea7b",
+            "price": 1.877,
+            "side": "under",
+            "line": 205.5,
+            "reason": "Murray's 165.5 pass yds/gm ranks 32nd (worst) through 4 starts, and even IND's mid-tier pass D (21st, 240.3 ypg allowed) hasn't pushed him past 247 yards all season.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "MIN",
+                "pos": "QB",
+                "stat": "pass_ypg",
+                "role": "off",
+                "claimed_rank": 32
+              },
+              {
+                "type": "current_opponent",
+                "team": "IND",
+                "pos": "QB",
+                "stat": "pass_ypg",
+                "role": "def",
+                "claimed_rank": 21
+              }
+            ],
+            "projection": 182,
+            "games_2026": 4,
+            "projection_edge": 23.5,
+            "grade": "W",
+            "actual": 150.0,
+            "actual_label": "150 pass yds"
+          },
+          {
+            "player": "Daniel Jones",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "38da8312e6bbea7b",
+            "price": 1.877,
+            "side": "under",
+            "line": 189.5,
+            "reason": "Jones averages 215.0 pass yds/gm (21st) but now draws MIN's elite pass defense, 3rd-ranked at 195.4 ypg allowed and 1st in completion percentage allowed.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "IND",
+                "pos": "QB",
+                "stat": "pass_ypg",
+                "role": "off",
+                "claimed_rank": 21
+              },
+              {
+                "type": "current_opponent",
+                "team": "MIN",
+                "pos": "QB",
+                "stat": "pass_ypg",
+                "role": "def",
+                "claimed_rank": 3
+              }
+            ],
+            "projection": 183,
+            "games_2026": 6,
+            "projection_edge": 6.5,
+            "grade": "W",
+            "actual": 108.0,
+            "actual_label": "108 pass yds"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "MIA",
+        "home": "NYJ",
+        "picks": [
+          {
+            "player": "Ollie Gordon II",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "b08745f52553e400",
+            "price": 1.877,
+            "side": "over",
+            "line": 52.5,
+            "reason": "Miami's RB corps ranks 24th at 78.2 rush yds/gm as a group, and Gordon has topped this line in two straight weeks against a Jets run D that's bottom-10 (27th, 105.8 rush yds/gm allowed to backs).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "MIA",
+                "pos": "RB",
+                "stat": "rush_ypg",
+                "role": "off",
+                "claimed_rank": 24
+              },
+              {
+                "type": "current_opponent",
+                "team": "NYJ",
+                "pos": "RB",
+                "stat": "rush_ypg",
+                "role": "def",
+                "claimed_rank": 27
+              }
+            ],
+            "projection": 61,
+            "games_2026": 4,
+            "projection_edge": 8.5,
+            "grade": "W",
+            "actual": 103.0,
+            "actual_label": "103 rush yds"
+          },
+          {
+            "player": "Garrett Wilson",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "b08745f52553e400",
+            "price": 1.877,
+            "side": "over",
+            "line": 62.5,
+            "reason": "Wilson's 69.7 rec yds/gm (19th) faces a Miami defense that's elite overall (3rd, 110.4 ypg allowed to WRs) but 31st in yards/target vs man, exactly the coverage PFF shows Wilson dominating.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NYJ",
+                "pos": "WR",
+                "stat": "rec_ypg",
+                "role": "off",
+                "claimed_rank": 19
+              },
+              {
+                "type": "current_opponent",
+                "team": "MIA",
+                "pos": "WR",
+                "stat": "rec_ypg",
+                "role": "def",
+                "claimed_rank": 3
+              }
+            ],
+            "projection": 71,
+            "games_2026": 6,
+            "projection_edge": 8.5,
+            "grade": "L",
+            "actual": 26.0,
+            "actual_label": "26 rec yds"
+          },
+          {
+            "player": "Malik Willis",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "b08745f52553e400",
+            "price": 1.877,
+            "side": "under",
+            "line": 183.5,
+            "reason": "Willis's 169.8 pass yds/gm ranks 30th leaguewide, and he now faces a Jets secondary that's 5th in the NFL in pass yards allowed (202.0 ypg).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "MIA",
+                "pos": "QB",
+                "stat": "pass_ypg",
+                "role": "off",
+                "claimed_rank": 30
+              },
+              {
+                "type": "current_opponent",
+                "team": "NYJ",
+                "pos": "QB",
+                "stat": "pass_ypg",
+                "role": "def",
+                "claimed_rank": 5
+              }
+            ],
+            "projection": 168,
+            "games_2026": 5,
+            "projection_edge": 15.5,
+            "grade": "L",
+            "actual": 208.0,
+            "actual_label": "208 pass yds"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "CLE",
+        "home": "TEN",
+        "picks": [
+          {
+            "player": "Harold Fannin Jr.",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "7810cb2f664241fe",
+            "price": 1.877,
+            "side": "under",
+            "line": 28.5,
+            "reason": "Cleveland's TE corps ranks just 27th in rec yds/gm as a group, and Fannin's own production has cratered to 11.3 ypg across three games against the exact caliber of elite TE defense Tennessee brings (2nd, 29.2 ypg allowed).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "CLE",
+                "pos": "TE",
+                "stat": "rec_ypg",
+                "role": "off",
+                "claimed_rank": 27
+              },
+              {
+                "type": "current_opponent",
+                "team": "TEN",
+                "pos": "TE",
+                "stat": "rec_ypg",
+                "role": "def",
+                "claimed_rank": 2
+              }
+            ],
+            "projection": 19,
+            "games_2026": 6,
+            "projection_edge": 9.5,
+            "grade": "L",
+            "actual": 91.0,
+            "actual_label": "91 rec yds"
+          },
+          {
+            "player": "Denzel Boston",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "7810cb2f664241fe",
+            "price": 1.877,
+            "side": "over",
+            "line": 51.5,
+            "reason": "Boston's 57.5 rec yds/gm (26th) lines up against a Titans WR defense that's bottom-10 (26th, 175.3 ypg allowed) and plays 78% zone, exactly the shell PFF shows him averaging 23.3 yards per catch in.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "CLE",
+                "pos": "WR",
+                "stat": "rec_ypg",
+                "role": "off",
+                "claimed_rank": 26
+              },
+              {
+                "type": "current_opponent",
+                "team": "TEN",
+                "pos": "WR",
+                "stat": "rec_ypg",
+                "role": "def",
+                "claimed_rank": 26
+              }
+            ],
+            "projection": 60,
+            "games_2026": 6,
+            "projection_edge": 8.5,
+            "grade": "L",
+            "actual": 27.0,
+            "actual_label": "27 rec yds"
+          },
+          {
+            "player": "Quinshon Judkins",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "7810cb2f664241fe",
+            "price": 1.877,
+            "side": "under",
+            "line": 46.5,
+            "reason": "Judkins' 44.2 rush yds/gm ranks 30th leaguewide, and his own road average (32.7 ypg) sits well below this line even against a merely mid-tier Titans run D (21st, 98.8 ypg allowed).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "CLE",
+                "pos": "RB",
+                "stat": "rush_ypg",
+                "role": "off",
+                "claimed_rank": 30
+              },
+              {
+                "type": "current_opponent",
+                "team": "TEN",
+                "pos": "RB",
+                "stat": "rush_ypg",
+                "role": "def",
+                "claimed_rank": 21
+              }
+            ],
+            "projection": 37,
+            "games_2026": 5,
+            "projection_edge": 9.5,
+            "grade": "L",
+            "actual": 96.0,
+            "actual_label": "96 rush yds"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "DEN",
+        "home": "ARI",
+        "picks": [
+          {
+            "player": "Evan Engram",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "aba9729876f720f6",
+            "price": 1.877,
+            "side": "over",
+            "line": 22.5,
+            "reason": "Engram's season average (22.3 ypg, 37th) undersells his road form (34.7 ypg across 3 games), and Arizona's TE defense ranks a generous 25th (69.3 ypg allowed).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "DEN",
+                "pos": "TE",
+                "stat": "rec_ypg",
+                "role": "off",
+                "claimed_rank": 37
+              },
+              {
+                "type": "current_opponent",
+                "team": "ARI",
+                "pos": "TE",
+                "stat": "rec_ypg",
+                "role": "def",
+                "claimed_rank": 25
+              }
+            ],
+            "projection": 30,
+            "games_2026": 6,
+            "projection_edge": 7.5,
+            "grade": "L",
+            "actual": 2.0,
+            "actual_label": "2 rec yds"
+          },
+          {
+            "player": "Courtland Sutton",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "aba9729876f720f6",
+            "price": 1.877,
+            "side": "under",
+            "line": 33.5,
+            "reason": "Sutton's 20.5 rec yds/gm ranks 95th among all qualified receivers, and even Arizona's merely mid-tier secondary (19th, 152.8 ypg allowed to WRs) hasn't pushed him past 46 yards since Week 3.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "DEN",
+                "pos": "WR",
+                "stat": "rec_ypg",
+                "role": "off",
+                "claimed_rank": 95
+              },
+              {
+                "type": "current_opponent",
+                "team": "ARI",
+                "pos": "WR",
+                "stat": "rec_ypg",
+                "role": "def",
+                "claimed_rank": 19
+              }
+            ],
+            "projection": 21,
+            "games_2026": 6,
+            "projection_edge": 12.5,
+            "grade": "L",
+            "actual": 45.0,
+            "actual_label": "45 rec yds"
+          },
+          {
+            "player": "J.K. Dobbins",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "aba9729876f720f6",
+            "price": 1.877,
+            "side": "over",
+            "line": 47.5,
+            "reason": "Dobbins' 45.0 rush yds/gm ranks 29th, but his one game against a bottom-tier run D produced 68 yards, and Arizona's run D (28th, 107.0 rush yds/gm allowed to backs) is exactly that caliber.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "DEN",
+                "pos": "RB",
+                "stat": "rush_ypg",
+                "role": "off",
+                "claimed_rank": 29
+              },
+              {
+                "type": "current_opponent",
+                "team": "ARI",
+                "pos": "RB",
+                "stat": "rush_ypg",
+                "role": "def",
+                "claimed_rank": 28
+              }
+            ],
+            "projection": 53,
+            "games_2026": 6,
+            "projection_edge": 5.5,
+            "grade": "L",
+            "actual": 23.0,
+            "actual_label": "23 rush yds"
+          }
+        ],
+        "mismatch_count": 0
+      }
+    ],
+    "per_position": {
+      "QB": {
+        "player": "Kyler Murray",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "38da8312e6bbea7b",
+        "price": 1.877,
+        "side": "under",
+        "line": 205.5,
+        "reason": "Murray's 165.5 pass yds/gm ranks 32nd (worst) through 4 starts, and even IND's mid-tier pass D (21st, 240.3 ypg allowed) hasn't pushed him past 247 yards all season.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "MIN",
+            "pos": "QB",
+            "stat": "pass_ypg",
+            "role": "off",
+            "claimed_rank": 32
+          },
+          {
+            "type": "current_opponent",
+            "team": "IND",
+            "pos": "QB",
+            "stat": "pass_ypg",
+            "role": "def",
+            "claimed_rank": 21
+          }
+        ],
+        "projection": 182,
+        "games_2026": 4,
+        "projection_edge": 23.5,
+        "grade": "W",
+        "actual": 150.0,
+        "actual_label": "150 pass yds"
+      },
+      "RB": {
+        "player": "Ollie Gordon II",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "b08745f52553e400",
+        "price": 1.877,
+        "side": "over",
+        "line": 52.5,
+        "reason": "Miami's RB corps ranks 24th at 78.2 rush yds/gm as a group, and Gordon has topped this line in two straight weeks against a Jets run D that's bottom-10 (27th, 105.8 rush yds/gm allowed to backs).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "MIA",
+            "pos": "RB",
+            "stat": "rush_ypg",
+            "role": "off",
+            "claimed_rank": 24
+          },
+          {
+            "type": "current_opponent",
+            "team": "NYJ",
+            "pos": "RB",
+            "stat": "rush_ypg",
+            "role": "def",
+            "claimed_rank": 27
+          }
+        ],
+        "projection": 61,
+        "games_2026": 4,
+        "projection_edge": 8.5,
+        "grade": "W",
+        "actual": 103.0,
+        "actual_label": "103 rush yds"
+      },
+      "WR": {
+        "player": "Courtland Sutton",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "aba9729876f720f6",
+        "price": 1.877,
+        "side": "under",
+        "line": 33.5,
+        "reason": "Sutton's 20.5 rec yds/gm ranks 95th among all qualified receivers, and even Arizona's merely mid-tier secondary (19th, 152.8 ypg allowed to WRs) hasn't pushed him past 46 yards since Week 3.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "DEN",
+            "pos": "WR",
+            "stat": "rec_ypg",
+            "role": "off",
+            "claimed_rank": 95
+          },
+          {
+            "type": "current_opponent",
+            "team": "ARI",
+            "pos": "WR",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 19
+          }
+        ],
+        "projection": 21,
+        "games_2026": 6,
+        "projection_edge": 12.5,
+        "grade": "L",
+        "actual": 45.0,
+        "actual_label": "45 rec yds"
+      },
+      "TE": {
+        "player": "Harold Fannin Jr.",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "7810cb2f664241fe",
+        "price": 1.877,
+        "side": "under",
+        "line": 28.5,
+        "reason": "Cleveland's TE corps ranks just 27th in rec yds/gm as a group, and Fannin's own production has cratered to 11.3 ypg across three games against the exact caliber of elite TE defense Tennessee brings (2nd, 29.2 ypg allowed).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "CLE",
+            "pos": "TE",
+            "stat": "rec_ypg",
+            "role": "off",
+            "claimed_rank": 27
+          },
+          {
+            "type": "current_opponent",
+            "team": "TEN",
+            "pos": "TE",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 2
+          }
+        ],
+        "projection": 19,
+        "games_2026": 6,
+        "projection_edge": 9.5,
+        "grade": "L",
+        "actual": 91.0,
+        "actual_label": "91 rec yds"
+      }
+    }
+  },
+  "prop_breakdown_errors": [],
+  "favorite_ou": {
+    "overs": [
+      {
+        "player": "Ollie Gordon II",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "b08745f52553e400",
+        "price": 1.877,
+        "side": "over",
+        "line": 52.5,
+        "reason": "Miami's RB corps ranks 24th at 78.2 rush yds/gm as a group, and Gordon has topped this line in two straight weeks against a Jets run D that's bottom-10 (27th, 105.8 rush yds/gm allowed to backs).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "MIA",
+            "pos": "RB",
+            "stat": "rush_ypg",
+            "role": "off",
+            "claimed_rank": 24
+          },
+          {
+            "type": "current_opponent",
+            "team": "NYJ",
+            "pos": "RB",
+            "stat": "rush_ypg",
+            "role": "def",
+            "claimed_rank": 27
+          }
+        ],
+        "projection": 61,
+        "games_2026": 4,
+        "projection_edge": 8.5,
+        "grade": "W",
+        "actual": 103.0,
+        "actual_label": "103 rush yds"
+      },
+      {
+        "player": "Denzel Boston",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "7810cb2f664241fe",
+        "price": 1.877,
+        "side": "over",
+        "line": 51.5,
+        "reason": "Boston's 57.5 rec yds/gm (26th) lines up against a Titans WR defense that's bottom-10 (26th, 175.3 ypg allowed) and plays 78% zone, exactly the shell PFF shows him averaging 23.3 yards per catch in.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "CLE",
+            "pos": "WR",
+            "stat": "rec_ypg",
+            "role": "off",
+            "claimed_rank": 26
+          },
+          {
+            "type": "current_opponent",
+            "team": "TEN",
+            "pos": "WR",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 26
+          }
+        ],
+        "projection": 60,
+        "games_2026": 6,
+        "projection_edge": 8.5,
+        "grade": "L",
+        "actual": 27.0,
+        "actual_label": "27 rec yds"
+      },
+      {
+        "player": "Garrett Wilson",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "b08745f52553e400",
+        "price": 1.877,
+        "side": "over",
+        "line": 62.5,
+        "reason": "Wilson's 69.7 rec yds/gm (19th) faces a Miami defense that's elite overall (3rd, 110.4 ypg allowed to WRs) but 31st in yards/target vs man, exactly the coverage PFF shows Wilson dominating.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NYJ",
+            "pos": "WR",
+            "stat": "rec_ypg",
+            "role": "off",
+            "claimed_rank": 19
+          },
+          {
+            "type": "current_opponent",
+            "team": "MIA",
+            "pos": "WR",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 3
+          }
+        ],
+        "projection": 71,
+        "games_2026": 6,
+        "projection_edge": 8.5,
+        "grade": "L",
+        "actual": 26.0,
+        "actual_label": "26 rec yds"
+      },
+      {
+        "player": "Evan Engram",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "aba9729876f720f6",
+        "price": 1.877,
+        "side": "over",
+        "line": 22.5,
+        "reason": "Engram's season average (22.3 ypg, 37th) undersells his road form (34.7 ypg across 3 games), and Arizona's TE defense ranks a generous 25th (69.3 ypg allowed).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "DEN",
+            "pos": "TE",
+            "stat": "rec_ypg",
+            "role": "off",
+            "claimed_rank": 37
+          },
+          {
+            "type": "current_opponent",
+            "team": "ARI",
+            "pos": "TE",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 25
+          }
+        ],
+        "projection": 30,
+        "games_2026": 6,
+        "projection_edge": 7.5,
+        "grade": "L",
+        "actual": 2.0,
+        "actual_label": "2 rec yds"
+      },
+      {
+        "player": "Jonathan Taylor",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "38da8312e6bbea7b",
+        "price": 1.877,
+        "side": "over",
+        "line": 70.5,
+        "reason": "Taylor's 82.0 rush yds/gm (7th) has produced 85.0 ypg across his three games against top-tier run defenses this season, a tier Minnesota's stingy unit (4th, 72.4 rush yds/gm allowed to backs) fits.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "IND",
+            "pos": "RB",
+            "stat": "rush_ypg",
+            "role": "off",
+            "claimed_rank": 7
+          },
+          {
+            "type": "current_opponent",
+            "team": "MIN",
+            "pos": "RB",
+            "stat": "rush_ypg",
+            "role": "def",
+            "claimed_rank": 4
+          }
+        ],
+        "projection": 78,
+        "games_2026": 6,
+        "projection_edge": 7.5,
+        "grade": "W",
+        "actual": 95.0,
+        "actual_label": "95 rush yds"
+      }
+    ],
+    "unders": [
+      {
+        "player": "Kyler Murray",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "38da8312e6bbea7b",
+        "price": 1.877,
+        "side": "under",
+        "line": 205.5,
+        "reason": "Murray's 165.5 pass yds/gm ranks 32nd (worst) through 4 starts, and even IND's mid-tier pass D (21st, 240.3 ypg allowed) hasn't pushed him past 247 yards all season.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "MIN",
+            "pos": "QB",
+            "stat": "pass_ypg",
+            "role": "off",
+            "claimed_rank": 32
+          },
+          {
+            "type": "current_opponent",
+            "team": "IND",
+            "pos": "QB",
+            "stat": "pass_ypg",
+            "role": "def",
+            "claimed_rank": 21
+          }
+        ],
+        "projection": 182,
+        "games_2026": 4,
+        "projection_edge": 23.5,
+        "grade": "W",
+        "actual": 150.0,
+        "actual_label": "150 pass yds"
+      },
+      {
+        "player": "Courtland Sutton",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "aba9729876f720f6",
+        "price": 1.877,
+        "side": "under",
+        "line": 33.5,
+        "reason": "Sutton's 20.5 rec yds/gm ranks 95th among all qualified receivers, and even Arizona's merely mid-tier secondary (19th, 152.8 ypg allowed to WRs) hasn't pushed him past 46 yards since Week 3.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "DEN",
+            "pos": "WR",
+            "stat": "rec_ypg",
+            "role": "off",
+            "claimed_rank": 95
+          },
+          {
+            "type": "current_opponent",
+            "team": "ARI",
+            "pos": "WR",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 19
+          }
+        ],
+        "projection": 21,
+        "games_2026": 6,
+        "projection_edge": 12.5,
+        "grade": "L",
+        "actual": 45.0,
+        "actual_label": "45 rec yds"
+      },
+      {
+        "player": "Harold Fannin Jr.",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "7810cb2f664241fe",
+        "price": 1.877,
+        "side": "under",
+        "line": 28.5,
+        "reason": "Cleveland's TE corps ranks just 27th in rec yds/gm as a group, and Fannin's own production has cratered to 11.3 ypg across three games against the exact caliber of elite TE defense Tennessee brings (2nd, 29.2 ypg allowed).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "CLE",
+            "pos": "TE",
+            "stat": "rec_ypg",
+            "role": "off",
+            "claimed_rank": 27
+          },
+          {
+            "type": "current_opponent",
+            "team": "TEN",
+            "pos": "TE",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 2
+          }
+        ],
+        "projection": 19,
+        "games_2026": 6,
+        "projection_edge": 9.5,
+        "grade": "L",
+        "actual": 91.0,
+        "actual_label": "91 rec yds"
+      },
+      {
+        "player": "Malik Willis",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "b08745f52553e400",
+        "price": 1.877,
+        "side": "under",
+        "line": 183.5,
+        "reason": "Willis's 169.8 pass yds/gm ranks 30th leaguewide, and he now faces a Jets secondary that's 5th in the NFL in pass yards allowed (202.0 ypg).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "MIA",
+            "pos": "QB",
+            "stat": "pass_ypg",
+            "role": "off",
+            "claimed_rank": 30
+          },
+          {
+            "type": "current_opponent",
+            "team": "NYJ",
+            "pos": "QB",
+            "stat": "pass_ypg",
+            "role": "def",
+            "claimed_rank": 5
+          }
+        ],
+        "projection": 168,
+        "games_2026": 5,
+        "projection_edge": 15.5,
+        "grade": "L",
+        "actual": 208.0,
+        "actual_label": "208 pass yds"
+      },
+      {
+        "player": "Quinshon Judkins",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "7810cb2f664241fe",
+        "price": 1.877,
+        "side": "under",
+        "line": 46.5,
+        "reason": "Judkins' 44.2 rush yds/gm ranks 30th leaguewide, and his own road average (32.7 ypg) sits well below this line even against a merely mid-tier Titans run D (21st, 98.8 ypg allowed).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "CLE",
+            "pos": "RB",
+            "stat": "rush_ypg",
+            "role": "off",
+            "claimed_rank": 30
+          },
+          {
+            "type": "current_opponent",
+            "team": "TEN",
+            "pos": "RB",
+            "stat": "rush_ypg",
+            "role": "def",
+            "claimed_rank": 21
+          }
+        ],
+        "projection": 37,
+        "games_2026": 5,
+        "projection_edge": 9.5,
+        "grade": "L",
+        "actual": 96.0,
+        "actual_label": "96 rush yds"
+      }
+    ]
+  },
+  "favorite_ou_errors": [],
+  "parlays": {},
+  "td_parlays": {},
+  "spread_parlays": {},
+  "ats_records": {
+    "ARI": {
+      "since": 2020,
+      "overall": {
+        "w": 54,
+        "l": 53,
+        "p": 0,
+        "pct": 50.5
+      },
+      "home": {
+        "w": 21,
+        "l": 31,
+        "p": 0,
+        "pct": 40.4
+      },
+      "away": {
+        "w": 33,
+        "l": 22,
+        "p": 0,
+        "pct": 60.0
+      }
+    },
+    "CLE": {
+      "since": 2020,
+      "overall": {
+        "w": 46,
+        "l": 59,
+        "p": 2,
+        "pct": 43.8
+      },
+      "home": {
+        "w": 28,
+        "l": 25,
+        "p": 1,
+        "pct": 52.8
+      },
+      "away": {
+        "w": 18,
+        "l": 34,
+        "p": 1,
+        "pct": 34.6
+      }
+    },
+    "DEN": {
+      "since": 2020,
+      "overall": {
+        "w": 53,
+        "l": 53,
+        "p": 1,
+        "pct": 50.0
+      },
+      "home": {
+        "w": 30,
+        "l": 24,
+        "p": 0,
+        "pct": 55.6
+      },
+      "away": {
+        "w": 23,
+        "l": 29,
+        "p": 1,
+        "pct": 44.2
+      }
+    },
+    "IND": {
+      "since": 2020,
+      "overall": {
+        "w": 54,
+        "l": 53,
+        "p": 0,
+        "pct": 50.5
+      },
+      "home": {
+        "w": 24,
+        "l": 30,
+        "p": 0,
+        "pct": 44.4
+      },
+      "away": {
+        "w": 30,
+        "l": 23,
+        "p": 0,
+        "pct": 56.6
+      }
+    },
+    "MIA": {
+      "since": 2020,
+      "overall": {
+        "w": 55,
+        "l": 49,
+        "p": 2,
+        "pct": 52.9
+      },
+      "home": {
+        "w": 31,
+        "l": 21,
+        "p": 1,
+        "pct": 59.6
+      },
+      "away": {
+        "w": 24,
+        "l": 28,
+        "p": 1,
+        "pct": 46.2
+      }
+    },
+    "MIN": {
+      "since": 2020,
+      "overall": {
+        "w": 53,
+        "l": 48,
+        "p": 5,
+        "pct": 52.5
+      },
+      "home": {
+        "w": 24,
+        "l": 28,
+        "p": 0,
+        "pct": 46.2
+      },
+      "away": {
+        "w": 29,
+        "l": 20,
+        "p": 5,
+        "pct": 59.2
+      }
+    },
+    "NYJ": {
+      "since": 2020,
+      "overall": {
+        "w": 43,
+        "l": 62,
+        "p": 2,
+        "pct": 41.0
+      },
+      "home": {
+        "w": 24,
+        "l": 29,
+        "p": 0,
+        "pct": 45.3
+      },
+      "away": {
+        "w": 19,
+        "l": 33,
+        "p": 2,
+        "pct": 36.5
+      }
+    },
+    "TEN": {
+      "since": 2020,
+      "overall": {
+        "w": 45,
+        "l": 58,
+        "p": 4,
+        "pct": 43.7
+      },
+      "home": {
+        "w": 23,
+        "l": 28,
+        "p": 3,
+        "pct": 45.1
+      },
+      "away": {
+        "w": 22,
+        "l": 30,
+        "p": 1,
+        "pct": 42.3
+      }
+    }
+  },
+  "graded_at": "2026-10-27T20:35:36.884201+00:00"
+}

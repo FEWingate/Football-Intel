@@ -1,0 +1,1109 @@
+{
+  "generated_at": "2026-10-24T01:55:30.211476+00:00",
+  "games_included": [
+    "PIT_NO",
+    "SF_ATL",
+    "CIN_BAL",
+    "TB_CAR",
+    "NYG_HOU"
+  ],
+  "coverage": {
+    "passing_yards": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-24T01:48:00.924564+00:00",
+      "source_age_seconds": 0
+    },
+    "rushing_yards": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-24T01:48:00.924564+00:00",
+      "source_age_seconds": 0
+    },
+    "receiving_yards": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-24T01:48:00.924564+00:00",
+      "source_age_seconds": 0
+    },
+    "receptions": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-24T01:48:00.924564+00:00",
+      "source_age_seconds": 0
+    },
+    "anytime_td": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-24T01:48:00.924564+00:00",
+      "source_age_seconds": 0
+    }
+  },
+  "stake_used_for_payout_examples": 10,
+  "markdown": "REAL DATA COVERAGE CHECK: All five stat families (passing, rushing, receiving, receptions, anytime TD) are LIVE across all 13 games \u2014 no family-level gaps. Several individual BAL skill players (Zay Flowers, Rashod Bateman, Mark Andrews) and a few others simply have no posted FanDuel market in this feed, so they're excluded below rather than guessed at. All picks below use 2026-season-only evidence per the Addendum.\n\n```json\nPROP_BREAKDOWN\n{\n  \"per_game\": [\n    {\"away\": \"Pittsburgh Steelers\", \"home\": \"New Orleans Saints\", \"picks\": [\n      {\"player\": \"Jaylen Warren\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"518de03174b4f73a\", \"price\": 1.877, \"side\": \"over\", \"line\": 63.5, \"reason\": \"Warren is averaging 76.7 rush yds/gm (10th among RBs) through 6 games against a Saints run defense allowing a league-worst 116.8 rush yds/gm to backs (32nd).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"NO\", \"pos\": \"RB\", \"stat\": \"rush_yds\", \"role\": \"def\", \"claimed_rank\": 32}], \"projection\": 85, \"games_2026\": 6},\n      {\"player\": \"Tyler Shough\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"518de03174b4f73a\", \"price\": 1.877, \"side\": \"under\", \"line\": 227.5, \"reason\": \"Shough's own top-tier-pass-defense bucket shows just 120.0 pass yds/gm (n=2) and he now draws Pittsburgh's 8th-ranked pass defense (222.0 yds/gm allowed), the toughest tier he's faced all year.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"PIT\", \"pos\": \"QB\", \"stat\": \"pass_yds\", \"role\": \"def\", \"claimed_rank\": 8}], \"projection\": 180, \"games_2026\": 6},\n      {\"player\": \"DK Metcalf\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"518de03174b4f73a\", \"price\": 1.877, \"side\": \"over\", \"line\": 58.5, \"reason\": \"Metcalf's road-and-mid-tier bucket shows 78.3 rec yds/gm (n=3) against the exact caliber of defense New Orleans represents at 18th in WR yards allowed (149.7/gm).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"NO\", \"pos\": \"WR\", \"stat\": \"rec_yds\", \"role\": \"def\", \"claimed_rank\": 18}], \"projection\": 75, \"games_2026\": 6}\n    ]},\n    {\"away\": \"San Francisco 49ers\", \"home\": \"Atlanta Falcons\", \"picks\": [\n      {\"player\": \"Christian McCaffrey\", \"market_key\": \"player_receptions\", \"canonical_event_id\": \"9ed62d68aaeb45dc\", \"price\": 1.98, \"side\": \"over\", \"line\": 5.5, \"reason\": \"McCaffrey ranks 4th in the league in catches/gm (4.7) and his own bottom-tier-pass-defense bucket shows 7.0 rec/gm (n=2), lining up with an Atlanta defense that is dead-last (32nd) against receiving backs.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"ATL\", \"pos\": \"RB\", \"stat\": \"rec\", \"role\": \"def\", \"claimed_rank\": 32}], \"projection\": 6.0, \"games_2026\": 6},\n      {\"player\": \"Bijan Robinson\", \"market_key\": \"player_receptions\", \"canonical_event_id\": \"9ed62d68aaeb45dc\", \"price\": 1.581, \"side\": \"over\", \"line\": 3.5, \"reason\": \"Robinson ranks 10th among backs in catches/gm (3.33) against a 49ers defense that is the single worst in the league (32nd) at receptions allowed to running backs.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"SF\", \"pos\": \"RB\", \"stat\": \"rec\", \"role\": \"def\", \"claimed_rank\": 32}], \"projection\": 4.0, \"games_2026\": 6},\n      {\"player\": \"Brock Purdy\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"9ed62d68aaeb45dc\", \"price\": 1.877, \"side\": \"over\", \"line\": 240.5, \"reason\": \"Purdy is averaging 243.3 pass yds/gm on a top-5 69.6% completion rate against an Atlanta pass defense that ranks bottom-5 in the league (29th, 268.7 yds/gm allowed).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"ATL\", \"pos\": \"QB\", \"stat\": \"pass_yds\", \"role\": \"def\", \"claimed_rank\": 29}], \"projection\": 260, \"games_2026\": 6}\n    ]},\n    {\"away\": \"Cincinnati Bengals\", \"home\": \"Baltimore Ravens\", \"picks\": [\n      {\"player\": \"Tee Higgins\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"f686a2afcc5ad5c8\", \"price\": 1.877, \"side\": \"over\", \"line\": 65.5, \"reason\": \"Higgins is averaging 84.6 rec yds/gm (9th among WRs) with a 69.0 rec yds/gm road average, against a Baltimore defense that ranks 27th (bottom 10) in WR yards allowed.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"BAL\", \"pos\": \"WR\", \"stat\": \"rec_yds\", \"role\": \"def\", \"claimed_rank\": 27}], \"projection\": 90, \"games_2026\": 5},\n      {\"player\": \"Joe Burrow\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"f686a2afcc5ad5c8\", \"price\": 1.877, \"side\": \"under\", \"line\": 260.5, \"reason\": \"Burrow's road average this season is just 226.3 pass yds/gm (3 games) against a Baltimore pass defense that ranks a genuine top-10 unit (10th, 225.7 yds/gm allowed).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"BAL\", \"pos\": \"QB\", \"stat\": \"pass_yds\", \"role\": \"def\", \"claimed_rank\": 10}], \"projection\": 230, \"games_2026\": 5},\n      {\"player\": \"Derrick Henry\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"f686a2afcc5ad5c8\", \"price\": 1.877, \"side\": \"under\", \"line\": 85.5, \"reason\": \"Henry's home average this season is just 70.5 rush yds/gm (2 games) against a Cincinnati run defense that is merely average against backs specifically (13th, 82.4 yds/gm allowed).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"CIN\", \"pos\": \"RB\", \"stat\": \"rush_yds\", \"role\": \"def\", \"claimed_rank\": 13}], \"projection\": 75, \"games_2026\": 6}\n    ]},\n    {\"away\": \"Tampa Bay Buccaneers\", \"home\": \"Carolina Panthers\", \"picks\": [\n      {\"player\": \"Tetairoa McMillan\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"e361231df87eecb1\", \"price\": 1.877, \"side\": \"over\", \"line\": 69.5, \"reason\": \"McMillan is averaging 94.2 rec yds/gm (5th among WRs) and 133.5 rec yds/gm at home (2 games) against a Tampa Bay defense that ranks 15th in WR yards allowed (145.7/gm).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"TB\", \"pos\": \"WR\", \"stat\": \"rec_yds\", \"role\": \"def\", \"claimed_rank\": 15}], \"projection\": 110, \"games_2026\": 5},\n      {\"player\": \"Bucky Irving\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"e361231df87eecb1\", \"price\": 1.877, \"side\": \"over\", \"line\": 66.5, \"reason\": \"Irving's road average this season is 105.0 rush yds/gm (2 games) against a Carolina run defense that ranks 23rd (bottom third) allowing 103.0 rush yds/gm to backs.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"CAR\", \"pos\": \"RB\", \"stat\": \"rush_yds\", \"role\": \"def\", \"claimed_rank\": 23}], \"projection\": 95, \"games_2026\": 6},\n      {\"player\": \"Bryce Young\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"e361231df87eecb1\", \"price\": 1.877, \"side\": \"over\", \"line\": 253.5, \"reason\": \"Young is averaging a league-leading 309.8 pass yds/gm and 345.0 pass yds/gm at home (2 games) against a Tampa Bay pass defense that ranks a modest 19th (237.7 yds/gm allowed).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"TB\", \"pos\": \"QB\", \"stat\": \"pass_yds\", \"role\": \"def\", \"claimed_rank\": 19}], \"projection\": 300, \"games_2026\": 5}\n    ]},\n    {\"away\": \"New York Giants\", \"home\": \"Houston Texans\", \"picks\": [\n      {\"player\": \"Malik Nabers\", \"market_key\": \"player_receptions\", \"canonical_event_id\": \"84ea8ce9bbab584b\", \"price\": 1.781, \"side\": \"over\", \"line\": 5.5, \"reason\": \"Nabers ranks 6th in the league in catches/gm (6.8) against a Houston defense that ranks 27th (bottom 10) in receptions allowed to wide receivers.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"HOU\", \"pos\": \"WR\", \"stat\": \"rec\", \"role\": \"def\", \"claimed_rank\": 27}], \"projection\": 7.0, \"games_2026\": 6},\n      {\"player\": \"Isaiah Likely\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"84ea8ce9bbab584b\", \"price\": 1.877, \"side\": \"over\", \"line\": 50.5, \"reason\": \"Likely ranks 2nd in the league in rec yds/gm (63.8) on a massive 28.6% target share against a Houston tight end defense that ranks a middling 16th (46.8 yds/gm allowed).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"HOU\", \"pos\": \"TE\", \"stat\": \"rec_yds\", \"role\": \"def\", \"claimed_rank\": 16}], \"projection\": 60, \"games_2026\": 6},\n      {\"player\": \"C.J. Stroud\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"84ea8ce9bbab584b\", \"price\": 1.877, \"side\": \"under\", \"line\": 255.5, \"reason\": \"Stroud is averaging 285.7 pass yds/gm (4th) but now draws a Giants pass defense that ranks 4th in the NFL (198.7 yds/gm allowed), the toughest matchup of his season, with a likely lopsided game script given the 10.5-point spread.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"NYG\", \"pos\": \"QB\", \"stat\": \"pass_yds\", \"role\": \"def\", \"claimed_rank\": 4}], \"projection\": 240, \"games_2026\": 6}\n    ]}\n  ],\n  \"per_position\": {\n    \"QB\": {\"player\": \"Bryce Young\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"e361231df87eecb1\", \"price\": 1.877, \"side\": \"over\", \"line\": 253.5, \"reason\": \"Young's 345.0 pass yds/gm home average and league-leading 309.8 season rate dwarf a line set against a Tampa Bay pass defense ranked just 19th (237.7 yds/gm allowed).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"TB\", \"pos\": \"QB\", \"stat\": \"pass_yds\", \"role\": \"def\", \"claimed_rank\": 19}], \"projection\": 300, \"games_2026\": 5},\n    \"RB\": {\"player\": \"Jaylen Warren\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"518de03174b4f73a\", \"price\": 1.877, \"side\": \"over\", \"line\": 63.5, \"reason\": \"Warren's 76.7 rush yds/gm (10th) against a Saints defense allowing a league-worst 116.8 rush yds/gm to backs (32nd) is the single most extreme convergence on the slate.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"NO\", \"pos\": \"RB\", \"stat\": \"rush_yds\", \"role\": \"def\", \"claimed_rank\": 32}], \"projection\": 85, \"games_2026\": 6},\n    \"WR\": {\"player\": \"Tetairoa McMillan\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"e361231df87eecb1\", \"price\": 1.877, \"side\": \"over\", \"line\": 69.5, \"reason\": \"McMillan's 133.5 rec yds/gm home average (2 games) sits nearly double this line against a Tampa Bay WR defense ranked 15th (145.7 yds/gm allowed).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"TB\", \"pos\": \"WR\", \"stat\": \"rec_yds\", \"role\": \"def\", \"claimed_rank\": 15}], \"projection\": 110, \"games_2026\": 5},\n    \"TE\": {\"player\": \"Isaiah Likely\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"84ea8ce9bbab584b\", \"price\": 1.877, \"side\": \"over\", \"line\": 50.5, \"reason\": \"Likely's 2nd-ranked 63.8 rec yds/gm on a 28.6% target share clears this line against a Houston TE defense that ranks just 16th (46.8 yds/gm allowed).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"HOU\", \"pos\": \"TE\", \"stat\": \"rec_yds\", \"role\": \"def\", \"claimed_rank\": 16}], \"projection\": 60, \"games_2026\": 6}\n  }\n}\n```\n\n```json\nFAVORITE_OU\n{\n  \"overs\": [\n    {\"player\": \"Tetairoa McMillan\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"e361231df87eecb1\", \"price\": 1.877, \"side\": \"over\", \"line\": 69.5, \"reason\": \"McMillan's 133.5 rec yds/gm home average (2 games) nearly doubles this line against a Tampa Bay WR defense ranked 15th (145.7 yds/gm allowed).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"TB\", \"pos\": \"WR\", \"stat\": \"rec_yds\", \"role\": \"def\", \"claimed_rank\": 15}], \"projection\": 110, \"games_2026\": 5},\n    {\"player\": \"Bijan Robinson\", \"market_key\": \"player_receptions\", \"canonical_event_id\": \"9ed62d68aaeb45dc\", \"price\": 1.581, \"side\": \"over\", \"line\": 3.5, \"reason\": \"Robinson's 10th-ranked 3.33 catches/gm meets a 49ers defense that is the worst in the league (32nd) at receptions allowed to backs.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"SF\", \"pos\": \"RB\", \"stat\": \"rec\", \"role\": \"def\", \"claimed_rank\": 32}], \"projection\": 4.0, \"games_2026\": 6},\n    {\"player\": \"Malik Nabers\", \"market_key\": \"player_receptions\", \"canonical_event_id\": \"84ea8ce9bbab584b\", \"price\": 1.781, \"side\": \"over\", \"line\": 5.5, \"reason\": \"Nabers' 6th-ranked 6.8 catches/gm faces a Houston defense ranked 27th (bottom 10) in receptions allowed to WRs.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"HOU\", \"pos\": \"WR\", \"stat\": \"rec\", \"role\": \"def\", \"claimed_rank\": 27}], \"projection\": 7.0, \"games_2026\": 6},\n    {\"player\": \"Bucky Irving\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"e361231df87eecb1\", \"price\": 1.877, \"side\": \"over\", \"line\": 66.5, \"reason\": \"Irving's 105.0 rush yds/gm road average (2 games) clears this line against a Carolina run defense ranked 23rd (bottom third) against backs.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"CAR\", \"pos\": \"RB\", \"stat\": \"rush_yds\", \"role\": \"def\", \"claimed_rank\": 23}], \"projection\": 95, \"games_2026\": 6},\n    {\"player\": \"Christian McCaffrey\", \"market_key\": \"player_receptions\", \"canonical_event_id\": \"9ed62d68aaeb45dc\", \"price\": 1.98, \"side\": \"over\", \"line\": 5.5, \"reason\": \"McCaffrey's 4th-ranked 4.7 catches/gm and 7.0 rec/gm bottom-tier-defense bucket (n=2) line up with an Atlanta defense that is dead-last (32nd) against receiving backs.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"ATL\", \"pos\": \"RB\", \"stat\": \"rec\", \"role\": \"def\", \"claimed_rank\": 32}], \"projection\": 6.0, \"games_2026\": 6},\n    {\"player\": \"Bryce Young\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"e361231df87eecb1\", \"price\": 1.877, \"side\": \"over\", \"line\": 253.5, \"reason\": \"Young's league-leading 309.8 pass yds/gm and 345.0 home average dwarf this line against a Tampa Bay pass defense ranked just 19th (237.7 yds/gm allowed).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"TB\", \"pos\": \"QB\", \"stat\": \"pass_yds\", \"role\": \"def\", \"claimed_rank\": 19}], \"projection\": 300, \"games_2026\": 5},\n    {\"player\": \"Jaylen Warren\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"518de03174b4f73a\", \"price\": 1.877, \"side\": \"over\", \"line\": 63.5, \"reason\": \"Warren's 76.7 rush yds/gm (10th) meets a Saints defense allowing a league-worst 116.8 rush yds/gm to backs (32nd).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"NO\", \"pos\": \"RB\", \"stat\": \"rush_yds\", \"role\": \"def\", \"claimed_rank\": 32}], \"projection\": 85, \"games_2026\": 6}\n  ],\n  \"unders\": [\n    {\"player\": \"Tyler Shough\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"518de03174b4f73a\", \"price\": 1.877, \"side\": \"under\", \"line\": 227.5, \"reason\": \"Shough's top-tier-pass-defense bucket shows just 120.0 pass yds/gm (n=2) and he now draws Pittsburgh's 8th-ranked pass defense (222.0 yds/gm allowed).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"PIT\", \"pos\": \"QB\", \"stat\": \"pass_yds\", \"role\": \"def\", \"claimed_rank\": 8}], \"projection\": 180, \"games_2026\": 6},\n    {\"player\": \"Joe Burrow\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"f686a2afcc5ad5c8\", \"price\": 1.877, \"side\": \"under\", \"line\": 260.5, \"reason\": \"Burrow's 226.3 pass yds/gm road average (3 games) sits well under this line against a genuinely top-10 Baltimore pass defense (10th, 225.7 yds/gm allowed).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"BAL\", \"pos\": \"QB\", \"stat\": \"pass_yds\", \"role\": \"def\", \"claimed_rank\": 10}], \"projection\": 230, \"games_2026\": 5},\n    {\"player\": \"C.J. Stroud\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"84ea8ce9bbab584b\", \"price\": 1.877, \"side\": \"under\", \"line\": 255.5, \"reason\": \"Stroud's 285.7 pass yds/gm season rate meets the toughest pass defense he's faced all year (NYG, 4th, 198.7 yds/gm allowed) with a likely lopsided 10.5-point game script.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"NYG\", \"pos\": \"QB\", \"stat\": \"pass_yds\", \"role\": \"def\", \"claimed_rank\": 4}], \"projection\": 240, \"games_2026\": 6},\n    {\"player\": \"Derrick Henry\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"f686a2afcc5ad5c8\", \"price\": 1.877, \"side\": \"under\", \"line\": 85.5, \"reason\": \"Henry's 70.5 rush yds/gm home average (2 games) is well under this line against a Cincinnati run defense that is merely average vs. backs specifically (13th, 82.4 yds/gm allowed).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"CIN\", \"pos\": \"RB\", \"stat\": \"rush_yds\", \"role\": \"def\", \"claimed_rank\": 13}], \"projection\": 75, \"games_2026\": 6},\n    {\"player\": \"Nico Collins\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"84ea8ce9bbab584b\", \"price\": 1.877, \"side\": \"under\", \"line\": 68.5, \"reason\": \"Collins' 80.75 rec yds/gm season rate (12th) was built entirely against bottom-tier WR defenses, and he now faces a Giants unit ranked 6th (top 10) in WR yards allowed, the first real test of that caliber.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"NYG\", \"pos\": \"WR\", \"stat\": \"rec_yds\", \"role\": \"def\", \"claimed_rank\": 6}], \"projection\": 55, \"games_2026\": 4}\n  ]\n}\n```",
+  "prop_breakdown": {
+    "per_game": [
+      {
+        "away": "Pittsburgh Steelers",
+        "home": "New Orleans Saints",
+        "picks": [
+          {
+            "player": "Jaylen Warren",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "518de03174b4f73a",
+            "price": 1.877,
+            "side": "over",
+            "line": 63.5,
+            "reason": "Warren is averaging 76.7 rush yds/gm (10th among RBs) through 6 games against a Saints run defense allowing a league-worst 116.8 rush yds/gm to backs (32nd).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NO",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "def",
+                "claimed_rank": 32
+              }
+            ],
+            "projection": 85,
+            "games_2026": 6,
+            "projection_edge": 21.5,
+            "grade": "W",
+            "actual": 101.0,
+            "actual_label": "101 rush yds"
+          },
+          {
+            "player": "Tyler Shough",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "518de03174b4f73a",
+            "price": 1.877,
+            "side": "under",
+            "line": 227.5,
+            "reason": "Shough's own top-tier-pass-defense bucket shows just 120.0 pass yds/gm (n=2) and he now draws Pittsburgh's 8th-ranked pass defense (222.0 yds/gm allowed), the toughest tier he's faced all year.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "PIT",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "def",
+                "claimed_rank": 8
+              }
+            ],
+            "projection": 180,
+            "games_2026": 6,
+            "projection_edge": 47.5,
+            "grade": "L",
+            "actual": 278.0,
+            "actual_label": "278 pass yds"
+          },
+          {
+            "player": "DK Metcalf",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "518de03174b4f73a",
+            "price": 1.877,
+            "side": "over",
+            "line": 58.5,
+            "reason": "Metcalf's road-and-mid-tier bucket shows 78.3 rec yds/gm (n=3) against the exact caliber of defense New Orleans represents at 18th in WR yards allowed (149.7/gm).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NO",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 18
+              }
+            ],
+            "projection": 75,
+            "games_2026": 6,
+            "projection_edge": 16.5,
+            "grade": "L",
+            "actual": 56.0,
+            "actual_label": "56 rec yds"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "San Francisco 49ers",
+        "home": "Atlanta Falcons",
+        "picks": [
+          {
+            "player": "Christian McCaffrey",
+            "market_key": "player_receptions",
+            "canonical_event_id": "9ed62d68aaeb45dc",
+            "price": 1.98,
+            "side": "over",
+            "line": 5.5,
+            "reason": "McCaffrey ranks 4th in the league in catches/gm (4.7) and his own bottom-tier-pass-defense bucket shows 7.0 rec/gm (n=2), lining up with an Atlanta defense that is dead-last (32nd) against receiving backs.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "ATL",
+                "pos": "RB",
+                "stat": "rec",
+                "role": "def",
+                "claimed_rank": 32
+              }
+            ],
+            "projection": 6.0,
+            "games_2026": 6,
+            "projection_edge": 0.5,
+            "grade": "W",
+            "actual": 6.0,
+            "actual_label": "6 rec"
+          },
+          {
+            "player": "Bijan Robinson",
+            "market_key": "player_receptions",
+            "canonical_event_id": "9ed62d68aaeb45dc",
+            "price": 1.581,
+            "side": "over",
+            "line": 3.5,
+            "reason": "Robinson ranks 10th among backs in catches/gm (3.33) against a 49ers defense that is the single worst in the league (32nd) at receptions allowed to running backs.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "SF",
+                "pos": "RB",
+                "stat": "rec",
+                "role": "def",
+                "claimed_rank": 32
+              }
+            ],
+            "projection": 4.0,
+            "games_2026": 6,
+            "projection_edge": 0.5,
+            "grade": "W",
+            "actual": 5.0,
+            "actual_label": "5 rec"
+          },
+          {
+            "player": "Brock Purdy",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "9ed62d68aaeb45dc",
+            "price": 1.877,
+            "side": "over",
+            "line": 240.5,
+            "reason": "Purdy is averaging 243.3 pass yds/gm on a top-5 69.6% completion rate against an Atlanta pass defense that ranks bottom-5 in the league (29th, 268.7 yds/gm allowed).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "ATL",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "def",
+                "claimed_rank": 29
+              }
+            ],
+            "projection": 260,
+            "games_2026": 6,
+            "projection_edge": 19.5,
+            "grade": "W",
+            "actual": 288.0,
+            "actual_label": "288 pass yds"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "Cincinnati Bengals",
+        "home": "Baltimore Ravens",
+        "picks": [
+          {
+            "player": "Tee Higgins",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "f686a2afcc5ad5c8",
+            "price": 1.877,
+            "side": "over",
+            "line": 65.5,
+            "reason": "Higgins is averaging 84.6 rec yds/gm (9th among WRs) with a 69.0 rec yds/gm road average, against a Baltimore defense that ranks 27th (bottom 10) in WR yards allowed.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "BAL",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 27
+              }
+            ],
+            "projection": 90,
+            "games_2026": 5,
+            "projection_edge": 24.5,
+            "grade": "W",
+            "actual": 148.0,
+            "actual_label": "148 rec yds"
+          },
+          {
+            "player": "Joe Burrow",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "f686a2afcc5ad5c8",
+            "price": 1.877,
+            "side": "under",
+            "line": 260.5,
+            "reason": "Burrow's road average this season is just 226.3 pass yds/gm (3 games) against a Baltimore pass defense that ranks a genuine top-10 unit (10th, 225.7 yds/gm allowed).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "BAL",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "def",
+                "claimed_rank": 10
+              }
+            ],
+            "projection": 230,
+            "games_2026": 5,
+            "projection_edge": 30.5,
+            "grade": "L",
+            "actual": 292.0,
+            "actual_label": "292 pass yds"
+          },
+          {
+            "player": "Derrick Henry",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "f686a2afcc5ad5c8",
+            "price": 1.877,
+            "side": "under",
+            "line": 85.5,
+            "reason": "Henry's home average this season is just 70.5 rush yds/gm (2 games) against a Cincinnati run defense that is merely average against backs specifically (13th, 82.4 yds/gm allowed).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "CIN",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "def",
+                "claimed_rank": 13
+              }
+            ],
+            "projection": 75,
+            "games_2026": 6,
+            "projection_edge": 10.5,
+            "grade": "W",
+            "actual": 45.0,
+            "actual_label": "45 rush yds"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "Tampa Bay Buccaneers",
+        "home": "Carolina Panthers",
+        "picks": [
+          {
+            "player": "Tetairoa McMillan",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "e361231df87eecb1",
+            "price": 1.877,
+            "side": "over",
+            "line": 69.5,
+            "reason": "McMillan is averaging 94.2 rec yds/gm (5th among WRs) and 133.5 rec yds/gm at home (2 games) against a Tampa Bay defense that ranks 15th in WR yards allowed (145.7/gm).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "TB",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 15
+              }
+            ],
+            "projection": 110,
+            "games_2026": 5,
+            "projection_edge": 40.5,
+            "grade": "L",
+            "actual": 40.0,
+            "actual_label": "40 rec yds"
+          },
+          {
+            "player": "Bucky Irving",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "e361231df87eecb1",
+            "price": 1.877,
+            "side": "over",
+            "line": 66.5,
+            "reason": "Irving's road average this season is 105.0 rush yds/gm (2 games) against a Carolina run defense that ranks 23rd (bottom third) allowing 103.0 rush yds/gm to backs.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "CAR",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "def",
+                "claimed_rank": 23
+              }
+            ],
+            "projection": 95,
+            "games_2026": 6,
+            "projection_edge": 28.5,
+            "grade": "W",
+            "actual": 106.0,
+            "actual_label": "106 rush yds"
+          },
+          {
+            "player": "Bryce Young",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "e361231df87eecb1",
+            "price": 1.877,
+            "side": "over",
+            "line": 253.5,
+            "reason": "Young is averaging a league-leading 309.8 pass yds/gm and 345.0 pass yds/gm at home (2 games) against a Tampa Bay pass defense that ranks a modest 19th (237.7 yds/gm allowed).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "TB",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "def",
+                "claimed_rank": 19
+              }
+            ],
+            "projection": 300,
+            "games_2026": 5,
+            "projection_edge": 46.5,
+            "grade": "L",
+            "actual": 163.0,
+            "actual_label": "163 pass yds"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "New York Giants",
+        "home": "Houston Texans",
+        "picks": [
+          {
+            "player": "Malik Nabers",
+            "market_key": "player_receptions",
+            "canonical_event_id": "84ea8ce9bbab584b",
+            "price": 1.781,
+            "side": "over",
+            "line": 5.5,
+            "reason": "Nabers ranks 6th in the league in catches/gm (6.8) against a Houston defense that ranks 27th (bottom 10) in receptions allowed to wide receivers.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "HOU",
+                "pos": "WR",
+                "stat": "rec",
+                "role": "def",
+                "claimed_rank": 27
+              }
+            ],
+            "projection": 7.0,
+            "games_2026": 6,
+            "projection_edge": 1.5,
+            "evidence_mismatches": [
+              "REAL MISMATCH: HOU's real current WR def rec rank is #15 or #28 \u2014 the report claimed #27."
+            ],
+            "grade": "W",
+            "actual": 7.0,
+            "actual_label": "7 rec"
+          },
+          {
+            "player": "Isaiah Likely",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "84ea8ce9bbab584b",
+            "price": 1.877,
+            "side": "over",
+            "line": 50.5,
+            "reason": "Likely ranks 2nd in the league in rec yds/gm (63.8) on a massive 28.6% target share against a Houston tight end defense that ranks a middling 16th (46.8 yds/gm allowed).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "HOU",
+                "pos": "TE",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 16
+              }
+            ],
+            "projection": 60,
+            "games_2026": 6,
+            "projection_edge": 9.5,
+            "grade": "L",
+            "actual": 12.0,
+            "actual_label": "12 rec yds"
+          },
+          {
+            "player": "C.J. Stroud",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "84ea8ce9bbab584b",
+            "price": 1.877,
+            "side": "under",
+            "line": 255.5,
+            "reason": "Stroud is averaging 285.7 pass yds/gm (4th) but now draws a Giants pass defense that ranks 4th in the NFL (198.7 yds/gm allowed), the toughest matchup of his season, with a likely lopsided game script given the 10.5-point spread.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NYG",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "def",
+                "claimed_rank": 4
+              }
+            ],
+            "projection": 240,
+            "games_2026": 6,
+            "projection_edge": 15.5,
+            "grade": "W",
+            "actual": 153.0,
+            "actual_label": "153 pass yds"
+          }
+        ],
+        "mismatch_count": 0
+      }
+    ],
+    "per_position": {
+      "QB": {
+        "player": "Bryce Young",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "e361231df87eecb1",
+        "price": 1.877,
+        "side": "over",
+        "line": 253.5,
+        "reason": "Young's 345.0 pass yds/gm home average and league-leading 309.8 season rate dwarf a line set against a Tampa Bay pass defense ranked just 19th (237.7 yds/gm allowed).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "TB",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "def",
+            "claimed_rank": 19
+          }
+        ],
+        "projection": 300,
+        "games_2026": 5,
+        "projection_edge": 46.5,
+        "grade": "L",
+        "actual": 163.0,
+        "actual_label": "163 pass yds"
+      },
+      "RB": {
+        "player": "Jaylen Warren",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "518de03174b4f73a",
+        "price": 1.877,
+        "side": "over",
+        "line": 63.5,
+        "reason": "Warren's 76.7 rush yds/gm (10th) against a Saints defense allowing a league-worst 116.8 rush yds/gm to backs (32nd) is the single most extreme convergence on the slate.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NO",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "def",
+            "claimed_rank": 32
+          }
+        ],
+        "projection": 85,
+        "games_2026": 6,
+        "projection_edge": 21.5,
+        "grade": "W",
+        "actual": 101.0,
+        "actual_label": "101 rush yds"
+      },
+      "WR": {
+        "player": "Tetairoa McMillan",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "e361231df87eecb1",
+        "price": 1.877,
+        "side": "over",
+        "line": 69.5,
+        "reason": "McMillan's 133.5 rec yds/gm home average (2 games) sits nearly double this line against a Tampa Bay WR defense ranked 15th (145.7 yds/gm allowed).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "TB",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 15
+          }
+        ],
+        "projection": 110,
+        "games_2026": 5,
+        "projection_edge": 40.5,
+        "grade": "L",
+        "actual": 40.0,
+        "actual_label": "40 rec yds"
+      },
+      "TE": {
+        "player": "Isaiah Likely",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "84ea8ce9bbab584b",
+        "price": 1.877,
+        "side": "over",
+        "line": 50.5,
+        "reason": "Likely's 2nd-ranked 63.8 rec yds/gm on a 28.6% target share clears this line against a Houston TE defense that ranks just 16th (46.8 yds/gm allowed).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "HOU",
+            "pos": "TE",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 16
+          }
+        ],
+        "projection": 60,
+        "games_2026": 6,
+        "projection_edge": 9.5,
+        "grade": "L",
+        "actual": 12.0,
+        "actual_label": "12 rec yds"
+      }
+    }
+  },
+  "prop_breakdown_errors": [
+    "New York Giants@Houston Texans \u2014 Malik Nabers: REAL MISMATCH: HOU's real current WR def rec rank is #15 or #28 \u2014 the report claimed #27."
+  ],
+  "favorite_ou": {
+    "overs": [
+      {
+        "player": "Tetairoa McMillan",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "e361231df87eecb1",
+        "price": 1.877,
+        "side": "over",
+        "line": 69.5,
+        "reason": "McMillan's 133.5 rec yds/gm home average (2 games) nearly doubles this line against a Tampa Bay WR defense ranked 15th (145.7 yds/gm allowed).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "TB",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 15
+          }
+        ],
+        "projection": 110,
+        "games_2026": 5,
+        "projection_edge": 40.5,
+        "grade": "L",
+        "actual": 40.0,
+        "actual_label": "40 rec yds"
+      },
+      {
+        "player": "Bijan Robinson",
+        "market_key": "player_receptions",
+        "canonical_event_id": "9ed62d68aaeb45dc",
+        "price": 1.581,
+        "side": "over",
+        "line": 3.5,
+        "reason": "Robinson's 10th-ranked 3.33 catches/gm meets a 49ers defense that is the worst in the league (32nd) at receptions allowed to backs.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "SF",
+            "pos": "RB",
+            "stat": "rec",
+            "role": "def",
+            "claimed_rank": 32
+          }
+        ],
+        "projection": 4.0,
+        "games_2026": 6,
+        "projection_edge": 0.5,
+        "grade": "W",
+        "actual": 5.0,
+        "actual_label": "5 rec"
+      },
+      {
+        "player": "Malik Nabers",
+        "market_key": "player_receptions",
+        "canonical_event_id": "84ea8ce9bbab584b",
+        "price": 1.781,
+        "side": "over",
+        "line": 5.5,
+        "reason": "Nabers' 6th-ranked 6.8 catches/gm faces a Houston defense ranked 27th (bottom 10) in receptions allowed to WRs.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "HOU",
+            "pos": "WR",
+            "stat": "rec",
+            "role": "def",
+            "claimed_rank": 27
+          }
+        ],
+        "projection": 7.0,
+        "games_2026": 6,
+        "projection_edge": 1.5,
+        "evidence_mismatches": [
+          "REAL MISMATCH: HOU's real current WR def rec rank is #15 or #28 \u2014 the report claimed #27."
+        ],
+        "grade": "W",
+        "actual": 7.0,
+        "actual_label": "7 rec"
+      },
+      {
+        "player": "Bucky Irving",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "e361231df87eecb1",
+        "price": 1.877,
+        "side": "over",
+        "line": 66.5,
+        "reason": "Irving's 105.0 rush yds/gm road average (2 games) clears this line against a Carolina run defense ranked 23rd (bottom third) against backs.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "CAR",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "def",
+            "claimed_rank": 23
+          }
+        ],
+        "projection": 95,
+        "games_2026": 6,
+        "projection_edge": 28.5,
+        "grade": "W",
+        "actual": 106.0,
+        "actual_label": "106 rush yds"
+      },
+      {
+        "player": "Christian McCaffrey",
+        "market_key": "player_receptions",
+        "canonical_event_id": "9ed62d68aaeb45dc",
+        "price": 1.98,
+        "side": "over",
+        "line": 5.5,
+        "reason": "McCaffrey's 4th-ranked 4.7 catches/gm and 7.0 rec/gm bottom-tier-defense bucket (n=2) line up with an Atlanta defense that is dead-last (32nd) against receiving backs.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "ATL",
+            "pos": "RB",
+            "stat": "rec",
+            "role": "def",
+            "claimed_rank": 32
+          }
+        ],
+        "projection": 6.0,
+        "games_2026": 6,
+        "projection_edge": 0.5,
+        "grade": "W",
+        "actual": 6.0,
+        "actual_label": "6 rec"
+      },
+      {
+        "player": "Bryce Young",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "e361231df87eecb1",
+        "price": 1.877,
+        "side": "over",
+        "line": 253.5,
+        "reason": "Young's league-leading 309.8 pass yds/gm and 345.0 home average dwarf this line against a Tampa Bay pass defense ranked just 19th (237.7 yds/gm allowed).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "TB",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "def",
+            "claimed_rank": 19
+          }
+        ],
+        "projection": 300,
+        "games_2026": 5,
+        "projection_edge": 46.5,
+        "grade": "L",
+        "actual": 163.0,
+        "actual_label": "163 pass yds"
+      },
+      {
+        "player": "Jaylen Warren",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "518de03174b4f73a",
+        "price": 1.877,
+        "side": "over",
+        "line": 63.5,
+        "reason": "Warren's 76.7 rush yds/gm (10th) meets a Saints defense allowing a league-worst 116.8 rush yds/gm to backs (32nd).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NO",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "def",
+            "claimed_rank": 32
+          }
+        ],
+        "projection": 85,
+        "games_2026": 6,
+        "projection_edge": 21.5,
+        "grade": "W",
+        "actual": 101.0,
+        "actual_label": "101 rush yds"
+      }
+    ],
+    "unders": [
+      {
+        "player": "Tyler Shough",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "518de03174b4f73a",
+        "price": 1.877,
+        "side": "under",
+        "line": 227.5,
+        "reason": "Shough's top-tier-pass-defense bucket shows just 120.0 pass yds/gm (n=2) and he now draws Pittsburgh's 8th-ranked pass defense (222.0 yds/gm allowed).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "PIT",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "def",
+            "claimed_rank": 8
+          }
+        ],
+        "projection": 180,
+        "games_2026": 6,
+        "projection_edge": 47.5,
+        "grade": "L",
+        "actual": 278.0,
+        "actual_label": "278 pass yds"
+      },
+      {
+        "player": "Joe Burrow",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "f686a2afcc5ad5c8",
+        "price": 1.877,
+        "side": "under",
+        "line": 260.5,
+        "reason": "Burrow's 226.3 pass yds/gm road average (3 games) sits well under this line against a genuinely top-10 Baltimore pass defense (10th, 225.7 yds/gm allowed).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "BAL",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "def",
+            "claimed_rank": 10
+          }
+        ],
+        "projection": 230,
+        "games_2026": 5,
+        "projection_edge": 30.5,
+        "grade": "L",
+        "actual": 292.0,
+        "actual_label": "292 pass yds"
+      },
+      {
+        "player": "C.J. Stroud",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "84ea8ce9bbab584b",
+        "price": 1.877,
+        "side": "under",
+        "line": 255.5,
+        "reason": "Stroud's 285.7 pass yds/gm season rate meets the toughest pass defense he's faced all year (NYG, 4th, 198.7 yds/gm allowed) with a likely lopsided 10.5-point game script.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NYG",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "def",
+            "claimed_rank": 4
+          }
+        ],
+        "projection": 240,
+        "games_2026": 6,
+        "projection_edge": 15.5,
+        "grade": "W",
+        "actual": 153.0,
+        "actual_label": "153 pass yds"
+      },
+      {
+        "player": "Derrick Henry",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "f686a2afcc5ad5c8",
+        "price": 1.877,
+        "side": "under",
+        "line": 85.5,
+        "reason": "Henry's 70.5 rush yds/gm home average (2 games) is well under this line against a Cincinnati run defense that is merely average vs. backs specifically (13th, 82.4 yds/gm allowed).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "CIN",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "def",
+            "claimed_rank": 13
+          }
+        ],
+        "projection": 75,
+        "games_2026": 6,
+        "projection_edge": 10.5,
+        "grade": "W",
+        "actual": 45.0,
+        "actual_label": "45 rush yds"
+      },
+      {
+        "player": "Nico Collins",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "84ea8ce9bbab584b",
+        "price": 1.877,
+        "side": "under",
+        "line": 68.5,
+        "reason": "Collins' 80.75 rec yds/gm season rate (12th) was built entirely against bottom-tier WR defenses, and he now faces a Giants unit ranked 6th (top 10) in WR yards allowed, the first real test of that caliber.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NYG",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 6
+          }
+        ],
+        "projection": 55,
+        "games_2026": 4,
+        "projection_edge": 13.5,
+        "grade": "W",
+        "actual": 6.0,
+        "actual_label": "6 rec yds"
+      }
+    ]
+  },
+  "favorite_ou_errors": [
+    "Malik Nabers: REAL MISMATCH: HOU's real current WR def rec rank is #15 or #28 \u2014 the report claimed #27."
+  ],
+  "parlays": {},
+  "td_parlays": {},
+  "spread_parlays": {},
+  "ats_records": {
+    "ATL": {
+      "since": 2020,
+      "overall": {
+        "w": 43,
+        "l": 62,
+        "p": 2,
+        "pct": 41.0
+      },
+      "home": {
+        "w": 17,
+        "l": 35,
+        "p": 1,
+        "pct": 32.7
+      },
+      "away": {
+        "w": 26,
+        "l": 27,
+        "p": 1,
+        "pct": 49.1
+      }
+    },
+    "BAL": {
+      "since": 2020,
+      "overall": {
+        "w": 53,
+        "l": 51,
+        "p": 3,
+        "pct": 51.0
+      },
+      "home": {
+        "w": 23,
+        "l": 29,
+        "p": 1,
+        "pct": 44.2
+      },
+      "away": {
+        "w": 30,
+        "l": 22,
+        "p": 2,
+        "pct": 57.7
+      }
+    },
+    "CAR": {
+      "since": 2020,
+      "overall": {
+        "w": 48,
+        "l": 56,
+        "p": 2,
+        "pct": 46.2
+      },
+      "home": {
+        "w": 23,
+        "l": 28,
+        "p": 1,
+        "pct": 45.1
+      },
+      "away": {
+        "w": 25,
+        "l": 28,
+        "p": 1,
+        "pct": 47.2
+      }
+    },
+    "CIN": {
+      "since": 2020,
+      "overall": {
+        "w": 58,
+        "l": 43,
+        "p": 4,
+        "pct": 57.4
+      },
+      "home": {
+        "w": 26,
+        "l": 23,
+        "p": 3,
+        "pct": 53.1
+      },
+      "away": {
+        "w": 32,
+        "l": 20,
+        "p": 1,
+        "pct": 61.5
+      }
+    },
+    "HOU": {
+      "since": 2020,
+      "overall": {
+        "w": 49,
+        "l": 56,
+        "p": 2,
+        "pct": 46.7
+      },
+      "home": {
+        "w": 23,
+        "l": 30,
+        "p": 1,
+        "pct": 43.4
+      },
+      "away": {
+        "w": 26,
+        "l": 26,
+        "p": 1,
+        "pct": 50.0
+      }
+    },
+    "NO": {
+      "since": 2020,
+      "overall": {
+        "w": 50,
+        "l": 56,
+        "p": 1,
+        "pct": 47.2
+      },
+      "home": {
+        "w": 21,
+        "l": 32,
+        "p": 0,
+        "pct": 39.6
+      },
+      "away": {
+        "w": 29,
+        "l": 24,
+        "p": 1,
+        "pct": 54.7
+      }
+    },
+    "NYG": {
+      "since": 2020,
+      "overall": {
+        "w": 54,
+        "l": 52,
+        "p": 1,
+        "pct": 50.9
+      },
+      "home": {
+        "w": 27,
+        "l": 26,
+        "p": 1,
+        "pct": 50.9
+      },
+      "away": {
+        "w": 27,
+        "l": 26,
+        "p": 0,
+        "pct": 50.9
+      }
+    },
+    "PIT": {
+      "since": 2020,
+      "overall": {
+        "w": 62,
+        "l": 43,
+        "p": 2,
+        "pct": 59.0
+      },
+      "home": {
+        "w": 33,
+        "l": 20,
+        "p": 1,
+        "pct": 62.3
+      },
+      "away": {
+        "w": 29,
+        "l": 23,
+        "p": 1,
+        "pct": 55.8
+      }
+    },
+    "SF": {
+      "since": 2020,
+      "overall": {
+        "w": 56,
+        "l": 51,
+        "p": 0,
+        "pct": 52.3
+      },
+      "home": {
+        "w": 26,
+        "l": 28,
+        "p": 0,
+        "pct": 48.1
+      },
+      "away": {
+        "w": 30,
+        "l": 23,
+        "p": 0,
+        "pct": 56.6
+      }
+    },
+    "TB": {
+      "since": 2020,
+      "overall": {
+        "w": 49,
+        "l": 56,
+        "p": 2,
+        "pct": 46.7
+      },
+      "home": {
+        "w": 22,
+        "l": 30,
+        "p": 2,
+        "pct": 42.3
+      },
+      "away": {
+        "w": 27,
+        "l": 26,
+        "p": 0,
+        "pct": 50.9
+      }
+    }
+  },
+  "graded_at": "2026-10-27T20:35:36.885716+00:00"
+}

@@ -1,0 +1,934 @@
+{
+  "generated_at": "2026-10-24T02:08:25.934829+00:00",
+  "games_included": [
+    "GB_DET",
+    "LAR_LV",
+    "KC_SEA",
+    "DAL_PHI"
+  ],
+  "coverage": {
+    "passing_yards": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-24T01:48:00.924564+00:00",
+      "source_age_seconds": 0
+    },
+    "rushing_yards": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-24T01:48:00.924564+00:00",
+      "source_age_seconds": 0
+    },
+    "receiving_yards": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-24T01:48:00.924564+00:00",
+      "source_age_seconds": 0
+    },
+    "receptions": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-24T01:48:00.924564+00:00",
+      "source_age_seconds": 0
+    },
+    "anytime_td": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-24T01:48:00.924564+00:00",
+      "source_age_seconds": 0
+    }
+  },
+  "stake_used_for_payout_examples": 10,
+  "markdown": "REAL DATA COVERAGE CHECK: All five stat families (passing yards, rushing yards, receiving yards, receptions, anytime TD) are LIVE across all 13 games \u2014 no family is stale or unavailable, so no market was skipped and no family needed to be omitted from any section below. Every pick below uses a real plain line from the FanDuel data provided; no alt-line ladders were available for any player used here (all `alts: []`). 2025 data was not used anywhere in this run.\n\n```json\nPROP_BREAKDOWN\n{\n  \"per_game\": [\n    {\"away\": \"GB\", \"home\": \"DET\", \"picks\": [\n      {\"player\": \"Tucker Kraft\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"315d06f1d48550c9\", \"price\": 1.98, \"side\": \"over\", \"line\": 49.5, \"reason\": \"Kraft's own 41.5 rec yds/gm (14th among TEs) runs into a DET defense allowing 109.0 rec yds/gm to TEs, dead last (32nd) in the NFL \u2014 the single largest position mismatch on this slate.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"DET\", \"pos\": \"TE\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 32}], \"projection\": 58, \"games_2026\": 6},\n      {\"player\": \"Christian Watson\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"315d06f1d48550c9\", \"price\": 1.877, \"side\": \"over\", \"line\": 74.5, \"reason\": \"Watson's 89.7 rec yds/gm (8th) runs into a DET defense allowing 194.8 rec yds/gm to WRs (31st), and his own road average (78.3 ypg) already clears this line.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"DET\", \"pos\": \"WR\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 31}], \"projection\": 85, \"games_2026\": 6},\n      {\"player\": \"Jahmyr Gibbs\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"315d06f1d48550c9\", \"price\": 1.877, \"side\": \"under\", \"line\": 93.5, \"reason\": \"Gibbs has rushed for just 49.0 yds/gm across his two 2026 games against mid-tier run defenses \u2014 the exact tier GB's 17th-ranked run defense sits in \u2014 well below his 100.8 season average.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"GB\", \"pos\": \"RB\", \"stat\": \"rush_ypg\", \"role\": \"def\", \"claimed_rank\": 18}], \"projection\": 70, \"games_2026\": 5}\n    ]},\n    {\"away\": \"LAR\", \"home\": \"LV\", \"picks\": [\n      {\"player\": \"Kyren Williams\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"81510361b9226fa8\", \"price\": 1.877, \"side\": \"over\", \"line\": 67.5, \"reason\": \"Williams' bottom-tier run-defense split (75.8 rush yds/gm over 4 games) and road average (84.0 ypg) both clear this line against an LV defense ranked 31st (113.7 rush yds/gm allowed) against backs.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"LV\", \"pos\": \"RB\", \"stat\": \"rush_ypg\", \"role\": \"def\", \"claimed_rank\": 31}], \"projection\": 78, \"games_2026\": 6},\n      {\"player\": \"Brock Bowers\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"81510361b9226fa8\", \"price\": 1.877, \"side\": \"under\", \"line\": 70.5, \"reason\": \"Despite ranking 1st among TEs at 95.5 rec yds/gm, Bowers draws a LAR defense that ranks 3rd in the NFL against tight ends (29.8 rec yds/gm allowed), his toughest individual matchup of the season.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"LAR\", \"pos\": \"TE\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 3}], \"projection\": 60, \"games_2026\": 4},\n      {\"player\": \"Tre Tucker\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"81510361b9226fa8\", \"price\": 1.714, \"side\": \"under\", \"line\": 40.5, \"reason\": \"Tucker's own top-tier-matchup split (35.5 rec yds/gm over 2 games) sits below this line, and LAR's defense ranks 2nd in the NFL against WRs (103.5 rec yds/gm allowed), the toughest perimeter unit he's faced.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"LAR\", \"pos\": \"WR\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 2}], \"projection\": 33, \"games_2026\": 6}\n    ]},\n    {\"away\": \"KC\", \"home\": \"SEA\", \"picks\": [\n      {\"player\": \"AJ Barner\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7b378d0000719bc6\", \"price\": 1.877, \"side\": \"over\", \"line\": 24.5, \"reason\": \"Barner's zone-heavy usage lines up with a KC defense that ranks a weak 26th against tight ends (73.2 rec yds/gm allowed), a real soft spot inside an otherwise strong KC unit.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"KC\", \"pos\": \"TE\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 26}], \"projection\": 29, \"games_2026\": 6},\n      {\"player\": \"Travis Kelce\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7b378d0000719bc6\", \"price\": 1.877, \"side\": \"over\", \"line\": 46.5, \"reason\": \"Kelce's own zone-coverage split (161 yards on 16 zone targets, a 129.4 rating) argues he's uniquely equipped for the shell Seattle plays 81.4% of the time, even though SEA's defense overall ranks 1st against tight ends.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"SEA\", \"pos\": \"TE\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 1}], \"projection\": 55, \"games_2026\": 5},\n      {\"player\": \"Xavier Worthy\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7b378d0000719bc6\", \"price\": 1.877, \"side\": \"under\", \"line\": 49.5, \"reason\": \"Worthy's season rate (41.2 rec yds/gm) already sits below this line, and Seattle \u2014 1st in the NFL against WRs at 100.5 rec yds/gm allowed and a heavy zone-coverage team \u2014 works against the man shell Worthy has punished more this season.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"SEA\", \"pos\": \"WR\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 1}], \"projection\": 38, \"games_2026\": 5}\n    ]},\n    {\"away\": \"DAL\", \"home\": \"PHI\", \"picks\": [\n      {\"player\": \"CeeDee Lamb\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"e1c19c87580db487\", \"price\": 1.877, \"side\": \"over\", \"line\": 80.5, \"reason\": \"Lamb ranks 4th among WRs at 96.2 rec yds/gm against a PHI defense ranked 29th (181.2 rec yds/gm allowed), a clean Elite-tier convergence reinforced by his own zone-coverage edge against a defense that plays zone 73.2% of the time.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"PHI\", \"pos\": \"WR\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 29}], \"projection\": 95, \"games_2026\": 6},\n      {\"player\": \"George Pickens\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"e1c19c87580db487\", \"price\": 1.877, \"side\": \"over\", \"line\": 64.5, \"reason\": \"Pickens' 71.3 rec yds/gm (17th) runs into the same 29th-ranked PHI WR defense (181.2 ypg allowed) carrying Lamb, and his season-high game came against only a middling pass defense, suggesting his ceiling doesn't need an extreme matchup.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"PHI\", \"pos\": \"WR\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 29}], \"projection\": 78, \"games_2026\": 6},\n      {\"player\": \"Dak Prescott\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"e1c19c87580db487\", \"price\": 1.877, \"side\": \"over\", \"line\": 268.5, \"reason\": \"Prescott's 273.2 pass yds/gm (6th) faces a PHI defense ranked 25th (253.8 ypg allowed) in a 44.5-total game, with Philadelphia's pass rush (1.3 sacks/gm, 31st) giving him a clean pocket.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"PHI\", \"pos\": \"QB\", \"stat\": \"pass_ypg\", \"role\": \"def\", \"claimed_rank\": 25}], \"projection\": 285, \"games_2026\": 6}\n    ]}\n  ],\n  \"per_position\": {\n    \"QB\": {\"player\": \"Dak Prescott\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"e1c19c87580db487\", \"price\": 1.877, \"side\": \"over\", \"line\": 268.5, \"reason\": \"The league's 6th-ranked passer faces a 25th-ranked PHI pass defense with elite protection (1.2 sacks/gm, 2nd-fewest) behind him in a game with a real 44.5 total.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"PHI\", \"pos\": \"QB\", \"stat\": \"pass_ypg\", \"role\": \"def\", \"claimed_rank\": 25}], \"projection\": 285, \"games_2026\": 6},\n    \"RB\": {\"player\": \"Kyren Williams\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"81510361b9226fa8\", \"price\": 1.877, \"side\": \"over\", \"line\": 67.5, \"reason\": \"Williams' own bottom-tier-defense split (75.8 rush yds/gm) and road average (84.0 ypg) both clear this line against LV's 31st-ranked run defense against backs.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"LV\", \"pos\": \"RB\", \"stat\": \"rush_ypg\", \"role\": \"def\", \"claimed_rank\": 31}], \"projection\": 78, \"games_2026\": 6},\n    \"WR\": {\"player\": \"CeeDee Lamb\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"e1c19c87580db487\", \"price\": 1.877, \"side\": \"over\", \"line\": 80.5, \"reason\": \"Lamb's 4th-ranked 96.2 rec yds/gm meets a 29th-ranked PHI WR defense (181.2 ypg allowed), the cleanest Elite-tier convergence on the slate.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"PHI\", \"pos\": \"WR\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 29}], \"projection\": 95, \"games_2026\": 6},\n    \"TE\": {\"player\": \"Tucker Kraft\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"315d06f1d48550c9\", \"price\": 1.98, \"side\": \"over\", \"line\": 49.5, \"reason\": \"Kraft's 14th-ranked production meets DET's dead-last (32nd) tight end defense (109.0 rec yds/gm allowed), the single largest position mismatch in this entire report.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"DET\", \"pos\": \"TE\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 32}], \"projection\": 58, \"games_2026\": 6}\n  }\n}\n```\n\n```json\nFAVORITE_OU\n{\n  \"overs\": [\n    {\"player\": \"CeeDee Lamb\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"e1c19c87580db487\", \"price\": 1.877, \"side\": \"over\", \"line\": 80.5, \"reason\": \"Lamb's 4th-ranked 96.2 rec yds/gm meets a 29th-ranked PHI WR defense (181.2 ypg allowed) in the cleanest Elite-tier convergence on the slate.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"PHI\", \"pos\": \"WR\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 29}], \"projection\": 95, \"games_2026\": 6},\n    {\"player\": \"Tucker Kraft\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"315d06f1d48550c9\", \"price\": 1.98, \"side\": \"over\", \"line\": 49.5, \"reason\": \"Kraft's 14th-ranked production meets DET's dead-last (32nd) tight end defense (109.0 rec yds/gm allowed), the single largest position mismatch in this entire report.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"DET\", \"pos\": \"TE\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 32}], \"projection\": 58, \"games_2026\": 6},\n    {\"player\": \"Kyren Williams\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"81510361b9226fa8\", \"price\": 1.877, \"side\": \"over\", \"line\": 67.5, \"reason\": \"Williams' bottom-tier-defense split (75.8 rush yds/gm) and road average (84.0 ypg) both clear this line against LV's 31st-ranked run defense against backs.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"LV\", \"pos\": \"RB\", \"stat\": \"rush_ypg\", \"role\": \"def\", \"claimed_rank\": 31}], \"projection\": 78, \"games_2026\": 6},\n    {\"player\": \"George Pickens\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"e1c19c87580db487\", \"price\": 1.877, \"side\": \"over\", \"line\": 64.5, \"reason\": \"Pickens' 71.3 rec yds/gm (17th) shares the same 29th-ranked PHI WR defense carrying Lamb, with a season-high already produced against a merely middling pass defense.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"PHI\", \"pos\": \"WR\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 29}], \"projection\": 78, \"games_2026\": 6},\n    {\"player\": \"Christian Watson\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"315d06f1d48550c9\", \"price\": 1.877, \"side\": \"over\", \"line\": 74.5, \"reason\": \"Watson's 89.7 rec yds/gm (8th) and 78.3 ypg road average both clear this line against DET's 31st-ranked WR defense.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"DET\", \"pos\": \"WR\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 31}], \"projection\": 85, \"games_2026\": 6},\n    {\"player\": \"Matthew Golden\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"315d06f1d48550c9\", \"price\": 1.877, \"side\": \"over\", \"line\": 73.5, \"reason\": \"Golden's own bottom-tier-defense split (102.0 rec yds/gm over 2 games) sits well above this line against DET's 31st-ranked WR defense.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"DET\", \"pos\": \"WR\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 31}], \"projection\": 90, \"games_2026\": 6}\n  ],\n  \"unders\": [\n    {\"player\": \"Xavier Worthy\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7b378d0000719bc6\", \"price\": 1.877, \"side\": \"under\", \"line\": 49.5, \"reason\": \"Worthy's season rate (41.2 rec yds/gm) already sits below this line against SEA's 1st-ranked WR defense (100.5 ypg allowed) and heavy zone-coverage mix.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"SEA\", \"pos\": \"WR\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 1}], \"projection\": 38, \"games_2026\": 5},\n    {\"player\": \"Brock Bowers\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"81510361b9226fa8\", \"price\": 1.877, \"side\": \"under\", \"line\": 70.5, \"reason\": \"Despite ranking 1st among TEs, Bowers draws LAR's 3rd-ranked tight end defense (29.8 rec yds/gm allowed), his toughest individual matchup of the season.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"LAR\", \"pos\": \"TE\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 3}], \"projection\": 60, \"games_2026\": 4},\n    {\"player\": \"Jahmyr Gibbs\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"315d06f1d48550c9\", \"price\": 1.877, \"side\": \"under\", \"line\": 93.5, \"reason\": \"Gibbs has rushed for just 49.0 yds/gm across his two 2026 games against mid-tier run defenses, the exact tier GB's 17th-ranked run defense sits in.\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"GB\", \"pos\": \"RB\", \"stat\": \"rush_ypg\", \"role\": \"def\", \"claimed_rank\": 18}], \"projection\": 70, \"games_2026\": 5},\n    {\"player\": \"Tre Tucker\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"81510361b9226fa8\", \"price\": 1.714, \"side\": \"under\", \"line\": 40.5, \"reason\": \"Tucker's own top-tier-matchup split (35.5 rec yds/gm over 2 games) sits below this line against LAR's 2nd-ranked WR defense (103.5 ypg allowed).\", \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"LAR\", \"pos\": \"WR\", \"stat\": \"rec_ypg\", \"role\": \"def\", \"claimed_rank\": 2}], \"projection\": 33, \"games_2026\": 6}\n  ]\n}\n```",
+  "prop_breakdown": {
+    "per_game": [
+      {
+        "away": "GB",
+        "home": "DET",
+        "picks": [
+          {
+            "player": "Tucker Kraft",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "315d06f1d48550c9",
+            "price": 1.877,
+            "side": "over",
+            "line": 49.5,
+            "reason": "Kraft's own 41.5 rec yds/gm (14th among TEs) runs into a DET defense allowing 109.0 rec yds/gm to TEs, dead last (32nd) in the NFL \u2014 the single largest position mismatch on this slate.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "DET",
+                "pos": "TE",
+                "stat": "rec_ypg",
+                "role": "def",
+                "claimed_rank": 32
+              }
+            ],
+            "projection": 58,
+            "games_2026": 6,
+            "projection_edge": 8.5,
+            "grade": "L",
+            "actual": 48.0,
+            "actual_label": "48 rec yds"
+          },
+          {
+            "player": "Christian Watson",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "315d06f1d48550c9",
+            "price": 1.877,
+            "side": "over",
+            "line": 74.5,
+            "reason": "Watson's 89.7 rec yds/gm (8th) runs into a DET defense allowing 194.8 rec yds/gm to WRs (31st), and his own road average (78.3 ypg) already clears this line.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "DET",
+                "pos": "WR",
+                "stat": "rec_ypg",
+                "role": "def",
+                "claimed_rank": 31
+              }
+            ],
+            "projection": 85,
+            "games_2026": 6,
+            "projection_edge": 10.5,
+            "grade": "L",
+            "actual": 57.0,
+            "actual_label": "57 rec yds"
+          },
+          {
+            "player": "Jahmyr Gibbs",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "315d06f1d48550c9",
+            "price": 1.877,
+            "side": "under",
+            "line": 93.5,
+            "reason": "Gibbs has rushed for just 49.0 yds/gm across his two 2026 games against mid-tier run defenses \u2014 the exact tier GB's 17th-ranked run defense sits in \u2014 well below his 100.8 season average.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "GB",
+                "pos": "RB",
+                "stat": "rush_ypg",
+                "role": "def",
+                "claimed_rank": 18
+              }
+            ],
+            "projection": 70,
+            "games_2026": 5,
+            "projection_edge": 23.5,
+            "evidence_mismatches": [
+              "REAL MISMATCH: GB's real current RB def rush_ypg rank is #6 or #15 or #17 or #19 \u2014 the report claimed #18."
+            ],
+            "grade": "L",
+            "actual": 116.0,
+            "actual_label": "116 rush yds"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "LAR",
+        "home": "LV",
+        "picks": [
+          {
+            "player": "Kyren Williams",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "81510361b9226fa8",
+            "price": 1.877,
+            "side": "over",
+            "line": 67.5,
+            "reason": "Williams' bottom-tier run-defense split (75.8 rush yds/gm over 4 games) and road average (84.0 ypg) both clear this line against an LV defense ranked 31st (113.7 rush yds/gm allowed) against backs.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "LV",
+                "pos": "RB",
+                "stat": "rush_ypg",
+                "role": "def",
+                "claimed_rank": 31
+              }
+            ],
+            "projection": 78,
+            "games_2026": 6,
+            "projection_edge": 10.5,
+            "grade": "W",
+            "actual": 99.0,
+            "actual_label": "99 rush yds"
+          },
+          {
+            "player": "Brock Bowers",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "81510361b9226fa8",
+            "price": 1.877,
+            "side": "under",
+            "line": 70.5,
+            "reason": "Despite ranking 1st among TEs at 95.5 rec yds/gm, Bowers draws a LAR defense that ranks 3rd in the NFL against tight ends (29.8 rec yds/gm allowed), his toughest individual matchup of the season.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "LAR",
+                "pos": "TE",
+                "stat": "rec_ypg",
+                "role": "def",
+                "claimed_rank": 3
+              }
+            ],
+            "projection": 60,
+            "games_2026": 4,
+            "projection_edge": 10.5,
+            "grade": "L",
+            "actual": 73.0,
+            "actual_label": "73 rec yds"
+          },
+          {
+            "player": "Tre Tucker",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "81510361b9226fa8",
+            "price": 1.877,
+            "side": "under",
+            "line": 40.5,
+            "reason": "Tucker's own top-tier-matchup split (35.5 rec yds/gm over 2 games) sits below this line, and LAR's defense ranks 2nd in the NFL against WRs (103.5 rec yds/gm allowed), the toughest perimeter unit he's faced.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "LAR",
+                "pos": "WR",
+                "stat": "rec_ypg",
+                "role": "def",
+                "claimed_rank": 2
+              }
+            ],
+            "projection": 33,
+            "games_2026": 6,
+            "projection_edge": 7.5,
+            "grade": "L",
+            "actual": 103.0,
+            "actual_label": "103 rec yds"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "KC",
+        "home": "SEA",
+        "picks": [
+          {
+            "player": "AJ Barner",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "7b378d0000719bc6",
+            "price": 1.877,
+            "side": "over",
+            "line": 24.5,
+            "reason": "Barner's zone-heavy usage lines up with a KC defense that ranks a weak 26th against tight ends (73.2 rec yds/gm allowed), a real soft spot inside an otherwise strong KC unit.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "KC",
+                "pos": "TE",
+                "stat": "rec_ypg",
+                "role": "def",
+                "claimed_rank": 26
+              }
+            ],
+            "projection": 29,
+            "games_2026": 6,
+            "projection_edge": 4.5,
+            "grade": "W",
+            "actual": 42.0,
+            "actual_label": "42 rec yds"
+          },
+          {
+            "player": "Travis Kelce",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "7b378d0000719bc6",
+            "price": 1.877,
+            "side": "over",
+            "line": 46.5,
+            "reason": "Kelce's own zone-coverage split (161 yards on 16 zone targets, a 129.4 rating) argues he's uniquely equipped for the shell Seattle plays 81.4% of the time, even though SEA's defense overall ranks 1st against tight ends.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "SEA",
+                "pos": "TE",
+                "stat": "rec_ypg",
+                "role": "def",
+                "claimed_rank": 1
+              }
+            ],
+            "projection": 55,
+            "games_2026": 5,
+            "projection_edge": 8.5,
+            "grade": "L",
+            "actual": 44.0,
+            "actual_label": "44 rec yds"
+          },
+          {
+            "player": "Xavier Worthy",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "7b378d0000719bc6",
+            "price": 1.877,
+            "side": "under",
+            "line": 49.5,
+            "reason": "Worthy's season rate (41.2 rec yds/gm) already sits below this line, and Seattle \u2014 1st in the NFL against WRs at 100.5 rec yds/gm allowed and a heavy zone-coverage team \u2014 works against the man shell Worthy has punished more this season.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "SEA",
+                "pos": "WR",
+                "stat": "rec_ypg",
+                "role": "def",
+                "claimed_rank": 1
+              }
+            ],
+            "projection": 38,
+            "games_2026": 5,
+            "projection_edge": 11.5,
+            "grade": "W",
+            "actual": 11.0,
+            "actual_label": "11 rec yds"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "DAL",
+        "home": "PHI",
+        "picks": [
+          {
+            "player": "CeeDee Lamb",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "e1c19c87580db487",
+            "price": 1.877,
+            "side": "over",
+            "line": 80.5,
+            "reason": "Lamb ranks 4th among WRs at 96.2 rec yds/gm against a PHI defense ranked 29th (181.2 rec yds/gm allowed), a clean Elite-tier convergence reinforced by his own zone-coverage edge against a defense that plays zone 73.2% of the time.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "PHI",
+                "pos": "WR",
+                "stat": "rec_ypg",
+                "role": "def",
+                "claimed_rank": 29
+              }
+            ],
+            "projection": 95,
+            "games_2026": 6,
+            "projection_edge": 14.5,
+            "grade": "L",
+            "actual": 74.0,
+            "actual_label": "74 rec yds"
+          },
+          {
+            "player": "George Pickens",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "e1c19c87580db487",
+            "price": 1.877,
+            "side": "over",
+            "line": 64.5,
+            "reason": "Pickens' 71.3 rec yds/gm (17th) runs into the same 29th-ranked PHI WR defense (181.2 ypg allowed) carrying Lamb, and his season-high game came against only a middling pass defense, suggesting his ceiling doesn't need an extreme matchup.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "PHI",
+                "pos": "WR",
+                "stat": "rec_ypg",
+                "role": "def",
+                "claimed_rank": 29
+              }
+            ],
+            "projection": 78,
+            "games_2026": 6,
+            "projection_edge": 13.5,
+            "grade": "L",
+            "actual": 57.0,
+            "actual_label": "57 rec yds"
+          },
+          {
+            "player": "Dak Prescott",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "e1c19c87580db487",
+            "price": 1.877,
+            "side": "over",
+            "line": 268.5,
+            "reason": "Prescott's 273.2 pass yds/gm (6th) faces a PHI defense ranked 25th (253.8 ypg allowed) in a 44.5-total game, with Philadelphia's pass rush (1.3 sacks/gm, 31st) giving him a clean pocket.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "PHI",
+                "pos": "QB",
+                "stat": "pass_ypg",
+                "role": "def",
+                "claimed_rank": 25
+              }
+            ],
+            "projection": 285,
+            "games_2026": 6,
+            "projection_edge": 16.5,
+            "grade": "L",
+            "actual": 212.0,
+            "actual_label": "212 pass yds"
+          }
+        ],
+        "mismatch_count": 0
+      }
+    ],
+    "per_position": {
+      "QB": {
+        "player": "Dak Prescott",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "e1c19c87580db487",
+        "price": 1.877,
+        "side": "over",
+        "line": 268.5,
+        "reason": "The league's 6th-ranked passer faces a 25th-ranked PHI pass defense with elite protection (1.2 sacks/gm, 2nd-fewest) behind him in a game with a real 44.5 total.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "PHI",
+            "pos": "QB",
+            "stat": "pass_ypg",
+            "role": "def",
+            "claimed_rank": 25
+          }
+        ],
+        "projection": 285,
+        "games_2026": 6,
+        "projection_edge": 16.5,
+        "grade": "L",
+        "actual": 212.0,
+        "actual_label": "212 pass yds"
+      },
+      "RB": {
+        "player": "Kyren Williams",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "81510361b9226fa8",
+        "price": 1.877,
+        "side": "over",
+        "line": 67.5,
+        "reason": "Williams' own bottom-tier-defense split (75.8 rush yds/gm) and road average (84.0 ypg) both clear this line against LV's 31st-ranked run defense against backs.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "LV",
+            "pos": "RB",
+            "stat": "rush_ypg",
+            "role": "def",
+            "claimed_rank": 31
+          }
+        ],
+        "projection": 78,
+        "games_2026": 6,
+        "projection_edge": 10.5,
+        "grade": "W",
+        "actual": 99.0,
+        "actual_label": "99 rush yds"
+      },
+      "WR": {
+        "player": "CeeDee Lamb",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "e1c19c87580db487",
+        "price": 1.877,
+        "side": "over",
+        "line": 80.5,
+        "reason": "Lamb's 4th-ranked 96.2 rec yds/gm meets a 29th-ranked PHI WR defense (181.2 ypg allowed), the cleanest Elite-tier convergence on the slate.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "PHI",
+            "pos": "WR",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 29
+          }
+        ],
+        "projection": 95,
+        "games_2026": 6,
+        "projection_edge": 14.5,
+        "grade": "L",
+        "actual": 74.0,
+        "actual_label": "74 rec yds"
+      },
+      "TE": {
+        "player": "Tucker Kraft",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "315d06f1d48550c9",
+        "price": 1.877,
+        "side": "over",
+        "line": 49.5,
+        "reason": "Kraft's 14th-ranked production meets DET's dead-last (32nd) tight end defense (109.0 rec yds/gm allowed), the single largest position mismatch in this entire report.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "DET",
+            "pos": "TE",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 32
+          }
+        ],
+        "projection": 58,
+        "games_2026": 6,
+        "projection_edge": 8.5,
+        "grade": "L",
+        "actual": 48.0,
+        "actual_label": "48 rec yds"
+      }
+    }
+  },
+  "prop_breakdown_errors": [
+    "GB@DET \u2014 Jahmyr Gibbs: REAL MISMATCH: GB's real current RB def rush_ypg rank is #6 or #15 or #17 or #19 \u2014 the report claimed #18."
+  ],
+  "favorite_ou": {
+    "overs": [
+      {
+        "player": "CeeDee Lamb",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "e1c19c87580db487",
+        "price": 1.877,
+        "side": "over",
+        "line": 80.5,
+        "reason": "Lamb's 4th-ranked 96.2 rec yds/gm meets a 29th-ranked PHI WR defense (181.2 ypg allowed) in the cleanest Elite-tier convergence on the slate.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "PHI",
+            "pos": "WR",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 29
+          }
+        ],
+        "projection": 95,
+        "games_2026": 6,
+        "projection_edge": 14.5,
+        "grade": "L",
+        "actual": 74.0,
+        "actual_label": "74 rec yds"
+      },
+      {
+        "player": "Tucker Kraft",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "315d06f1d48550c9",
+        "price": 1.877,
+        "side": "over",
+        "line": 49.5,
+        "reason": "Kraft's 14th-ranked production meets DET's dead-last (32nd) tight end defense (109.0 rec yds/gm allowed), the single largest position mismatch in this entire report.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "DET",
+            "pos": "TE",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 32
+          }
+        ],
+        "projection": 58,
+        "games_2026": 6,
+        "projection_edge": 8.5,
+        "grade": "L",
+        "actual": 48.0,
+        "actual_label": "48 rec yds"
+      },
+      {
+        "player": "Kyren Williams",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "81510361b9226fa8",
+        "price": 1.877,
+        "side": "over",
+        "line": 67.5,
+        "reason": "Williams' bottom-tier-defense split (75.8 rush yds/gm) and road average (84.0 ypg) both clear this line against LV's 31st-ranked run defense against backs.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "LV",
+            "pos": "RB",
+            "stat": "rush_ypg",
+            "role": "def",
+            "claimed_rank": 31
+          }
+        ],
+        "projection": 78,
+        "games_2026": 6,
+        "projection_edge": 10.5,
+        "grade": "W",
+        "actual": 99.0,
+        "actual_label": "99 rush yds"
+      },
+      {
+        "player": "George Pickens",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "e1c19c87580db487",
+        "price": 1.877,
+        "side": "over",
+        "line": 64.5,
+        "reason": "Pickens' 71.3 rec yds/gm (17th) shares the same 29th-ranked PHI WR defense carrying Lamb, with a season-high already produced against a merely middling pass defense.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "PHI",
+            "pos": "WR",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 29
+          }
+        ],
+        "projection": 78,
+        "games_2026": 6,
+        "projection_edge": 13.5,
+        "grade": "L",
+        "actual": 57.0,
+        "actual_label": "57 rec yds"
+      },
+      {
+        "player": "Christian Watson",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "315d06f1d48550c9",
+        "price": 1.877,
+        "side": "over",
+        "line": 74.5,
+        "reason": "Watson's 89.7 rec yds/gm (8th) and 78.3 ypg road average both clear this line against DET's 31st-ranked WR defense.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "DET",
+            "pos": "WR",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 31
+          }
+        ],
+        "projection": 85,
+        "games_2026": 6,
+        "projection_edge": 10.5,
+        "grade": "L",
+        "actual": 57.0,
+        "actual_label": "57 rec yds"
+      },
+      {
+        "player": "Matthew Golden",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "315d06f1d48550c9",
+        "price": 1.877,
+        "side": "over",
+        "line": 73.5,
+        "reason": "Golden's own bottom-tier-defense split (102.0 rec yds/gm over 2 games) sits well above this line against DET's 31st-ranked WR defense.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "DET",
+            "pos": "WR",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 31
+          }
+        ],
+        "projection": 90,
+        "games_2026": 6,
+        "projection_edge": 16.5,
+        "grade": "L",
+        "actual": 39.0,
+        "actual_label": "39 rec yds"
+      }
+    ],
+    "unders": [
+      {
+        "player": "Xavier Worthy",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "7b378d0000719bc6",
+        "price": 1.877,
+        "side": "under",
+        "line": 49.5,
+        "reason": "Worthy's season rate (41.2 rec yds/gm) already sits below this line against SEA's 1st-ranked WR defense (100.5 ypg allowed) and heavy zone-coverage mix.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "SEA",
+            "pos": "WR",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 1
+          }
+        ],
+        "projection": 38,
+        "games_2026": 5,
+        "projection_edge": 11.5,
+        "grade": "W",
+        "actual": 11.0,
+        "actual_label": "11 rec yds"
+      },
+      {
+        "player": "Brock Bowers",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "81510361b9226fa8",
+        "price": 1.877,
+        "side": "under",
+        "line": 70.5,
+        "reason": "Despite ranking 1st among TEs, Bowers draws LAR's 3rd-ranked tight end defense (29.8 rec yds/gm allowed), his toughest individual matchup of the season.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "LAR",
+            "pos": "TE",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 3
+          }
+        ],
+        "projection": 60,
+        "games_2026": 4,
+        "projection_edge": 10.5,
+        "grade": "L",
+        "actual": 73.0,
+        "actual_label": "73 rec yds"
+      },
+      {
+        "player": "Jahmyr Gibbs",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "315d06f1d48550c9",
+        "price": 1.877,
+        "side": "under",
+        "line": 93.5,
+        "reason": "Gibbs has rushed for just 49.0 yds/gm across his two 2026 games against mid-tier run defenses, the exact tier GB's 17th-ranked run defense sits in.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "GB",
+            "pos": "RB",
+            "stat": "rush_ypg",
+            "role": "def",
+            "claimed_rank": 18
+          }
+        ],
+        "projection": 70,
+        "games_2026": 5,
+        "projection_edge": 23.5,
+        "evidence_mismatches": [
+          "REAL MISMATCH: GB's real current RB def rush_ypg rank is #6 or #15 or #17 or #19 \u2014 the report claimed #18."
+        ],
+        "grade": "L",
+        "actual": 116.0,
+        "actual_label": "116 rush yds"
+      },
+      {
+        "player": "Tre Tucker",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "81510361b9226fa8",
+        "price": 1.877,
+        "side": "under",
+        "line": 40.5,
+        "reason": "Tucker's own top-tier-matchup split (35.5 rec yds/gm over 2 games) sits below this line against LAR's 2nd-ranked WR defense (103.5 ypg allowed).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "LAR",
+            "pos": "WR",
+            "stat": "rec_ypg",
+            "role": "def",
+            "claimed_rank": 2
+          }
+        ],
+        "projection": 33,
+        "games_2026": 6,
+        "projection_edge": 7.5,
+        "grade": "L",
+        "actual": 103.0,
+        "actual_label": "103 rec yds"
+      }
+    ]
+  },
+  "favorite_ou_errors": [
+    "Jahmyr Gibbs: REAL MISMATCH: GB's real current RB def rush_ypg rank is #6 or #15 or #17 or #19 \u2014 the report claimed #18."
+  ],
+  "parlays": {},
+  "td_parlays": {},
+  "spread_parlays": {},
+  "ats_records": {
+    "DAL": {
+      "since": 2020,
+      "overall": {
+        "w": 53,
+        "l": 52,
+        "p": 2,
+        "pct": 50.5
+      },
+      "home": {
+        "w": 28,
+        "l": 24,
+        "p": 1,
+        "pct": 53.8
+      },
+      "away": {
+        "w": 25,
+        "l": 28,
+        "p": 1,
+        "pct": 47.2
+      }
+    },
+    "DET": {
+      "since": 2020,
+      "overall": {
+        "w": 62,
+        "l": 41,
+        "p": 3,
+        "pct": 60.2
+      },
+      "home": {
+        "w": 29,
+        "l": 20,
+        "p": 3,
+        "pct": 59.2
+      },
+      "away": {
+        "w": 33,
+        "l": 21,
+        "p": 0,
+        "pct": 61.1
+      }
+    },
+    "GB": {
+      "since": 2020,
+      "overall": {
+        "w": 55,
+        "l": 50,
+        "p": 2,
+        "pct": 52.4
+      },
+      "home": {
+        "w": 32,
+        "l": 21,
+        "p": 0,
+        "pct": 60.4
+      },
+      "away": {
+        "w": 23,
+        "l": 29,
+        "p": 2,
+        "pct": 44.2
+      }
+    },
+    "KC": {
+      "since": 2020,
+      "overall": {
+        "w": 45,
+        "l": 59,
+        "p": 2,
+        "pct": 43.3
+      },
+      "home": {
+        "w": 23,
+        "l": 30,
+        "p": 1,
+        "pct": 43.4
+      },
+      "away": {
+        "w": 22,
+        "l": 29,
+        "p": 1,
+        "pct": 43.1
+      }
+    },
+    "LAR": {
+      "since": 2020,
+      "overall": {
+        "w": 57,
+        "l": 48,
+        "p": 2,
+        "pct": 54.3
+      },
+      "home": {
+        "w": 29,
+        "l": 25,
+        "p": 0,
+        "pct": 53.7
+      },
+      "away": {
+        "w": 28,
+        "l": 23,
+        "p": 2,
+        "pct": 54.9
+      }
+    },
+    "LV": {
+      "since": 2020,
+      "overall": {
+        "w": 54,
+        "l": 51,
+        "p": 2,
+        "pct": 51.4
+      },
+      "home": {
+        "w": 30,
+        "l": 23,
+        "p": 1,
+        "pct": 56.6
+      },
+      "away": {
+        "w": 24,
+        "l": 28,
+        "p": 1,
+        "pct": 46.2
+      }
+    },
+    "PHI": {
+      "since": 2020,
+      "overall": {
+        "w": 51,
+        "l": 53,
+        "p": 3,
+        "pct": 49.0
+      },
+      "home": {
+        "w": 26,
+        "l": 25,
+        "p": 2,
+        "pct": 51.0
+      },
+      "away": {
+        "w": 25,
+        "l": 28,
+        "p": 1,
+        "pct": 47.2
+      }
+    },
+    "SEA": {
+      "since": 2020,
+      "overall": {
+        "w": 51,
+        "l": 52,
+        "p": 4,
+        "pct": 49.5
+      },
+      "home": {
+        "w": 23,
+        "l": 27,
+        "p": 3,
+        "pct": 46.0
+      },
+      "away": {
+        "w": 28,
+        "l": 25,
+        "p": 1,
+        "pct": 52.8
+      }
+    }
+  },
+  "graded_at": "2026-10-27T20:35:36.882859+00:00"
+}

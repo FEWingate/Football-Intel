@@ -87,7 +87,12 @@
    "model_edge": 0.344,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 26.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -106,7 +111,12 @@
    "model_edge": 0.067,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 218.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -125,7 +135,12 @@
    "model_edge": 0.293,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 62.0,
+   "model_result": "WIN",
+   "model_units": 0.87,
+   "coeus_result": "WIN",
+   "coeus_units": 0.87
   },
   {
    "season": 2026,
@@ -144,7 +159,12 @@
    "model_edge": 0.053,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 76.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -163,7 +183,10 @@
    "model_edge": -0.03,
    "coeus_pick": "NEUTRAL",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 122.0,
+   "model_result": "LOSS",
+   "model_units": -1.0
   },
   {
    "season": 2026,
@@ -182,7 +205,12 @@
    "model_edge": 0.022,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 101.0,
+   "model_result": "WIN",
+   "model_units": 0.877,
+   "coeus_result": "WIN",
+   "coeus_units": 0.877
   },
   {
    "season": 2026,
@@ -201,7 +229,12 @@
    "model_edge": 0.191,
    "coeus_pick": "UNDER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 295.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -220,7 +253,10 @@
    "model_edge": -0.006,
    "coeus_pick": "NEUTRAL",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 293.0,
+   "model_result": "WIN",
+   "model_units": 0.885
   },
   {
    "season": 2026,
@@ -239,7 +275,12 @@
    "model_edge": 0.065,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 172.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -258,7 +299,10 @@
    "model_edge": 0.004,
    "coeus_pick": "NEUTRAL",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 110.0,
+   "model_result": "WIN",
+   "model_units": 0.885
   },
   {
    "season": 2026,
@@ -277,7 +321,10 @@
    "model_edge": 0.011,
    "coeus_pick": "NEUTRAL",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 157.0,
+   "model_result": "LOSS",
+   "model_units": -1.0
   },
   {
    "season": 2026,
@@ -296,7 +343,10 @@
    "model_edge": 0.009,
    "coeus_pick": "NEUTRAL",
    "saved_at": "2026-10-23T19:09:42Z",
-   "graded": false
+   "graded": true,
+   "actual": 326.0,
+   "model_result": "WIN",
+   "model_units": 0.885
   },
   {
    "season": 2026,
@@ -315,7 +365,12 @@
    "model_edge": 0.164,
    "coeus_pick": "UNDER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 186.0,
+   "model_result": "WIN",
+   "model_units": 0.885,
+   "coeus_result": "WIN",
+   "coeus_units": 0.885
   },
   {
    "season": 2026,
@@ -334,7 +389,12 @@
    "model_edge": 0.163,
    "coeus_pick": "UNDER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 58.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "WIN",
+   "coeus_units": 0.885
   },
   {
    "season": 2026,
@@ -353,7 +413,12 @@
    "model_edge": 0.054,
    "coeus_pick": "UNDER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 100.0,
+   "model_result": "WIN",
+   "model_units": 0.885,
+   "coeus_result": "WIN",
+   "coeus_units": 0.885
   },
   {
    "season": 2026,
@@ -372,7 +437,10 @@
    "model_edge": 0.002,
    "coeus_pick": "NEUTRAL",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 60.0,
+   "model_result": "WIN",
+   "model_units": 0.885
   },
   {
    "season": 2026,
@@ -391,7 +459,12 @@
    "model_edge": 0.094,
    "coeus_pick": "UNDER",
    "saved_at": "2026-10-23T19:09:42Z",
-   "graded": false
+   "graded": true,
+   "actual": 90.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -410,7 +483,12 @@
    "model_edge": 0.069,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 220.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -429,7 +507,12 @@
    "model_edge": 0.082,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 121.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -448,7 +531,12 @@
    "model_edge": 0.108,
    "coeus_pick": "UNDER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 49.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "WIN",
+   "coeus_units": 0.885
   },
   {
    "season": 2026,
@@ -467,7 +555,12 @@
    "model_edge": 0.104,
    "coeus_pick": "UNDER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 327.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -486,7 +579,10 @@
    "model_edge": 0.127,
    "coeus_pick": "NEUTRAL",
    "saved_at": "2026-10-23T19:09:42Z",
-   "graded": false
+   "graded": true,
+   "actual": 347.0,
+   "model_result": "WIN",
+   "model_units": 0.885
   },
   {
    "season": 2026,
@@ -505,7 +601,12 @@
    "model_edge": -0.016,
    "coeus_pick": "UNDER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 115.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -524,7 +625,12 @@
    "model_edge": 0.075,
    "coeus_pick": "UNDER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 287.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -543,7 +649,12 @@
    "model_edge": 0.182,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 23.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -562,7 +673,12 @@
    "model_edge": 0.094,
    "coeus_pick": "UNDER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 253.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -581,7 +697,12 @@
    "model_edge": 0.124,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 23.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -600,7 +721,10 @@
    "model_edge": -0.005,
    "coeus_pick": "NEUTRAL",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 288.0,
+   "model_result": "WIN",
+   "model_units": 0.885
   },
   {
    "season": 2026,
@@ -619,7 +743,10 @@
    "model_edge": -0.021,
    "coeus_pick": "NEUTRAL",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 143.0,
+   "model_result": "LOSS",
+   "model_units": -1.0
   },
   {
    "season": 2026,
@@ -638,7 +765,12 @@
    "model_edge": -0.0,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 302.0,
+   "model_result": "WIN",
+   "model_units": 0.885,
+   "coeus_result": "WIN",
+   "coeus_units": 0.885
   },
   {
    "season": 2026,
@@ -657,7 +789,12 @@
    "model_edge": 0.114,
    "coeus_pick": "UNDER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 155.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -676,7 +813,12 @@
    "model_edge": 0.149,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 137.0,
+   "model_result": "WIN",
+   "model_units": 0.885,
+   "coeus_result": "WIN",
+   "coeus_units": 0.885
   },
   {
    "season": 2026,
@@ -695,7 +837,12 @@
    "model_edge": 0.046,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 304.0,
+   "model_result": "WIN",
+   "model_units": 0.885,
+   "coeus_result": "WIN",
+   "coeus_units": 0.885
   },
   {
    "season": 2026,
@@ -714,7 +861,10 @@
    "model_edge": 0.032,
    "coeus_pick": "NEUTRAL",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 110.0,
+   "model_result": "WIN",
+   "model_units": 0.885
   },
   {
    "season": 2026,
@@ -733,7 +883,12 @@
    "model_edge": 0.014,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 274.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -752,7 +907,10 @@
    "model_edge": 0.089,
    "coeus_pick": "NEUTRAL",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 91.0,
+   "model_result": "WIN",
+   "model_units": 0.877
   },
   {
    "season": 2026,
@@ -771,7 +929,12 @@
    "model_edge": 0.106,
    "coeus_pick": "UNDER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 28.0,
+   "model_result": "WIN",
+   "model_units": 0.87,
+   "coeus_result": "WIN",
+   "coeus_units": 0.87
   },
   {
    "season": 2026,
@@ -790,7 +953,12 @@
    "model_edge": 0.092,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 57.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -809,7 +977,12 @@
    "model_edge": -0.021,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 121.0,
+   "model_result": "WIN",
+   "model_units": 0.877,
+   "coeus_result": "WIN",
+   "coeus_units": 0.877
   },
   {
    "season": 2026,
@@ -828,7 +1001,12 @@
    "model_edge": 0.056,
    "coeus_pick": "UNDER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 245.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -847,7 +1025,10 @@
    "model_edge": -0.006,
    "coeus_pick": "NEUTRAL",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 212.0,
+   "model_result": "WIN",
+   "model_units": 0.885
   },
   {
    "season": 2026,
@@ -866,7 +1047,12 @@
    "model_edge": 0.036,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 103.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "WIN",
+   "coeus_units": 0.885
   },
   {
    "season": 2026,
@@ -885,7 +1071,12 @@
    "model_edge": 0.033,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 179.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -923,7 +1114,10 @@
    "model_edge": 0.018,
    "coeus_pick": "NEUTRAL",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 104.0,
+   "model_result": "WIN",
+   "model_units": 0.885
   },
   {
    "season": 2026,
@@ -942,7 +1136,12 @@
    "model_edge": 0.279,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 60.0,
+   "model_result": "WIN",
+   "model_units": 0.885,
+   "coeus_result": "WIN",
+   "coeus_units": 0.885
   },
   {
    "season": 2026,
@@ -961,7 +1160,12 @@
    "model_edge": 0.104,
    "coeus_pick": "UNDER",
    "saved_at": "2026-10-23T19:09:42Z",
-   "graded": false
+   "graded": true,
+   "actual": 115.0,
+   "model_result": "WIN",
+   "model_units": 0.885,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -980,7 +1184,12 @@
    "model_edge": 0.141,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 86.0,
+   "model_result": "WIN",
+   "model_units": 0.901,
+   "coeus_result": "WIN",
+   "coeus_units": 0.901
   },
   {
    "season": 2026,
@@ -999,7 +1208,12 @@
    "model_edge": 0.34,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-23T19:09:42Z",
-   "graded": false
+   "graded": true,
+   "actual": 13.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -1018,7 +1232,10 @@
    "model_edge": 0.002,
    "coeus_pick": "NEUTRAL",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 274.0,
+   "model_result": "WIN",
+   "model_units": 0.885
   },
   {
    "season": 2026,
@@ -1037,7 +1254,12 @@
    "model_edge": 0.109,
    "coeus_pick": "UNDER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 16.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "WIN",
+   "coeus_units": 0.87
   },
   {
    "season": 2026,
@@ -1056,7 +1278,12 @@
    "model_edge": 0.095,
    "coeus_pick": "OVER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 212.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -1075,7 +1302,12 @@
    "model_edge": 0.079,
    "coeus_pick": "UNDER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 155.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -1094,7 +1326,12 @@
    "model_edge": 0.244,
    "coeus_pick": "UNDER",
    "saved_at": "2026-10-23T19:09:42Z",
-   "graded": false
+   "graded": true,
+   "actual": 23.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "WIN",
+   "coeus_units": 0.901
   },
   {
    "season": 2026,
@@ -1132,7 +1369,12 @@
    "model_edge": 0.099,
    "coeus_pick": "UNDER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 49.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -1151,7 +1393,12 @@
    "model_edge": -0.027,
    "coeus_pick": "UNDER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 285.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "LOSS",
+   "coeus_units": -1.0
   },
   {
    "season": 2026,
@@ -1170,7 +1417,12 @@
    "model_edge": 0.217,
    "coeus_pick": "UNDER",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 17.0,
+   "model_result": "LOSS",
+   "model_units": -1.0,
+   "coeus_result": "WIN",
+   "coeus_units": 0.885
   },
   {
    "season": 2026,
@@ -1189,7 +1441,10 @@
    "model_edge": 0.287,
    "coeus_pick": "NEUTRAL",
    "saved_at": "2026-10-24T19:56:46Z",
-   "graded": false
+   "graded": true,
+   "actual": 81.0,
+   "model_result": "WIN",
+   "model_units": 0.901
   }
  ]
 }

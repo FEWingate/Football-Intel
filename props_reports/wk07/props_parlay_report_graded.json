@@ -1,0 +1,509 @@
+{
+  "generated_at": "2026-10-22T20:07:56.290627+00:00",
+  "games_included": [
+    "NE_CHI"
+  ],
+  "coverage": {
+    "passing_yards": {
+      "status": "current",
+      "current_event_count": 1,
+      "displayed_event_count": 1,
+      "previous_event_count": 1,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-22T20:02:25.613943+00:00",
+      "source_age_seconds": 0
+    },
+    "rushing_yards": {
+      "status": "current",
+      "current_event_count": 1,
+      "displayed_event_count": 1,
+      "previous_event_count": 1,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-22T20:02:25.613943+00:00",
+      "source_age_seconds": 0
+    },
+    "receiving_yards": {
+      "status": "current",
+      "current_event_count": 1,
+      "displayed_event_count": 1,
+      "previous_event_count": 1,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-22T20:02:25.613943+00:00",
+      "source_age_seconds": 0
+    },
+    "receptions": {
+      "status": "current",
+      "current_event_count": 1,
+      "displayed_event_count": 1,
+      "previous_event_count": 1,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-22T20:02:25.613943+00:00",
+      "source_age_seconds": 0
+    },
+    "anytime_td": {
+      "status": "current",
+      "current_event_count": 1,
+      "displayed_event_count": 1,
+      "previous_event_count": 1,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-22T20:02:25.613943+00:00",
+      "source_age_seconds": 0
+    }
+  },
+  "stake_used_for_payout_examples": 10,
+  "markdown": "=== REAL DATA COVERAGE CHECK ===\nSingle game on this slate (NE @ CHI). All five stat families \u2014 passing, rushing, receiving, receptions, anytime TD \u2014 are LIVE with current FanDuel pricing; nothing is stale or unavailable. No family or player is missing a real market below.\n\n```json\nPROP_BREAKDOWN\n{\n  \"per_game\": [\n    {\"away\": \"NE\", \"home\": \"CHI\", \"picks\": [\n      {\"player\": \"D'Andre Swift\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"7941c642e8a4cadb\", \"price\": 1.606, \"side\": \"over\", \"line\": null, \"reason\": \"Swift carries a 44.8% red-zone touch share and has scored 6 rushing TDs in 6 games (5 of them inside the red zone), a volume-driven role that edges past this price's 62.3% implied probability.\", \"games_2026\": 6, \"projection\": 0.65, \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"NE\", \"pos\": \"RB\", \"stat\": \"rush_td\", \"role\": \"def\", \"claimed_rank\": 16}]},\n      {\"player\": \"Rome Odunze\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7941c642e8a4cadb\", \"price\": 1.885, \"side\": \"over\", \"line\": 44.5, \"reason\": \"Odunze's 52.0 rec yds/gm season rate clears this 44.5 line comfortably, and his home-specific average this year (60.3 ypg over 3 games) is even higher despite NE's 12th-ranked WR pass defense (141.7 rec yds/gm allowed).\", \"games_2026\": 6, \"projection\": 54, \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"NE\", \"pos\": \"WR\", \"stat\": \"rec_yds\", \"role\": \"def\", \"claimed_rank\": 12}]},\n      {\"player\": \"Luther Burden III\", \"market_key\": \"player_receptions\", \"canonical_event_id\": \"7941c642e8a4cadb\", \"price\": 1.676, \"side\": \"over\", \"line\": 4.5, \"reason\": \"Burden's team-leading 5.17 receptions/gm (22.2% target share) clears this 4.5 line against an NE defense that allows a middling 11.8 WR receptions/gm (20th).\", \"games_2026\": 6, \"projection\": 5.1, \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"NE\", \"pos\": \"WR\", \"stat\": \"rec\", \"role\": \"def\", \"claimed_rank\": 20}]}\n    ]}\n  ],\n  \"per_position\": {\n    \"QB\": {\"player\": \"Drake Maye\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"7941c642e8a4cadb\", \"price\": 1.885, \"side\": \"under\", \"line\": 247.5, \"reason\": \"Maye's 243.8 pass yds/gm season rate already sits under this 247.5 line, and his road splits this season (215.3 ypg over 3 games, worse completion% and more INTs) outweigh CHI's only middling 15th-ranked pass defense; game total sits at a moderate 50.5 with CHI favored by 3, not an extreme passing environment either way.\", \"games_2026\": 6, \"projection\": 225, \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"CHI\", \"pos\": \"QB\", \"stat\": \"pass_yds\", \"role\": \"def\", \"claimed_rank\": 15}]},\n    \"RB\": {\"player\": \"D'Andre Swift\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"7941c642e8a4cadb\", \"price\": 1.885, \"side\": \"over\", \"line\": 60.5, \"reason\": \"Swift's 66.3 rush yds/gm season rate (12th) sits above this 60.5 line, and in his two games this season against defenses in NE's current 12th-ranked range he's averaged 83.5 rush yds/gm.\", \"games_2026\": 6, \"projection\": 71, \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"NE\", \"pos\": \"RB\", \"stat\": \"rush_yds\", \"role\": \"def\", \"claimed_rank\": 12}]},\n    \"WR\": {\"player\": \"Luther Burden III\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7941c642e8a4cadb\", \"price\": 1.885, \"side\": \"under\", \"line\": 56.5, \"reason\": \"Burden's home average this season (52.0 rec yds/gm over 3 games) and his one game so far against a defense in NE's current 12th-ranked range (47.0 yards) both sit below this 56.5 line, with his season average inflated by two big games against bottom-tier defenses.\", \"games_2026\": 6, \"projection\": 50, \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"NE\", \"pos\": \"WR\", \"stat\": \"rec_yds\", \"role\": \"def\", \"claimed_rank\": 12}]},\n    \"TE\": {\"player\": \"Colston Loveland\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7941c642e8a4cadb\", \"price\": 1.885, \"side\": \"under\", \"line\": 43.5, \"reason\": \"Loveland's 29.2 rec yds/gm season rate (25th) and his home average (30.3 ypg over 3 games) both sit well under this 43.5 line, and against defenses in NE's current 15th-ranked range he's averaged 32.0 rec yds/gm across 3 such games.\", \"games_2026\": 6, \"projection\": 31, \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"NE\", \"pos\": \"TE\", \"stat\": \"rec_yds\", \"role\": \"def\", \"claimed_rank\": 15}]}\n  }\n}\n```\n\n```json\nFAVORITE_OU\n{\n  \"overs\": [\n    {\"player\": \"D'Andre Swift\", \"market_key\": \"player_anytime_td\", \"canonical_event_id\": \"7941c642e8a4cadb\", \"price\": 1.606, \"side\": \"over\", \"line\": null, \"reason\": \"44.8% red-zone touch share and 6 rushing TDs in 6 games edge past this price's 62.3% implied probability.\", \"games_2026\": 6, \"projection\": 0.65, \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"NE\", \"pos\": \"RB\", \"stat\": \"rush_td\", \"role\": \"def\", \"claimed_rank\": 16}]},\n    {\"player\": \"Luther Burden III\", \"market_key\": \"player_receptions\", \"canonical_event_id\": \"7941c642e8a4cadb\", \"price\": 1.676, \"side\": \"over\", \"line\": 4.5, \"reason\": \"Team-leading 5.17 receptions/gm clears this 4.5 line against an NE defense allowing a middling 11.8 WR receptions/gm (20th).\", \"games_2026\": 6, \"projection\": 5.1, \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"NE\", \"pos\": \"WR\", \"stat\": \"rec\", \"role\": \"def\", \"claimed_rank\": 20}]},\n    {\"player\": \"Rome Odunze\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7941c642e8a4cadb\", \"price\": 1.885, \"side\": \"over\", \"line\": 44.5, \"reason\": \"52.0 rec yds/gm season rate and a 60.3 ypg home average both clear this 44.5 line versus NE's 12th-ranked WR pass defense.\", \"games_2026\": 6, \"projection\": 54, \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"NE\", \"pos\": \"WR\", \"stat\": \"rec_yds\", \"role\": \"def\", \"claimed_rank\": 12}]},\n    {\"player\": \"D'Andre Swift\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"7941c642e8a4cadb\", \"price\": 1.885, \"side\": \"over\", \"line\": 60.5, \"reason\": \"66.3 rush yds/gm season rate and an 83.5 ypg average in his two games against NE's current 12th-ranked caliber of run defense both clear this 60.5 line.\", \"games_2026\": 6, \"projection\": 71, \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"NE\", \"pos\": \"RB\", \"stat\": \"rush_yds\", \"role\": \"def\", \"claimed_rank\": 12}]}\n  ],\n  \"unders\": [\n    {\"player\": \"Colston Loveland\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7941c642e8a4cadb\", \"price\": 1.885, \"side\": \"under\", \"line\": 43.5, \"reason\": \"29.2 rec yds/gm season rate, a 30.3 ypg home average, and a 32.0 ypg mark against NE's current 15th-ranked caliber of defense all sit well under this 43.5 line.\", \"games_2026\": 6, \"projection\": 31, \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"NE\", \"pos\": \"TE\", \"stat\": \"rec_yds\", \"role\": \"def\", \"claimed_rank\": 15}]},\n    {\"player\": \"Luther Burden III\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7941c642e8a4cadb\", \"price\": 1.885, \"side\": \"under\", \"line\": 56.5, \"reason\": \"A 52.0 ypg home average and a 47.0-yard game against NE's current 12th-ranked caliber of defense both sit below this 56.5 line, with his season average skewed by two huge games against bottom-tier defenses.\", \"games_2026\": 6, \"projection\": 50, \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"NE\", \"pos\": \"WR\", \"stat\": \"rec_yds\", \"role\": \"def\", \"claimed_rank\": 12}]},\n    {\"player\": \"Drake Maye\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"7941c642e8a4cadb\", \"price\": 1.885, \"side\": \"under\", \"line\": 247.5, \"reason\": \"243.8 pass yds/gm season rate already sits under this 247.5 line, and his 215.3 ypg road average (3 games, worse completion% and more INTs) outweighs CHI's middling 15th-ranked pass defense; a moderate 50.5 total with CHI favored by 3 is not an extreme passing environment either way.\", \"games_2026\": 6, \"projection\": 225, \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"CHI\", \"pos\": \"QB\", \"stat\": \"pass_yds\", \"role\": \"def\", \"claimed_rank\": 15}]},\n    {\"player\": \"A.J. Brown\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"7941c642e8a4cadb\", \"price\": 1.885, \"side\": \"under\", \"line\": 69.5, \"reason\": \"Brown's actual 2026 production with this offense (26.5 rec yds/gm across 2 games, a limited practice window for his ankle) sits far below this 69.5 line even accounting for CHI's 22nd-ranked WR pass defense.\", \"games_2026\": 2, \"projection\": 40, \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"CHI\", \"pos\": \"WR\", \"stat\": \"rec_yds\", \"role\": \"def\", \"claimed_rank\": 22}]},\n    {\"player\": \"Rhamondre Stevenson\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"7941c642e8a4cadb\", \"price\": 1.885, \"side\": \"under\", \"line\": 43.5, \"reason\": \"His 43.8 rush yds/gm season rate already sits right at this line, and in his two true road games against top-10 run defenses \u2014 the same caliber as CHI's current 9th-ranked unit \u2014 he's averaged just 36.5 rush yds/gm on 2.9 ypc.\", \"games_2026\": 6, \"projection\": 38, \"evidence_check\": [{\"type\": \"current_opponent\", \"team\": \"CHI\", \"pos\": \"RB\", \"stat\": \"rush_yds\", \"role\": \"def\", \"claimed_rank\": 9}]}\n  ]\n}\n```",
+  "prop_breakdown": {
+    "per_game": [
+      {
+        "away": "NE",
+        "home": "CHI",
+        "picks": [
+          {
+            "player": "D'Andre Swift",
+            "market_key": "player_anytime_td",
+            "canonical_event_id": "7941c642e8a4cadb",
+            "price": 1.606,
+            "side": "over",
+            "line": null,
+            "reason": "Swift carries a 44.8% red-zone touch share and has scored 6 rushing TDs in 6 games (5 of them inside the red zone), a volume-driven role that edges past this price's 62.3% implied probability.",
+            "games_2026": 6,
+            "projection": 0.65,
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NE",
+                "pos": "RB",
+                "stat": "rush_td",
+                "role": "def",
+                "claimed_rank": 16
+              }
+            ],
+            "grade": "W",
+            "actual": 1.0,
+            "actual_label": "1 TD"
+          },
+          {
+            "player": "Rome Odunze",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "7941c642e8a4cadb",
+            "price": 1.885,
+            "side": "over",
+            "line": 44.5,
+            "reason": "Odunze's 52.0 rec yds/gm season rate clears this 44.5 line comfortably, and his home-specific average this year (60.3 ypg over 3 games) is even higher despite NE's 12th-ranked WR pass defense (141.7 rec yds/gm allowed).",
+            "games_2026": 6,
+            "projection": 54,
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NE",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 12
+              }
+            ],
+            "projection_edge": 9.5,
+            "grade": "W",
+            "actual": 69.0,
+            "actual_label": "69 rec yds"
+          },
+          {
+            "player": "Luther Burden III",
+            "market_key": "player_receptions",
+            "canonical_event_id": "7941c642e8a4cadb",
+            "price": 1.676,
+            "side": "over",
+            "line": 4.5,
+            "reason": "Burden's team-leading 5.17 receptions/gm (22.2% target share) clears this 4.5 line against an NE defense that allows a middling 11.8 WR receptions/gm (20th).",
+            "games_2026": 6,
+            "projection": 5.1,
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "NE",
+                "pos": "WR",
+                "stat": "rec",
+                "role": "def",
+                "claimed_rank": 20
+              }
+            ],
+            "projection_edge": 0.6,
+            "evidence_mismatches": [
+              "REAL MISMATCH: NE's real current WR def rec rank is #9 or #21 \u2014 the report claimed #20."
+            ],
+            "grade": "L",
+            "actual": 4.0,
+            "actual_label": "4 rec"
+          }
+        ],
+        "mismatch_count": 0
+      }
+    ],
+    "per_position": {
+      "QB": {
+        "player": "Drake Maye",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "7941c642e8a4cadb",
+        "price": 1.885,
+        "side": "under",
+        "line": 247.5,
+        "reason": "Maye's 243.8 pass yds/gm season rate already sits under this 247.5 line, and his road splits this season (215.3 ypg over 3 games, worse completion% and more INTs) outweigh CHI's only middling 15th-ranked pass defense; game total sits at a moderate 50.5 with CHI favored by 3, not an extreme passing environment either way.",
+        "games_2026": 6,
+        "projection": 225,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "CHI",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "def",
+            "claimed_rank": 15
+          }
+        ],
+        "projection_edge": 22.5,
+        "grade": "L",
+        "actual": 321.0,
+        "actual_label": "321 pass yds"
+      },
+      "RB": {
+        "player": "D'Andre Swift",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "7941c642e8a4cadb",
+        "price": 1.885,
+        "side": "over",
+        "line": 60.5,
+        "reason": "Swift's 66.3 rush yds/gm season rate (12th) sits above this 60.5 line, and in his two games this season against defenses in NE's current 12th-ranked range he's averaged 83.5 rush yds/gm.",
+        "games_2026": 6,
+        "projection": 71,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NE",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "def",
+            "claimed_rank": 12
+          }
+        ],
+        "projection_edge": 10.5,
+        "grade": "W",
+        "actual": 78.0,
+        "actual_label": "78 rush yds"
+      },
+      "WR": {
+        "player": "Luther Burden III",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "7941c642e8a4cadb",
+        "price": 1.885,
+        "side": "under",
+        "line": 56.5,
+        "reason": "Burden's home average this season (52.0 rec yds/gm over 3 games) and his one game so far against a defense in NE's current 12th-ranked range (47.0 yards) both sit below this 56.5 line, with his season average inflated by two big games against bottom-tier defenses.",
+        "games_2026": 6,
+        "projection": 50,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NE",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 12
+          }
+        ],
+        "projection_edge": 6.5,
+        "grade": "L",
+        "actual": 130.0,
+        "actual_label": "130 rec yds"
+      },
+      "TE": {
+        "player": "Colston Loveland",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "7941c642e8a4cadb",
+        "price": 1.885,
+        "side": "under",
+        "line": 43.5,
+        "reason": "Loveland's 29.2 rec yds/gm season rate (25th) and his home average (30.3 ypg over 3 games) both sit well under this 43.5 line, and against defenses in NE's current 15th-ranked range he's averaged 32.0 rec yds/gm across 3 such games.",
+        "games_2026": 6,
+        "projection": 31,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NE",
+            "pos": "TE",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 15
+          }
+        ],
+        "projection_edge": 12.5,
+        "grade": "L",
+        "actual": 69.0,
+        "actual_label": "69 rec yds"
+      }
+    }
+  },
+  "prop_breakdown_errors": [
+    "NE@CHI \u2014 Luther Burden III: REAL MISMATCH: NE's real current WR def rec rank is #9 or #21 \u2014 the report claimed #20."
+  ],
+  "favorite_ou": {
+    "overs": [
+      {
+        "player": "Luther Burden III",
+        "market_key": "player_receptions",
+        "canonical_event_id": "7941c642e8a4cadb",
+        "price": 1.676,
+        "side": "over",
+        "line": 4.5,
+        "reason": "Team-leading 5.17 receptions/gm clears this 4.5 line against an NE defense allowing a middling 11.8 WR receptions/gm (20th).",
+        "games_2026": 6,
+        "projection": 5.1,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NE",
+            "pos": "WR",
+            "stat": "rec",
+            "role": "def",
+            "claimed_rank": 20
+          }
+        ],
+        "projection_edge": 0.6,
+        "evidence_mismatches": [
+          "REAL MISMATCH: NE's real current WR def rec rank is #9 or #21 \u2014 the report claimed #20."
+        ],
+        "grade": "L",
+        "actual": 4.0,
+        "actual_label": "4 rec"
+      },
+      {
+        "player": "Rome Odunze",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "7941c642e8a4cadb",
+        "price": 1.885,
+        "side": "over",
+        "line": 44.5,
+        "reason": "52.0 rec yds/gm season rate and a 60.3 ypg home average both clear this 44.5 line versus NE's 12th-ranked WR pass defense.",
+        "games_2026": 6,
+        "projection": 54,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NE",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 12
+          }
+        ],
+        "projection_edge": 9.5,
+        "grade": "W",
+        "actual": 69.0,
+        "actual_label": "69 rec yds"
+      },
+      {
+        "player": "D'Andre Swift",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "7941c642e8a4cadb",
+        "price": 1.885,
+        "side": "over",
+        "line": 60.5,
+        "reason": "66.3 rush yds/gm season rate and an 83.5 ypg average in his two games against NE's current 12th-ranked caliber of run defense both clear this 60.5 line.",
+        "games_2026": 6,
+        "projection": 71,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NE",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "def",
+            "claimed_rank": 12
+          }
+        ],
+        "projection_edge": 10.5,
+        "grade": "W",
+        "actual": 78.0,
+        "actual_label": "78 rush yds"
+      }
+    ],
+    "unders": [
+      {
+        "player": "Colston Loveland",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "7941c642e8a4cadb",
+        "price": 1.885,
+        "side": "under",
+        "line": 43.5,
+        "reason": "29.2 rec yds/gm season rate, a 30.3 ypg home average, and a 32.0 ypg mark against NE's current 15th-ranked caliber of defense all sit well under this 43.5 line.",
+        "games_2026": 6,
+        "projection": 31,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NE",
+            "pos": "TE",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 15
+          }
+        ],
+        "projection_edge": 12.5,
+        "grade": "L",
+        "actual": 69.0,
+        "actual_label": "69 rec yds"
+      },
+      {
+        "player": "Luther Burden III",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "7941c642e8a4cadb",
+        "price": 1.885,
+        "side": "under",
+        "line": 56.5,
+        "reason": "A 52.0 ypg home average and a 47.0-yard game against NE's current 12th-ranked caliber of defense both sit below this 56.5 line, with his season average skewed by two huge games against bottom-tier defenses.",
+        "games_2026": 6,
+        "projection": 50,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "NE",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 12
+          }
+        ],
+        "projection_edge": 6.5,
+        "grade": "L",
+        "actual": 130.0,
+        "actual_label": "130 rec yds"
+      },
+      {
+        "player": "Drake Maye",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "7941c642e8a4cadb",
+        "price": 1.885,
+        "side": "under",
+        "line": 247.5,
+        "reason": "243.8 pass yds/gm season rate already sits under this 247.5 line, and his 215.3 ypg road average (3 games, worse completion% and more INTs) outweighs CHI's middling 15th-ranked pass defense; a moderate 50.5 total with CHI favored by 3 is not an extreme passing environment either way.",
+        "games_2026": 6,
+        "projection": 225,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "CHI",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "def",
+            "claimed_rank": 15
+          }
+        ],
+        "projection_edge": 22.5,
+        "grade": "L",
+        "actual": 321.0,
+        "actual_label": "321 pass yds"
+      },
+      {
+        "player": "A.J. Brown",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "7941c642e8a4cadb",
+        "price": 1.885,
+        "side": "under",
+        "line": 69.5,
+        "reason": "Brown's actual 2026 production with this offense (26.5 rec yds/gm across 2 games, a limited practice window for his ankle) sits far below this 69.5 line even accounting for CHI's 22nd-ranked WR pass defense.",
+        "games_2026": 2,
+        "projection": 40,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "CHI",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 22
+          }
+        ],
+        "projection_edge": 29.5,
+        "grade": "W",
+        "actual": 48.0,
+        "actual_label": "48 rec yds"
+      },
+      {
+        "player": "Rhamondre Stevenson",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "7941c642e8a4cadb",
+        "price": 1.885,
+        "side": "under",
+        "line": 43.5,
+        "reason": "His 43.8 rush yds/gm season rate already sits right at this line, and in his two true road games against top-10 run defenses \u2014 the same caliber as CHI's current 9th-ranked unit \u2014 he's averaged just 36.5 rush yds/gm on 2.9 ypc.",
+        "games_2026": 6,
+        "projection": 38,
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "CHI",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "def",
+            "claimed_rank": 9
+          }
+        ],
+        "projection_edge": 5.5,
+        "grade": "W",
+        "actual": 22.0,
+        "actual_label": "22 rush yds"
+      }
+    ]
+  },
+  "favorite_ou_errors": [
+    "D'Andre Swift: Anytime TD has no real Under side and does not belong in Favorite O/U \u2014 excluded from this section.",
+    "Luther Burden III: REAL MISMATCH: NE's real current WR def rec rank is #9 or #21 \u2014 the report claimed #20."
+  ],
+  "parlays": {},
+  "td_parlays": {},
+  "spread_parlays": {},
+  "ats_records": {
+    "CHI": {
+      "since": 2020,
+      "overall": {
+        "w": 49,
+        "l": 49,
+        "p": 9,
+        "pct": 50.0
+      },
+      "home": {
+        "w": 26,
+        "l": 22,
+        "p": 5,
+        "pct": 54.2
+      },
+      "away": {
+        "w": 23,
+        "l": 27,
+        "p": 4,
+        "pct": 46.0
+      }
+    },
+    "NE": {
+      "since": 2020,
+      "overall": {
+        "w": 51,
+        "l": 52,
+        "p": 4,
+        "pct": 49.5
+      },
+      "home": {
+        "w": 25,
+        "l": 28,
+        "p": 1,
+        "pct": 47.2
+      },
+      "away": {
+        "w": 26,
+        "l": 24,
+        "p": 3,
+        "pct": 52.0
+      }
+    }
+  },
+  "graded_at": "2026-10-27T20:35:36.880063+00:00"
+}
