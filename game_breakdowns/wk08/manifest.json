@@ -6,6 +6,34 @@
       "season": 2026,
       "week": 8,
       "generated_at": "2026-10-29T20:35:48.742123+00:00"
+    },
+    "BAL_BUF": {
+      "away": "BAL",
+      "home": "BUF",
+      "season": 2026,
+      "week": 8,
+      "generated_at": "2026-10-29T21:23:24.408605+00:00"
+    },
+    "TEN_CIN": {
+      "away": "TEN",
+      "home": "CIN",
+      "season": 2026,
+      "week": 8,
+      "generated_at": "2026-10-29T21:38:11.283256+00:00"
+    },
+    "ARI_DAL": {
+      "away": "ARI",
+      "home": "DAL",
+      "season": 2026,
+      "week": 8,
+      "generated_at": "2026-10-29T22:00:58.555509+00:00"
+    },
+    "MIN_DET": {
+      "away": "MIN",
+      "home": "DET",
+      "season": 2026,
+      "week": 8,
+      "generated_at": "2026-10-29T22:14:58.575778+00:00"
     }
   }
 }
