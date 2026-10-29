@@ -1,0 +1,11 @@
+{
+  "games": {
+    "CAR_GB": {
+      "away": "CAR",
+      "home": "GB",
+      "season": 2026,
+      "week": 8,
+      "generated_at": "2026-10-29T20:35:48.742123+00:00"
+    }
+  }
+}

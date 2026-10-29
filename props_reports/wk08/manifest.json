@@ -1,0 +1,10 @@
+{
+  "batches": {
+    "props_parlay_report_batch1_CAR.json": {
+      "games": [
+        "CAR_GB"
+      ],
+      "generated_at": "2026-10-29T20:54:49.082177+00:00"
+    }
+  }
+}
