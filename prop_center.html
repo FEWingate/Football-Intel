@@ -325,6 +325,8 @@
 .played-tag{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:4px;border:1px solid var(--border2,var(--border));
   font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.14em;color:var(--text-mid);background:var(--surface2);vertical-align:middle}
 .slot-head.played{opacity:.55}
+.game-sub{grid-column:1/-1;display:flex;align-items:baseline;gap:12px;margin:6px 0 -2px;padding:4px 2px 2px;border-bottom:1px solid var(--hairline);
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;font-weight:700;color:var(--text-mid)}
 .combo-slip-btn{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
   padding:7px 12px;border-radius:8px;border:1px solid var(--border2,var(--border));background:var(--surface2);color:var(--text-mid);cursor:pointer}
 .combo-slip-btn:hover{border-color:var(--accent-blue);color:var(--accent-blue)}
@@ -2154,7 +2156,9 @@ function comboSetOverride(key, val){
   if(val == null) delete s[key]; else s[key] = val;
   try{ localStorage.setItem(COMBO_STORE, JSON.stringify(s)); }catch(e){}
 }
-function comboKey(r){ return r.player + '|' + r.market; }
+// A typed line belongs to ONE week: the key carries the combo file's week, so last week's typed lines can
+// never show up on this week's cards (they used to, because the key was just player + market).
+function comboKey(r){ return 'wk' + (COMBO && COMBO.week ? COMBO.week : '') + '|' + r.player + '|' + r.market; }
 function comboPhi(z){
   const x = Math.abs(z) / Math.SQRT2, t = 1 / (1 + 0.3275911 * x);
   const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
@@ -2346,7 +2350,8 @@ function renderComboReportInner(){
       scaled by how many yards the opponent allows to that position, and compared with the FanDuel line.
       Type the real FanDuel line into a card and the edge updates; it is remembered in this browser. Our odds feed
       only carries the separate lines, so a saved line only exists for players added with
-      <b>python3 build_combo_props.py --add "Name" pass_rush|rush_rec LINE</b>. The two separate lines added together
+      <b>python3 build_combo_props.py --add "Name" pass_rush|rush_rec LINE</b>, or typed here and exported with
+      <b>Save typed lines to file</b> (then copy that file into the project and rebuild). The two separate lines added together
       are shown for reference only: on 10/19 FanDuel's real combo lines ran 7.5 to 11.5 yards above that sum.
       Each card also shows the opponent's rank and tier against each half (the site's Top 10 / Mid 12 / Bottom 10, with Top 5 / Bottom 5)
       and how this player has averaged against defenses in that same tier.
@@ -2363,6 +2368,8 @@ function renderComboReportInner(){
       </label>
       <input class="search-box" id="comboSearch" placeholder="Search player or team…" value="${esc2(comboSearch)}">
       <span class="rank-chip">built ${esc2((COMBO.generated_at || '').replace('T', ' ').replace('Z', ' UTC'))}</span>
+      <button class="pc-slip-btn" id="comboSave" title="Downloads manual_combo_lines.json with every line you typed for this week">⬇ Save typed lines to file</button>
+      <span class="rank-chip" id="comboSaveMsg"></span>
       ${comboRecordHTML()}
     </div>
     <div class="intel-grid" id="comboGrid" style="grid-template-columns:repeat(auto-fill,minmax(430px,1fr))"></div>`;
@@ -2371,6 +2378,7 @@ function renderComboReportInner(){
     $("comboTabs").querySelectorAll("button").forEach(x => x.setAttribute("aria-selected", String(x === b)));
     renderComboGrid();
   });
+  $("comboSave").onclick = comboSaveLines;
   $("comboOnly").onchange = e => { comboOnlyLine = e.target.checked; renderComboGrid(); };
   $("comboSearch").oninput = e => { comboSearch = e.target.value.toLowerCase(); renderComboGrid(); };
   renderComboGrid();
@@ -2400,14 +2408,62 @@ function comboSlot(iso){
   if(e.dow === 'Mon') return {rank: 7, title: 'Monday Night Football', sub: e.t12};
   return {rank: 8, title: e.dow, sub: e.t12};
 }
+// Turns the lines typed into the cards (kept in this browser) into manual_combo_lines.json, the same file
+// `build_combo_props.py --add` writes, so they can be copied into the repo, rebuilt with Coeus and pushed.
+// Merges with the file already on the server: a typed line replaces that player's older line; everything else stays.
+async function comboSaveLines(){
+  const msg = $("comboSaveMsg"), wk = COMBO && COMBO.week;
+  if(!wk){ msg.textContent = 'No combo week loaded'; return; }
+  const prefix = 'wk' + wk + '|', typed = [];
+  for(const [k, v] of Object.entries(comboOverrides())){
+    if(!k.startsWith(prefix) || !v || v.line == null || isNaN(Number(v.line))) continue;
+    const parts = k.slice(prefix.length).split('|');
+    const market = parts.pop(), player = parts.join('|');
+    typed.push({player, market, line: Number(v.line)});
+  }
+  if(!typed.length){ msg.textContent = 'No typed lines for Week ' + wk + ' yet'; return; }
+  let data = {lines: []};
+  try{ const r = await fetch('manual_combo_lines.json', {cache: 'no-store'}); if(r.ok) data = await r.json(); }catch(e){}
+  data.lines = Array.isArray(data.lines) ? data.lines : [];
+  const nm = x => String(x || '').toLowerCase().replace(/[^a-z]/g, '');
+  for(const t of typed){
+    data.lines = data.lines.filter(x => !(nm(x.player) === nm(t.player) && x.market === t.market));
+    data.lines.push({player: t.player, market: t.market, line: t.line, over_price: null, under_price: null,
+                     source: 'manual (typed from FanDuel)', week: wk});
+  }
+  const blob = new Blob([JSON.stringify(data, null, 1)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'manual_combo_lines.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  msg.textContent = typed.length + ' Week ' + wk + ' line' + (typed.length === 1 ? '' : 's') + ' saved to manual_combo_lines.json (Downloads)';
+}
+
 let COMBO_VIEW = [];
 function renderComboGrid(){
   // Group by kickoff slot (Thursday, Sunday early, Sunday late, SNF, MNF); order inside a slot stays best-edge first.
-  const tagged = comboRows().map((r, k) => ({r, k, s: comboSlot(comboKick(r))}))
-    .sort((a, b) => (a.s.rank - b.s.rank) || (a.k - b.k));
+  // Inside a slot, players from the SAME GAME sit together (away player first), so typing lines goes game by game.
+  // Games are ordered best-edge first once lines exist; with no lines yet, by kickoff time then team names.
+  const score = r => {
+    const L = comboEffLine(r); if(!L || !r.projection) return -1;
+    const ev = comboEval(r, L.point, L.over_price, L.under_price);
+    return ev ? ev.edge : -1;
+  };
+  const gameOf = r => { const m = comboMatch(r); return m ? m.key : ('zz|' + r.team); };
+  const rows0 = comboRows();
+  const best = {};
+  rows0.forEach(r => { const g = gameOf(r); best[g] = Math.max(best[g] ?? -1, score(r)); });
+  const tagged = rows0.map((r, k) => ({r, k, s: comboSlot(comboKick(r)), g: gameOf(r)}))
+    .sort((a, b) => (a.s.rank - b.s.rank)
+      || (best[b.g] - best[a.g])
+      || String(comboKick(a.r) || '').localeCompare(String(comboKick(b.r) || ''))
+      || a.g.localeCompare(b.g)
+      || ((a.r.home ? 1 : 0) - (b.r.home ? 1 : 0))
+      || (a.k - b.k));
   const slots = tagged.map(x => x.s);
+  const gkeys = tagged.map(x => x.g);
   COMBO_VIEW = tagged.map(x => x.r);
-  let html = '', last = null;
+  let html = '', last = null, lastGame = null;
   COMBO_VIEW.forEach((r, i) => {
     const sl = slots[i], key = sl.rank + '|' + sl.title;
     if(key !== last){
@@ -2416,7 +2472,12 @@ function renderComboGrid(){
       const sts = mine.map(comboGameState), allPlayed = sts.every(x => x), allFinal = sts.every(x => x === 'final');
       html += `<div class="slot-head${allPlayed ? ' played' : ''}"><span class="sh-t">${esc2(sl.title)}</span><span class="sh-m">${allPlayed ? (allFinal ? 'FINAL' : 'STARTED') + ' · ' : ''}${esc2(sl.sub)} · ${mine.length} player${mine.length === 1 ? '' : 's'}</span>
         <span class="sh-m">${games.map(esc2).join(' · ')}</span></div>`;
-      last = key;
+      last = key; lastGame = null;
+    }
+    if(gkeys[i] !== lastGame){
+      const n = gkeys.filter(g => g === gkeys[i]).length, gm = gkeys[i].split('@');
+      html += `<div class="game-sub"><span>${gm.length === 2 ? esc2(gm[0]) + ' @ ' + esc2(gm[1]) : esc2(r.team)}</span><span class="sh-m">${n} player${n === 1 ? '' : 's'}</span></div>`;
+      lastGame = gkeys[i];
     }
     html += comboCardHTML(r, i);
   });

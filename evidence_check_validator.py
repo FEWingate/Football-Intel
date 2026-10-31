@@ -421,6 +421,11 @@ def verify_evidence_check(evidence_check, evidence_by_game):
 
         elif ctype == "current_opponent":
             team, pos, stat, role = claim.get("team"), claim.get("pos"), claim.get("stat"), claim.get("role")
+            # Coeus occasionally writes pos in lowercase ("team", "qb"); the live-rank
+            # lookup compares against "TEAM" / "QB" exactly, so normalise first
+            # (a lowercase "team" claim was reported as "no real data" for all 22 team claims).
+            if isinstance(pos, str):
+                pos = pos.strip().upper()
 
             # Find which game (and this claim's week + opponent) this
             # team belongs to, so live files can be loaded and, for a

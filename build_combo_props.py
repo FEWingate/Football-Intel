@@ -621,7 +621,8 @@ def game_context(feed):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--coeus", action="store_true", help="ask Coeus for a pick on every row that has a real line")
+    ap.add_argument("--coeus", action="store_true", help="ask Coeus for a pick on every row that has a real line and no saved pick yet (same week and same line)")
+    ap.add_argument("--all", action="store_true", help="with --coeus: ask about EVERY row again, even ones that already have a saved pick (costs more)")
     ap.add_argument("--model", default="claude-sonnet-5")
     ap.add_argument("--add", nargs="+", metavar=("PLAYER", "MARKET"),
                     help='PLAYER MARKET LINE [OVER_PRICE [UNDER_PRICE]] - save a real FanDuel combo line, then continue')
@@ -803,6 +804,10 @@ def main():
            "rows": rows}
 
     if a.coeus:
+        if not a.all:
+            k = carry_forward_coeus(out)
+            if k:
+                print("Kept %d saved Coeus picks (same week and line) - not asking about those again. Use --all to re-ask everything." % k)
         coeus_picks(out, a.model)
     else:
         k = carry_forward_coeus(out)
@@ -928,6 +933,8 @@ def coeus_picks(out, model):
     for r in out["rows"]:
         if not r.get("eval"):
             continue
+        if r.get("coeus"):      # already has a saved pick for this week and line (carried forward); don't pay for it again
+            continue
         items.append({"player": r["player"], "team": r["team"], "opp": r["opp"], "home": r["home"], "market": r["market"],
                       "fanduel_line": r["line"]["point"], "over_price": r["line"].get("over_price"),
                       "under_price": r["line"].get("under_price"), "game": r["game"],
@@ -935,7 +942,7 @@ def coeus_picks(out, model):
                       "this_player_rank_among_same_position": r.get("player_rank"),
                       "recent_games_oldest_to_newest": r["log"]})
     if not items:
-        print("Coeus: no rows with a real FanDuel line yet - nothing to pick.")
+        print("Coeus: nothing new to pick - every row with a real line already has a saved Coeus pick (use --all to re-ask).")
         return
     client = anthropic.Anthropic()
     print("Asking Coeus about %d rows (in batches of 5)..." % len(items))

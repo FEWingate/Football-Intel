@@ -453,6 +453,51 @@ function rankTeamDefenses(pos, statKey, limit, worstFirst){
   return rows.slice(0, limit || 10);
 }
 
+// Combo defenses: two yardage categories allowed to one position, added together and re-ranked across all
+// 32 defenses (1 = toughest, 32 = weakest — same direction as every other rank here).
+//   RB: rushing + receiving yds/g      QB: passing + rushing yds/g
+// Values come straight from matchup.json's def[pos] cells; only the sum and its rank are new. Each row also
+// names the lead player (by the same two stats combined) of the offense that defense faces this week —
+// picked (for QBs) from players who played at least half of the team's most-played QB's games, so a
+// one-game backup can't top the list. RBs have no such floor, so a back who just returned (e.g. Jacobs)
+// still shows.
+const COMBO_DEF = {
+  RB: { a: 'rush_ypg', b: 'rec_ypg',  aLabel: 'Rush yds/g allowed',    bLabel: 'Rec yds/g allowed',    who: 'RB' },
+  QB: { a: 'pass_ypg', b: 'rush_ypg', aLabel: 'Pass yds/g allowed',    bLabel: 'Rush yds/g allowed',   who: 'QB' },
+};
+function rankComboDefenses(spec){
+  const pos = spec.position === 'QB' ? 'QB' : 'RB', C = COMBO_DEF[pos];
+  const rows = [];
+  for(const team of Object.keys(MATCHUP?.teams || {})){
+    const d = MATCHUP.teams[team]?.def?.[pos] || {};
+    const ca = d[C.a], cb = d[C.b];
+    if(!ca || !cb || ca.v == null || cb.v == null) continue;
+    rows.push({ team, a_ypg: ca.v, a_rank: ca.r, b_ypg: cb.v, b_rank: cb.r,
+                combined_ypg: Math.round((ca.v + cb.v) * 10) / 10 });
+  }
+  [...rows].sort((x, y) => x.combined_ypg - y.combined_ypg).forEach((r, i) => { r.combined_rank = i + 1; });
+  const pool = PLAYERS?.players?.[pos] || [];
+  for(const r of rows){
+    r.faces = TEAM_OPPONENT[r.team] || null;
+    const cands = r.faces ? pool.filter(x => x.team === r.faces) : [];
+    const maxG = Math.max(0, ...cands.map(x => x?.season?.games || 0));
+    let best = null;
+    for(const x of cands){
+      if(pos === 'QB' && (x?.season?.games || 0) < Math.ceil(maxG / 2)) continue;
+      const m = x?.season?.m || {};
+      const va = m[C.a] || 0, vb = m[C.b] || 0, tot = va + vb;
+      if(!best || tot > best.tot) best = { name: x.name, va, vb, tot };
+    }
+    r.lead = best ? { name: best.name, a: Math.round(best.va * 10) / 10, b: Math.round(best.vb * 10) / 10,
+                      total: Math.round(best.tot * 10) / 10 } : null;
+  }
+  let out = rows;
+  if(spec.opponent_rank_min) out = out.filter(r => r.combined_rank >= spec.opponent_rank_min);
+  if(spec.opponent_rank_max) out = out.filter(r => r.combined_rank <= spec.opponent_rank_max);
+  out.sort((x, y) => spec.opponent_rank_max ? x.combined_rank - y.combined_rank : y.combined_rank - x.combined_rank);
+  return out;
+}
+
 // Q3: same-team QB + WR pairs who BOTH have a favorable matchup this week.
 // They share an opponent by definition (same team, same week), so this is
 // really "does this team's real opponent grade as weak against both the
@@ -1326,6 +1371,16 @@ function rankSlotDefenses(win, limit, worstFirst){
 
 // The weak (or tough) slot defenses that actually play this week, with who they face — shown above the
 // player list so the question "bottom-5 defenses AND the players they face" is answered in one place.
+// The offense's two biggest slot receivers by real slot volume (targets x slot rate, PFF alignment),
+// with a small-sample floor of 8 targets — the players who actually line up against that slot defense.
+function topSlotReceivers(team, n){
+  const list = (PFF?.receivers?.teams || {})[team] || [];
+  return list.filter(r => (r.targets || 0) >= 8 && (r.slot_rate || 0) > 0)
+    .map(r => ({ ...r, slot_tgts: (r.targets || 0) * (r.slot_rate || 0) / 100 }))
+    .sort((a, b) => b.slot_tgts - a.slot_tgts)
+    .slice(0, n);
+}
+
 function slotDefensesThisWeek(spec){
   const season = PFF?.slot?.season_to_date || {}, l3 = PFF?.slot?.last3?.teams || {};
   const rows = [];
@@ -1336,7 +1391,8 @@ function slotDefensesThisWeek(spec){
     if(spec.opponent_rank_max && d.rank_yards_pg > spec.opponent_rank_max) continue;
     rows.push({ team, faces, window: 'season', rank_slot_yards_pg: d.rank_yards_pg, slot_yards_pg: d.slot_yards_pg,
       rank_yards_per_target: d.rank_yards_per_target, yards_per_target: d.yards_per_target,
-      slot_targets_pg: d.slot_targets_pg, catch_rate: d.catch_rate, games: d.games, last3_rank: l3[team]?.rank_yards_pg ?? null });
+      slot_targets_pg: d.slot_targets_pg, catch_rate: d.catch_rate, games: d.games, last3_rank: l3[team]?.rank_yards_pg ?? null,
+      top_slot: topSlotReceivers(faces, 2) });
   }
   rows.sort((a, b) => spec.opponent_rank_max ? a.rank_slot_yards_pg - b.rank_slot_yards_pg : b.rank_slot_yards_pg - a.rank_slot_yards_pg);
   return rows;
@@ -1430,9 +1486,9 @@ function pffContextForFreeform(spec){
 function renderSlotDefenseTable(rows){
   if(!rows.length) return `<div class="result-empty">No PFF slot-defense rows available.</div>`;
   return `<table class="result-table"><thead><tr>
-    <th>Defense</th>${rows.some(r => r.faces) ? '<th>Faces this week</th>' : ''}<th>Slot yds/g (rank)</th><th>Yds/target (rank)</th><th>Targets/g</th><th>Catch %</th><th>Last 3 rank</th>
+    <th>Defense</th>${rows.some(r => r.faces) ? '<th>Faces this week</th>' : ''}${rows.some(r => r.top_slot) ? '<th>Top slot receivers (their offense)</th>' : ''}<th>Slot yds/g (rank)</th><th>Yds/target (rank)</th><th>Targets/g</th><th>Catch %</th><th>Last 3 rank</th>
     </tr></thead><tbody>
-    ${rows.map(r => `<tr><td>${esc(r.team)}</td>${rows.some(x => x.faces) ? `<td>${esc(r.faces || '')}</td>` : ''}<td>${r.slot_yards_pg} (#${r.rank_slot_yards_pg})</td>
+    ${rows.map(r => `<tr><td>${esc(r.team)}</td>${rows.some(x => x.faces) ? `<td>${esc(r.faces || '')}</td>` : ''}${rows.some(x => x.top_slot) ? `<td>${(r.top_slot || []).map(t => `${esc(t.player)} <span style="opacity:.65">(${t.slot_rate}% slot · ${t.targets} tgt)</span>`).join('<br>') || '—'}</td>` : ''}<td>${r.slot_yards_pg} (#${r.rank_slot_yards_pg})</td>
       <td>${r.yards_per_target} (#${r.rank_yards_per_target})</td><td>${r.slot_targets_pg}</td>
       <td>${r.catch_rate ?? '—'}</td><td>${r.last3_rank != null ? '#' + r.last3_rank : '—'}</td></tr>`).join('')}
     </tbody></table>
@@ -1640,6 +1696,12 @@ FIVE MORE REAL MODES — check for these too before defaulting to freeform:
 "which defenses are worst/best against POSITION" questions:
 {"mode":"teamrank","position":"RB","limit":10,"worst_first":true}
 worst_first=true for "worst defenses" (highest rank numbers first), false for "best defenses".
+
+"rb_combo" — ranks DEFENSES by two yardage categories added together, per game allowed: position "RB" = \
+rushing + receiving yards to running backs; position "QB" = passing + rushing yards to quarterbacks. Use for \
+"which defenses give up the most rushing and receiving yards to RBs" / "passing and rushing yards to QBs" \
+questions. opponent_rank_min 28 = bottom 5, 23 = bottom 10; opponent_rank_max 5 / 10 = top 5 / top 10:
+{"mode":"rb_combo","position":"QB","opponent_rank_min":23}
 
 "trending_share" — a real, slate-wide scan for players whose real target share, rush share, or \
 snap share has genuinely climbed over their most recent 2 real games compared to their earlier \
@@ -2067,6 +2129,21 @@ function renderTeamRankTable(rows, spec){
     </tbody></table>`;
 }
 
+function renderComboTable(rows, spec){
+  if(!rows || !rows.length) return `<div class="result-empty">No defense data matched.</div>`;
+  const pos = spec?.position === 'QB' ? 'QB' : 'RB', C = COMBO_DEF[pos];
+  return `<table class="result-table"><thead><tr>
+    <th>Defense</th><th>Faces this week</th><th>${C.aLabel} (rank)</th><th>${C.bLabel} (rank)</th>
+    <th>Combined yds/g (rank)</th><th>Their lead ${pos} (${pos === 'QB' ? 'pass + rush' : 'rush + rec'} ypg)</th>
+    </tr></thead><tbody>
+    ${rows.map(r => `<tr><td>${esc(r.team)}</td><td>${esc(r.faces || 'bye')}</td>
+      <td>${r.a_ypg} (#${r.a_rank})</td><td>${r.b_ypg} (#${r.b_rank})</td>
+      <td><strong>${r.combined_ypg}</strong> (#${r.combined_rank})</td>
+      <td>${r.lead ? `${esc(r.lead.name)} <span style="opacity:.65">(${r.lead.a} + ${r.lead.b} = ${r.lead.total})</span>` : '—'}</td></tr>`).join('')}
+    </tbody></table>
+    <div class="freeform-caveat">Source: matchup data, ${pos}s only. Combined = ${pos === 'QB' ? 'passing + rushing' : 'rushing + receiving'} yards per game allowed, re-ranked across all 32 defenses (1 = toughest, 32 = weakest). Season to date.</div>`;
+}
+
 const TRENDING_SHARE_FIELD_LABEL = { target_share: 'Target Share', rush_share: 'Rush Share', snap_pct: 'Snap %' };
 function renderTrendingShareTable(rows){
   if(!rows || !rows.length) return `<div class="result-empty">No real player on this week's slate has a
@@ -2163,6 +2240,11 @@ async function ask(question, prebuiltSpec){
         <span class="answer-mode filter">Real ${spec.season ? spec.season + ' ' : ''}game log — computed, not guessed</span>
         ${renderGameLogTable(games, spec)}
         ${narration ? `<div class="answer-narration">${marked.parse(narration)}</div>` : ''}`;
+    } else if(spec.mode === 'rb_combo'){
+      const rows = rankComboDefenses(spec);
+      box.innerHTML = `<div class="answer-q">${esc(question)}</div>
+        <span class="answer-mode filter">${spec.position === 'QB' ? 'QB passing + rushing' : 'RB rushing + receiving'} yards allowed — computed, not guessed</span>
+        ${renderComboTable(rows, spec)}`;
     } else if(spec.mode === 'teamrank'){
       const rows = rankTeamDefenses(spec.position, spec.opponent_def_stat, spec.limit, spec.worst_first !== false);
       const narration = rows.length
@@ -2425,6 +2507,24 @@ async function init(){
       </div>
     </div>
 
+    <div class="qa-section">
+      <div class="qa-section-title">Defense Combo Yardage</div>
+      <div class="qa-controls">
+        <label>Defenses vs.</label>
+        <select id="rbcPos">
+          <option value="RB" selected>RBs: rushing + receiving</option>
+          <option value="QB">QBs: passing + rushing</option>
+        </select>
+        <select id="rbcTier">
+          <option value="bottom5">Bottom 5</option>
+          <option value="bottom10" selected>Bottom 10</option>
+          <option value="top10">Top 10</option>
+          <option value="top5">Top 5</option>
+        </select>
+        <button class="qa-go" id="rbcGo">Ask</button>
+      </div>
+    </div>
+
     <div class="qa-section" id="slotSection" style="display:none">
       <div class="qa-section-title">Slot Matchups (local only)</div>
       <div class="qa-controls">
@@ -2492,6 +2592,15 @@ async function init(){
     const { spec: tierSpec, label: tierLabel } = TIERS[tier];
     const label = `${pos}'s vs. ${tierLabel} defenses`;
     ask(label, { position: pos, ...tierSpec });
+  };
+
+  $('rbcGo').onclick = () => {
+    const T = { bottom5: [{ opponent_rank_min: 28 }, 'bottom 5'], bottom10: [{ opponent_rank_min: 23 }, 'bottom 10'],
+                top10: [{ opponent_rank_max: 10 }, 'top 10'], top5: [{ opponent_rank_max: 5 }, 'top 5'] };
+    const [tierSpec, tierLabel] = T[$('rbcTier').value];
+    const pos = $('rbcPos').value;
+    ask(`${tierLabel} defenses vs. ${pos === 'QB' ? "QBs — passing + rushing" : "RBs — rushing + receiving"} yards combined`,
+        { mode: 'rb_combo', position: pos, ...tierSpec });
   };
 
   $('smGo').onclick = () => {
