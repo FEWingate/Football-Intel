@@ -2269,8 +2269,9 @@ function comboCoeusHTML(r){
   const col = pk === 'OVER' ? 'var(--accent-green)' : (pk === 'UNDER' ? 'var(--accent-red)' : 'var(--accent-blue)');
   return `<div class="combo-coeus" style="border-left-color:${col};background:color-mix(in srgb, ${col} 9%, transparent)">
     <div class="cc-title">Coeus pick</div>
-    <div class="cc-top"><span style="color:${col};font-weight:800;letter-spacing:.04em">${esc2(pk || '—')}${c.review ? ' <span class="fav-badge check" style="margin-left:6px;font-size:9px" title="The model projection is more than 12% from the line, so treat this pick with caution">⚠ REVIEW</span>' : ''}</span><span class="rank-chip">confidence ${esc2(c.confidence ?? '—')}/5</span></div>
+    <div class="cc-top"><span style="color:${col};font-weight:800;letter-spacing:.04em">${esc2(pk || '—')}${c.review ? ' <span class="fav-badge check" style="margin-left:6px;font-size:9px" title="The model projection is more than 12% from the line, so treat this pick with caution">⚠ REVIEW</span>' : ''}</span>${pk === 'NEUTRAL' ? (comboLeanChip(r) || '<span class="rank-chip">no edge</span>') : `<span class="rank-chip">confidence ${esc2(c.confidence ?? '—')}/5</span>`}</div>
     <p class="cc-why">${esc2(c.reasoning || '')}</p>
+    ${pk === 'NEUTRAL' ? '<p class="cc-why" style="opacity:.7;font-size:11px">NEUTRAL means no bet: the model sees no edge worth taking on either side. The lean only shows which way the numbers tilt.</p>' : ''}
   </div>`;
 }
 function comboRows(){
@@ -2290,13 +2291,29 @@ function comboRows(){
   rows.sort((a, b) => (score(b) - score(a)) || ((b.projection ? b.projection.proj_total : 0) - (a.projection ? a.projection.proj_total : 0)));
   return rows;
 }
+// "Lean" for a NEUTRAL pick: which way the model tilts, even when the tilt is too small to bet. Uses the line on the
+// card (saved or typed), so it updates as you type. p is the model's chance for that side before any betting margin.
+function comboLean(r){
+  const L = comboEffLine(r), pr = r.projection;
+  if(!L || L.point == null || isNaN(L.point) || !pr) return null;
+  const ev = comboEval(r, L.point, L.over_price, L.under_price);
+  if(!ev) return null;
+  const over = ev.pOver >= ev.pUnder, p = over ? ev.pOver : ev.pUnder;
+  return { side: over ? 'OVER' : 'UNDER', p, diff: pr.proj_total - L.point, even: p < 0.52 };
+}
+function comboLeanChip(r){
+  const l = comboLean(r); if(!l) return '';
+  if(l.even) return `<span class="rank-chip" title="The model puts this at about 50/50, so there is no tilt either way">no lean · dead even</span>`;
+  const col = l.side === 'OVER' ? 'var(--accent-green)' : 'var(--accent-red)';
+  return `<span class="rank-chip" style="color:${col}" title="The model tilts ${l.side} (${Math.round(100 * l.p)}% on that side, projection ${l.diff >= 0 ? '+' : ''}${l.diff.toFixed(1)} yds vs the line), but not by enough to call a bet">slight lean ${l.side} · ${Math.round(100 * l.p)}%</span>`;
+}
 function comboMiniPick(r){
   const c = r.coeus; if(!c) return '';
   const pk = c.pick === 'PASS' ? 'NEUTRAL' : c.pick;
   const col = pk === 'OVER' ? 'var(--accent-green)' : (pk === 'UNDER' ? 'var(--accent-red)' : 'var(--accent-blue)');
   return `<div class="combo-mini" style="border-left-color:${col};background:color-mix(in srgb, ${col} 9%, transparent)">
     <div class="cm-pick"><span class="cm-lbl">Coeus pick</span><span style="color:${col}">${esc2(pk || '—')}</span>${c.review ? '<span class="fav-badge check" style="font-size:9px" title="The model projection is more than 12% from the line, so treat this pick with caution">⚠ REVIEW</span>' : ''}</div>
-    <span class="rank-chip">confidence ${esc2(c.confidence ?? '—')}/5</span></div>`;
+    ${pk === 'NEUTRAL' ? (comboLeanChip(r) || '<span class="rank-chip">no edge</span>') : `<span class="rank-chip">confidence ${esc2(c.confidence ?? '—')}/5</span>`}</div>`;
 }
 function comboCardHTML(r, i){
   const L = comboEffLine(r), g = r.game;
