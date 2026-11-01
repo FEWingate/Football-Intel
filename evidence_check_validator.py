@@ -80,6 +80,7 @@ trusting the prose alone:
 """
 
 import json
+import re
 import os
 import sys
 
@@ -282,7 +283,9 @@ def live_current_opponent_ranks(live, team, pos, stat, role, opponent=None):
         # when teams have played different numbers of games (bye weeks). A report citing yards per game and its
         # per-game rank is correct, so both spellings are accepted.
         stat_keys = [stat] + ([stat[:-4] + "_ypg"] if stat.endswith("_yds") else []) \
-                           + ([stat[:-4] + "_yds"] if stat.endswith("_ypg") else [])
+                           + ([stat[:-4] + "_yds"] if stat.endswith("_ypg") else []) \
+                           + ([stat[:-1]] if stat.endswith("_tds") else []) \
+                           + ([stat + "s"] if stat.endswith("_td") else [])
         team_data = (matchup.get("teams") or {}).get(team) or {}
         group = (team_data.get(role) or {}).get(pos)
         for sk in stat_keys:
@@ -426,6 +429,24 @@ def verify_evidence_check(evidence_check, evidence_by_game):
             # (a lowercase "team" claim was reported as "no real data" for all 22 team claims).
             if isinstance(pos, str):
                 pos = pos.strip().upper()
+
+            # Coeus sometimes writes the PLAYER's name in the team field ("team": "Zay Flowers") for a player-rank
+            # claim. A name is not a team code, so no live lookup could ever match it and every such claim came back
+            # as "no real data" (21 of them for the Week 8 BAL@BUF batch). Resolve the name to that player's team
+            # from the evidence package first, then check the claim exactly as if the team code had been written.
+            if isinstance(team, str) and team:
+                known = {c for ge in evidence_by_game.values() for c in ((ge.get("game") or {}).get("away"), (ge.get("game") or {}).get("home")) if c}
+                if team not in known:
+                    want = re.sub(r"[^a-z]", "", team.lower())
+                    hit = None
+                    for ge in evidence_by_game.values():
+                        gi = ge.get("game") or {}
+                        for side in ("away", "home"):
+                            for pl in ((ge.get("players") or {}).get(side) or []):
+                                if isinstance(pl, dict) and re.sub(r"[^a-z]", "", str(pl.get("name", "")).lower()) == want:
+                                    hit = gi.get(side)
+                    if hit:
+                        team = hit
 
             # Find which game (and this claim's week + opponent) this
             # team belongs to, so live files can be loaded and, for a
