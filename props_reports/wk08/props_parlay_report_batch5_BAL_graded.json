@@ -1,0 +1,1532 @@
+{
+  "generated_at": "2026-10-31T22:47:40.655507+00:00",
+  "games_included": [
+    "BAL_BUF",
+    "TEN_CIN",
+    "ARI_DAL",
+    "MIN_DET",
+    "IND_JAX"
+  ],
+  "coverage": {
+    "passing_yards": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-31T22:40:19.887740+00:00",
+      "source_age_seconds": 0
+    },
+    "rushing_yards": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-31T22:40:19.887740+00:00",
+      "source_age_seconds": 0
+    },
+    "receiving_yards": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-31T22:40:19.887740+00:00",
+      "source_age_seconds": 0
+    },
+    "receptions": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-31T22:40:19.887740+00:00",
+      "source_age_seconds": 0
+    },
+    "anytime_td": {
+      "status": "current",
+      "current_event_count": 13,
+      "displayed_event_count": 13,
+      "previous_event_count": 13,
+      "carried_event_count": 0,
+      "source_generated_at": "2026-10-31T22:40:19.887740+00:00",
+      "source_age_seconds": 0
+    }
+  },
+  "stake_used_for_payout_examples": 10,
+  "markdown": "**REAL DATA COVERAGE CHECK:** All five families (passing, rushing, receiving, receptions, anytime TD) are LIVE across all 13 games this slate \u2014 no stale or unavailable markets, no picks omitted for data-coverage reasons.\n\n```json\nPROP_BREAKDOWN\n{\n  \"per_game\": [\n    {\"away\": \"BAL\", \"home\": \"BUF\", \"picks\": [\n      {\"player\": \"Zay Flowers\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"f10c53df0128ae4a\", \"price\": 1.885, \"side\": \"over\", \"line\": 82.5, \"reason\": \"Flowers ranks 2nd in the league in rec yds/gm (101.3, 6 games) while Buffalo's defense ranks 28th against WRs (181.6 allowed) \u2014 the exact Standard-tier Threat convergence, reinforced by his 56.1% slot rate against the league's worst slot defense (32nd).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Zay Flowers\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"off\",\"claimed_rank\":2},{\"type\":\"current_opponent\",\"team\":\"BUF\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":28}], \"projection\": 98, \"games_2026\": 6},\n      {\"player\": \"Derrick Henry\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"f10c53df0128ae4a\", \"price\": 1.885, \"side\": \"over\", \"line\": 78.5, \"reason\": \"Henry ranks 6th in rush yds/gm (82.7, 7 games) against a Buffalo run defense that ranks a middling 13th against backs (82.8 allowed), and his road average (98.2) and road-plus-mid-tier split (123.0, n=2) both sit well above this line.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Derrick Henry\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"off\",\"claimed_rank\":6},{\"type\":\"current_opponent\",\"team\":\"BUF\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":13}], \"projection\": 88, \"games_2026\": 7},\n      {\"player\": \"Josh Allen\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"f10c53df0128ae4a\", \"price\": 1.885, \"side\": \"over\", \"line\": 247.5, \"reason\": \"Allen ranks 11th in pass yds/gm (250.7, 6 games) against a Baltimore pass defense ranked 15th, and the 54.5 real game total with Buffalo favored by 3 supports real passing volume rather than a run-out script.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Josh Allen\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"off\",\"claimed_rank\":11},{\"type\":\"current_opponent\",\"team\":\"BAL\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":15}], \"projection\": 262, \"games_2026\": 6}\n    ]},\n    {\"away\": \"TEN\", \"home\": \"CIN\", \"picks\": [\n      {\"player\": \"Tee Higgins\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"237a900b9f27f896\", \"price\": 1.885, \"side\": \"over\", \"line\": 70.5, \"reason\": \"Higgins ranks 4th in rec yds/gm (95.2, 6 games) against a Tennessee defense that ranks 27th against WRs (175.6 allowed) \u2014 a full Quadruple-type Threat convergence also hit on receptions (10th vs 30th allowed).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Tee Higgins\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"off\",\"claimed_rank\":4},{\"type\":\"current_opponent\",\"team\":\"TEN\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":27}], \"projection\": 102, \"games_2026\": 6},\n      {\"player\": \"Joe Burrow\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"237a900b9f27f896\", \"price\": 1.885, \"side\": \"over\", \"line\": 272.5, \"reason\": \"Burrow ranks 5th in pass yds/gm (275.5, 6 games) against a Tennessee pass defense ranked 23rd, and his home average this season (341.0 ypg across 2 starts) sits well clear of this line.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Joe Burrow\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"off\",\"claimed_rank\":5},{\"type\":\"current_opponent\",\"team\":\"TEN\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":23}], \"projection\": 292, \"games_2026\": 6},\n      {\"player\": \"Cam Ward\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"237a900b9f27f896\", \"price\": 1.885, \"side\": \"under\", \"line\": 192.5, \"reason\": \"Ward ranks dead-last in the league in pass yds/gm (168.4, 32nd, 7 games) even against Cincinnati's pass defense (ranked 23rd), and his own season-long splits are flat (160-177 ypg regardless of opponent quality) \u2014 a real ceiling well below this line.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Cam Ward\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"off\",\"claimed_rank\":31},{\"type\":\"current_opponent\",\"team\":\"CIN\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":26}], \"projection\": 171, \"games_2026\": 7}\n    ]},\n    {\"away\": \"ARI\", \"home\": \"DAL\", \"picks\": [\n      {\"player\": \"Dak Prescott\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"a6cec503b5656d31\", \"price\": 1.885, \"side\": \"over\", \"line\": 271.5, \"reason\": \"Prescott ranks 8th in pass yds/gm (264.4, 7 games) and 8th in TD rate against an Arizona defense that ranks a middling 21st in yards but dead-last (32nd) in passing TDs allowed, the exact Threat convergence, and his home average (290.3 ypg) clears this line.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Dak Prescott\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"off\",\"claimed_rank\":8},{\"type\":\"current_opponent\",\"team\":\"ARI\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":21},{\"type\":\"current_opponent\",\"team\":\"Dak Prescott\",\"pos\":\"QB\",\"stat\":\"pass_tds\",\"role\":\"off\",\"claimed_rank\":8},{\"type\":\"current_opponent\",\"team\":\"ARI\",\"pos\":\"QB\",\"stat\":\"pass_tds\",\"role\":\"def\",\"claimed_rank\":32}], \"projection\": 288, \"games_2026\": 7},\n      {\"player\": \"CeeDee Lamb\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"a6cec503b5656d31\", \"price\": 1.885, \"side\": \"over\", \"line\": 80.5, \"reason\": \"Lamb ranks 5th in rec yds/gm (93.0, 7 games) against an Arizona WR defense that ranks 21st in yards allowed but surrenders the worst yards-per-catch mark in the league (32nd), exactly the profile that turns his volume into big plays.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CeeDee Lamb\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"off\",\"claimed_rank\":5},{\"type\":\"current_opponent\",\"team\":\"ARI\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":21}], \"projection\": 96, \"games_2026\": 7},\n      {\"player\": \"Javonte Williams\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"a6cec503b5656d31\", \"price\": 1.885, \"side\": \"over\", \"line\": 76.5, \"reason\": \"Williams ranks 17th in rush yds/gm (67.4, 7 games) against an Arizona run defense that ranks 23rd against backs (103.6 allowed), and his 68.9% red-zone carry share (8 rushing TDs) adds real goal-line volume on top of the yardage.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Javonte Williams\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"off\",\"claimed_rank\":17},{\"type\":\"current_opponent\",\"team\":\"ARI\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":23}], \"projection\": 82, \"games_2026\": 7}\n    ]},\n    {\"away\": \"MIN\", \"home\": \"DET\", \"picks\": [\n      {\"player\": \"T.J. Hockenson\", \"market_key\": \"player_receptions\", \"canonical_event_id\": \"79c32aa4cb70268d\", \"price\": 1.847, \"side\": \"over\", \"line\": 4.5, \"reason\": \"Hockenson ranks 8th in receptions among qualifying players at his position (4.5/gm, 6 games) against a Detroit defense that allows the most TE receptions in the league (32nd), a clean Standard-tier Threat convergence.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"T.J. Hockenson\",\"pos\":\"TE\",\"stat\":\"rec\",\"role\":\"off\",\"claimed_rank\":8},{\"type\":\"current_opponent\",\"team\":\"DET\",\"pos\":\"TE\",\"stat\":\"rec\",\"role\":\"def\",\"claimed_rank\":32}], \"projection\": 5.3, \"games_2026\": 6},\n      {\"player\": \"Jahmyr Gibbs\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"79c32aa4cb70268d\", \"price\": 1.885, \"side\": \"over\", \"line\": 87.5, \"reason\": \"Gibbs ranks 3rd in rush yds/gm (103.3, 6 games) against a Minnesota run defense that ranks a mid-tier 15th against backs, and his home average this season (123.7 ypg) clears this line by a wide margin.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Jahmyr Gibbs\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"off\",\"claimed_rank\":3},{\"type\":\"current_opponent\",\"team\":\"MIN\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":15}], \"projection\": 112, \"games_2026\": 6},\n      {\"player\": \"Sam LaPorta\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"79c32aa4cb70268d\", \"price\": 1.885, \"side\": \"under\", \"line\": 45.5, \"reason\": \"LaPorta ranks 6th in rec yds/gm (55.7, 6 games) but Minnesota's TE defense ranks 5th-toughest in the league (38.8 allowed), and his one real precedent against a comparably elite TE defense this season produced just 18 yards.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Sam LaPorta\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"off\",\"claimed_rank\":6},{\"type\":\"current_opponent\",\"team\":\"MIN\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":5}], \"projection\": 37, \"games_2026\": 6}\n    ]},\n    {\"away\": \"IND\", \"home\": \"JAX\", \"picks\": [\n      {\"player\": \"Josh Downs\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"e5475c6180f55c8d\", \"price\": 1.885, \"side\": \"over\", \"line\": 32.5, \"reason\": \"Downs ranks 48th among qualifying WRs in rec yds/gm (43.9, 7 games) but Jacksonville's defense allows the most WR receiving yards in the league (210.0, 32nd), a mismatch his own raw season average already clears by over 11 yards.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Josh Downs\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"off\",\"claimed_rank\":48},{\"type\":\"current_opponent\",\"team\":\"JAX\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":32}], \"projection\": 48, \"games_2026\": 7},\n      {\"player\": \"Jonathan Taylor\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"e5475c6180f55c8d\", \"price\": 1.885, \"side\": \"over\", \"line\": 49.5, \"reason\": \"Taylor ranks 5th in rush yds/gm (83.9, 7 games), and even though Jacksonville's run defense is the league's best against backs (1st, 51.5 allowed), his own road-plus-top-tier split this season (94.0 ypg, n=3) says he hasn't been suppressed by good run defenses, with this line set well below his season rate.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Jonathan Taylor\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"off\",\"claimed_rank\":5},{\"type\":\"current_opponent\",\"team\":\"JAX\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":1}], \"projection\": 68, \"games_2026\": 7},\n      {\"player\": \"Parker Washington\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"e5475c6180f55c8d\", \"price\": 1.885, \"side\": \"over\", \"line\": 67.5, \"reason\": \"Washington ranks 18th in rec yds/gm (69.3, 6 games) against an Indianapolis WR defense that ranks 14th (mid-tier), and his home average this season (77.8 ypg) sits above this line.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Parker Washington\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"off\",\"claimed_rank\":18},{\"type\":\"current_opponent\",\"team\":\"IND\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":14}], \"projection\": 76, \"games_2026\": 6}\n    ]}\n  ],\n  \"per_position\": {\n    \"QB\": {\"player\": \"Joe Burrow\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"237a900b9f27f896\", \"price\": 1.885, \"side\": \"over\", \"line\": 272.5, \"reason\": \"Burrow's Standard-tier Threat convergence (5th in pass yds/gm vs Tennessee's 23rd-ranked pass defense) is the cleanest QB-yardage edge on the slate, with his home average (341.0 ypg) well clear of this line.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Joe Burrow\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"off\",\"claimed_rank\":5},{\"type\":\"current_opponent\",\"team\":\"TEN\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":23}], \"projection\": 292, \"games_2026\": 6},\n    \"RB\": {\"player\": \"Jahmyr Gibbs\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"79c32aa4cb70268d\", \"price\": 1.885, \"side\": \"over\", \"line\": 87.5, \"reason\": \"Gibbs' 3rd-ranked rush yds/gm (103.3) against Minnesota's mid-tier (15th) run defense, paired with a 123.7 ypg home average, gives him the widest real margin above his own posted line of any back on the slate.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Jahmyr Gibbs\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"off\",\"claimed_rank\":3},{\"type\":\"current_opponent\",\"team\":\"MIN\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":15}], \"projection\": 112, \"games_2026\": 6},\n    \"WR\": {\"player\": \"Zay Flowers\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"f10c53df0128ae4a\", \"price\": 1.885, \"side\": \"over\", \"line\": 82.5, \"reason\": \"Flowers' Quadruple-type Threat designation (2nd in rec yds/gm and 7th in receptions, both converging against Buffalo's 26th/27th-ranked WR defense) is the single strongest individual matchup on this week's board.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Zay Flowers\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"off\",\"claimed_rank\":2},{\"type\":\"current_opponent\",\"team\":\"BUF\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":28}], \"projection\": 98, \"games_2026\": 6},\n    \"TE\": {\"player\": \"T.J. Hockenson\", \"market_key\": \"player_receptions\", \"canonical_event_id\": \"79c32aa4cb70268d\", \"price\": 1.847, \"side\": \"over\", \"line\": 4.5, \"reason\": \"Hockenson's Standard-tier Threat convergence (8th in receptions vs Detroit's league-worst 32nd-ranked TE defense) is the clearest positional mismatch at tight end this week.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"T.J. Hockenson\",\"pos\":\"TE\",\"stat\":\"rec\",\"role\":\"off\",\"claimed_rank\":8},{\"type\":\"current_opponent\",\"team\":\"DET\",\"pos\":\"TE\",\"stat\":\"rec\",\"role\":\"def\",\"claimed_rank\":32}], \"projection\": 5.3, \"games_2026\": 6}\n  }\n}\n```\n\n```json\nFAVORITE_OU\n{\n  \"overs\": [\n    {\"player\": \"Zay Flowers\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"f10c53df0128ae4a\", \"price\": 1.885, \"side\": \"over\", \"line\": 82.5, \"reason\": \"The strongest Threat convergence on the slate (2nd in rec yds/gm vs Buffalo's 28th-ranked WR defense) plus elite slot usage against the league's worst slot unit.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Zay Flowers\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"off\",\"claimed_rank\":2},{\"type\":\"current_opponent\",\"team\":\"BUF\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":28}], \"projection\": 98, \"games_2026\": 6},\n    {\"player\": \"Tee Higgins\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"237a900b9f27f896\", \"price\": 1.885, \"side\": \"over\", \"line\": 70.5, \"reason\": \"A full Quadruple-type Threat (4th in rec yds/gm and 10th in receptions, both converging against Tennessee's weak WR defense).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Tee Higgins\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"off\",\"claimed_rank\":4},{\"type\":\"current_opponent\",\"team\":\"TEN\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":27}], \"projection\": 102, \"games_2026\": 6},\n    {\"player\": \"Dak Prescott\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"a6cec503b5656d31\", \"price\": 1.885, \"side\": \"over\", \"line\": 271.5, \"reason\": \"Triple-type Threat (8th in pass yds/gm, 8th in TD rate) against Arizona's league-worst (32nd) passing-TD defense, with a 290.3 ypg home average clearing this line.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Dak Prescott\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"off\",\"claimed_rank\":8},{\"type\":\"current_opponent\",\"team\":\"ARI\",\"pos\":\"QB\",\"stat\":\"pass_tds\",\"role\":\"def\",\"claimed_rank\":32}], \"projection\": 288, \"games_2026\": 7},\n    {\"player\": \"Joe Burrow\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"237a900b9f27f896\", \"price\": 1.885, \"side\": \"over\", \"line\": 272.5, \"reason\": \"Triple-type Threat (5th in pass yds/gm vs Tennessee's 23rd-ranked pass defense) with a 341.0 ypg home average well above this line.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Joe Burrow\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"off\",\"claimed_rank\":5},{\"type\":\"current_opponent\",\"team\":\"TEN\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":23}], \"projection\": 292, \"games_2026\": 6},\n    {\"player\": \"T.J. Hockenson\", \"market_key\": \"player_receptions\", \"canonical_event_id\": \"79c32aa4cb70268d\", \"price\": 1.847, \"side\": \"over\", \"line\": 4.5, \"reason\": \"Standard-tier Threat (8th in receptions vs Detroit's league-worst 32nd-ranked TE defense).\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"T.J. Hockenson\",\"pos\":\"TE\",\"stat\":\"rec\",\"role\":\"off\",\"claimed_rank\":8},{\"type\":\"current_opponent\",\"team\":\"DET\",\"pos\":\"TE\",\"stat\":\"rec\",\"role\":\"def\",\"claimed_rank\":32}], \"projection\": 5.3, \"games_2026\": 6},\n    {\"player\": \"Jahmyr Gibbs\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"79c32aa4cb70268d\", \"price\": 1.885, \"side\": \"over\", \"line\": 87.5, \"reason\": \"3rd-ranked rush yds/gm against Minnesota's mid-tier (15th) run defense, with a 123.7 ypg home average clearing this line by a wide margin.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Jahmyr Gibbs\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"off\",\"claimed_rank\":3},{\"type\":\"current_opponent\",\"team\":\"MIN\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":15}], \"projection\": 112, \"games_2026\": 6},\n    {\"player\": \"CeeDee Lamb\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"a6cec503b5656d31\", \"price\": 1.885, \"side\": \"over\", \"line\": 80.5, \"reason\": \"5th-ranked rec yds/gm against an Arizona WR defense that owns the league's worst yards-per-catch mark allowed (32nd), exactly the profile for a big-play boost.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"CeeDee Lamb\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"off\",\"claimed_rank\":5},{\"type\":\"current_opponent\",\"team\":\"ARI\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":21}], \"projection\": 96, \"games_2026\": 7},\n    {\"player\": \"Josh Downs\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"e5475c6180f55c8d\", \"price\": 1.885, \"side\": \"over\", \"line\": 32.5, \"reason\": \"A modest 48th-ranked rec yds/gm but Jacksonville's defense allows the most WR receiving yards in the league (32nd), a mismatch his raw average already clears by over 11 yards.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Josh Downs\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"off\",\"claimed_rank\":48},{\"type\":\"current_opponent\",\"team\":\"JAX\",\"pos\":\"WR\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":32}], \"projection\": 48, \"games_2026\": 7}\n  ],\n  \"unders\": [\n    {\"player\": \"Jared Goff\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"79c32aa4cb70268d\", \"price\": 1.885, \"side\": \"under\", \"line\": 259.5, \"reason\": \"Even the league's 1st-ranked passer in yds/gm (298.0) faces real resistance from Minnesota's pass defense, which ranks 2nd-toughest in the league (180.8 allowed) \u2014 the single toughest matchup on the board for a high-volume passer.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Jared Goff\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"off\",\"claimed_rank\":1},{\"type\":\"current_opponent\",\"team\":\"MIN\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":2}], \"projection\": 248, \"games_2026\": 6},\n    {\"player\": \"Cam Ward\", \"market_key\": \"player_passing_yards\", \"canonical_event_id\": \"237a900b9f27f896\", \"price\": 1.885, \"side\": \"under\", \"line\": 192.5, \"reason\": \"Ward ranks dead-last in the league in pass yds/gm (168.4, 32nd), and his own season-long splits stay flat (160-177 ypg) regardless of opponent quality, including against Cincinnati's 23rd-ranked pass defense.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Cam Ward\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"off\",\"claimed_rank\":31},{\"type\":\"current_opponent\",\"team\":\"CIN\",\"pos\":\"QB\",\"stat\":\"pass_yds\",\"role\":\"def\",\"claimed_rank\":26}], \"projection\": 171, \"games_2026\": 7},\n    {\"player\": \"James Cook\", \"market_key\": \"player_rushing_yards\", \"canonical_event_id\": \"f10c53df0128ae4a\", \"price\": 1.885, \"side\": \"under\", \"line\": 82.5, \"reason\": \"Cook ranks 2nd in rush yds/gm (104.5) but Baltimore's run defense is specifically tough against backs, ranking 7th-best in the league (77.4 allowed) \u2014 a real step up from Buffalo's typical opponent.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"James Cook\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"off\",\"claimed_rank\":2},{\"type\":\"current_opponent\",\"team\":\"BAL\",\"pos\":\"RB\",\"stat\":\"rush_yds\",\"role\":\"def\",\"claimed_rank\":7}], \"projection\": 74, \"games_2026\": 6},\n    {\"player\": \"Dalton Kincaid\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"f10c53df0128ae4a\", \"price\": 1.885, \"side\": \"under\", \"line\": 46.5, \"reason\": \"Kincaid ranks 7th in rec yds/gm (52.5) but Baltimore's tight end defense ranks a tough 6th-best in the league (39.0 allowed), the opposite of a funnel matchup.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Dalton Kincaid\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"off\",\"claimed_rank\":7},{\"type\":\"current_opponent\",\"team\":\"BAL\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":6}], \"projection\": 36, \"games_2026\": 6},\n    {\"player\": \"Sam LaPorta\", \"market_key\": \"player_receiving_yards\", \"canonical_event_id\": \"79c32aa4cb70268d\", \"price\": 1.885, \"side\": \"under\", \"line\": 45.5, \"reason\": \"LaPorta ranks 6th in rec yds/gm but Minnesota's tight end defense ranks 5th-toughest in the league, and his one real precedent against a comparably elite TE defense this season produced just 18 yards.\", \"evidence_check\": [{\"type\":\"current_opponent\",\"team\":\"Sam LaPorta\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"off\",\"claimed_rank\":6},{\"type\":\"current_opponent\",\"team\":\"MIN\",\"pos\":\"TE\",\"stat\":\"rec_yds\",\"role\":\"def\",\"claimed_rank\":5}], \"projection\": 37, \"games_2026\": 6}\n  ]\n}\n```",
+  "prop_breakdown": {
+    "per_game": [
+      {
+        "away": "BAL",
+        "home": "BUF",
+        "picks": [
+          {
+            "player": "Zay Flowers",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "f10c53df0128ae4a",
+            "price": 1.885,
+            "side": "over",
+            "line": 82.5,
+            "reason": "Flowers ranks 2nd in the league in rec yds/gm (101.3, 6 games) while Buffalo's defense ranks 28th against WRs (181.6 allowed) \u2014 the exact Standard-tier Threat convergence, reinforced by his 56.1% slot rate against the league's worst slot defense (32nd).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "Zay Flowers",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "off",
+                "claimed_rank": 2
+              },
+              {
+                "type": "current_opponent",
+                "team": "BUF",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 28
+              }
+            ],
+            "projection": 98,
+            "games_2026": 6,
+            "projection_edge": 15.5,
+            "evidence_mismatches": [
+              "evidence_check cites Zay Flowers's current WR off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+            ],
+            "grade": "L",
+            "actual": 0.0,
+            "actual_label": "0 rec yds"
+          },
+          {
+            "player": "Derrick Henry",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "f10c53df0128ae4a",
+            "price": 1.885,
+            "side": "over",
+            "line": 78.5,
+            "reason": "Henry ranks 6th in rush yds/gm (82.7, 7 games) against a Buffalo run defense that ranks a middling 13th against backs (82.8 allowed), and his road average (98.2) and road-plus-mid-tier split (123.0, n=2) both sit well above this line.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "Derrick Henry",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "off",
+                "claimed_rank": 6
+              },
+              {
+                "type": "current_opponent",
+                "team": "BUF",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "def",
+                "claimed_rank": 13
+              }
+            ],
+            "projection": 88,
+            "games_2026": 7,
+            "projection_edge": 9.5,
+            "evidence_mismatches": [
+              "evidence_check cites Derrick Henry's current RB off rush_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+            ],
+            "grade": "L",
+            "actual": 53.0,
+            "actual_label": "53 rush yds"
+          },
+          {
+            "player": "Josh Allen",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "f10c53df0128ae4a",
+            "price": 1.885,
+            "side": "over",
+            "line": 247.5,
+            "reason": "Allen ranks 11th in pass yds/gm (250.7, 6 games) against a Baltimore pass defense ranked 15th, and the 54.5 real game total with Buffalo favored by 3 supports real passing volume rather than a run-out script.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "Josh Allen",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "off",
+                "claimed_rank": 11
+              },
+              {
+                "type": "current_opponent",
+                "team": "BAL",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "def",
+                "claimed_rank": 15
+              }
+            ],
+            "projection": 262,
+            "games_2026": 6,
+            "projection_edge": 14.5,
+            "evidence_mismatches": [
+              "evidence_check cites Josh Allen's current QB off pass_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+            ],
+            "grade": "W",
+            "actual": 289.0,
+            "actual_label": "289 pass yds"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "TEN",
+        "home": "CIN",
+        "picks": [
+          {
+            "player": "Tee Higgins",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "237a900b9f27f896",
+            "price": 1.885,
+            "side": "over",
+            "line": 70.5,
+            "reason": "Higgins ranks 4th in rec yds/gm (95.2, 6 games) against a Tennessee defense that ranks 27th against WRs (175.6 allowed) \u2014 a full Quadruple-type Threat convergence also hit on receptions (10th vs 30th allowed).",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "Tee Higgins",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "off",
+                "claimed_rank": 4
+              },
+              {
+                "type": "current_opponent",
+                "team": "TEN",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 27
+              }
+            ],
+            "projection": 102,
+            "games_2026": 6,
+            "projection_edge": 31.5,
+            "evidence_mismatches": [
+              "evidence_check cites Tee Higgins's current WR off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+            ],
+            "grade": "W",
+            "actual": 155.0,
+            "actual_label": "155 rec yds"
+          },
+          {
+            "player": "Joe Burrow",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "237a900b9f27f896",
+            "price": 1.885,
+            "side": "over",
+            "line": 272.5,
+            "reason": "Burrow ranks 5th in pass yds/gm (275.5, 6 games) against a Tennessee pass defense ranked 23rd, and his home average this season (341.0 ypg across 2 starts) sits well clear of this line.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "Joe Burrow",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "off",
+                "claimed_rank": 5
+              },
+              {
+                "type": "current_opponent",
+                "team": "TEN",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "def",
+                "claimed_rank": 23
+              }
+            ],
+            "projection": 292,
+            "games_2026": 6,
+            "projection_edge": 19.5,
+            "evidence_mismatches": [
+              "evidence_check cites Joe Burrow's current QB off pass_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+            ],
+            "grade": "W",
+            "actual": 462.0,
+            "actual_label": "462 pass yds"
+          },
+          {
+            "player": "Cam Ward",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "237a900b9f27f896",
+            "price": 1.885,
+            "side": "under",
+            "line": 192.5,
+            "reason": "Ward ranks dead-last in the league in pass yds/gm (168.4, 32nd, 7 games) even against Cincinnati's pass defense (ranked 23rd), and his own season-long splits are flat (160-177 ypg regardless of opponent quality) \u2014 a real ceiling well below this line.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "Cam Ward",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "off",
+                "claimed_rank": 31
+              },
+              {
+                "type": "current_opponent",
+                "team": "CIN",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "def",
+                "claimed_rank": 26
+              }
+            ],
+            "projection": 171,
+            "games_2026": 7,
+            "projection_edge": 21.5,
+            "evidence_mismatches": [
+              "evidence_check cites Cam Ward's current QB off pass_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+            ],
+            "grade": "L",
+            "actual": 304.0,
+            "actual_label": "304 pass yds"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "ARI",
+        "home": "DAL",
+        "picks": [
+          {
+            "player": "Dak Prescott",
+            "market_key": "player_passing_yards",
+            "canonical_event_id": "a6cec503b5656d31",
+            "price": 1.885,
+            "side": "over",
+            "line": 271.5,
+            "reason": "Prescott ranks 8th in pass yds/gm (264.4, 7 games) and 8th in TD rate against an Arizona defense that ranks a middling 21st in yards but dead-last (32nd) in passing TDs allowed, the exact Threat convergence, and his home average (290.3 ypg) clears this line.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "Dak Prescott",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "off",
+                "claimed_rank": 8
+              },
+              {
+                "type": "current_opponent",
+                "team": "ARI",
+                "pos": "QB",
+                "stat": "pass_yds",
+                "role": "def",
+                "claimed_rank": 21
+              },
+              {
+                "type": "current_opponent",
+                "team": "Dak Prescott",
+                "pos": "QB",
+                "stat": "pass_tds",
+                "role": "off",
+                "claimed_rank": 8
+              },
+              {
+                "type": "current_opponent",
+                "team": "ARI",
+                "pos": "QB",
+                "stat": "pass_tds",
+                "role": "def",
+                "claimed_rank": 32
+              }
+            ],
+            "projection": 288,
+            "games_2026": 7,
+            "projection_edge": 16.5,
+            "evidence_mismatches": [
+              "evidence_check cites Dak Prescott's current QB off pass_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+              "evidence_check cites Dak Prescott's current QB off pass_tds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+              "evidence_check cites ARI's current QB def pass_tds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+            ],
+            "grade": "L",
+            "actual": 195.0,
+            "actual_label": "195 pass yds"
+          },
+          {
+            "player": "CeeDee Lamb",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "a6cec503b5656d31",
+            "price": 1.885,
+            "side": "over",
+            "line": 80.5,
+            "reason": "Lamb ranks 5th in rec yds/gm (93.0, 7 games) against an Arizona WR defense that ranks 21st in yards allowed but surrenders the worst yards-per-catch mark in the league (32nd), exactly the profile that turns his volume into big plays.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "CeeDee Lamb",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "off",
+                "claimed_rank": 5
+              },
+              {
+                "type": "current_opponent",
+                "team": "ARI",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 21
+              }
+            ],
+            "projection": 96,
+            "games_2026": 7,
+            "projection_edge": 15.5,
+            "evidence_mismatches": [
+              "evidence_check cites CeeDee Lamb's current WR off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+            ],
+            "grade": "L",
+            "actual": 58.0,
+            "actual_label": "58 rec yds"
+          },
+          {
+            "player": "Javonte Williams",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "a6cec503b5656d31",
+            "price": 1.885,
+            "side": "over",
+            "line": 76.5,
+            "reason": "Williams ranks 17th in rush yds/gm (67.4, 7 games) against an Arizona run defense that ranks 23rd against backs (103.6 allowed), and his 68.9% red-zone carry share (8 rushing TDs) adds real goal-line volume on top of the yardage.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "Javonte Williams",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "off",
+                "claimed_rank": 17
+              },
+              {
+                "type": "current_opponent",
+                "team": "ARI",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "def",
+                "claimed_rank": 23
+              }
+            ],
+            "projection": 82,
+            "games_2026": 7,
+            "projection_edge": 5.5,
+            "evidence_mismatches": [
+              "evidence_check cites Javonte Williams's current RB off rush_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+            ],
+            "grade": "L",
+            "actual": 56.0,
+            "actual_label": "56 rush yds"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "MIN",
+        "home": "DET",
+        "picks": [
+          {
+            "player": "T.J. Hockenson",
+            "market_key": "player_receptions",
+            "canonical_event_id": "79c32aa4cb70268d",
+            "price": 1.847,
+            "side": "over",
+            "line": 4.5,
+            "reason": "Hockenson ranks 8th in receptions among qualifying players at his position (4.5/gm, 6 games) against a Detroit defense that allows the most TE receptions in the league (32nd), a clean Standard-tier Threat convergence.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "T.J. Hockenson",
+                "pos": "TE",
+                "stat": "rec",
+                "role": "off",
+                "claimed_rank": 8
+              },
+              {
+                "type": "current_opponent",
+                "team": "DET",
+                "pos": "TE",
+                "stat": "rec",
+                "role": "def",
+                "claimed_rank": 32
+              }
+            ],
+            "projection": 5.3,
+            "games_2026": 6,
+            "projection_edge": 0.8,
+            "evidence_mismatches": [
+              "evidence_check cites T.J. Hockenson's current TE off rec rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+            ],
+            "grade": "L",
+            "actual": 4.0,
+            "actual_label": "4 rec"
+          },
+          {
+            "player": "Jahmyr Gibbs",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "79c32aa4cb70268d",
+            "price": 1.885,
+            "side": "over",
+            "line": 87.5,
+            "reason": "Gibbs ranks 3rd in rush yds/gm (103.3, 6 games) against a Minnesota run defense that ranks a mid-tier 15th against backs, and his home average this season (123.7 ypg) clears this line by a wide margin.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "Jahmyr Gibbs",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "off",
+                "claimed_rank": 3
+              },
+              {
+                "type": "current_opponent",
+                "team": "MIN",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "def",
+                "claimed_rank": 15
+              }
+            ],
+            "projection": 112,
+            "games_2026": 6,
+            "projection_edge": 24.5,
+            "evidence_mismatches": [
+              "evidence_check cites Jahmyr Gibbs's current RB off rush_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+            ],
+            "grade": "W",
+            "actual": 153.0,
+            "actual_label": "153 rush yds"
+          },
+          {
+            "player": "Sam LaPorta",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "79c32aa4cb70268d",
+            "price": 1.885,
+            "side": "under",
+            "line": 45.5,
+            "reason": "LaPorta ranks 6th in rec yds/gm (55.7, 6 games) but Minnesota's TE defense ranks 5th-toughest in the league (38.8 allowed), and his one real precedent against a comparably elite TE defense this season produced just 18 yards.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "Sam LaPorta",
+                "pos": "TE",
+                "stat": "rec_yds",
+                "role": "off",
+                "claimed_rank": 6
+              },
+              {
+                "type": "current_opponent",
+                "team": "MIN",
+                "pos": "TE",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 5
+              }
+            ],
+            "projection": 37,
+            "games_2026": 6,
+            "projection_edge": 8.5,
+            "evidence_mismatches": [
+              "evidence_check cites Sam LaPorta's current TE off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+            ],
+            "grade": "W",
+            "actual": 33.0,
+            "actual_label": "33 rec yds"
+          }
+        ],
+        "mismatch_count": 0
+      },
+      {
+        "away": "IND",
+        "home": "JAX",
+        "picks": [
+          {
+            "player": "Josh Downs",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "e5475c6180f55c8d",
+            "price": 1.885,
+            "side": "over",
+            "line": 32.5,
+            "reason": "Downs ranks 48th among qualifying WRs in rec yds/gm (43.9, 7 games) but Jacksonville's defense allows the most WR receiving yards in the league (210.0, 32nd), a mismatch his own raw season average already clears by over 11 yards.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "Josh Downs",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "off",
+                "claimed_rank": 48
+              },
+              {
+                "type": "current_opponent",
+                "team": "JAX",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 32
+              }
+            ],
+            "projection": 48,
+            "games_2026": 7,
+            "projection_edge": 15.5,
+            "evidence_mismatches": [
+              "evidence_check cites Josh Downs's current WR off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+            ],
+            "grade": "L",
+            "actual": 23.0,
+            "actual_label": "23 rec yds"
+          },
+          {
+            "player": "Jonathan Taylor",
+            "market_key": "player_rushing_yards",
+            "canonical_event_id": "e5475c6180f55c8d",
+            "price": 1.885,
+            "side": "over",
+            "line": 49.5,
+            "reason": "Taylor ranks 5th in rush yds/gm (83.9, 7 games), and even though Jacksonville's run defense is the league's best against backs (1st, 51.5 allowed), his own road-plus-top-tier split this season (94.0 ypg, n=3) says he hasn't been suppressed by good run defenses, with this line set well below his season rate.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "Jonathan Taylor",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "off",
+                "claimed_rank": 5
+              },
+              {
+                "type": "current_opponent",
+                "team": "JAX",
+                "pos": "RB",
+                "stat": "rush_yds",
+                "role": "def",
+                "claimed_rank": 1
+              }
+            ],
+            "projection": 68,
+            "games_2026": 7,
+            "projection_edge": 18.5,
+            "evidence_mismatches": [
+              "evidence_check cites Jonathan Taylor's current RB off rush_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+            ],
+            "grade": "L",
+            "actual": 23.0,
+            "actual_label": "23 rush yds"
+          },
+          {
+            "player": "Parker Washington",
+            "market_key": "player_receiving_yards",
+            "canonical_event_id": "e5475c6180f55c8d",
+            "price": 1.885,
+            "side": "over",
+            "line": 67.5,
+            "reason": "Washington ranks 18th in rec yds/gm (69.3, 6 games) against an Indianapolis WR defense that ranks 14th (mid-tier), and his home average this season (77.8 ypg) sits above this line.",
+            "evidence_check": [
+              {
+                "type": "current_opponent",
+                "team": "Parker Washington",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "off",
+                "claimed_rank": 18
+              },
+              {
+                "type": "current_opponent",
+                "team": "IND",
+                "pos": "WR",
+                "stat": "rec_yds",
+                "role": "def",
+                "claimed_rank": 14
+              }
+            ],
+            "projection": 76,
+            "games_2026": 6,
+            "projection_edge": 8.5,
+            "evidence_mismatches": [
+              "evidence_check cites Parker Washington's current WR off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+            ],
+            "grade": "L",
+            "actual": 16.0,
+            "actual_label": "16 rec yds"
+          }
+        ],
+        "mismatch_count": 0
+      }
+    ],
+    "per_position": {
+      "QB": {
+        "player": "Joe Burrow",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "237a900b9f27f896",
+        "price": 1.885,
+        "side": "over",
+        "line": 272.5,
+        "reason": "Burrow's Standard-tier Threat convergence (5th in pass yds/gm vs Tennessee's 23rd-ranked pass defense) is the cleanest QB-yardage edge on the slate, with his home average (341.0 ypg) well clear of this line.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "Joe Burrow",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "off",
+            "claimed_rank": 5
+          },
+          {
+            "type": "current_opponent",
+            "team": "TEN",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "def",
+            "claimed_rank": 23
+          }
+        ],
+        "projection": 292,
+        "games_2026": 6,
+        "projection_edge": 19.5,
+        "evidence_mismatches": [
+          "evidence_check cites Joe Burrow's current QB off pass_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+        ],
+        "grade": "W",
+        "actual": 462.0,
+        "actual_label": "462 pass yds"
+      },
+      "RB": {
+        "player": "Jahmyr Gibbs",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "79c32aa4cb70268d",
+        "price": 1.885,
+        "side": "over",
+        "line": 87.5,
+        "reason": "Gibbs' 3rd-ranked rush yds/gm (103.3) against Minnesota's mid-tier (15th) run defense, paired with a 123.7 ypg home average, gives him the widest real margin above his own posted line of any back on the slate.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "Jahmyr Gibbs",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "off",
+            "claimed_rank": 3
+          },
+          {
+            "type": "current_opponent",
+            "team": "MIN",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "def",
+            "claimed_rank": 15
+          }
+        ],
+        "projection": 112,
+        "games_2026": 6,
+        "projection_edge": 24.5,
+        "evidence_mismatches": [
+          "evidence_check cites Jahmyr Gibbs's current RB off rush_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+        ],
+        "grade": "W",
+        "actual": 153.0,
+        "actual_label": "153 rush yds"
+      },
+      "WR": {
+        "player": "Zay Flowers",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "f10c53df0128ae4a",
+        "price": 1.885,
+        "side": "over",
+        "line": 82.5,
+        "reason": "Flowers' Quadruple-type Threat designation (2nd in rec yds/gm and 7th in receptions, both converging against Buffalo's 26th/27th-ranked WR defense) is the single strongest individual matchup on this week's board.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "Zay Flowers",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "off",
+            "claimed_rank": 2
+          },
+          {
+            "type": "current_opponent",
+            "team": "BUF",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 28
+          }
+        ],
+        "projection": 98,
+        "games_2026": 6,
+        "projection_edge": 15.5,
+        "evidence_mismatches": [
+          "evidence_check cites Zay Flowers's current WR off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+        ],
+        "grade": "L",
+        "actual": 0.0,
+        "actual_label": "0 rec yds"
+      },
+      "TE": {
+        "player": "T.J. Hockenson",
+        "market_key": "player_receptions",
+        "canonical_event_id": "79c32aa4cb70268d",
+        "price": 1.847,
+        "side": "over",
+        "line": 4.5,
+        "reason": "Hockenson's Standard-tier Threat convergence (8th in receptions vs Detroit's league-worst 32nd-ranked TE defense) is the clearest positional mismatch at tight end this week.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "T.J. Hockenson",
+            "pos": "TE",
+            "stat": "rec",
+            "role": "off",
+            "claimed_rank": 8
+          },
+          {
+            "type": "current_opponent",
+            "team": "DET",
+            "pos": "TE",
+            "stat": "rec",
+            "role": "def",
+            "claimed_rank": 32
+          }
+        ],
+        "projection": 5.3,
+        "games_2026": 6,
+        "projection_edge": 0.8,
+        "evidence_mismatches": [
+          "evidence_check cites T.J. Hockenson's current TE off rec rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+        ],
+        "grade": "L",
+        "actual": 4.0,
+        "actual_label": "4 rec"
+      }
+    }
+  },
+  "prop_breakdown_errors": [
+    "BAL@BUF \u2014 Zay Flowers: evidence_check cites Zay Flowers's current WR off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "BAL@BUF \u2014 Derrick Henry: evidence_check cites Derrick Henry's current RB off rush_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "BAL@BUF \u2014 Josh Allen: evidence_check cites Josh Allen's current QB off pass_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "TEN@CIN \u2014 Tee Higgins: evidence_check cites Tee Higgins's current WR off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "TEN@CIN \u2014 Joe Burrow: evidence_check cites Joe Burrow's current QB off pass_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "TEN@CIN \u2014 Cam Ward: evidence_check cites Cam Ward's current QB off pass_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "ARI@DAL \u2014 Dak Prescott: evidence_check cites Dak Prescott's current QB off pass_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "ARI@DAL \u2014 Dak Prescott: evidence_check cites Dak Prescott's current QB off pass_tds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "ARI@DAL \u2014 Dak Prescott: evidence_check cites ARI's current QB def pass_tds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "ARI@DAL \u2014 CeeDee Lamb: evidence_check cites CeeDee Lamb's current WR off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "ARI@DAL \u2014 Javonte Williams: evidence_check cites Javonte Williams's current RB off rush_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "MIN@DET \u2014 T.J. Hockenson: evidence_check cites T.J. Hockenson's current TE off rec rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "MIN@DET \u2014 Jahmyr Gibbs: evidence_check cites Jahmyr Gibbs's current RB off rush_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "MIN@DET \u2014 Sam LaPorta: evidence_check cites Sam LaPorta's current TE off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "IND@JAX \u2014 Josh Downs: evidence_check cites Josh Downs's current WR off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "IND@JAX \u2014 Jonathan Taylor: evidence_check cites Jonathan Taylor's current RB off rush_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "IND@JAX \u2014 Parker Washington: evidence_check cites Parker Washington's current WR off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "QB favorite (Joe Burrow): evidence_check cites Joe Burrow's current QB off pass_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "RB favorite (Jahmyr Gibbs): evidence_check cites Jahmyr Gibbs's current RB off rush_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "WR favorite (Zay Flowers): evidence_check cites Zay Flowers's current WR off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "TE favorite (T.J. Hockenson): evidence_check cites T.J. Hockenson's current TE off rec rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+  ],
+  "favorite_ou": {
+    "overs": [
+      {
+        "player": "Zay Flowers",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "f10c53df0128ae4a",
+        "price": 1.885,
+        "side": "over",
+        "line": 82.5,
+        "reason": "The strongest Threat convergence on the slate (2nd in rec yds/gm vs Buffalo's 28th-ranked WR defense) plus elite slot usage against the league's worst slot unit.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "Zay Flowers",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "off",
+            "claimed_rank": 2
+          },
+          {
+            "type": "current_opponent",
+            "team": "BUF",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 28
+          }
+        ],
+        "projection": 98,
+        "games_2026": 6,
+        "projection_edge": 15.5,
+        "evidence_mismatches": [
+          "evidence_check cites Zay Flowers's current WR off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+        ],
+        "grade": "L",
+        "actual": 0.0,
+        "actual_label": "0 rec yds"
+      },
+      {
+        "player": "Tee Higgins",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "237a900b9f27f896",
+        "price": 1.885,
+        "side": "over",
+        "line": 70.5,
+        "reason": "A full Quadruple-type Threat (4th in rec yds/gm and 10th in receptions, both converging against Tennessee's weak WR defense).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "Tee Higgins",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "off",
+            "claimed_rank": 4
+          },
+          {
+            "type": "current_opponent",
+            "team": "TEN",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 27
+          }
+        ],
+        "projection": 102,
+        "games_2026": 6,
+        "projection_edge": 31.5,
+        "evidence_mismatches": [
+          "evidence_check cites Tee Higgins's current WR off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+        ],
+        "grade": "W",
+        "actual": 155.0,
+        "actual_label": "155 rec yds"
+      },
+      {
+        "player": "Dak Prescott",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "a6cec503b5656d31",
+        "price": 1.885,
+        "side": "over",
+        "line": 271.5,
+        "reason": "Triple-type Threat (8th in pass yds/gm, 8th in TD rate) against Arizona's league-worst (32nd) passing-TD defense, with a 290.3 ypg home average clearing this line.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "Dak Prescott",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "off",
+            "claimed_rank": 8
+          },
+          {
+            "type": "current_opponent",
+            "team": "ARI",
+            "pos": "QB",
+            "stat": "pass_tds",
+            "role": "def",
+            "claimed_rank": 32
+          }
+        ],
+        "projection": 288,
+        "games_2026": 7,
+        "projection_edge": 16.5,
+        "evidence_mismatches": [
+          "evidence_check cites Dak Prescott's current QB off pass_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+          "evidence_check cites ARI's current QB def pass_tds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+        ],
+        "grade": "L",
+        "actual": 195.0,
+        "actual_label": "195 pass yds"
+      },
+      {
+        "player": "Joe Burrow",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "237a900b9f27f896",
+        "price": 1.885,
+        "side": "over",
+        "line": 272.5,
+        "reason": "Triple-type Threat (5th in pass yds/gm vs Tennessee's 23rd-ranked pass defense) with a 341.0 ypg home average well above this line.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "Joe Burrow",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "off",
+            "claimed_rank": 5
+          },
+          {
+            "type": "current_opponent",
+            "team": "TEN",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "def",
+            "claimed_rank": 23
+          }
+        ],
+        "projection": 292,
+        "games_2026": 6,
+        "projection_edge": 19.5,
+        "evidence_mismatches": [
+          "evidence_check cites Joe Burrow's current QB off pass_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+        ],
+        "grade": "W",
+        "actual": 462.0,
+        "actual_label": "462 pass yds"
+      },
+      {
+        "player": "T.J. Hockenson",
+        "market_key": "player_receptions",
+        "canonical_event_id": "79c32aa4cb70268d",
+        "price": 1.847,
+        "side": "over",
+        "line": 4.5,
+        "reason": "Standard-tier Threat (8th in receptions vs Detroit's league-worst 32nd-ranked TE defense).",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "T.J. Hockenson",
+            "pos": "TE",
+            "stat": "rec",
+            "role": "off",
+            "claimed_rank": 8
+          },
+          {
+            "type": "current_opponent",
+            "team": "DET",
+            "pos": "TE",
+            "stat": "rec",
+            "role": "def",
+            "claimed_rank": 32
+          }
+        ],
+        "projection": 5.3,
+        "games_2026": 6,
+        "projection_edge": 0.8,
+        "evidence_mismatches": [
+          "evidence_check cites T.J. Hockenson's current TE off rec rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+        ],
+        "grade": "L",
+        "actual": 4.0,
+        "actual_label": "4 rec"
+      },
+      {
+        "player": "Jahmyr Gibbs",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "79c32aa4cb70268d",
+        "price": 1.885,
+        "side": "over",
+        "line": 87.5,
+        "reason": "3rd-ranked rush yds/gm against Minnesota's mid-tier (15th) run defense, with a 123.7 ypg home average clearing this line by a wide margin.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "Jahmyr Gibbs",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "off",
+            "claimed_rank": 3
+          },
+          {
+            "type": "current_opponent",
+            "team": "MIN",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "def",
+            "claimed_rank": 15
+          }
+        ],
+        "projection": 112,
+        "games_2026": 6,
+        "projection_edge": 24.5,
+        "evidence_mismatches": [
+          "evidence_check cites Jahmyr Gibbs's current RB off rush_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+        ],
+        "grade": "W",
+        "actual": 153.0,
+        "actual_label": "153 rush yds"
+      },
+      {
+        "player": "CeeDee Lamb",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "a6cec503b5656d31",
+        "price": 1.885,
+        "side": "over",
+        "line": 80.5,
+        "reason": "5th-ranked rec yds/gm against an Arizona WR defense that owns the league's worst yards-per-catch mark allowed (32nd), exactly the profile for a big-play boost.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "CeeDee Lamb",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "off",
+            "claimed_rank": 5
+          },
+          {
+            "type": "current_opponent",
+            "team": "ARI",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 21
+          }
+        ],
+        "projection": 96,
+        "games_2026": 7,
+        "projection_edge": 15.5,
+        "evidence_mismatches": [
+          "evidence_check cites CeeDee Lamb's current WR off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+        ],
+        "grade": "L",
+        "actual": 58.0,
+        "actual_label": "58 rec yds"
+      },
+      {
+        "player": "Josh Downs",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "e5475c6180f55c8d",
+        "price": 1.885,
+        "side": "over",
+        "line": 32.5,
+        "reason": "A modest 48th-ranked rec yds/gm but Jacksonville's defense allows the most WR receiving yards in the league (32nd), a mismatch his raw average already clears by over 11 yards.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "Josh Downs",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "off",
+            "claimed_rank": 48
+          },
+          {
+            "type": "current_opponent",
+            "team": "JAX",
+            "pos": "WR",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 32
+          }
+        ],
+        "projection": 48,
+        "games_2026": 7,
+        "projection_edge": 15.5,
+        "evidence_mismatches": [
+          "evidence_check cites Josh Downs's current WR off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+        ],
+        "grade": "L",
+        "actual": 23.0,
+        "actual_label": "23 rec yds"
+      }
+    ],
+    "unders": [
+      {
+        "player": "Jared Goff",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "79c32aa4cb70268d",
+        "price": 1.885,
+        "side": "under",
+        "line": 259.5,
+        "reason": "Even the league's 1st-ranked passer in yds/gm (298.0) faces real resistance from Minnesota's pass defense, which ranks 2nd-toughest in the league (180.8 allowed) \u2014 the single toughest matchup on the board for a high-volume passer.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "Jared Goff",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "off",
+            "claimed_rank": 1
+          },
+          {
+            "type": "current_opponent",
+            "team": "MIN",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "def",
+            "claimed_rank": 2
+          }
+        ],
+        "projection": 248,
+        "games_2026": 6,
+        "projection_edge": 11.5,
+        "evidence_mismatches": [
+          "evidence_check cites Jared Goff's current QB off pass_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+        ],
+        "grade": "W",
+        "actual": 176.0,
+        "actual_label": "176 pass yds"
+      },
+      {
+        "player": "Cam Ward",
+        "market_key": "player_passing_yards",
+        "canonical_event_id": "237a900b9f27f896",
+        "price": 1.885,
+        "side": "under",
+        "line": 192.5,
+        "reason": "Ward ranks dead-last in the league in pass yds/gm (168.4, 32nd), and his own season-long splits stay flat (160-177 ypg) regardless of opponent quality, including against Cincinnati's 23rd-ranked pass defense.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "Cam Ward",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "off",
+            "claimed_rank": 31
+          },
+          {
+            "type": "current_opponent",
+            "team": "CIN",
+            "pos": "QB",
+            "stat": "pass_yds",
+            "role": "def",
+            "claimed_rank": 26
+          }
+        ],
+        "projection": 171,
+        "games_2026": 7,
+        "projection_edge": 21.5,
+        "evidence_mismatches": [
+          "evidence_check cites Cam Ward's current QB off pass_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+        ],
+        "grade": "L",
+        "actual": 304.0,
+        "actual_label": "304 pass yds"
+      },
+      {
+        "player": "James Cook",
+        "market_key": "player_rushing_yards",
+        "canonical_event_id": "f10c53df0128ae4a",
+        "price": 1.885,
+        "side": "under",
+        "line": 82.5,
+        "reason": "Cook ranks 2nd in rush yds/gm (104.5) but Baltimore's run defense is specifically tough against backs, ranking 7th-best in the league (77.4 allowed) \u2014 a real step up from Buffalo's typical opponent.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "James Cook",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "off",
+            "claimed_rank": 2
+          },
+          {
+            "type": "current_opponent",
+            "team": "BAL",
+            "pos": "RB",
+            "stat": "rush_yds",
+            "role": "def",
+            "claimed_rank": 7
+          }
+        ],
+        "projection": 74,
+        "games_2026": 6,
+        "projection_edge": 8.5,
+        "evidence_mismatches": [
+          "evidence_check cites James Cook's current RB off rush_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+        ],
+        "grade": "W",
+        "actual": 80.0,
+        "actual_label": "80 rush yds"
+      },
+      {
+        "player": "Dalton Kincaid",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "f10c53df0128ae4a",
+        "price": 1.885,
+        "side": "under",
+        "line": 46.5,
+        "reason": "Kincaid ranks 7th in rec yds/gm (52.5) but Baltimore's tight end defense ranks a tough 6th-best in the league (39.0 allowed), the opposite of a funnel matchup.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "Dalton Kincaid",
+            "pos": "TE",
+            "stat": "rec_yds",
+            "role": "off",
+            "claimed_rank": 7
+          },
+          {
+            "type": "current_opponent",
+            "team": "BAL",
+            "pos": "TE",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 6
+          }
+        ],
+        "projection": 36,
+        "games_2026": 6,
+        "projection_edge": 10.5,
+        "evidence_mismatches": [
+          "evidence_check cites Dalton Kincaid's current TE off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+        ],
+        "grade": "L",
+        "actual": 86.0,
+        "actual_label": "86 rec yds"
+      },
+      {
+        "player": "Sam LaPorta",
+        "market_key": "player_receiving_yards",
+        "canonical_event_id": "79c32aa4cb70268d",
+        "price": 1.885,
+        "side": "under",
+        "line": 45.5,
+        "reason": "LaPorta ranks 6th in rec yds/gm but Minnesota's tight end defense ranks 5th-toughest in the league, and his one real precedent against a comparably elite TE defense this season produced just 18 yards.",
+        "evidence_check": [
+          {
+            "type": "current_opponent",
+            "team": "Sam LaPorta",
+            "pos": "TE",
+            "stat": "rec_yds",
+            "role": "off",
+            "claimed_rank": 6
+          },
+          {
+            "type": "current_opponent",
+            "team": "MIN",
+            "pos": "TE",
+            "stat": "rec_yds",
+            "role": "def",
+            "claimed_rank": 5
+          }
+        ],
+        "projection": 37,
+        "games_2026": 6,
+        "projection_edge": 8.5,
+        "evidence_mismatches": [
+          "evidence_check cites Sam LaPorta's current TE off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+        ],
+        "grade": "W",
+        "actual": 33.0,
+        "actual_label": "33 rec yds"
+      }
+    ]
+  },
+  "favorite_ou_errors": [
+    "Zay Flowers: evidence_check cites Zay Flowers's current WR off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "Tee Higgins: evidence_check cites Tee Higgins's current WR off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "Dak Prescott: evidence_check cites Dak Prescott's current QB off pass_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "Dak Prescott: evidence_check cites ARI's current QB def pass_tds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "Joe Burrow: evidence_check cites Joe Burrow's current QB off pass_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "T.J. Hockenson: evidence_check cites T.J. Hockenson's current TE off rec rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "Jahmyr Gibbs: evidence_check cites Jahmyr Gibbs's current RB off rush_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "CeeDee Lamb: evidence_check cites CeeDee Lamb's current WR off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "Josh Downs: evidence_check cites Josh Downs's current WR off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "Jared Goff: evidence_check cites Jared Goff's current QB off pass_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "Cam Ward: evidence_check cites Cam Ward's current QB off pass_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "James Cook: evidence_check cites James Cook's current RB off rush_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "Dalton Kincaid: evidence_check cites Dalton Kincaid's current TE off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided).",
+    "Sam LaPorta: evidence_check cites Sam LaPorta's current TE off rec_yds rank, but no real data for that exact combination could be found on Football Intel (live stats or evidence actually provided)."
+  ],
+  "parlays": {},
+  "td_parlays": {},
+  "spread_parlays": {},
+  "ats_records": {
+    "ARI": {
+      "since": 2020,
+      "overall": {
+        "w": 54,
+        "l": 54,
+        "p": 0,
+        "pct": 50.0
+      },
+      "home": {
+        "w": 21,
+        "l": 32,
+        "p": 0,
+        "pct": 39.6
+      },
+      "away": {
+        "w": 33,
+        "l": 22,
+        "p": 0,
+        "pct": 60.0
+      }
+    },
+    "BAL": {
+      "since": 2020,
+      "overall": {
+        "w": 53,
+        "l": 52,
+        "p": 3,
+        "pct": 50.5
+      },
+      "home": {
+        "w": 23,
+        "l": 30,
+        "p": 1,
+        "pct": 43.4
+      },
+      "away": {
+        "w": 30,
+        "l": 22,
+        "p": 2,
+        "pct": 57.7
+      }
+    },
+    "BUF": {
+      "since": 2020,
+      "overall": {
+        "w": 57,
+        "l": 46,
+        "p": 3,
+        "pct": 55.3
+      },
+      "home": {
+        "w": 29,
+        "l": 23,
+        "p": 2,
+        "pct": 55.8
+      },
+      "away": {
+        "w": 28,
+        "l": 23,
+        "p": 1,
+        "pct": 54.9
+      }
+    },
+    "CIN": {
+      "since": 2020,
+      "overall": {
+        "w": 59,
+        "l": 43,
+        "p": 4,
+        "pct": 57.8
+      },
+      "home": {
+        "w": 26,
+        "l": 23,
+        "p": 3,
+        "pct": 53.1
+      },
+      "away": {
+        "w": 33,
+        "l": 20,
+        "p": 1,
+        "pct": 62.3
+      }
+    },
+    "DAL": {
+      "since": 2020,
+      "overall": {
+        "w": 54,
+        "l": 52,
+        "p": 2,
+        "pct": 50.9
+      },
+      "home": {
+        "w": 28,
+        "l": 24,
+        "p": 1,
+        "pct": 53.8
+      },
+      "away": {
+        "w": 26,
+        "l": 28,
+        "p": 1,
+        "pct": 48.1
+      }
+    },
+    "DET": {
+      "since": 2020,
+      "overall": {
+        "w": 62,
+        "l": 42,
+        "p": 3,
+        "pct": 59.6
+      },
+      "home": {
+        "w": 29,
+        "l": 21,
+        "p": 3,
+        "pct": 58.0
+      },
+      "away": {
+        "w": 33,
+        "l": 21,
+        "p": 0,
+        "pct": 61.1
+      }
+    },
+    "IND": {
+      "since": 2020,
+      "overall": {
+        "w": 55,
+        "l": 53,
+        "p": 0,
+        "pct": 50.9
+      },
+      "home": {
+        "w": 24,
+        "l": 30,
+        "p": 0,
+        "pct": 44.4
+      },
+      "away": {
+        "w": 31,
+        "l": 23,
+        "p": 0,
+        "pct": 57.4
+      }
+    },
+    "JAX": {
+      "since": 2020,
+      "overall": {
+        "w": 54,
+        "l": 52,
+        "p": 1,
+        "pct": 50.9
+      },
+      "home": {
+        "w": 28,
+        "l": 27,
+        "p": 0,
+        "pct": 50.9
+      },
+      "away": {
+        "w": 26,
+        "l": 25,
+        "p": 1,
+        "pct": 51.0
+      }
+    },
+    "MIN": {
+      "since": 2020,
+      "overall": {
+        "w": 53,
+        "l": 49,
+        "p": 5,
+        "pct": 52.0
+      },
+      "home": {
+        "w": 24,
+        "l": 29,
+        "p": 0,
+        "pct": 45.3
+      },
+      "away": {
+        "w": 29,
+        "l": 20,
+        "p": 5,
+        "pct": 59.2
+      }
+    },
+    "TEN": {
+      "since": 2020,
+      "overall": {
+        "w": 45,
+        "l": 59,
+        "p": 4,
+        "pct": 43.3
+      },
+      "home": {
+        "w": 23,
+        "l": 29,
+        "p": 3,
+        "pct": 44.2
+      },
+      "away": {
+        "w": 22,
+        "l": 30,
+        "p": 1,
+        "pct": 42.3
+      }
+    }
+  },
+  "graded_at": "2026-11-03T22:37:57.978054+00:00"
+}
