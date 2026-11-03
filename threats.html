@@ -99,6 +99,12 @@
 .rules{font-family:var(--font-mono);font-size:10px;color:var(--text-dim);
   line-height:1.9;margin-top:26px;padding-top:16px;border-top:1px solid var(--border)}
 .rules b{color:var(--text-mid);font-weight:500}
+.tg{display:inline-block;margin-left:auto;font-family:var(--font-mono,monospace);font-size:11px;font-weight:700;padding:2px 7px;border-radius:5px;white-space:nowrap}
+.tg.win{background:rgba(74,222,128,.16);color:#4ade80}
+.tg.loss{background:rgba(248,113,113,.16);color:#f87171}
+.tg.void{background:rgba(127,127,127,.16);color:var(--text-mid)}
+.conv-cat{display:flex;align-items:center;gap:4px}
+.sum-pill.graded b{color:#4ade80}
 </style>
 </head>
 <body>
@@ -107,6 +113,22 @@
 const SUPPORT_DISPLAY_MAX = 10;   // how far down to show supporting rows
 
 let DATA = null;
+let GRADED = {};   // results/threats_graded.json, made by grade_threats.py
+const gKey = (wk, team, name, cat) => `${wk}|${team}|${name}|${cat}`;
+async function loadGraded(){
+  try {
+    const r = await fetch('results/threats_graded.json', { cache: 'no-store' });
+    if (!r.ok) return;
+    for (const x of ((await r.json()).rows || [])) GRADED[gKey(x.week, x.team, x.player, x.cat)] = x;
+  } catch (e) { /* no grading file yet: page works exactly as before */ }
+}
+function gradeTag(team, s, cat){
+  const g = GRADED[gKey(DATA.week, team, s.name, cat)];
+  if (!g) return '';
+  if (g.result === 'HIT') return `<span class="tg win" title="Actual ${g.actual} vs average ${g.avg}">\u2713 Hit \u00b7 ${g.actual}</span>`;
+  if (g.result === 'MISS') return `<span class="tg loss" title="Actual ${g.actual} vs average ${g.avg}">\u2717 Miss \u00b7 ${g.actual}</span>`;
+  return `<span class="tg void" title="Did not play, no grade">DNP</span>`;
+}
 const main = fiShell({ page: 'threats', pageLabel: 'Threat System', status: 'loading' });
 const $ = id => document.getElementById(id);
 const pad = n => String(n).padStart(2, '0');
@@ -249,6 +271,7 @@ function threatHTML(s, team){
       <div class="conv-cat">
         ${converged ? '<span class="mark">\u25CF</span>' : '<span class="mark"></span>'}
         ${esc(label(s.pos, c))}
+        ${converged ? gradeTag(team, s, c) : ''}
       </div>
       <div class="conv-nums">
         <span class="side-val"><b class="${vClass}">${x.v}</b>${v26}<span class="rk ${rkClass(x.r)}">#${x.r}</span></span>
@@ -360,8 +383,18 @@ function render(){
          ${DATA.min_games}-game minimum. Early-season ranks swing hard, so expect more
          flags than a settled week would produce — treat these as provisional.</span></div>`
       : '');
+  let gH = 0, gM = 0;
+  for (const g of DATA.games) for (const t of [g.away, g.home])
+    for (const s of (DATA.teams[t]?.starters || [])){
+      if (isOut(t, s) && hideOutOn()) continue;
+      for (const r of classify(s.cats || {})) for (const c of r.conv){
+        const x = GRADED[gKey(DATA.week, t, s.name, c)];
+        if (x && x.result === 'HIT') gH++; else if (x && x.result === 'MISS') gM++;
+      }
+    }
+  const gradedPill = (gH + gM) ? `<span class="sum-pill graded">Graded vs average <b>${gH}-${gM}</b> (${Math.round(100 * gH / (gH + gM))}%)</span>` : '';
   $('summary').innerHTML =
-    `<span class="sum-pill"><b>${total}</b> threats</span>
+    `<span class="sum-pill"><b>${total}</b> threats</span>${gradedPill}
      <span class="sum-pill"><b>${gamesWith}</b> of ${DATA.games.length} games</span>` +
     Object.entries(counts).sort((a, b) => b[1] - a[1])
       .map(([k, v]) => `<span class="sum-pill">${esc(k)} <b>${v}</b></span>`).join('');
@@ -374,7 +407,7 @@ function render(){
      A player can hold more than one designation.`;
 }
 
-determineDefaultWeek().then(week => {
+loadGraded().then(() => determineDefaultWeek()).then(week => {
   wkSel.value = week;
   load(week);
 });
