@@ -319,8 +319,9 @@
 .bd-threat{margin-top:14px;padding:10px 14px;border:1px solid var(--border2,var(--border));border-radius:10px;background:rgba(127,127,127,.05)}
 .bd-threat .bt-row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px}
 .bd-threat .bt-row:last-child{border-bottom:0}
-.combo-card.played{opacity:.5;filter:grayscale(1)}
-.combo-card.played:hover{opacity:.8}
+.combo-card.played > *:not(.combo-grade){opacity:.5;filter:grayscale(1)}
+.combo-card.played:hover > *:not(.combo-grade){opacity:.8}
+.combo-grade .grade-badge{font-size:13px;padding:4px 10px}
 .combo-card.played .prop-input{cursor:not-allowed}
 .played-tag{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:4px;border:1px solid var(--border2,var(--border));
   font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.14em;color:var(--text-mid);background:var(--surface2);vertical-align:middle}
@@ -2320,7 +2321,7 @@ function comboGradeBadge(r){
   const g = all.find(p => p.graded && p.week === (COMBO && COMBO.week) && p.player === r.player && p.market === r.market);
   if(!g || !g.coeus_result) return '';   // NEUTRAL = no bet, so nothing to grade
   const grade = g.coeus_result === 'WIN' ? 'W' : g.coeus_result === 'LOSS' ? 'L' : 'P';
-  return `<div style="margin-bottom:8px">${gradeBadgeHTML(grade, g.actual != null ? g.actual + ' yds' : '')}</div>`;
+  return `<div class="combo-grade" style="margin-bottom:8px">${gradeBadgeHTML(grade, g.actual != null ? g.actual + ' yds' : '')}</div>`;
 }
 function comboCardHTML(r, i){
   const L = comboEffLine(r), g = r.game;
