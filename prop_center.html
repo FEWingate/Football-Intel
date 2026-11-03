@@ -2315,26 +2315,19 @@ function comboMiniPick(r){
     <div class="cm-pick"><span class="cm-lbl">Coeus pick</span><span style="color:${col}">${esc2(pk || '—')}</span>${c.review ? '<span class="fav-badge check" style="font-size:9px" title="The model projection is more than 12% from the line, so treat this pick with caution">⚠ REVIEW</span>' : ''}</div>
     ${pk === 'NEUTRAL' ? (comboLeanChip(r) || '<span class="rank-chip">no edge</span>') : `<span class="rank-chip">confidence ${esc2(c.confidence ?? '—')}/5</span>`}</div>`;
 }
-function comboGraded(r){
+function comboGradeBadge(r){
   const all = (COMBO_HIST && COMBO_HIST.picks) || [];
-  return all.find(p => p.graded && p.week === (COMBO && COMBO.week) && p.player === r.player && p.market === r.market) || null;
-}
-function comboGradedHTML(r){
-  const g = comboGraded(r); if(!g) return '';
-  const chip = (res) => res === 'WIN' ? '<span class="fav-badge yes">WIN</span>' : res === 'LOSS' ? '<span class="fav-badge no">LOSS</span>' : '<span class="fav-badge mid">PUSH</span>';
-  const u = (x) => x == null ? '' : ` <span class="rank-chip">${x >= 0 ? '+' : ''}${Number(x).toFixed(2)}u</span>`;
-  const pk = g.coeus_pick === 'PASS' ? 'NEUTRAL' : g.coeus_pick;
-  let rows = `<div class="ic-row"><span class="ic-row-label">Actual</span><span class="cell-val">${esc2(g.actual)} yds <span class="rank-chip">line ${esc2(g.line)}</span></span></div>`;
-  if(g.coeus_result) rows += `<div class="ic-row"><span class="ic-row-label">Coeus ${esc2(pk)}</span><span>${chip(g.coeus_result)}${u(g.coeus_units)}</span></div>`;
-  else rows += `<div class="ic-row"><span class="ic-row-label">Coeus NEUTRAL (no bet)</span><span><span class="rank-chip">model ${esc2(g.model_side)} would have been</span> ${chip(g.model_result)}</span></div>`;
-  if(g.coeus_result && g.model_lean && g.model_lean !== 'NEUTRAL') rows += `<div class="ic-row"><span class="ic-row-label">Model ${esc2(g.model_lean)} ${esc2(g.model_side)}</span><span>${chip(g.model_result)}${u(g.model_units)}</span></div>`;
-  return `<div class="combo-box" style="margin-top:8px"><div class="ic-section-label">Result</div>${rows}</div>`;
+  const g = all.find(p => p.graded && p.week === (COMBO && COMBO.week) && p.player === r.player && p.market === r.market);
+  if(!g || !g.coeus_result) return '';   // NEUTRAL = no bet, so nothing to grade
+  const grade = g.coeus_result === 'WIN' ? 'W' : g.coeus_result === 'LOSS' ? 'L' : 'P';
+  return `<div style="margin-bottom:8px">${gradeBadgeHTML(grade, g.actual != null ? g.actual + ' yds' : '')}</div>`;
 }
 function comboCardHTML(r, i){
   const L = comboEffLine(r), g = r.game;
   const sp = g && g.team_spread != null ? (g.team_spread > 0 ? '+' : '') + g.team_spread : '—';
   const gs = comboGameState(r);
   return `<div class="intel-card combo-card${gs ? ' played' : ''}" data-i="${i}">
+    ${comboGradeBadge(r)}
     <div class="ic-head">
       <img class="ic-headshot" src="${esc2(r.headshot || '')}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
       <div>
@@ -2351,7 +2344,6 @@ function comboCardHTML(r, i){
     </div>
     ${(r.line && r.line.stale && !(L && L.edited)) ? `<div class="empty" style="padding:6px 4px 0;text-align:left;font-size:10px;color:var(--amber,#d9a441)">Stale feed line: not refreshed since ${esc2(r.line.last_update ? new Date(r.line.last_update).toLocaleString() : 'an earlier run')}. Confirm it in the FanDuel app and retype it above if it moved.</div>` : ''}
     ${comboMiniPick(r)}
-    ${comboGradedHTML(r)}
     ${gs ? '' : comboCardSlipRow(r, i)}
     <div class="combo-foot">${comboFootHTML(r, gs)}</div>
   </div>`;
