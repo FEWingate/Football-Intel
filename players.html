@@ -131,6 +131,7 @@
 </head>
 <body>
 <script src="js/fi-shell.js"></script>
+<script src="js/hit-rates.js"></script>
 <script>
 const main = fiShell({ page:'players', pageLabel:'Players', status:'loading' });
 
@@ -362,6 +363,7 @@ function renderProfilePanel(){
       <button role="tab" data-sec="tiers" aria-selected="false">Defense Tier</button>
       <button role="tab" data-sec="window" aria-selected="false">L5 / L10</button>
       <button role="tab" data-sec="log" aria-selected="false">Game Log</button>
+      ${HR_LADDER[pos] ? `<button role="tab" data-sec="hitrate" aria-selected="false">Hit Rate</button>` : ''}
       <button role="tab" data-sec="advanced" aria-selected="false">Advanced</button>
       ${hasHomeRoad ? `<button role="tab" data-sec="homeroad" aria-selected="false">Home/Road</button>` : ''}
       ${pffReceiverFor(p) ? `<button role="tab" data-sec="manzone" aria-selected="false">Man/Zone (PFF)</button>` : ''}
@@ -447,6 +449,7 @@ function renderProfileBody(){
   else if(activeSec === 'career') box.innerHTML = statBlockHTML(p.career.m,
     `${p.career.games} games · through ${p.career.through}`, p.pos);
   else if(activeSec === 'tiers') renderTierTab(box, p);
+  else if(activeSec === 'hitrate') box.innerHTML = hrLadderHTML(p);
   else if(activeSec === 'window') renderWindow(box, p);
   else if(activeSec === 'advanced'){
     box.innerHTML = `<div class="empty">Loading…</div>`;

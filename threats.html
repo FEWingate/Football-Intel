@@ -104,17 +104,38 @@
 .tg.loss{background:rgba(248,113,113,.16);color:#f87171}
 .tg.void{background:rgba(127,127,127,.16);color:var(--text-mid)}
 .conv-cat{display:flex;align-items:center;gap:4px}
+.conv-hr{padding-left:13px;margin-top:5px}
 .sum-pill.graded b{color:#4ade80}
 </style>
 </head>
 <body>
 <script src="js/fi-shell.js"></script>
+<script src="js/hit-rates.js"></script>
 <script>
 const SUPPORT_DISPLAY_MAX = 10;   // how far down to show supporting rows
 
 let DATA = null;
+let HRIDX = null;  // players/latest.json indexed for hit rates
 let GRADED = {};   // results/threats_graded.json, made by grade_threats.py
 const gKey = (wk, team, name, cat) => `${wk}|${team}|${name}|${cat}`;
+async function loadHitRates(){
+  try {
+    const r = await fetch('players/latest.json');
+    if (r.ok) HRIDX = hrIndex(await r.json());
+  } catch (e) { /* no player file: hit-rate lines simply don't show */ }
+}
+/* Hit-rate line for one starter + Threat category, using only games BEFORE this week. */
+function hitRateLine(s, cat){
+  const stat = HR_FROM_THREAT[cat]; if (!HRIDX || !stat) return '';
+  const p = hrLookup(HRIDX, s.name, s.pos); if (!p) return '';
+  const res = hrCompute(p, DATA.week - 1)[stat];
+  if (!res || !res.games) return '';
+  const best = hrBest(res);
+  if (best) return `<div class="conv-hr"><span class="hr-chip ${hrPctClass(best.pct)}" title="Highest mark he has reached in 75%+ of his games this season">Hit rate \u00b7 ${hrText(stat, best, res.games)} <b>${Math.round(100 * best.pct)}%</b></span></div>`;
+  if (res.games < HR_MIN_GAMES) return `<div class="conv-hr"><span class="hr-none">Hit rate \u00b7 only ${res.games} game${res.games === 1 ? '' : 's'} so far</span></div>`;
+  const n = hrNearest(res);
+  return `<div class="conv-hr"><span class="hr-none">Hit rate \u00b7 no mark reached in 75%+ of games${n ? ' (best: ' + hrText(stat, n, res.games) + ')' : ''}</span></div>`;
+}
 async function loadGraded(){
   try {
     const r = await fetch('results/threats_graded.json', { cache: 'no-store' });
@@ -279,6 +300,7 @@ function threatHTML(s, team){
         <span class="side-val"><b class="${vClass}">${x.dv}</b>${dv26}<span class="rk ${rkClass(x.dr)}">#${x.dr}</span>
           <em>allowed</em></span>
       </div>
+      ${converged ? hitRateLine(s, c) : ''}
     </div>`;
   };
   const support = Object.keys(s.cats).filter(c =>
@@ -394,7 +416,7 @@ function render(){
     }
   const gradedPill = (gH + gM) ? `<span class="sum-pill graded">Graded vs average <b>${gH}-${gM}</b> (${Math.round(100 * gH / (gH + gM))}%)</span>` : '';
   $('summary').innerHTML =
-    `<span class="sum-pill"><b>${total}</b> threats</span>${gradedPill}
+    `<span class="sum-pill"><b>${total}</b> threats</span>${gradedPill}<a class="sum-pill" href="hit_rates.html?week=${DATA.week}" style="text-decoration:none">Weekly Hit Rate list \u2192</a>
      <span class="sum-pill"><b>${gamesWith}</b> of ${DATA.games.length} games</span>` +
     Object.entries(counts).sort((a, b) => b[1] - a[1])
       .map(([k, v]) => `<span class="sum-pill">${esc(k)} <b>${v}</b></span>`).join('');
@@ -407,7 +429,7 @@ function render(){
      A player can hold more than one designation.`;
 }
 
-loadGraded().then(() => determineDefaultWeek()).then(week => {
+Promise.all([loadGraded(), loadHitRates()]).then(() => determineDefaultWeek()).then(week => {
   wkSel.value = week;
   load(week);
 });

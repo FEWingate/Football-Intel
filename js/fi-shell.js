@@ -8,6 +8,7 @@
 const NAV = [
   { key: 'games',    label: 'Games',        ico: '📅', href: 'games.html' },
   { key: 'threats',  label: 'Threats',      ico: '⚡', href: 'threats.html' },
+  { key: 'hitrate',  label: 'Hit Rates',    ico: '✅', href: 'hit_rates.html' },
   { key: 'matchup',  label: 'Matchup Stats',ico: '⚔️', href: 'matchup_stats.html' },
   { key: 'context',  label: 'Contextual',   ico: '📊', href: 'contextual_stats.html' },
   { key: 'teams',    label: 'Teams',        ico: '🛡️', href: 'teams.html' },
@@ -20,7 +21,7 @@ const NAV = [
   { key: 'coeus',    label: 'Ask Coeus',    ico: '◉', href: 'coeus.html' },
 ];
 
-const MOBILE_NAV = NAV.map(n => n.key);   // all sections, 6 per row (2 rows)
+const MOBILE_NAV = NAV.map(n => n.key).filter(k => k !== 'hitrate');   // Hit Rates is reachable from Threats on phones (keeps the bar at 2 rows)   // all sections, 6 per row (2 rows)
 const MOBILE_LABEL = { dfs: 'DFS', props: 'Props', stats: 'Stats', reports: 'Reports', coeus: 'Coeus', context: 'Context' };
 
 function fiShell({ page, pageLabel, status = 'ready' }) {
