@@ -104,7 +104,9 @@
 .tg.loss{background:rgba(248,113,113,.16);color:#f87171}
 .tg.void{background:rgba(127,127,127,.16);color:var(--text-mid)}
 .conv-cat{display:flex;align-items:center;gap:4px}
-.conv-hr{padding-left:13px;margin-top:5px}
+.conv-hr{padding-left:13px;margin-top:5px;min-width:0}
+.conv-hr .hr-chip{white-space:normal;flex-wrap:wrap;max-width:100%;line-height:1.5}
+.side{min-width:0}
 .sum-pill.graded b{color:#4ade80}
 </style>
 </head>
@@ -136,11 +138,13 @@ function hitRateLine(s, cat){
   const n = hrNearest(res);
   return `<div class="conv-hr"><span class="hr-none">Hit rate \u00b7 no mark reached in 75%+ of games${n ? ' (best: ' + hrText(stat, n, res.games) + ')' : ''}</span></div>`;
 }
+let PLAYED_THRU = 0;  // latest week with at least one graded HIT/MISS
 async function loadGraded(){
   try {
     const r = await fetch('results/threats_graded.json', { cache: 'no-store' });
     if (!r.ok) return;
     for (const x of ((await r.json()).rows || [])) GRADED[gKey(x.week, x.team, x.player, x.cat)] = x;
+    for (const x of Object.values(GRADED)) if (x.result !== 'VOID') PLAYED_THRU = Math.max(PLAYED_THRU, x.week);
   } catch (e) { /* no grading file yet: page works exactly as before */ }
 }
 function gradeTag(team, s, cat){
@@ -148,6 +152,7 @@ function gradeTag(team, s, cat){
   if (!g) return '';
   if (g.result === 'HIT') return `<span class="tg win" title="Actual ${g.actual} vs average ${g.avg}">\u2713 Hit \u00b7 ${g.actual}</span>`;
   if (g.result === 'MISS') return `<span class="tg loss" title="Actual ${g.actual} vs average ${g.avg}">\u2717 Miss \u00b7 ${g.actual}</span>`;
+  if (DATA.week > PLAYED_THRU) return '';   // week not played yet: nothing to grade
   return `<span class="tg void" title="Did not play, no grade">DNP</span>`;
 }
 const main = fiShell({ page: 'threats', pageLabel: 'Threat System', status: 'loading' });
