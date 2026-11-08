@@ -36,12 +36,13 @@ def load_logs():
 
 def main():
     logs = load_logs()
+    played = max((w for (_n, w) in logs), default=0)   # latest week with real games; later weeks are not graded
     files = sorted(glob.glob("threats/wk*.json"))
     lo, hi = (int(sys.argv[1]), int(sys.argv[2])) if len(sys.argv) >= 3 else (1, 99)
     rows = []
     for f in files:
         wk = int(re.search(r"wk(\d+)", f).group(1))
-        if not (lo <= wk <= hi):
+        if not (lo <= wk <= hi) or wk > played:
             continue
         t = json.load(open(f))
         carry = t.get("carryover_season")
